@@ -5,10 +5,10 @@ At the end of this protocol both users will have a Friend record holding the acc
 `accessToken` is a uuid that is used to authenticate connection requests, `requestToken` is a uuid which is used to retrieve an accessToken
 
 Friend Table Definition:
-[common/models/Friend.json](https://github.com/mediapolis/digitopia-social/blob/master/common/models/friend.json)
+[common/models/Friend.json](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/friend.json)
 
 Protocol implementation:
-[server/boot/friend-protocol.js](https://github.com/mediapolis/digitopia-social/blob/master/common/models/friend.json)
+[server/boot/friend-protocol.js](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/friend.json)
 
 
 ### Friend Request
