@@ -1,10 +1,16 @@
 ### development notes
 
+This prototype is built in [Nodejs](https://nodejs.org) on the [loopback](https://loopback.io/) application framework.
+
+### installation
+
 Fork the repository and clone it to your development computer
 
 install node if you don't already have it
 
 `cp localdev-example.env localdev.env`
+
+Note that by default all data is ephemeral using the loopback memory connector. If you want the data to persist set MEMORY_CONNECTOR_BACKING_FILE=working/memory-db.json in localdev.env
 
 run `npm install`
 

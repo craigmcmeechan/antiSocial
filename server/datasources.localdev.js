@@ -38,7 +38,8 @@ function getDB() {
 		db = {
 			'db': {
 				'name': 'db',
-				'connector': 'memory'
+				'connector': 'memory',
+				'file': process.env.MEMORY_CONNECTOR_BACKING_FILE ? process.env.MEMORY_CONNECTOR_BACKING_FILE : ''
 			}
 		}
 		console.log('using memory connector');

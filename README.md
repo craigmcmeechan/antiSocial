@@ -10,11 +10,11 @@
 
 [Manifesto](https://github.com/antiSocialNet/antiSocial/blob/master/README-manifesto.md)
 
+[Build for Development](https://github.com/antiSocialNet/antiSocial/blob/master/README-development.md)
+
 ### Draft Protocol Descriptions
 * [Friend Protocol ](https://github.com/antiSocialNet/antiSocial/blob/master/README-FRIEND-PROTOCOL.md)
-
-### Development Notes
-* [Build for Development](https://github.com/antiSocialNet/antiSocial/blob/master/README-development.md)
+* [Realtime Newsfeeds] in development
 
 ### Primary design goals:
 
