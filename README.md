@@ -13,8 +13,8 @@
 [Build for Development](https://github.com/antiSocialNet/antiSocial/blob/master/README-development.md)
 
 ### Draft Protocol Descriptions
-* [Friend Protocol ](https://github.com/antiSocialNet/antiSocial/blob/master/README-FRIEND-PROTOCOL.md)
-* [Realtime Newsfeeds] in development
+* [Friend Protocol ](https://github.com/antiSocialNet/antiSocial/blob/master/README-friend-protocol.md)
+* [Realtime Newsfeeds](https://github.com/antiSocialNet/antiSocial/blob/master/README-pushfeeds.md)
 
 ### Primary design goals:
 

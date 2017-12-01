@@ -12,6 +12,11 @@ module.exports = function resolveProfiles(item, done) {
 		profiles[item.source] = {};
 	}
 
+	if (item.remoteEndPoint) {
+		endpoints.push(item.remoteEndPoint);
+		profiles[item.remoteEndPoint] = {};
+	}
+
 	if (item.about) {
 		endpoints.push(item.about);
 		profiles[item.about] = {};

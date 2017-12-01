@@ -421,9 +421,8 @@ module.exports = function (server) {
 			function newsFeedPendingFriendRequest(user, friend, cb) {
 				debug('/friend-request newsFeedPendingFriendRequest');
 
-				friend.source = friend.remoteEndPoint; // TODO change friend to follow source/about profile resolution scheme
 				resolveProfiles(friend, function (e) {
-					var sourceProfile = friend.resolvedProfiles[friend.source];
+					var sourceProfile = friend.resolvedProfiles[friend.remoteEndPoint];
 
 					var myNewsFeedItem = {
 						'userId': user.id,

@@ -3,7 +3,7 @@
 PushNewsFeedItems are used to propagate notifications through friend networks
 	"michael created a new post"
 	"michael posted to my wall"
-	"michael liked a post by my"
+	"michael liked a post by me"
 
 NewsFeeds is used to aggregate news about me and my items from the
 PushNewsFeedItems of my friends - server side feed watchers make MyNewsFeed

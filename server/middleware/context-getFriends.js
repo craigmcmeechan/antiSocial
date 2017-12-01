@@ -12,20 +12,19 @@ module.exports = function () {
 
 		var query = {
 			'where': {
-				'userId':user.id
+				'userId': user.id
 			}
 		};
-		req.app.models.Friend.find(query,function(err,friends){
-			if(err) {
+		req.app.models.Friend.find(query, function (err, friends) {
+			if (err) {
 				return next(err);
 			}
 
-			async.each(friends,function(friend,cb){
-				friend.source = friend.remoteEndPoint; // TODO change friend to follow source/about scheme
-				resolveProfiles(friend,cb);
-			},function(err) {
+			async.each(friends, function (friend, cb) {
+				resolveProfiles(friend, cb);
+			}, function (err) {
 				//console.log('%j',friends);
-				reqContext.set('friends',friends);
+				reqContext.set('friends', friends);
 				next();
 			});
 		});
