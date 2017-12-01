@@ -27,8 +27,6 @@ docker.env
 # !.elasticbeanstalk/*.cfg.yml
 # !.elasticbeanstalk/*.global.yml
 
-docker-ebs notes
-
 dockercfg.json
 
 notes.txt
