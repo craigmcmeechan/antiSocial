@@ -51,19 +51,19 @@ Michael's Browser         Michael's server           Alan's server            Al
 GET --------------------->
 http://rhodes.com/api/NewsFeeds/me/live
 
-																										<---------------------- GET
-																																						http://emtage.com/api/NewsFeeds/me/live
-													GET --------------------->
-													http://emtage.com/api/PushNewsFeedItems/alan/stream-updates
-													HEADERS: {
-														'friend-access-token': Michael's Access token for Alan,
-														'friend-high-water': Latest record seen
-													}
+                                                    <---------------------- GET
+                                                                            http://emtage.com/api/NewsFeeds/me/live
+                          GET --------------------->
+                          http://emtage.com/api/PushNewsFeedItems/alan/stream-updates
+                          HEADERS: {
+                            'friend-access-token': Michael's Access token for Alan,
+                            'friend-high-water': Latest record seen
+                          }
 
-													<------------------------ GET
-																										http://rhodes.com/api/PushNewsFeedItems/michael/stream-updates
-																										HEADERS: {
-																											'friend-access-token': Alan's Access token for Michael,
-																											'friend-high-water': Latest record seen
-																										}
+                          <------------------------ GET
+                                                    http://rhodes.com/api/PushNewsFeedItems/michael/stream-updates
+                                                    HEADERS: {
+                                                      'friend-access-token': Alan's Access token for Michael,
+                                                      'friend-high-water': Latest record seen
+                                                    }
 ```
