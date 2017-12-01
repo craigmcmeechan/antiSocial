@@ -1,0 +1,119 @@
+extends ../wrapper
+
+block seo
+	title.
+		Settings
+
+block content
+	- var photo = getUploadForProperty('photo',user.uploads(),'large',headshotFPO)
+	- var background = getUploadForProperty('background',user.uploads(),'large',FPO)
+
+	.container-fluid.content-padding-top.content
+		.row
+			.col-sm-8
+				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/api/MyUsers/me")
+					.form-group
+							.checkbox
+								label
+									if user.discoverable
+										input(type="checkbox" name="discoverable" checked)
+									else
+										input(type="checkbox" name="discoverable")
+
+									| Discoverable
+
+					if !user.username
+						.form-group
+								label User Name (one time edit)
+								.input-relative
+									input.form-control(type="text" name="username" placeholder="Username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-unique-endpoint= "/api/MyUsers/isunique?field=username")
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
+					.form-group
+							label Full Name
+							.input-relative
+								input.form-control(type="text" name="name" placeholder="Full Name" data-validate="required" value= user.name)
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+
+					.form-group
+							label Email
+							.input-relative
+								input.form-control(type="text" name="email" placeholder="Email address" data-validate="required" value= user.email  data-unique-endpoint= "/api/MyUsers/isunique?field=email")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+
+					.form-group
+							.input-relative
+								label Audiences
+								- var canEdit = user.audiences !== ""
+								- var audiences = JSON.stringify(user.audiences ? user.audiences : ['besties','family','colleagues','acquaintances'])
+								input#audience-list.form-control(type="hidden" name="audiences" placeholder="Audiences" data-validate="required" value= audiences)
+								.list-edit(data-jsclass="editListController" data-target="#audience-list" data-add-only= !init)
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+
+					.form-group
+							.input-relative
+								label Post Categories
+								- var init = user.categories === ""
+								- var categories = JSON.stringify(user.categories ? user.categories : ['LOL','WTF','politics'])
+								input#category-list.form-control(type="hidden" name="categories" placeholder="Categories" data-validate="required" value= categories)
+								.list-edit(data-jsclass="editListController" data-target="#category-list" data-add-only= !init)
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+
+
+				
+
+				- var fb,tw
+
+				if user.identities()
+					for identity in user.identities()
+						if identity.provider === 'facebook'
+							- fb= identity
+						if identity.provider === 'twitter'
+							- tw= identity
+
+				.row
+					.col-xs-12
+						if fb
+							p Linked w/facebook account
+						else
+							p
+								a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
+				.row
+					.col-xs-12
+						if tw
+							p Linked w/twitter account
+						else
+							p
+								a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
+
+
+
+		#scope-upload
+			.row
+				.col-sm-4
+					h3 Profile Photo
+					- var endpoint = "/api/MyUsers/me/upload/photo"
+					.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+						img(data-jsclass="digitopiaLazyImg" data-lazy-src= photo.url)
+						.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+							.dz-message.
+								Drop your photo here<br><small>(or click to upload)</small>
+
+			.row
+				.col-sm-8
+					h3 Profile Background
+					- var endpoint = "/api/MyUsers/me/upload/background"
+					.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+						img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
+						.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+							.dz-message.
+								Drop your photo here<br><small>(or click to upload)</small>

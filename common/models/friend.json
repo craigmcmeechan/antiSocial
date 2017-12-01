@@ -1,0 +1,70 @@
+{
+  "name": "Friend",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdOn",
+      "updatedAt": "updatedOn",
+      "required": false,
+      "validateUpsert": true
+    }
+  },
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "remoteRequestToken": {
+      "type": "string"
+    },
+    "remoteAccessToken": {
+      "type": "string"
+    },
+    "remoteEndPoint": {
+      "type": "string"
+    },
+    "localRequestToken": {
+      "type": "string"
+    },
+    "localAccessToken": {
+      "type": "string"
+    },
+    "originator": {
+      "type": "boolean"
+    },
+    "audiences": {
+      "type": "array"
+    },
+    "tags": {
+      "type": "array"
+    },
+    "highWater": {
+      "type": "string"
+    },
+    "keys": {
+      "type": "object"
+    },
+    "remotePublicKey": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "user": {
+      "type": "belongsTo",
+      "model": "MyUser",
+      "foreignKey": "userId"
+    },
+    "newsFeeds": {
+      "type": "hasMany",
+      "model": "NewsFeed",
+      "foreignKey": "friendId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Upload",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "indexes": {
+    "Upload_uploadableId": {
+      "keys": {
+        "uploadableId": 1
+      }
+    },
+    "Upload_uploadableType": {
+      "keys": {
+        "uploadableType": 1
+      }
+    }
+  },
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdOn",
+      "updatedAt": "updatedOn",
+      "required": false,
+      "validateUpsert": true
+    }
+  },
+  "admin": {
+    "defaultProperty": "url",
+    "listProperties": [
+      "property",
+      "url"
+    ]
+  },
+  "properties": {
+    "property": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "filename": {
+      "type": "string"
+    },
+    "bucket": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "imageSet": {
+      "type": "object"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "owner": {
+      "type": "belongsTo",
+      "polymorphic": {
+        "foreignKey": "uploadableId",
+        "discriminator": "uploadableType"
+      }
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

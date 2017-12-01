@@ -1,0 +1,41 @@
+{
+  "name": "UserIdentity",
+  "plural": "UserIdentities",
+  "base": "PersistedModel",
+  "strictObjectIDCoercion": true,
+  "properties": {
+    "provider": {
+      "type": "String"
+    },
+    "externalId": {
+      "type": "String"
+    },
+    "profile": {
+      "type": "Object"
+    },
+    "credentials": {
+      "type": "Object"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "user": {
+      "type": "belongsTo",
+      "model": "MyUser",
+      "foreignKey": "userId"
+    }
+  },
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {}
+}

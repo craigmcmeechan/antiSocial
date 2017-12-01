@@ -1,0 +1,23 @@
+{
+  "name": "ImageSet",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "properties": {
+    "original": {
+      "type": "string",
+      "required": true
+    },
+    "imageSet": {
+      "type": "object",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

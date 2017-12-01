@@ -1,0 +1,230 @@
+doctype html
+html(lang="en")
+	head
+		meta(charset="utf-8")
+		meta(http-equiv="X-UA-Compatible" content="IE=edge")
+		meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
+		meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no")
+		meta(name="apple-mobile-web-app-capable" content="yes")
+		meta(name="apple-mobile-web-app-status-bar-style" content="black-translucent")
+		meta(name="mobile-web-app-capable" content="yes")
+
+		link(href='//fonts.googleapis.com/css?family=Titillium+Web:100,300,400,600' rel='stylesheet' type='text/css')
+
+		block seo
+
+		if env === 'production'
+			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.min.css")
+		else
+			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.css")
+
+		block css
+			
+		style#override-styles(type="text/css")
+
+	body#document-body(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController")
+		script.
+			var result;
+			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
+			if(cookie){document.body.className = cookie;}
+
+		nav.navbar.navbar-inverse.navbar-fixed-top
+			.container-fluid
+				.navbar-header
+					button.navbar-toggle.collapsed(type="button" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar")
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					<a class="navbar-brand" href="/">antiSocialNet</a>
+				#navbar.collapse.navbar-collapse(data-jsclass="navController")
+					ul.nav.navbar-nav
+						li#nav-feed.hidden-logged-out
+							<a href="/feed">Feed</a>
+						li#nav-page.hidden-logged-out
+							<a href="/profile">Profile</a>
+						li#nav-settings.hidden-logged-out
+							<a href="/settings">Settings</a>
+						li#nav-settings.hidden-logged-out
+							<a href="/friends">Friends</a>
+					ul.nav.navbar-nav.navbar-right
+						if globalSettings.multiUser === 'invite'
+							li.hidden-logged-in
+								a(href="#" data-toggle="modal" data-target="#request-invite-form") Request Account
+						if globalSettings.multiUser === 'open'
+							li.hidden-logged-in
+								a(href="#" data-toggle="modal" data-target="#register-form") Create Account
+						li.hidden-logged-in
+							a(href="#" data-toggle="modal" data-target="#login-form") Login
+						li.hidden-logged-out
+							a(href="" data-jsclass="logoutController") Logout
+						li.menu-icon-placeholder
+							#menu-icon(data-hijax="true")
+								if user
+									img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)
+
+		#content(data-hijax="true")
+			block content
+				
+		#tmks.container-fluid.text-center
+			span.
+				Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
+
+		#ajax-status
+
+		#news-feed(data-jsclass="liveNewsFeedController")
+			include components/news-feed
+
+		block controller
+
+		if env === 'production'
+			script(src="/dist/js/jquery.min.js")
+		else
+			script(src="/dist/js/jquery.js")
+
+		if raven
+			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
+			script.
+				Raven.config('https://ef63061ed04d46089284817e8aa9b37d@sentry.io/152485').install();
+
+		if env === 'production'
+			script(src="/dist/js/DigitopiaSocial.min.js")
+		else
+			script(src="/dist/js/DigitopiaSocial.js")
+				
+		if environment.GOOGLE_MAPS_API_KEY
+			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
+
+		#login-form.modal.fade(tabindex="-1" role="dialog")
+			.modal-dialog(role="document")
+				form.form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button" data-modal="#login-form")
+					.modal-content
+						.modal-header
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">Login</h4>
+						.modal-body
+							.row
+								.col-sm-6.form-group
+									label Email Address
+									.input-relative
+										input#login-email-address.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email")
+										.input-ok-indicator
+											span.glyphicon.glyphicon-ok
+										.validation-help
+								.col-sm-6.form-group
+									label Password
+									.input-relative
+										input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
+										.input-ok-indicator
+											span.glyphicon.glyphicon-ok
+										.validation-help
+						.modal-footer
+							.pull-left
+								a(href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal") Forgot Password
+								| &nbsp;|&nbsp;
+								a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
+							button#login-button.btn.btn-primary(type="submit") Login
+
+		#password-request-reset-form.modal.fade(tabindex="-1" role="dialog")
+			.modal-dialog(role="document")
+				form.form.form-validation(action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.")
+					.modal-content
+						.modal-header
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">Recover Password</h4>
+						.modal-body
+							.row
+								.col-sm-6.form-group
+									label Email Address
+									.input-relative
+										input#login-email-address.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email")
+										.input-ok-indicator
+											span.glyphicon.glyphicon-ok
+										.validation-help
+						.modal-footer
+							.pull-left
+								a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
+							button#reset-request-button.btn.btn-primary(type="submit") Password Reset
+
+		#register-form.modal.fade(tabindex="-1" role="dialog")
+			.modal-dialog(role="document")
+				
+				form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
+					.modal-content
+						.modal-header
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">Register</h4>
+						.modal-body
+							.form-group.input-relative
+								input.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+									
+							.form-group.input-relative
+								input.form-control(type="text" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+
+							.form-group.input-relative
+								input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+									
+							.form-group.input-relative
+								input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+						.modal-footer
+							.pull-left
+								a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Already Have Account
+							button#register-button.btn.btn-primary Sign Up
+							
+		#password-reset-form.modal.fade(tabindex="-1" role="dialog")
+			.modal-dialog(role="document")
+				form.form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
+					input(type="hidden" name="access_token" value= passwordResetToken)
+					.modal-content
+						.modal-header
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">Reset Password</h4>
+						.modal-body
+							.form-group.input-relative
+								input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+									
+							.form-group.input-relative
+								input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+						.modal-footer
+							button#reset-button.btn.btn-primary Reset Password
+
+		#request-invite-form.modal.fade(tabindex="-1" role="dialog")
+			.modal-dialog(role="document")
+				form.form.form-validation(action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.")
+					.modal-content
+						.modal-header
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">Request an Account on This Server</h4>
+						.modal-body
+							.row
+								.col-sm-6.form-group
+									label Your Email Address
+									.input-relative
+										input#login-email-address.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email")
+										.input-ok-indicator
+											span.glyphicon.glyphicon-ok
+										.validation-help
+							.row
+								.col-sm-12
+									p.
+										This is a very, very early prototype. Once things are more stable we will add users who want to help us test the system.
+						.modal-footer
+							button#request-invite-button.btn.btn-primary(type="submit") Send Request

@@ -1,0 +1,70 @@
+@import 'nib'
+
+.ogPreview
+	height:350px
+	cursor:pointer
+	border-radius:6px
+	border:3px solid #666
+	background-color: #666
+	margin-bottom:30px
+	
+	&:hover
+		border-color: #222
+	.play
+		text-align:center
+		color:white
+		font-size:60px
+		width:100%
+		line-height:350px
+		opacity:.2
+
+	.caption
+		transition: all 0.25s ease
+		transform: translate3d(0,0,0)
+		color: white
+		background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0.9) 100%)
+		padding:10px
+		padding-top:20px
+		position:absolute
+		bottom:0px
+		left:0px
+		top:80%
+		width:100%
+		font-size:12px
+
+		a
+			color: white
+		h3
+			font-size:16px
+			margin:0px
+			padding-bottom:20px
+			white-space: nowrap
+			overflow: hidden
+			text-overflow: ellipsis
+			i
+				font-size:12px
+				opacity:.4
+		h4
+			transition: all 0.25s ease
+			transition-delay: .25s
+			transform: translate3d(0,0,0)
+			font-size:12px
+			height:0px
+			opacity:0
+		small
+			position:absolute
+			right:10px
+			bottom:10px
+			opacity:.6
+
+.hovering
+	.caption
+		background: linear-gradient(to bottom, rgba(0,0,0,.4) 0%,rgba(0,0,0,0.9) 100%)
+		top:0px
+	.caption h3
+		overflow:auto
+		white-space:normal
+		text-overflow:unset
+	.caption h4
+		height:auto
+		opacity: 1

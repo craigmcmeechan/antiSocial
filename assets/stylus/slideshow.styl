@@ -1,0 +1,78 @@
+@import 'nib'
+
+.carousel-container
+	display:none
+	width: 100%
+	padding-top:75%
+	position:relative
+	&.full-screen
+		position:fixed
+		top:0px
+		left:0px
+		right:0px
+		bottom:0px
+		z-index:11000
+		padding-top: 0
+		padding-bottom: 0
+		background-color: #333
+	.carousel
+		position:absolute
+		top:0
+		left:0
+		right:0
+		bottom:0
+		margin:0
+	.carousel-caption
+		background: linear-gradient(to top, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)
+		padding:0
+		margin:0
+		width:100%
+		left:0px
+		bottom:0px
+		text-align:center
+		width:100%
+		padding-left:10%
+		padding-right:10%
+		padding-bottom:50px
+	.comments-tab
+		color:white
+		position:fixed
+		bottom:0px
+		width:100%
+		z-index:99
+		.comments-tab-header
+			margin:0 auto
+			font-size:20px
+			text-align:center
+			cursor:pointer
+			padding-bottom:10px
+		.photo-reactions
+			background-color:rgba(0,0,0,.8)
+			max-width:380px
+			margin:0 auto
+		#reactions-and-comments
+			padding:15px
+	.carousel-indicators
+		top: 0px
+		right: 0px
+		margin: 15px
+		text-align: right
+		left: auto
+		bottom:auto
+	.carousel-indicators li
+		background-color: #ccc
+		border: thin solid #666
+	.carousel-control
+		cursor:pointer
+	.full-screen
+		position:absolute
+		top:15px
+		left:15px
+		z-index:900
+		color:white
+		opacity: 0.5
+		font-size:1.5em
+		font-weight:bold
+		cursor:pointer
+		&:hover
+			opacity:1

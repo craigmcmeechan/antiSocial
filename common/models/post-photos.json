@@ -1,0 +1,35 @@
+{
+  "name": "PostPhoto",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "properties": {
+    "sequence": {
+      "type": "number"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "post": {
+      "type": "belongsTo",
+      "model": "Post",
+      "foreignKey": "postId"
+    },
+    "photo": {
+      "type": "belongsTo",
+      "model": "Photo",
+      "foreignKey": "photoId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

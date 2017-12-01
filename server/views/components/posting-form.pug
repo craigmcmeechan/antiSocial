@@ -1,0 +1,49 @@
+#scope-posting-form
+	- var placeholder = wall ? 'Post something on ' + profile.name + "'s wall." : "What's on your mind?"
+	form#posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= wall ? profile.endpoint : '' data-submitter='#post-submit-button' data-focus-target="#posting-body" data-endpoint="/post")
+		.tabbed
+			#form-tab
+				.form-group.input-relative
+					textarea#posting-body.form-control(type="text" name="body" placeholder= placeholder data-validate="required")
+					.input-ok-indicator
+						span.glyphicon.glyphicon-ok
+					.validation-help
+			#preview-tab.hide-until-subject-focus.markdown
+
+		.hide-until-subject-focus
+			.upload-zone
+					
+		.post-tools.hide-until-subject-focus
+			.form-group.input-relative.button-zone
+				button#post-submit-button.btn.btn-primary Post
+				a#post-upload-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
+				a#post-geo-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-map-marker"></i>
+				a#post-preview-button.btn.btn-default(href="#") Preview
+				a#post-cancel-button.btn.btn-default.pull-right(href="#") Cancel
+
+			.geo-zone
+				.form-group.input-relative
+					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY)
+					input#geo-location(type="hidden")
+				.dropdown
+					ul#geo-pulldown.dropdown-menu
+					#geo-attributions
+
+			.form-group.input-relative.text-center
+				input#posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= '["friends"]')
+				.checkbox-group.lazy-instantiate(data-lazy-jsclass="checkboxGroupController" data-target="#posting-visibility")
+					label.checkbox-inline Visibility:
+					label.checkbox-inline
+						input(type="checkbox" data-value="private")
+						| private
+					label.checkbox-inline
+						input(type="checkbox" data-value="public")
+						| public
+					label.checkbox-inline
+						input(type="checkbox" data-value="friends")
+						| friends
+					if user && user.audiences
+						for audience in user.audiences
+							label.checkbox-inline
+								input(type="checkbox" data-value= audience)
+								= audience

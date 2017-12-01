@@ -1,0 +1,64 @@
+{
+  "name": "OgTag",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "indexes": {
+    "OgTag_url": {
+      "keys": {
+        "url": 1
+      }
+    }
+  },
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdOn",
+      "updatedAt": "updatedOn",
+      "required": false,
+      "validateUpsert": true
+    }
+  },
+  "admin": {
+    "defaultProperty": "url",
+    "helpers": [
+      {
+        "type": "upload",
+        "name": "Image",
+        "property": "image",
+        "endpoint": "/api/OgTags/:id/upload/image"
+      }
+    ]
+  },
+  "properties": {
+    "url": {
+      "type": "string",
+      "required": true,
+      "length": 255
+    },
+    "ogData": {
+      "type": "object"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "lookup"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "scrape"
+    }
+  ],
+  "methods": {}
+}

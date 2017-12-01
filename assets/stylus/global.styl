@@ -1,0 +1,464 @@
+@import 'nib'
+
+$borderColor = #eee
+
+body
+	background: linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,.6))
+
+.container-fluid
+	max-width:1024px
+
+.content
+	background: linear-gradient(to right bottom, rgba(255,255,255,.3), rgba(255,255,255,.6))
+	min-height:100vh
+	color:#333
+
+#content
+	margin-top:50px
+	.content-padding-top
+		padding-top:15px
+		padding-bottom:15px
+
+
+#sidebar
+	text-align:center
+	padding:1em
+	border: thin solid #eee
+	border-radius: 4px
+	margin-bottom: 30px
+	.page-header
+		margin-top:0
+
+#tmks
+	text-align:left
+	color:#ccc
+
+.copy-left
+	display: inline-block
+	text-align: right
+	margin: 0px
+	transform: scaleX(-1)
+	filter: FlipH
+
+#login-form
+	display:none
+
+.is-logged-in
+	.hidden-logged-in
+		display:none!important
+
+.is-logged-out
+	.hidden-logged-out
+		display:none!important
+
+.profile-photo-viewport
+	position:relative
+	height:300px
+	img
+		transition: all 0.5s ease
+	.dropzone
+		position:absolute
+		top:0px!important
+		width:100%
+		height:300px
+		opacity: 0
+		transition: all 0.5s ease;
+		paddding-top:40%
+	.dropzone:hover
+		opacity: 0.8
+	.loading
+		opacity: 1
+
+
+img.avatar
+	width:150px
+	right:calc(10% - 0px)
+	top:150px
+	border-radius:75px
+	border:thick solid white
+	position:fixed
+	z-index:1030
+
+.profile-hero
+	top:50px
+	position:fixed
+	height:100vh
+	width:100vw
+	z-index:-1
+	.text-gradient
+		background: linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)
+		padding-bottom:50px
+	.text-overlay
+		color:white
+		a
+			color:white
+
+.profile-parallax
+	margin-top:calc(100vh + 50px)
+	min-height:calc(100vh - 50px)
+	background-color:white
+
+#ajax-status
+	position:fixed
+	right:0px
+	bottom:0px
+	z-index:9000
+
+.revealer
+	padding-left:7px
+	font-size:.75em
+	cursor:pointer
+
+.form-validation
+	.input-relative
+		position:relative
+		input[type="text"]
+			padding-right:30px
+
+	.form-control
+		box-shadow: none
+		-webkit-box-shadow: none
+
+	.form-control:focus
+		box-shadow: none
+		-webkit-box-shadow: none
+
+	.input-ok-indicator
+		opacity:0
+		position:absolute
+		right:8px
+		top:8px
+		color: green
+
+	.input-ok
+		.input-ok-indicator
+			opacity:1
+
+	.validation-help
+		opacity:0
+		padding-left:5px
+		height:18px
+		color: red
+
+	.input-error
+		&.touched
+			.validation-help
+				opacity:.8
+
+			input[type="text"], input[type="password"], input[type="tel"], select
+				border: thin solid tomato
+
+	.input-with-icon
+		padding-left:25px!important
+
+.post-comments
+	#posting-form
+		margin-bottom:-30px
+
+#scope-posting-form
+	#posting-form
+		overflow:visible
+		&.focused
+			margin-bottom:0px
+			.form-group
+				margin-bottom:0px
+				overflow:hidden
+			#form-tab
+				textarea
+					min-height:33vh
+					border-radius:0
+					border-top-left-radius: 4px
+					border-top-right-radius: 4px
+	.form-control
+		box-shadow: none
+		-webkit-box-shadow: none
+
+	.form-control:focus
+		box-shadow: none
+		-webkit-box-shadow: none
+		border-color: $borderColor
+	.tabbed
+		position:relative
+		overflow:auto
+		.tabs
+			position:absolute
+			top:0px
+			left:0px
+			width:100%
+		#form-tab
+			background-color:white
+			border-radius: 4px;
+		#preview-tab
+			display:none
+			min-height:33vh
+			border-top-left-radius: 4px
+			border-top-right-radius: 4px
+			border: thin solid $borderColor
+			padding: 6px 12px
+			background-color:white
+	.validation-help
+		margin-top: -18px
+	.upload-zone
+		border:none
+		border-left:thin solid $borderColor
+		border-right:thin solid $borderColor
+		border-bottom:thin solid $borderColor
+		min-height:100px
+		text-align:center
+		display:none
+		.dz-preview
+			width:100%
+			.metadata
+				textarea
+					height: 4.8em
+					min-height: 1.2em
+		.dz-image
+			margin:0 auto
+			img
+				max-height:120px
+		.dz-message
+			color:#eee
+		.dz-remove
+			text-align:left
+		.ui-state-highlight
+			height: 120px
+			width:140px
+			display:inline-block
+			margin:16px
+	.geo-zone
+		padding-bottom: 7px
+		position:relative
+		display:none
+	.post-tools
+		border-right: thin solid $borderColor
+		border-left: thin solid $borderColor
+		border-bottom: thin solid $borderColor
+
+		border-bottom-left-radius: 4px
+		border-bottom-right-radius: 4px
+		padding: 7px
+		background-color:white
+		margin-bottom:30px
+		.button-zone
+			padding-bottom:7px
+
+	.comment-button-zone
+		padding-top:7px
+	.hide-until-subject-focus
+		display:none
+	.focused .hide-until-subject-focus
+		display:block
+	textarea
+		font-family: "Lucida Console", Monaco, monospace
+		min-height:2.5em
+	.focused textarea
+		min-height:calc(33vh - 8px)
+	label
+		color: #666
+		font-weight: normal
+	.checkbox-group
+		border-top: thin solid $borderColor
+		text-align:center
+		label
+			font-size: .75em
+
+	#post-upload-button
+		margin-left:15px
+
+	#post-geo-button
+		margin-left:15px
+
+	#post-preview-button
+		margin-left:15px
+
+.markdown
+	h1,h2,h3,h4
+		margin-top:0px
+		margin-bottom:.5em
+
+#scope-post-list
+	min-height: calc(100vh - 50px)
+	.post
+		background-color:white
+		padding:7px
+		border:thin solid $borderColor
+		border-radius:4px
+		margin-bottom:30px
+		.post-identity
+			position:relative
+			border-bottom:thin solid $borderColor
+			padding-bottom:7px
+			margin-bottom:7px
+			.post-avatar
+				img
+					max-width:75px
+			.target-arrow
+				margin-left:15px
+				margin-right:15px
+				color: #999
+				font-size:.8em
+			.post-geo
+				position:absolute
+				bottom:7px
+				right:0px
+
+		.form-group
+			margin-bottom:0
+		.focused .form-group
+			margin-bottom:15px
+		.img-thumb
+			margin:0
+			padding:0
+			cursor:pointer
+			.caption
+				transition: all 0.5s ease
+				padding:10px
+				background-color:rgba(0,0,0,.5)
+				color:white
+				top:0px
+				right:0px
+				bottom:0px
+				left:0px
+				opacity:0
+				&:hover
+					opacity:1
+
+#reactions-and-comments
+	.post-reactions
+		border-top:thin solid $borderColor
+		padding-top:7px
+		margin-bottom:7px
+		.reaction-button-container
+			position:relative
+			display:inline-block
+			.badge
+				position:absolute
+				right: -4px
+				top: -4px
+		.reaction-button
+			font-size:20px
+			padding:4px
+			border:thin solid $borderColor
+			border-radius:2px
+			margin-right:4px
+			cursor:pointer
+			&:hover
+				border-color:red
+			&.selected
+				border-color:orange
+		.reaction
+			.profile-thumb
+				width:36px
+				border-radius:50%
+	.post-comments
+		border-top:thin solid $borderColor
+		padding-top:7px
+		.comments-label
+			margin-bottom:7px
+		.comment
+			.profile-thumb
+				width:50px
+				float:left
+				margin-right:7px
+				margin-bottom:7px
+			.profile-link
+				margin-right:7px
+
+#news-feed
+	display:none
+	position:absolute
+	top:calc(100vh + 75px)
+	left:0px
+	overflow: hidden
+	background-color:white
+	.digitopia-xsmall &
+		display:none
+	.status
+		width:8px
+		height:8px
+		border-radius:4px
+		background-color:green
+		margin-top:11px
+		margin-right:10px
+
+		&.offline
+			background-color:red
+	.news-feed-header
+		height:30px
+		line-height:30px
+		padding-left: 10px
+		padding-right: 10px
+		font-weight:bold
+		background-color:#eee
+	.news-feed-footer
+		height:30px
+		line-height:30px
+		padding-left: 10px
+		padding-right: 10px
+		background-color:#eee
+		text-align:right
+		font-size:.75em
+
+	.news-feed-items
+		font-size:.75em
+		max-height: 500px
+		overflow:hidden;
+		.news-feed-item
+			height:50px
+			border-bottom:thin dashed $borderColor
+			border-right:thin dashed $borderColor
+			padding-right: 10px
+			margin-left:50px
+			img
+				height:39px
+				border-radius:25px
+				margin-top:5px
+				margin-bottom:5px
+				margin-left:-40px
+			div
+				padding-left:10px
+				display:inline-block
+				vertical-align:middle
+.menu-icon-placeholder
+	width:75px
+	position:relative
+.menubar-thumb
+	position:absolute
+	right:16px
+	height:42px
+	top:4px
+	border-radius:21px
+	z-index:2000
+.friend-card
+	overflow:auto
+	color:white
+	padding:15px
+	h3
+		margin-top:0
+	img
+		max-width:50px
+		border-radius:25px
+		border:thick solid white
+	a
+		color: white
+
+.loader
+	margin:0 auto
+	border: 10px solid #f3f3f3;
+	border-top: 10px solid #3498db
+	border-radius: 50%
+	width: 60px
+	height: 60px
+	animation: spin 2s linear infinite
+
+@keyframes spin
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+
+#geo-pulldown
+	.address
+		padding-left:.5em
+		padding-right:.5em
+		cursor:pointer
+		&:hover
+			background-color:#eee

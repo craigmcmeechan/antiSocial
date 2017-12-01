@@ -1,0 +1,178 @@
+{
+  "name": "MyUser",
+  "base": "User",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdOn",
+      "updatedAt": "updatedOn",
+      "required": false,
+      "validateUpsert": true
+    }
+  },
+  "admin": {
+    "defaultProperty": "email",
+    "listProperties": [
+      "email",
+      "name",
+      "discoverable"
+    ],
+    "editProperties": [
+      "email",
+      "name",
+      "password",
+      "discoverable",
+      "bio"
+    ],
+    "includeRelations": [
+      "uploads",
+      "identities",
+      "posts",
+      "settings"
+    ],
+    "helpers": [
+      {
+        "type": "upload",
+        "name": "Upload Photo",
+        "property": "photo",
+        "endpoint": "/api/MyUsers/:id/upload/photo"
+      },
+      {
+        "type": "upload",
+        "name": "Upload Background",
+        "property": "background",
+        "endpoint": "/api/MyUsers/:id/upload/background"
+      }
+    ]
+  },
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "discoverable": {
+      "type": "boolean"
+    },
+    "bio": {
+      "type": "object"
+    },
+    "audiences": {
+      "type": "array"
+    },
+    "categories": {
+      "type": "array"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "identities": {
+      "type": "hasMany",
+      "model": "UserIdentity",
+      "foreignKey": "userId"
+    },
+    "posts": {
+      "type": "hasMany",
+      "model": "Post",
+      "foreignKey": "userId"
+    },
+    "friends": {
+      "type": "hasMany",
+      "model": "Friend",
+      "foreignKey": "userId"
+    },
+    "settings": {
+      "type": "hasMany",
+      "model": "Settings",
+      "foreignKey": "userId"
+    },
+    "pushNewsFeedItems": {
+      "type": "hasMany",
+      "model": "PushNewsFeedItem",
+      "foreignKey": "userId"
+    },
+    "newsFeeds": {
+      "type": "hasMany",
+      "model": "NewsFeed",
+      "foreignKey": "userId"
+    },
+    "photos": {
+      "type": "hasMany",
+      "model": "Photo",
+      "foreignKey": "userId"
+    },
+    "invitations": {
+      "type": "hasMany",
+      "model": "Invitation",
+      "foreignKey": "userId"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "upload"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "isunique"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "register"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "__create__invitations"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "__create__posts"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "__updateById__friends"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "__destroyById__photos"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "__get__photos"
+    }
+  ],
+  "methods": {}
+}

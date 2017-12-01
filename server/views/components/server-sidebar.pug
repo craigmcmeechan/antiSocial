@@ -1,0 +1,36 @@
+#sidebar
+	.page-header
+		h4
+			!= globalSettings.serverName
+		p
+			if globalSettings.serverTitle
+				!= globalSettings.serverTitle
+			if globalSettings.serverDescription
+				small
+					p
+						!= globalSettings.serverDescription
+						
+	.page-header
+		if !globalSettings.multiUser
+			h4 This server is closed to new users
+		else
+			h4 This is a community server
+
+	if publicUsers
+		h4 Public users on this server
+		for user in publicUsers
+			div
+				a(href= config.publicHost + '/' + user.username)= user.name
+		br
+		br
+
+	if globalSettings.multiUser === 'open'
+		p You can create an account on this server. Just click on the thingy up there in the menu bar.
+
+	if globalSettings.multiUser === 'invite'
+		p 
+			= 'You can create an account on this server by '
+			a(href="#" data-toggle="modal" data-target="#request-invite-form") requesting an invitation
+			= '.'
+
+	

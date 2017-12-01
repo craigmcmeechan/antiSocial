@@ -1,0 +1,24 @@
+extends ../wrapper
+
+block seo
+	title
+		!= globalSettings.serverTitle
+
+block content
+	.container-fluid.content-padding-top.content
+		.row
+			.col-sm-8
+				if posts && posts.length
+					h4
+						= 'Recent Public Posts On This Server'
+						
+					include ../components/post-list
+				else
+					.page-header
+						h4 No public posts on this server at the moment
+
+			.col-sm-4
+				if user
+						#newsfeed-here
+				else
+					include ../components/server-sidebar

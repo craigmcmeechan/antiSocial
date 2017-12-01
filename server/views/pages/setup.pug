@@ -1,0 +1,38 @@
+extends ../wrapper
+
+block seo
+	title.
+		Node Setup
+
+block content
+	.container-fluid.content-padding-top.content
+		.page-header
+			h1 Create an administrator login for your node
+
+		form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter=".register-button")
+			.form-group.input-relative
+				input.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email")
+				.input-ok-indicator
+					span.glyphicon.glyphicon-ok
+				.validation-help
+					
+			.form-group.input-relative
+				input.form-control(type="text" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']")
+				.input-ok-indicator
+					span.glyphicon.glyphicon-ok
+				.validation-help
+
+			.form-group.input-relative
+				input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
+				.input-ok-indicator
+					span.glyphicon.glyphicon-ok
+				.validation-help
+					
+			.form-group.input-relative
+				input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
+				.input-ok-indicator
+					span.glyphicon.glyphicon-ok
+				.validation-help
+					
+			.form-group
+				button.register-button.form-control.btn.btn-primary Sign Up

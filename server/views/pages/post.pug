@@ -1,0 +1,68 @@
+extends ../wrapper
+
+block seo
+	title
+		= 'Post by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
+		
+	- var summary = marked(posts[0].body)
+	- summary = summary.replace(/\<table\>/g,'<table class="table table-condensed">')
+	- summary = summary.replace(/<.*?>/g,"")
+	if summary.length > 200
+		- summary= summary.substring(0,200)
+		- summary= summary.replace(/[^ ]+$/,'')  + '...'
+	
+	meta(property="og:type" content="article")
+	meta(property="og:image" content= profile.background.url)
+	meta(property="og:description" content= summary)
+
+block content
+	img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-effect-start="0.5" data-effect-end="0.98" data-effect-units="viewport" data-effect-transform-units="" data-effect-start-css="border-radius:10px;width:150px;top:150px;right:calc(10% - 0px);" data-effect-end-css="border-radius:75px;width:42px;top:4px;right:calc(50% - 25px);" data-effect-ease="linear")
+
+	.profile-hero(data-jsclass="scrollToController,scrollEffectsController" style= 'background-image:url(' + profile.background.url + ');background-size: cover;background-repeat:no-repeat;background-position: center center;' data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
+		.text-gradient
+			.container-fluid.text-overlay
+				h1= profile.name
+
+				if isFriend
+					if isFriend.status === 'accepted'
+						| This friend can see my public posts and posts in
+						each audience, i in isFriend.audiences
+							if i
+								| ,
+							= ' ' + audience
+
+						span.revealer(data-target="#edit-friend-audience" data-toggle="collapse")
+							i.glyphicon.glyphicon-chevron-down
+
+						#edit-friend-audience.collapse
+							form#form.form-validation(data-jsclass="postingFormController,formValidator,saveOnChange" data-method="PUT" data-endpoint="/api/MyUsers/me/friends/"+ isFriend.id)
+								.form-group
+									label Set Audience
+									input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(isFriend.audiences))
+									.checkbox-group(data-jsclass="checkboxGroupController" data-target="#friend-audiences")
+										label.checkbox-inline
+											input(type="checkbox" data-value="friends")
+											| friends
+										if user && user.audiences
+											each audience in user.audiences
+												label.checkbox-inline
+													input(type="checkbox" data-value= audience)
+													= audience
+
+					else
+						| pending friend request
+				else
+					if user && !isMe && profile.endpoint
+						button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= '/friend?endpoint=' + encodeURIComponent(profile.endpoint)) Add Friend
+						| this user can see my public posts.
+
+	.profile-parallax(data-jsclass="vibrantController" data-image= profile.background.url)
+		.container-fluid.content-padding-top.content
+			.row
+				.col-sm-8
+					include ../components/post-list
+				.col-sm-4
+					if user
+						#newsfeed-here
+					else
+						include ../components/server-sidebar

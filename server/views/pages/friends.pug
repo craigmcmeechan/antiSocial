@@ -1,0 +1,81 @@
+extends ../wrapper
+
+block seo
+	title.
+		Friends
+
+block content
+	.container-fluid.content-padding-top.content
+		.row
+			.col-sm-6
+				.page-header
+					h1 Friends
+			.col-sm-6
+				#sidebar
+					h4 Your Public Page
+					p= config.publicHost + '/' + user.username
+		.row
+			.col-sm-6
+				if !friends.length
+					p Oops. No friends yet.
+				else
+					.row
+						for friend in friends
+							.col-lg-6
+								.friend-card(style="background:url("+friend.resolvedProfiles[friend.source].profile.background.url+");background-size: cover;")
+									img.pull-right(src= friend.resolvedProfiles[friend.source].profile.photo.url)
+									h3
+										a(href= '/profile?endpoint='+encodeURIComponent(friend.remoteEndPoint))= friend.resolvedProfiles[friend.source].profile.name
+
+									if friend.status === 'pending'
+										<br>
+										if !friend.originator
+											button.btn.btn-primary.btn-md(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
+											| [decline] [block]
+										else
+											| Request Pending [cancel]
+									else
+										<br>
+										|  [delete]
+
+			.col-sm-6
+							
+				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
+					label Add friend by Public Page URL
+					.form-group
+						.input-group
+							.input-relative
+								input.form-control(type="text" name="endpoint" placeholder="Endpoint" data-validate="required,url" value= endpoint)
+							.input-group-btn
+								button#lookup-button.btn.btn-primary Lookup
+							
+
+				if error
+					.alert.alert-error= error
+
+				if profile
+					// p= JSON.stringify(profile)
+					.friend-card(style="background:url("+profile.profile.background.url+");;background-size: cover;")
+						img.pull-right(src= profile.profile.photo.url)
+						h3= profile.profile.name
+
+						button.btn.btn-primary.btn-sm(data-jsclass="getEndpointController" data-endpoint= '/friend?endpoint=' + encodeURIComponent(endpoint)) Add Friend
+
+				h3 Invite a friend via Email
+
+				form#invite-friend-form.form.form-validation(method="POST" action="/api/MyUsers/me/invitations" data-jsclass="formValidator" data-submitter="#lookup-button")
+					input(type="hidden" name="type" value="friend")
+					.form-group
+						.input-relative
+							input.form-control(type="text" name="email" placeholder="Email Address" data-validate="required,email")
+							.input-ok-indicator
+								span.glyphicon.glyphicon-ok
+							.validation-help
+								
+					.form-group
+						.input-relative
+							textarea.form-control(type="text" name="note" placeholder="Note" data-validate="required")
+							.input-ok-indicator
+								span.glyphicon.glyphicon-ok
+							.validation-help
+					button.btn.btn-primary.btn-sm(data-jsclass="postEndpointController" data-target="#invite-friend-form" data-endpoint= '/api/MyUsers/me/invitations') Send

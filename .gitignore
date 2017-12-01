@@ -1,0 +1,39 @@
+*.csv
+*.dat
+*.iml
+*.log
+*.out
+*.pid
+*.seed
+*.sublime-*
+*.swo
+*.swp
+*.tgz
+*.xml
+.DS_Store
+.idea
+.project
+.strong-pm
+coverage
+node_modules
+npm-debug.log
+working
+localdev.env
+docker.env
+
+
+# Elastic Beanstalk Files
+# .elasticbeanstalk/*
+# !.elasticbeanstalk/*.cfg.yml
+# !.elasticbeanstalk/*.global.yml
+
+docker-ebs notes
+
+dockercfg.json
+
+notes.txt
+devel-notes/
+
+client/dist/
+client/uploads/
+client/import/

@@ -1,0 +1,11 @@
+.news-feed-header
+	.status.pull-right
+	| Activity Feed
+.news-feed-items
+	.news-feed-item
+		- var thumb= getUploadForProperty('photo', user ? user.uploads() : {}, 'thumb', headshotFPO).url
+		img(src=thumb)
+		div
+			| listening for events
+.news-feed-footer
+	| TODO [all]

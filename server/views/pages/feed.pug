@@ -1,0 +1,20 @@
+extends ../wrapper
+
+block seo
+	title.
+		Feed
+
+block content
+	.container-fluid.content-padding-top.content
+		.row
+			.col-sm-8
+				include ../components/posting-form
+
+				include ../components/post-list
+				
+				
+				.text-center
+					.loader(data-jsclass="loadMoreController")
+					
+			.col-sm-4
+				#newsfeed-here

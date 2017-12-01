@@ -1,0 +1,98 @@
+{
+  "name": "Post",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdOn",
+      "updatedAt": "updatedOn",
+      "required": false,
+      "validateUpsert": true
+    }
+  },
+  "admin": {
+    "editProperties": [
+      "body",
+      "visibility",
+      "userId"
+    ]
+  },
+  "properties": {
+    "uuid": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "about": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string",
+      "required": true,
+      "admin": {
+        "inputType": "textarea"
+      }
+    },
+    "visibility": {
+      "type": [
+        "string"
+      ],
+      "required": true
+    },
+    "categories": {
+      "type": [
+        "string"
+      ]
+    },
+    "geoDescription": {
+      "type": "string"
+    },
+    "geoLocation": {
+      "type": [
+        "number"
+      ]
+    }
+  },
+  "validations": [],
+  "relations": {
+    "user": {
+      "type": "belongsTo",
+      "model": "MyUser",
+      "foreignKey": "userId"
+    },
+    "comments": {
+      "type": "hasMany",
+      "model": "Comment",
+      "polymorphic": {
+        "foreignKey": "foreignId",
+        "discriminator": "foreignType"
+      }
+    },
+    "reactions": {
+      "type": "hasMany",
+      "model": "Reaction",
+      "polymorphic": {
+        "foreignKey": "foreignId",
+        "discriminator": "foreignType"
+      }
+    },
+    "photos": {
+      "type": "hasMany",
+      "model": "Photo",
+      "foreignKey": "postId",
+      "through": "PostPhoto"
+    },
+    "postPhotos": {
+      "type": "hasMany",
+      "model": "PostPhoto",
+      "foreignKey": "postId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
