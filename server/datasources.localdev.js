@@ -38,8 +38,7 @@ function getDB() {
 		db = {
 			'db': {
 				'name': 'db',
-				'connector': 'memory',
-				'file': 'working/memory-db.json'
+				'connector': 'memory'
 			}
 		}
 		console.log('using memory connector');
