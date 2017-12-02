@@ -26,52 +26,51 @@ Watched by the users web browsers. Servers watching for `PushNewsFeedItem` updat
 
 The listeners (both the servers and the clients) maintain "high water" pointers so they can pick up where they left off after being offline.
 
-Michael make a post
-	Allocate a PushNewsFeedItem
-	```
-	{
-		'type': 'post',
-		'source': http://rhodes.com/mr
-		'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
-		'visibility': ['friends','family']
-	}
-	```
+Michael makes a post then allocates a PushNewsFeedItem
+```
+{
+	'type': 'post',
+	'source': http://rhodes.com/mr
+	'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
+	'visibility': ['friends','family']
+}
+```
 
-Alan's server immediately sees the PushNewsFeedItem because he is in the audience 'family'
-	Alan's server creates a NewsFeedItem record to propagate this event to his browser
-	```
-	{
-		'type': 'post',
-		'source': http://rhodes.com/mr
-		'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
-	}
-	```
+Alan's server immediately sees the PushNewsFeedItem because he is in the audience 'family'. Alan's server creates a NewsFeedItem record to propagate this event to his browser
+```
+{
+	'type': 'post',
+	'source': http://rhodes.com/mr
+	'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
+}
+```
 
 Alan's web browser immediately sees this and prepends it to his Activity Feed.
 
-Alan reacts to Michael's post
-	Allocate a PushNewsFeedItem
-	```
-	{
-		'type': 'react',
-		'source': http://emtage.com/alan
-		'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
-		'details': {
-			"reaction": "thumbsup"
-		}
+Alan reacts to Michael's post then allocates a PushNewsFeedItem
+```
+{
+	'type': 'react',
+	'source': http://emtage.com/alan
+	'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
+	'details': {
+		"reaction": "thumbsup"
 	}
-	```
+}
+```
 
 Michael's server sees immediately sees the PushNewsFeedItem and creates a NewsFeedItem item to notify him. In this case the server also creates a 'Reaction' row to accumulate all the 'Likes' for his post
 
 ```
 Michael's Browser         Michael's server           Alan's server            Alan's Browser
 -----------------         ----------------          ----------------         ----------------
+
 GET --------------------->
 http://rhodes.com/api/NewsFeedItems/me/live
 
                                                     <---------------------- GET
                                                                             http://emtage.com/api/NewsFeedItems/me/live
+
                           GET --------------------->
                           http://emtage.com/api/PushNewsFeedItems/alan/stream-updates
                           HEADERS: {
