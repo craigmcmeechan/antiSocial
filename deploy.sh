@@ -36,6 +36,8 @@ build_images() {
 deploy_eb () {
 	if [ "$CIRCLE_BRANCH" == "production" ]; then
 		cp Dockerrun.aws.production.json Dockerrun.aws.json
+		git commit add .
+		git commit -a -m "Dockerrun"
 		echo "deploying mr"
 		~/.local/bin/eb use mr-antisocial
 		~/.local/bin/eb deploy
@@ -45,6 +47,8 @@ deploy_eb () {
 		~/.local/bin/eb deploy
 	else
 		cp Dockerrun.aws.development.json Dockerrun.aws.json
+		git commit add .
+		git commit -a -m "Dockerrun"
 		echo "deploying development"
 		~/.local/bin/eb use devel-antisocial
 		~/.local/bin/eb deploy
