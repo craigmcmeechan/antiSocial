@@ -18,23 +18,24 @@ build_images() {
 	echo "docker-compose"
 	cd docker-assets
 	docker-compose build
-	docker tag webapp-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social:webapp-antisocial
-	docker tag nginx-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social:nginx-antisocial
+	docker tag webapp-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
+	docker tag nginx-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:nginx-antisocial
 
 	echo "docker login"
 	eval $(aws ecr get-login --region us-east-1)
 
-	echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social:webapp-antisocial"
-	docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social:webapp-antisocial
+	echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial"
+	docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
 
-	echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social:nginx-antisocial"
-	docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social:nginx-antisocial
+	echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:nginx-antisocial"
+	docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:nginx-antisocial
 
 	cd ../
 }
 
 deploy_eb () {
 	if [ "$CIRCLE_BRANCH" == "production" ]; then
+		cp Dockerrun.aws.production.json Dockerrun.aws.json
 		echo "deploying mr"
 		~/.local/bin/eb use mr-antisocial
 		~/.local/bin/eb deploy
@@ -43,6 +44,7 @@ deploy_eb () {
 		~/.local/bin/eb use ae-antisocial
 		~/.local/bin/eb deploy
 	else
+		cp Dockerrun.aws.devel.json Dockerrun.aws.json
 		echo "deploying development"
 		~/.local/bin/eb use devel-antisocial
 		~/.local/bin/eb deploy
