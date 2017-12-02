@@ -67,14 +67,13 @@ Michael's server  immediately sees the PushNewsFeedItem and creates a NewsFeedIt
 
 [PushNewsFeedItem Agent](https://github.com/antiSocialNet/antiSocial/blob/master/server/lib/watchFeed.js)
 
-[NewsFeedItem definition](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/news-feed.json)
-
-[NewsFeedItem methods](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/news-feed.js)
-
 [PushNewsFeedItem definition](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/push-news-feed-item.json)
 
 [PushNewsFeedItem methods](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/push-news-feed-item.js)
 
+[NewsFeedItem definition](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/news-feed-item.json)
+
+[NewsFeedItem methods](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/news-feed-item.js)
 
 ```
 Michael's Browser         Michael's server           Alan's server            Alan's Browser
