@@ -1,7 +1,7 @@
 var async = require('async');
 
 module.exports = function () {
-	return function contextGetNewsFeed(req, res, next) {
+	return function contextGetNewsFeedItem(req, res, next) {
 		var reqContext = req.getCurrentContext();
 		var user = reqContext.get('currentUser');
 
@@ -16,7 +16,7 @@ module.exports = function () {
 			'include': ['friend']
 		};
 
-		req.app.models.NewsFeed.find(query,function(err,feed){
+		req.app.models.NewsFeedItem.find(query,function(err,feed){
 			reqContext.set('newsFeed', feed);
 			return next();
 		});

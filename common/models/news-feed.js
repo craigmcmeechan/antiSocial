@@ -3,10 +3,10 @@ var PassThrough = require('stream').PassThrough;
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 
-module.exports = function (NewsFeed) {
+module.exports = function (NewsFeedItem) {
 
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
-	NewsFeed.live = function (userId, ctx, cb) {
+	NewsFeedItem.live = function (userId, ctx, cb) {
 		var reqContext = ctx.req.getCurrentContext();
 		var user = reqContext.get('currentUser');
 
@@ -34,7 +34,7 @@ module.exports = function (NewsFeed) {
 				changes.removeAllListeners('error');
 				changes.removeAllListeners('end');
 			}
-			NewsFeed.removeObserver('after save', changeHandler);
+			NewsFeedItem.removeObserver('after save', changeHandler);
 			writeable = false;
 			changes = null;
 		};
@@ -67,12 +67,12 @@ module.exports = function (NewsFeed) {
 				'limit': 30
 			};
 
-			NewsFeed.find(query, function (e, items) {
+			NewsFeedItem.find(query, function (e, items) {
 				if (e) {
-					logger.error('backfilling NewsFeed %j error', query, e);
+					logger.error('backfilling NewsFeedItem %j error', query, e);
 				}
 				else {
-					debug('backfilling NewsFeed %j count', query, items ? items.length : 0);
+					debug('backfilling NewsFeedItem %j count', query, items ? items.length : 0);
 
 					items.reverse();
 
@@ -85,7 +85,7 @@ module.exports = function (NewsFeed) {
 							'backfill': true
 						};
 
-						debugVerbose('backfilling NewsFeed %j', data);
+						debugVerbose('backfilling NewsFeedItem %j', data);
 
 						changes.write(change);
 					}
@@ -93,7 +93,7 @@ module.exports = function (NewsFeed) {
 			});
 		});
 
-		NewsFeed.observe('after save', changeHandler);
+		NewsFeedItem.observe('after save', changeHandler);
 
 		function createChangeHandler(type) {
 			return function (ctx, next) {
@@ -150,7 +150,7 @@ module.exports = function (NewsFeed) {
 		}
 	};
 
-	NewsFeed.remoteMethod(
+	NewsFeedItem.remoteMethod(
 		'live', {
 			description: 'stream news feed to subscribers.',
 			accessType: 'READ',

@@ -74,7 +74,7 @@ module.exports = {
     'dataSource': 'db',
     'public': true
   },
-  'NewsFeed': {
+  'NewsFeedItem': {
     'dataSource': 'db',
     'public': true
   },

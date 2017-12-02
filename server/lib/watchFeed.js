@@ -5,8 +5,8 @@ PushNewsFeedItems are used to propagate notifications through friend networks
 	"michael posted to my wall"
 	"michael liked a post by me"
 
-NewsFeeds is used to aggregate news about me and my items from the
-PushNewsFeedItems of my friends - server side feed watchers make MyNewsFeed
+NewsFeedItems is used to aggregate news about me and my items from the
+PushNewsFeedItems of my friends - server side feed watchers make MyNewsFeedItem
 items based on feeds they are watching to notify users of activity in their
 network that is of interest to them.
 
@@ -30,17 +30,17 @@ My server receives notification of new PushNewsFeedItems initiated by Michael
 	commented on) if so is it also of interest to my followers?
 
 	"Michael created a post"
-	-> only of interest to me. Create a NewsFeeds item with reference to
+	-> only of interest to me. Create a NewsFeedItems item with reference to
 	post so I can see it in my newsfeed
 
 	"Michael liked a post by xxx"
 	"Michael commented on a post by xxx"
-	-> of interest to me but not my followers. Create a NewsFeeds with
+	-> of interest to me but not my followers. Create a NewsFeedItems with
 	reference to post so I can see it in my newsfeed
 
 	"Michael liked my post"
 	"Michael commented on my post"
-	-> also of interest to my network, create a NewsFeeds to propigate and
+	-> also of interest to my network, create a NewsFeedItems to propigate and
 	create a PushNewsFeedItem to notify my followers
 
 */
@@ -114,7 +114,7 @@ function getListener(server, friend) {
 			var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
 
 			if (!decrypted.valid) { // could not validate signature
-				logger.error('WatchNewsFeed decryption signature validation error %j', message);
+				logger.error('WatchNewsFeedItem decryption signature validation error %j', message);
 				return;
 			}
 
@@ -236,9 +236,9 @@ function getListener(server, friend) {
 
 						delete myNewsFeedItem.resolvedProfiles;
 
-						server.models.NewsFeed.create(myNewsFeedItem, function (err, item) {
+						server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 							if (err) {
-								logger.error('error saving NewsFeed item', myNewsFeedItem);
+								logger.error('error saving NewsFeedItem item', myNewsFeedItem);
 								return cb(err);
 							}
 							cb();

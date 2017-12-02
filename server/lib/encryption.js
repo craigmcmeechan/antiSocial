@@ -4,7 +4,7 @@ var debug = require('debug')('encryption');
 
 var algorithm = 'aes-256-ctr';
 
-// implement Hybrid Cryptosystem for PushNewsFeed
+// implement Hybrid Cryptosystem for PushNewsFeedItem
 // - user to user encryption using exchanged public keys
 
 

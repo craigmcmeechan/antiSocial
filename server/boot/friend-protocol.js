@@ -432,7 +432,7 @@ module.exports = function (server) {
 						'source': friend.remoteEndPoint,
 						'humanReadable': '<img src="' + sourceProfile.profile.photo.url + '"> pending friend request from ' + sourceProfile.profile.name
 					};
-					req.app.models.NewsFeed.create(myNewsFeedItem, function (err, item) {
+					req.app.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 						if (err) {
 							var e = new VError(err, 'error creating newsfeed item');
 							return cb(e);

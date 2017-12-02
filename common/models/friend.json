@@ -61,7 +61,7 @@
     },
     "newsFeeds": {
       "type": "hasMany",
-      "model": "NewsFeed",
+      "model": "NewsFeedItem",
       "foreignKey": "friendId"
     }
   },

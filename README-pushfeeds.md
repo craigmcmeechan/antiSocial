@@ -17,8 +17,8 @@ PushNewsFeedItem feeds are filtered by 'audience'
 * Michael's friend Alan has been granted access to ['public','friends','family']
 * All posts have a setting to indicate which audiences are allowed to see them. A post marked with audience "family" would be seen by all Friend connections that are members of the "family" audience
 
-#### NewsFeed
-Watched by the users web browsers. Servers watching for `PushNewsFeedItem` updates create `NewsFeed` rows when they see items that would be of interest to the user wo that the UI can update the activity feed in real-time.
+#### NewsFeedItem
+Watched by the users web browsers. Servers watching for `PushNewsFeedItem` updates create `NewsFeedItem` rows when they see items that would be of interest to the user wo that the UI can update the activity feed in real-time.
 
 * "Michael created a new post"
 * "Michael liked a post by me"
@@ -38,7 +38,7 @@ Michael make a post
 	```
 
 Alan's server immediately sees the PushNewsFeedItem because he is in the audience 'family'
-	Alan's server creates a NewsFeed record to propagate this event to his browser
+	Alan's server creates a NewsFeedItem record to propagate this event to his browser
 	```
 	{
 		'type': 'post',
@@ -62,16 +62,16 @@ Alan reacts to Michael's post
 	}
 	```
 
-Michael's server sees immediately sees the PushNewsFeedItem and creates a NewsFeed item to notify him. In this case the server also creates a 'Reaction' row to accumulate all the 'Likes' for his post
+Michael's server sees immediately sees the PushNewsFeedItem and creates a NewsFeedItem item to notify him. In this case the server also creates a 'Reaction' row to accumulate all the 'Likes' for his post
 
 ```
 Michael's Browser         Michael's server           Alan's server            Alan's Browser
 -----------------         ----------------          ----------------         ----------------
 GET --------------------->
-http://rhodes.com/api/NewsFeeds/me/live
+http://rhodes.com/api/NewsFeedItems/me/live
 
                                                     <---------------------- GET
-                                                                            http://emtage.com/api/NewsFeeds/me/live
+                                                                            http://emtage.com/api/NewsFeedItems/me/live
                           GET --------------------->
                           http://emtage.com/api/PushNewsFeedItems/alan/stream-updates
                           HEADERS: {

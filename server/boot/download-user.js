@@ -264,7 +264,7 @@ function reanimate(currentUser, archive, done) {
 				return cb();
 			});
 		},
-		function importNewsFeeds(cb) {
+		function importNewsFeedItems(cb) {
 			async.map(toReAnimate.newsFeeds, function (item, cbMap) {
 				delete item.id;
 				currentUser.newsFeeds.create(item, cbMap);

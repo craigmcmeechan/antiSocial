@@ -1,5 +1,5 @@
 (function ($) {
-	function liveNewsFeedController(elem, options) {
+	function liveNewsFeedItemController(elem, options) {
 		this.element = $(elem);
 		var self = this;
 		this.src = null;
@@ -62,7 +62,7 @@
 
 		this.connect = function () {
 			self.element.find('ul').empty();
-			var endpoint = '/api/NewsFeeds/me/live';
+			var endpoint = '/api/NewsFeedItems/me/live';
 			self.src = new EventSource(endpoint);
 			self.src.addEventListener('data', self.processNews);
 			self.src.addEventListener('error', self.errors);
@@ -100,5 +100,5 @@
 		};
 	}
 
-	$.fn.liveNewsFeedController = GetJQueryPlugin('liveNewsFeedController', liveNewsFeedController);
+	$.fn.liveNewsFeedItemController = GetJQueryPlugin('liveNewsFeedItemController', liveNewsFeedItemController);
 })(jQuery);
