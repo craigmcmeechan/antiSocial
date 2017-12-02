@@ -44,7 +44,7 @@ deploy_eb () {
 		~/.local/bin/eb use ae-antisocial
 		~/.local/bin/eb deploy
 	else
-		cp Dockerrun.aws.devel.json Dockerrun.aws.json
+		cp Dockerrun.aws.development.json Dockerrun.aws.json
 		echo "deploying development"
 		~/.local/bin/eb use devel-antisocial
 		~/.local/bin/eb deploy
