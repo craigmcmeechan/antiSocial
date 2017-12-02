@@ -14,36 +14,55 @@ Eg.
 	"Michael liked a post"
 
 PushNewsFeedItem feeds are filtered by 'audience'
-	* Michael's friend Alan has been granted access to ['public','friends','family']
-	* All posts have a setting to indicate which audiences are allowed to see them. A post marked with audience "family" would be seen by all Friend connections that are members of the "family" audience
+* Michael's friend Alan has been granted access to ['public','friends','family']
+* All posts have a setting to indicate which audiences are allowed to see them. A post marked with audience "family" would be seen by all Friend connections that are members of the "family" audience
 
 #### NewsFeed
 Watched by the users web browsers. Servers watching for `PushNewsFeedItem` updates create `NewsFeed` rows when they see items that would be of interest to the user wo that the UI can update the activity feed in real-time.
 
-	* "Michael created a new post"
-	* "Michael liked a post by me"
-	* "Michael liked a post by one of my friends"
+* "Michael created a new post"
+* "Michael liked a post by me"
+* "Michael liked a post by one of my friends"
 
 The listeners (both the servers and the clients) maintain "high water" pointers so they can pick up where they left off after being offline.
 
 Michael make a post
 	Allocate a PushNewsFeedItem
+	```
 	{
 		'type': 'post',
 		'source': http://rhodes.com/mr
 		'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
 		'visibility': ['friends','family']
 	}
+	```
 
 Alan's server immediately sees the PushNewsFeedItem because he is in the audience 'family'
 	Alan's server creates a NewsFeed record to propagate this event to his browser
+	```
 	{
 		'type': 'post',
 		'source': http://rhodes.com/mr
 		'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
 	}
+	```
 
-	Alan's web browser immediately sees this and prepends it to his Activity Feed.
+Alan's web browser immediately sees this and prepends it to his Activity Feed.
+
+Alan reacts to Michael's post
+	Allocate a PushNewsFeedItem
+	```
+	{
+		'type': 'react',
+		'source': http://emtage.com/alan
+		'about': http://rhodes.com/mr/post/xxxxxxxxxxxx
+		'details': {
+			"reaction": "thumbsup"
+		}
+	}
+	```
+
+Michael's server sees immediately sees the PushNewsFeedItem and creates a NewsFeed item to notify him. In this case the server also creates a 'Reaction' row to accumulate all the 'Likes' for his post
 
 ```
 Michael's Browser         Michael's server           Alan's server            Alan's Browser
