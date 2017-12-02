@@ -34,13 +34,19 @@ build_images() {
 }
 
 deploy_eb () {
-	echo "deploying mr"
-	~/.local/bin/eb use mr-antisocial
-	~/.local/bin/eb deploy
+	if [ "$CIRCLE_BRANCH" == "production" ]; then
+		echo "deploying mr"
+		~/.local/bin/eb use mr-antisocial
+		~/.local/bin/eb deploy
 
-	echo "deploying ae"
-	~/.local/bin/eb use ae-antisocial
-	~/.local/bin/eb deploy
+		echo "deploying ae"
+		~/.local/bin/eb use ae-antisocial
+		~/.local/bin/eb deploy
+	else
+		echo "deploying development"
+		~/.local/bin/eb use devel-antisocial
+		~/.local/bin/eb deploy
+	fi
 }
 
 run_grunt

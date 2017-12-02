@@ -42,7 +42,7 @@ jobs:
       - deploy:
           name: Deploy to ecs if tests pass and branch is Master
           command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "master" ]; then
               bash ~/repo/deploy.sh
             else
               echo "Not production branch so not deploying"

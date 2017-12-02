@@ -10,6 +10,9 @@ Friend Table Definition:
 Protocol implementation:
 [server/boot/friend-protocol.js](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/friend.json)
 
+Encryption:
+[server/lib/encryption.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/lib/encryption.js)
+
 
 ### Friend Request
 ---
