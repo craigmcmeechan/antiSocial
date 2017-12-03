@@ -11,6 +11,7 @@ configure_aws_cli(){
 
 run_grunt() {
 	echo "grunt"
+	cd ~/repo
 	node_modules/.bin/grunt
 }
 
