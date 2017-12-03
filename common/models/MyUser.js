@@ -86,21 +86,10 @@ module.exports = function (MyUser) {
 				maxHeight: 1024,
 				maxWidth: 1024,
 			}, {
-				suffix: 'medium',
-				quality: 90,
-				maxHeight: 480,
-				maxWidth: 480
-			}, {
 				suffix: 'thumb',
 				quality: 90,
-				maxHeight: 320,
-				maxWidth: 320,
-				aspect: '1:1'
-			}, {
-				suffix: 'icon',
-				quality: 90,
-				maxWidth: 50,
-				maxHeight: 50,
+				maxHeight: 300,
+				maxWidth: 300,
 				aspect: '1:1'
 			}]
 		};

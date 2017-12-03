@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: mr-antisocial
+    environment: devel-antisocial
 global:
   application_name: digitopia-social
   branch: null
