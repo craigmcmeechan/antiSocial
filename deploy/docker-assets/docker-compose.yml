@@ -6,8 +6,8 @@ services:
     image: webapp-antisocial
     restart: always
     build:
-      context: ../
-      dockerfile: docker-assets/Dockerfile-webapp
+      context: ../../
+      dockerfile: deploy/docker-assets/Dockerfile-webapp
     ports:
       - "3000:3000"
     volumes:
@@ -20,8 +20,8 @@ services:
     image: nginx-antisocial
     restart: always
     build:
-      context: ../
-      dockerfile: docker-assets/Dockerfile-nginx
+      context: ../../
+      dockerfile: deploy/docker-assets/Dockerfile-nginx
     ports:
       - "80:8080"
     networks:
