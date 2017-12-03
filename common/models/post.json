@@ -14,13 +14,6 @@
       "validateUpsert": true
     }
   },
-  "admin": {
-    "editProperties": [
-      "body",
-      "visibility",
-      "userId"
-    ]
-  },
   "properties": {
     "uuid": {
       "type": "string"
