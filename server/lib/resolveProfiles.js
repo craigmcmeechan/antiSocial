@@ -42,7 +42,7 @@ module.exports = function resolveProfiles(item, done) {
 
 		request.get(options, function (err, response, body) {
 			var payload = {};
-			if (err) {
+			if (err || response.statusCode !== 200) {
 				payload.status = 'could not load endpoint profile';
 			}
 			else {
