@@ -14,12 +14,6 @@ module.exports = function (Photo) {
 				quality: 90,
 				maxHeight: 300,
 				maxWidth: 300,
-			}, {
-				suffix: 'icon',
-				quality: 90,
-				maxWidth: 50,
-				maxHeight: 50,
-				aspect: '1:1'
 			}]
 		};
 
