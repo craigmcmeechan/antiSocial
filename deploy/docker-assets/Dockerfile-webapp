@@ -16,10 +16,10 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 RUN apt-get install -y nodejs
 
 RUN mkdir -p /var/app/current/working
-ADD docker-assets/webapp /var/app/current/docker-assets/webapp
+ADD deploy/docker-assets/webapp /var/app/current/deploy/docker-assets/webapp
 
 # set up supervisord
-RUN cd /var/app/current; cp docker-assets/webapp/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN cd /var/app/current; cp deploy/docker-assets/webapp/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # To run npm install or not to run npm install, that is the question.
 #
