@@ -9,9 +9,21 @@
 		this.user = this.element.data('user');
 		this.photoId = this.element.data('photoId');
 
+		this.showAll = false;
+
 		this.start = function () {
+			this.element.on('mouseenter', function (e) {
+				self.element.find('.more-reactions').addClass('shown');
+				self.showAll = true;
+			});
+			this.element.on('mouseleave', function (e) {
+				self.element.find('.more-reactions').removeClass('shown');
+				self.showAll = false;
+			});
+
 			this.element.on('click', '.reaction-button', function (e) {
 				if (self.user && !self.isMe) {
+
 					var prev = self.element.find('.selected');
 					if (prev.length) {
 						prev.removeClass('selected');
@@ -22,6 +34,7 @@
 						$(this).addClass('selected');
 					}
 					self.saveReaction(reaction);
+
 				}
 			});
 		};

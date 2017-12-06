@@ -2,26 +2,42 @@
 	.em.em-thumbsup
 	if counts && counts.length
 		.badge= counts['thumbsup']
-.reaction-button-container.reaction-button(data-value="smiley")
+.reaction-button-container.reaction-button.more-reactions(data-value="thumbsdown")
+	.em.em-thumbsdown
+	if counts && counts.length
+		.badge= counts['thumbsdown']
+.reaction-button-container.reaction-button.more-reactions(data-value="smiley")
 	.em.em-smiley
 	if counts && counts.length
 		.badge= counts['smiley']
-.reaction-button-container.reaction-button(data-value="smirk")
+.reaction-button-container.reaction-button.more-reactions(data-value="smirk")
 	.em.em-smirk
 	if counts && counts.length
 		.badge= counts['smirk']
-.reaction-button-container.reaction-button(data-value="yum")
+.reaction-button-container.reaction-button.more-reactions(data-value="yum")
 	.em.em-yum
 	if counts && counts.length
 		.badge= counts['yum']
-.reaction-button-container.reaction-button(data-value="heart_eyes")
+.reaction-button-container.reaction-button.more-reactions(data-value="heart_eyes")
 	.em.em-heart_eyes
 	if counts && counts.length
 		.badge= counts['heart_eyes']
-.reaction-button-container.reaction-button(data-value="worried")
+.reaction-button-container.reaction-button.more-reactions(data-value="worried")
 	.em.em-worried
 		if counts && counts.length
 			.badge= counts['worried']
+.reaction-button-container.reaction-button.more-reactions(data-value="cry")
+	.em.em-cry
+		if counts && counts.length
+			.badge= counts['cry']
+.reaction-button-container.reaction-button.more-reactions(data-value="angry")
+	.em.em-angry
+		if counts && counts.length
+			.badge= counts['angry']
+.reaction-button-container.reaction-button.more-reactions(data-value="rage")
+	.em.em-rage
+		if counts && counts.length
+			.badge= counts['rage']
 .pull-right
 	- var reactions = typeof reactions === 'function' ? reactions() : reactions
 	if reactions
