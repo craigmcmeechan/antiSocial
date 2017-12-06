@@ -37,10 +37,6 @@
 
 				.post-body.markdown!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
-				if !user && !isPermalink
-					.permalink
-						a(href= postEndpoint) permalink
-
 				if post.sortedPhotos && post.sortedPhotos.length
 					
 					script#slideshow(data-uuid= post.uuid type="text/x-json")
@@ -71,16 +67,20 @@
 											em= photo.description
 				- var counts = post.counts
 				- var reactions = post.reactions
-				
+
+				if !user && !isPermalink
+					.permalink
+						a(href= postEndpoint) permalink
+
+
 				#reactions-and-comments
 					if user
 						.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-post-author-name= poster.name data-endpoint= poster.endpoint + '/post/' + post.uuid)
 							include reactions
 
 						- var comments = typeof post.comments === 'function' ? post.comments() : post.comments
-						if comments && comments.length
-							.post-comments
-								include comments
+						.post-comments
+							include comments
 
 						-var about= poster.endpoint + '/post/' + post.uuid
 						-var endpoint= "/comment"

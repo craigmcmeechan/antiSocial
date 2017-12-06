@@ -8,7 +8,7 @@ Friend Table Definition:
 [common/models/Friend.json](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/friend.json)
 
 Protocol implementation:
-[server/boot/friend-protocol.js](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/friend.json)
+[server/boot/friend-protocol.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/boot/friend-protocol.js)
 
 Encryption:
 [server/lib/encryption.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/lib/encryption.js)
