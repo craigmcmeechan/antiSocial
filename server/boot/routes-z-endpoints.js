@@ -196,7 +196,7 @@ module.exports = function (server) {
 
       if (highwater) {
         query.where.and.push({
-          'id': {
+          'createdOn': {
             'gt': highwater
           }
         });

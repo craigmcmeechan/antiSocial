@@ -103,7 +103,7 @@ module.exports = function (PushNewsFeedItem) {
 							'and': [{
 								'userId': user.id
 							}, {
-								'id': {
+								'createdOn': {
 									'gt': highwater
 								}
 							}]

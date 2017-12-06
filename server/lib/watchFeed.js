@@ -362,10 +362,10 @@ function getListener(server, friend) {
 					},
 					function updateHighwater(cb) {
 
-						debug('saving highwater %j', message.data.id);
+						debug('saving highwater %j', message.data.createdOn);
 
 						friend.updateAttributes({
-							'highWater': message.data.id
+							'highWater': message.data.createdOn
 						}, function (err, updated) {
 							if (err) {
 								logger.error('error saving highwater %j', err);
