@@ -107,8 +107,6 @@ module.exports = function downloadUser(server) {
 		req.app.models.MyUser.findById(currentUser.id, {
 			'include': ['identities', {
 				'posts': [{
-					'comments': ['reactions']
-				}, 'reactions', {
 					'postPhotos': [{
 						'photo': ['uploads']
 					}]
@@ -285,20 +283,6 @@ function reanimate(currentUser, archive, done) {
 				delete item.id;
 				currentUser.posts.create(item, function (err, post) {
 					async.series([
-						function importPostReactions(cbSeries) {
-							async.map(item.reactions, function (reaction, cbInnerMap) {
-								cbInnerMap();
-							}, function (err) {
-								cbSeries()
-							})
-						},
-						function importPostComments(cbSeries) {
-							async.map(item.comments, function (comment, cbInnerMap) {
-								cbInnerMap();
-							}, function (err) {
-								cbSeries()
-							})
-						},
 						function importPostPhotos(cbSeries) {
 							async.map(item.posrPhotos, function (postPhoto, cbInnerMap) {
 								cbInnerMap();

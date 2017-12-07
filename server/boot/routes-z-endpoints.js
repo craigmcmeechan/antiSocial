@@ -89,13 +89,10 @@ module.exports = function (server) {
         'order': 'createdOn DESC',
         'limit': 30,
         'include': [{
-            'user': ['uploads']
-          },
-          'comments',
-          'reactions', {
-            'photos': ['uploads']
-          }
-        ]
+          'user': ['uploads']
+        }, {
+          'photos': ['uploads']
+        }]
       };
 
       //console.log('finding post %j for friend %j', query, friend);
@@ -186,12 +183,9 @@ module.exports = function (server) {
         },
         'order': 'createdOn DESC',
         'limit': 10,
-        'include': [
-          'comments',
-          'reactions', {
-            'user': ['uploads']
-          }
-        ]
+        'include': [{
+          'user': ['uploads']
+        }]
       };
 
       if (highwater) {
@@ -211,7 +205,7 @@ module.exports = function (server) {
 
         for (var i = 0; i < posts.length; i++) {
           posts[i].counts = {};
-          var reactions = posts[i].resolevedReactions;
+          var reactions = posts[i].resolvedReactions ? posts[i].resolvedReactions : [];
           var counts = {};
           for (var j = 0; j < reactions.length; j++) {
             if (!posts[i].counts[reactions[j].reaction]) {

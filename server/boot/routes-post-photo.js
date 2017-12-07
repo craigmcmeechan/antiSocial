@@ -137,7 +137,7 @@ module.exports = function (server) {
 				'order': 'createdOn DESC',
 				'limit': 30,
 				'include': [{
-					'photos': ['uploads', 'comments', 'reactions']
+					'photos': ['uploads']
 				}]
 			};
 

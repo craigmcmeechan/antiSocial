@@ -48,22 +48,6 @@
       "model": "Post",
       "foreignKey": "photoId",
       "through": "PostPhoto"
-    },
-    "comments": {
-      "type": "hasMany",
-      "model": "Comment",
-      "polymorphic": {
-        "foreignKey": "foreignId",
-        "discriminator": "foreignType"
-      }
-    },
-    "reactions": {
-      "type": "hasMany",
-      "model": "Reaction",
-      "polymorphic": {
-        "foreignKey": "foreignId",
-        "discriminator": "foreignType"
-      }
     }
   },
   "acls": [],

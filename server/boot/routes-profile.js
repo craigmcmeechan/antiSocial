@@ -95,11 +95,8 @@ module.exports = function (server) {
         'order': 'createdOn DESC',
         'limit': 30,
         'include': [{
-            'user': ['uploads']
-          },
-          'comments',
-          'reactions'
-        ]
+          'user': ['uploads']
+        }]
       }, function (err, posts) {
         if (err) {
           return next(err);

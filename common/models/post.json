@@ -58,22 +58,6 @@
       "model": "MyUser",
       "foreignKey": "userId"
     },
-    "comments": {
-      "type": "hasMany",
-      "model": "Comment",
-      "polymorphic": {
-        "foreignKey": "foreignId",
-        "discriminator": "foreignType"
-      }
-    },
-    "reactions": {
-      "type": "hasMany",
-      "model": "Reaction",
-      "polymorphic": {
-        "foreignKey": "foreignId",
-        "discriminator": "foreignType"
-      }
-    },
     "photos": {
       "type": "hasMany",
       "model": "Photo",

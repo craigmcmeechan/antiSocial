@@ -58,7 +58,7 @@ module.exports = function (server) {
         'limit': 30,
         'include': [{
           'user': ['uploads']
-        }, 'comments', 'reactions', {
+        }, {
           'photos': ['uploads']
         }]
       }, function (err, posts) {
