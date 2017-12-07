@@ -6,14 +6,7 @@
     "validateUpsert": true
   },
   "strictObjectIDCoercion": true,
-  "mixins": {
-    "TimeStamp": {
-      "createdAt": "createdOn",
-      "updatedAt": "updatedOn",
-      "required": false,
-      "validateUpsert": true
-    }
-  },
+  "mixins": {},
   "properties": {
     "uuid": {
       "type": "string",
@@ -34,6 +27,12 @@
     },
     "humanReadable": {
       "type": "string"
+    },
+    "createdOn": {
+      "type": "date"
+    },
+    "updatedOn": {
+      "type": "date"
     }
   },
   "validations": [],

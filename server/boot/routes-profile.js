@@ -9,7 +9,7 @@ var getFriendAccess = require('../middleware/context-getFriendAccess');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
 var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
-var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
+var resolveReactionsAndComments = require('../lib/resolveReactionsAndComments');
 var getPhotosForPosts = require('../lib/resolvePostPhotos');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
@@ -105,11 +105,11 @@ module.exports = function (server) {
           return next(err);
         }
 
-        resolveProfilesForPosts(posts, function (err) {
+        resolveReactionsAndComments(posts, function (err) {
           getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
             for (var i = 0; i < posts.length; i++) {
               posts[i].counts = {};
-              var reactions = posts[i].reactions();
+              var reactions = posts[i].resolvedReactions;
               var counts = {};
               for (var j = 0; j < reactions.length; j++) {
                 if (!posts[i].counts[reactions[j].reaction]) {

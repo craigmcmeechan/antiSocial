@@ -9,7 +9,7 @@ var getFriendAccess = require('../middleware/context-getFriendAccess');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
 var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
-var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
+var resolveReactionsAndComments = require('../lib/resolveReactionsAndComments');
 var getPhotosForPosts = require('../lib/resolvePostPhotos');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
@@ -123,7 +123,7 @@ module.exports = function (server) {
           });
         }
 
-        resolveProfilesForPosts([post], function (err) {
+        resolveReactionsAndComments([post], function (err) {
           getPhotosForPosts([post], req.app.models.PostPhoto, function (err) {
 
             res.render('pages/post', {
@@ -211,7 +211,7 @@ module.exports = function (server) {
 
         for (var i = 0; i < posts.length; i++) {
           posts[i].counts = {};
-          var reactions = posts[i].reactions();
+          var reactions = posts[i].resolevedReactions;
           var counts = {};
           for (var j = 0; j < reactions.length; j++) {
             if (!posts[i].counts[reactions[j].reaction]) {
@@ -233,7 +233,7 @@ module.exports = function (server) {
           });
         }
         else if (view === '/posts.json') {
-          resolveProfilesForPosts(posts, function (err) {
+          resolveReactionsAndComments(posts, function (err) {
             getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
               return res.send({
                 'profile': {
@@ -248,7 +248,7 @@ module.exports = function (server) {
           });
         }
         else {
-          resolveProfilesForPosts(posts, function (err) {
+          resolveReactionsAndComments(posts, function (err) {
             getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
 
               res.render('pages/profile', {

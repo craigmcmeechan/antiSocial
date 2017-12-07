@@ -39,7 +39,6 @@
 		if counts && counts.length
 			.badge= counts['rage']
 .pull-right
-	- var reactions = typeof reactions === 'function' ? reactions() : reactions
 	if reactions
 		for reaction in reactions
 			.reaction

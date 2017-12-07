@@ -2,7 +2,6 @@ var async = require('async');
 var resolveProfiles = require('../lib/resolveProfiles');
 
 function resolveProfilesForPost(post, done) {
-	//console.log('post',post.id,post.comments(),post.reactions());
 	async.series([
 		function (cb) {
 			async.each([post], resolveProfiles, function (err) {
@@ -10,13 +9,13 @@ function resolveProfilesForPost(post, done) {
 			});
 		},
 		function (cb) {
-			var comments = typeof post.comments === 'function' ? post.comments() : post.comments;
+			var comments = typeof post.resolvedComments === 'function' ? post.resolvedComments() : post.resolvedComments;
 			async.each(comments, resolveProfiles, function (err) {
 				cb(err);
 			});
 		},
 		function (cb) {
-			var reactions = typeof post.reactions === 'function' ? post.reactions() : post.reactions;
+			var reactions = typeof post.resolvedReactions === 'function' ? post.resolvedReactions() : post.resolvedReactions;
 
 			async.each(reactions, resolveProfiles, function (err) {
 				cb(err);

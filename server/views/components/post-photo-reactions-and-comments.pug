@@ -1,8 +1,8 @@
 - var poster = post.resolvedProfiles[post.source].profile
 - var about= poster.endpoint + '/post/' + post.uuid
 - var counts = photo.counts
-- var reactions = photo.reactions
-- var comments = typeof photo.comments === 'function' ? photo.comments() : photo.comments
+- var reactions = photo.resolvedReactions
+- var comments = photo.resolvedComments
 
 #reactions-and-comments
   .post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-post-author-name= poster.name data-endpoint= poster.endpoint + '/post/' + post.uuid data-photo= photo.uuid)

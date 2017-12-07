@@ -66,7 +66,7 @@
 											p= photo.title
 											em= photo.description
 				- var counts = post.counts
-				- var reactions = post.reactions
+				- var reactions = post.resolvedreactions
 
 				if !user && !isPermalink
 					.permalink
@@ -78,7 +78,8 @@
 						.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-post-author-name= poster.name data-endpoint= poster.endpoint + '/post/' + post.uuid)
 							include reactions
 
-						- var comments = typeof post.comments === 'function' ? post.comments() : post.comments
+						- var comments = post.resolvedComments
+						
 						.post-comments
 							include comments
 
