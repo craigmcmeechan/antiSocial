@@ -13,7 +13,7 @@ var resolveReactionsAndComments = require('../lib/resolveReactionsAndComments');
 var getPhotosForPosts = require('../lib/resolvePostPhotos');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
-
+var encryption = require('../lib/encryption');
 
 var uuid = require('uuid');
 
@@ -108,20 +108,40 @@ module.exports = function (server) {
           return res.sendStatus(404);
         }
 
-        if (view === '.json') {
-          return res.send({
-            'profile': {
-              'name': user.name,
-              'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-              'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-              'endpoint': server.locals.config.publicHost + '/' + user.username
-            },
-            'post': post
-          });
-        }
-
         resolveReactionsAndComments([post], function (err) {
           getPhotosForPosts([post], req.app.models.PostPhoto, function (err) {
+
+            if (view === '.json') {
+              var payload;
+
+              var response = {
+                'profile': {
+                  'name': user.name,
+                  'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
+                  'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+                  'endpoint': server.locals.config.publicHost + '/' + user.username
+                },
+                'post': post
+              };
+
+              if (friend) {
+                var privateKey = friend.keys.private;
+                var publicKey = friend.remotePublicKey;
+                var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(response));
+
+                var payload = {
+                  'data': encrypted.data,
+                  'sig': encrypted.sig,
+                  'pass': encrypted.pass
+                };
+              }
+              else {
+                payload = response;
+              }
+
+              return res.send(payload);
+            }
+
 
             res.render('pages/post', {
               'user': currentUser,
@@ -229,7 +249,7 @@ module.exports = function (server) {
         else if (view === '/posts.json') {
           resolveReactionsAndComments(posts, function (err) {
             getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
-              return res.send({
+              var response = {
                 'profile': {
                   'name': user.name,
                   'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
@@ -237,7 +257,23 @@ module.exports = function (server) {
                   'endpoint': server.locals.config.publicHost + '/' + user.username
                 },
                 'posts': posts
-              });
+              }
+              if (friend) {
+                var privateKey = friend.keys.private;
+                var publicKey = friend.remotePublicKey;
+                var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(response));
+
+                var payload = {
+                  'data': encrypted.data,
+                  'sig': encrypted.sig,
+                  'pass': encrypted.pass
+                };
+              }
+              else {
+                payload = response;
+              }
+
+              return res.send(payload);
             });
           });
         }

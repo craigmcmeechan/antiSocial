@@ -11,5 +11,8 @@
 					img.profile-thumb(src= thumb)
 					span.profile-link
 						= name
+				.timestamp= moment(comment.createdOn).calendar()
+
 				!= marked(comment.details.body)
+
 			.clearfix

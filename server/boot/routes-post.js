@@ -12,6 +12,7 @@ var resolveProfiles = require('../lib/resolveProfiles');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
+var encryption = require('../lib/encryption');
 
 var uuid = require('uuid');
 
@@ -174,11 +175,28 @@ module.exports = function (server) {
           return res.sendStatus(response.statusCode);
         }
 
-        resolveProfilesForPosts([body.post], function (err) {
+        var data = body;
+
+        if (friend && body.sig) {
+          var privateKey = friend.keys.private;
+          var publicKey = friend.remotePublicKey;
+          var toDecrypt = body.data;
+          var sig = body.sig;
+          var pass = body.pass;
+
+          var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+          if (!decrypted.valid) { // could not validate signature
+            return res.sendStatus('401');
+          }
+
+          data = JSON.parse(decrypted.data);
+        }
+
+        resolveProfilesForPosts([data.post], function (err) {
           res.render('pages/post', {
             'globalSettings': ctx.get('globalSettings'),
-            'profile': body.profile,
-            'posts': [body.post],
+            'profile': data.profile,
+            'posts': [data.post],
             'isFriend': ctx.get('isFriend'),
             'user': currentUser
           });

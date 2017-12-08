@@ -13,6 +13,7 @@ var resolveReactionsAndComments = require('../lib/resolveReactionsAndComments');
 var getPhotosForPosts = require('../lib/resolvePostPhotos');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
+var encryption = require('../lib/encryption');
 
 
 var uuid = require('uuid');
@@ -68,10 +69,28 @@ module.exports = function (server) {
         if (response.statusCode !== 200) {
           return res.sendStatus(response.statusCode);
         }
+
+        var data = body;
+
+        if (friend && body.sig) {
+          var privateKey = friend.keys.private;
+          var publicKey = friend.remotePublicKey;
+          var toDecrypt = body.data;
+          var sig = body.sig;
+          var pass = body.pass;
+
+          var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+          if (!decrypted.valid) { // could not validate signature
+            return res.sendStatus('401');
+          }
+
+          data = JSON.parse(decrypted.data);
+        }
+
         res.render('pages/profile', {
           'globalSettings': ctx.get('globalSettings'),
-          'profile': body.profile,
-          'posts': body.posts,
+          'profile': data.profile,
+          'posts': data.posts,
           'isFriend': ctx.get('isFriend'),
           'user': currentUser,
           'wall': true

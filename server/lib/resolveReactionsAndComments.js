@@ -21,7 +21,7 @@ module.exports = function resolveReactionsAndComments(posts, done) {
 							'type': 'new comment'
 						}]
 					},
-					'order': 'createdOn DESC'
+					'order': 'createdOn ASC'
 				};
 
 				server.models.NewsFeedItem.find(query, function (err, comments) {
@@ -40,7 +40,7 @@ module.exports = function resolveReactionsAndComments(posts, done) {
 							'type': 'new reaction'
 						}]
 					},
-					'order': 'createdOn DESC'
+					'order': 'createdOn ASC'
 				};
 
 				server.models.NewsFeedItem.find(query, function (err, reactions) {
