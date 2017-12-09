@@ -26,7 +26,7 @@
 							chunk = $(docBody).filter('#' + self.id);
 						}
 						$('#' + self.id).html(chunk.children());
-						didInjectContent();
+						didInjectContent($('#' + self.id));
 						flashAjaxStatus('info', 'reloaded element id ' + self.id);
 
 					}).fail(function (jqXHR, textStatus, errorThrown) {

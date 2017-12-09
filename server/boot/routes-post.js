@@ -142,7 +142,8 @@ module.exports = function (server) {
         });
       }
       res.send({
-        'status': 'ok'
+        'status': 'ok',
+        'uuid': post.uuid
       });
     });
   });

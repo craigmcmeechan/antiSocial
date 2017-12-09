@@ -1,20 +1,21 @@
-.ajax-load(id= 'reactions-' + post.uuid data-jsclass="ajaxLoadController" data-endpoint= '/post?endpoint=' + encodeURIComponent(postEndpoint))
 
-	if user
-		#reactions-and-comments
-			- var counts = post.counts
-			- var reactions = post.resolvedReactions
-			
+if user
+	.reactions-and-comments
+		- var counts = post.counts
+		- var reactions = post.resolvedReactions
+		
+		.ajax-load(id= 'reactions-' + post.uuid data-jsclass="ajaxLoadController" data-endpoint= '/post?endpoint=' + encodeURIComponent(postEndpoint))
+
 			.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-post-author-name= poster.name data-endpoint= poster.endpoint + '/post/' + post.uuid)
 				include reactions
 
-			- var comments = post.resolvedComments
-			
-			.post-comments
-				include comments
+		- var comments = post.resolvedComments
+		
+		.post-comments
+			include comments
 
-			-var about= poster.endpoint + '/post/' + post.uuid
-			-var endpoint= "/comment"
-			
-			include comment-form
-			
+		-var about= poster.endpoint + '/post/' + post.uuid
+		-var endpoint= "/comment"
+		
+		include comment-form
+		

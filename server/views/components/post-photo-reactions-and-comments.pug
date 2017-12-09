@@ -4,7 +4,7 @@
 - var reactions = photo.resolvedReactions
 - var comments = photo.resolvedComments
 
-#reactions-and-comments
+.reactions-and-comments
   .post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-post-author-name= poster.name data-endpoint= poster.endpoint + '/post/' + post.uuid data-photo= photo.uuid)
     include reactions
 

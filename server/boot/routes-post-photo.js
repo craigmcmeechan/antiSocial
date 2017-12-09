@@ -81,7 +81,11 @@ module.exports = function (server) {
 
 				resolveProfilesForPosts([body.post, body.photo],
 					function (err) {
-						res.send(body);
+						res.render('components/post-photo-reactions-and-comments', {
+							'user': currentUser,
+							'post': body.post,
+							'photo': body.photo
+						});
 					});
 			});
 		}
@@ -144,7 +148,7 @@ module.exports = function (server) {
 			};
 
 			if (!currentUser || currentUser.id.toString() !== user.id.toString()) {
-				query.where.and.append({
+				query.where.and.push({
 					'visibility': {
 						'inq': friend && friend.audiences ? friend.audiences : ['public']
 					}
