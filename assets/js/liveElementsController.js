@@ -8,7 +8,7 @@
 				e.stopPropagation();
 				self.element.find('.live-element[data-watch="' + endpoint + '"]').each(function () {
 					$(this).addClass('changed');
-					if (type === 'new comment') {
+					if (type === 'comment') {
 						$(this).find('.comments-list').append(rendered).append('<div class="clearfix"></div>');
 						didInjectContent($(this).find('.comments-list'));
 					}

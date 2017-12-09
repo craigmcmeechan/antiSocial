@@ -537,7 +537,7 @@ module.exports = function (server) {
 				var item = {
 					'userId': friend.user().id,
 					'uuid': uuid(),
-					'type': 'new friend',
+					'type': 'friend',
 					'source': server.locals.config.publicHost + '/' + friend.user().username,
 					'about': friend.remoteEndPoint,
 					'visibility': ['friends'],
@@ -642,7 +642,7 @@ module.exports = function (server) {
 						var item = {
 							'userId': friend.user().id,
 							'uuid': uuid(),
-							'type': 'new friend',
+							'type': 'friend',
 							'source': server.locals.config.publicHost + '/' + friend.user().username,
 							'about': friend.remoteEndPoint,
 							'visibility': ['friends'],

@@ -11,7 +11,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 		var aboutProfile = myNewsFeedItem.resolvedProfiles[myNewsFeedItem.about];
 		var whoAbout = myNewsFeedItem.about.replace(/\/post\/.*$/, '');
 
-		if (myNewsFeedItem.type === 'new friend') {
+		if (myNewsFeedItem.type === 'friend') {
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
 
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
@@ -24,7 +24,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			}
 		}
 
-		if (myNewsFeedItem.type === 'new post') {
+		if (myNewsFeedItem.type === 'post') {
 			if (myNewsFeedItem.target === myEndPoint) {
 				debug('my friend "' + sourceProfile.profile.name + '" posted ' + myNewsFeedItem.about + ' to my wall');
 			}
@@ -39,7 +39,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			}
 		}
 
-		if (myNewsFeedItem.type === 'new comment') {
+		if (myNewsFeedItem.type === 'comment') {
 			var author = aboutProfile.profile.name;
 
 			var postDesc = 'this post';

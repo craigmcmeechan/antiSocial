@@ -18,7 +18,7 @@ module.exports = function resolveReactionsAndComments(posts, done) {
 						'and': [{
 							'about': postEndpoint
 						}, {
-							'type': 'new comment'
+							'type': 'comment'
 						}]
 					},
 					'order': 'createdOn ASC'

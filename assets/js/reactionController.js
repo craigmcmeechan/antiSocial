@@ -14,19 +14,27 @@
 
 		this.start = function () {
 			self.element.on('mouseleave', function (e) {
+				if (!self.debounce && self.shown) {
+					self.shown = false;
+					self.element.find('.more-reactions').animateCss('fadeOutLeft', function () {
+						self.element.find('.more-reactions').hide();
+					});
+				}
 				if (self.debounce) {
 					clearTimeout(self.debounce);
 				}
+				self.element.find('.greyscale').removeClass('color');
 			});
 
 			this.element.on('mouseenter', function (e) {
 				if (self.debounce) {
 					clearTimeout(self.debounce);
 				}
+				self.element.find('.greyscale').addClass('color');
 				self.debounce = setTimeout(function () {
 					self.debounce = undefined;
+					self.shown = true;
 					self.element.find('.more-reactions').show().animateCss('fadeInLeft', function () {
-						self.shown = true;
 						self.element.one('mouseleave', function (e) {
 							if (self.debounce) {
 								clearTimeout(self.debounce);
@@ -34,8 +42,8 @@
 							if (self.shown) {
 								self.debounce = setTimeout(function () {
 									self.debounce = undefined;
+									self.shown = false;
 									self.element.find('.more-reactions').animateCss('fadeOutLeft', function () {
-										self.shown = false;
 										self.element.find('.more-reactions').hide();
 									});
 								});
@@ -65,7 +73,9 @@
 		};
 
 		this.stop = function () {
-			this.element.off('click', 'span');
+			self.element.off('mouseleave');
+			self.element.off('mouseleave');
+			this.element.off('click', '.reaction-button');
 		};
 
 		this.saveReaction = function (reaction) {
@@ -81,6 +91,8 @@
 				}
 				else {
 					flashAjaxStatus('info', 'reaction saved');
+					self.element.closest('.ajax-load').trigger('ReloadElement');
+					$('body').trigger('DigitopiaReloadPage');
 				}
 			}, 'json');
 		};

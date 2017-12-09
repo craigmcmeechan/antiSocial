@@ -119,7 +119,7 @@ module.exports = function (server) {
       function (post, postPhotoInstances, cb) { // tell the world
         currentUser.pushNewsFeedItems.create({
           'uuid': uuid(),
-          'type': 'new post',
+          'type': 'post',
           'source': server.locals.config.publicHost + '/' + currentUser.username,
           'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
           'target': post.about,

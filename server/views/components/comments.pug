@@ -25,10 +25,12 @@
 					a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
 						img.profile-thumb(src= thumb)
 				.comment-container
-					a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
-						span.profile-link
-							= name
 					.timestamp= moment(comment.createdOn).calendar()
+
+					strong.pull-left
+						a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
+							span.profile-link
+								= name
 
 					!= marked(comment.details.body)
 					
