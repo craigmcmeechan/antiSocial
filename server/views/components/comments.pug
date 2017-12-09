@@ -1,18 +1,41 @@
 .comments-label
 	= 'Comments '
 	i.glyphicon.glyphicon-comment
+		
+	.comment-summary.pull-right
+		if comments
+			for comment, index in comments
+				if index < 2
+					if index === 1
+						= ', '
+					a(href= '/profile?endoint=' + encodeURIComponent(comment.source))= comment.resolvedProfiles[comment.source].profile.name
+			if comments.length > 2
+				- var remainder = comments.length - 2
+				= ' and ' + remainder + ' other'
+				if comments.length > 2
+					= 's'
+					
 .comments-list
 	if comments
-		for comment in comments
+		for comment,index in comments
 			.comment
 				- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 				- var name = comment.resolvedProfiles[comment.source].profile.name
-				a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
-					img.profile-thumb(src= thumb)
-					span.profile-link
-						= name
-				.timestamp= moment(comment.createdOn).calendar()
+				.thumb-container(style="float:left;")
+					a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
+						img.profile-thumb(src= thumb)
+				.comment-container
+					a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
+						span.profile-link
+							= name
+					.timestamp= moment(comment.createdOn).calendar()
 
-				!= marked(comment.details.body)
-
+					!= marked(comment.details.body)
+					
+					- var reactions = comment.resolvedReactions
+					.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-endpoint= poster.endpoint + '/post/' + post.uuid + '/comment/' + comment.uuid)
+						include reactions
+						
+					.comment-separator
+						
 			.clearfix

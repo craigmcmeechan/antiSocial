@@ -9,17 +9,42 @@
 		this.user = this.element.data('user');
 		this.photoId = this.element.data('photoId');
 
-		this.showAll = false;
+		this.debounce = null;
+		this.shown = false;
 
 		this.start = function () {
+			self.element.on('mouseleave', function (e) {
+				if (self.debounce) {
+					clearTimeout(self.debounce);
+				}
+			});
+
 			this.element.on('mouseenter', function (e) {
-				self.element.find('.more-reactions').addClass('shown');
-				self.showAll = true;
+				if (self.debounce) {
+					clearTimeout(self.debounce);
+				}
+				self.debounce = setTimeout(function () {
+					self.debounce = undefined;
+					self.element.find('.more-reactions').show().animateCss('fadeInLeft', function () {
+						self.shown = true;
+						self.element.one('mouseleave', function (e) {
+							if (self.debounce) {
+								clearTimeout(self.debounce);
+							}
+							if (self.shown) {
+								self.debounce = setTimeout(function () {
+									self.debounce = undefined;
+									self.element.find('.more-reactions').animateCss('fadeOutLeft', function () {
+										self.shown = false;
+										self.element.find('.more-reactions').hide();
+									});
+								});
+							}
+						});
+					});
+				}, 500);
 			});
-			this.element.on('mouseleave', function (e) {
-				self.element.find('.more-reactions').removeClass('shown');
-				self.showAll = false;
-			});
+
 
 			this.element.on('click', '.reaction-button', function (e) {
 				if (self.user && !self.isMe) {

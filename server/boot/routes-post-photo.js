@@ -6,6 +6,8 @@ var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var request = require('request');
+var debug = require('debug')('friends');
+var debugVerbose = require('debug')('friends:verbose');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();

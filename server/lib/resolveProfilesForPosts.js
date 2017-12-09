@@ -15,6 +15,17 @@ function resolveProfilesForPost(post, done) {
 			});
 		},
 		function (cb) {
+			var comments = typeof post.resolvedComments === 'function' ? post.resolvedComments() : post.resolvedComments;
+			async.each(comments, function (comment, doneComment) {
+				var reactions = typeof comment.resolvedReactions === 'function' ? comment.resolvedReactions() : comment.resolvedReactions;
+				async.each(reactions, resolveProfiles, function (err) {
+					doneComment(err);
+				});
+			}, function (err) {
+				cb(err);
+			});
+		},
+		function (cb) {
 			var reactions = typeof post.resolvedReactions === 'function' ? post.resolvedReactions() : post.resolvedReactions;
 
 			async.each(reactions, resolveProfiles, function (err) {

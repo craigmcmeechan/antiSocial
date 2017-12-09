@@ -65,16 +65,17 @@
 												i.comments.glyphicon.glyphicon-comment
 											p= photo.title
 											em= photo.description
-				- var counts = post.counts
-				- var reactions = post.resolvedreactions
 
 				if !user && !isPermalink
 					.permalink
 						a(href= postEndpoint) permalink
 
-
 				#reactions-and-comments
 					if user
+
+						- var counts = post.counts
+						- var reactions = post.resolvedReactions
+						
 						.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-post-author-name= poster.name data-endpoint= poster.endpoint + '/post/' + post.uuid)
 							include reactions
 
