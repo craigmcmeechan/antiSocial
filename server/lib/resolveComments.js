@@ -28,7 +28,7 @@ module.exports = function resolveReactionsCommentsAndProfiles(posts, done) {
 
 			post.resolvedComments = comments;
 
-			async.map(post.resolvedComments, resolveCommentReactions, function (err) {
+			resolveCommentReactions(post.resolvedComments, function (err) {
 				doneMap();
 			});
 

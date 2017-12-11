@@ -1,8 +1,11 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
+var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
-var getPhotosForPosts = require('../lib/resolvePostPhotos');
+var resolveReactions = require('../lib/resolveReactions');
+var resolveComments = require('../lib/resolveComments');
+var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var qs = require('querystring');
 var encryption = require('../lib/encryption');
 var uuid = require('uuid');
@@ -151,7 +154,7 @@ module.exports = function (server) {
         }
 
         resolveReactionsCommentsAndProfiles(posts, function (err) {
-          getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
+          resolvePostPhotos(posts, function (err) {
             var data = {
               'posts': posts
             };
@@ -178,7 +181,6 @@ module.exports = function (server) {
       });
     });
   });
-
   router.get(postRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var matches = req.url.match(postRE);
@@ -199,64 +201,503 @@ module.exports = function (server) {
         return res.sendStatus('404');
       }
 
-      var query = {
-        'where': {
-          'and': [{
-            'uuid': postId
-          }, {
-            'userId': user.id
-          }, {
-            'visibility': {
-              'inq': friend && friend.audiences ? friend.audiences : ['public']
-            }
-          }]
+      async.waterfall([
+        function (cb) {
+          getUser(username, function (err, user) {
+            cb(err, user);
+          });
         },
-        'order': 'createdOn DESC',
-        'limit': 30,
-        'include': [{
-          'user': ['uploads']
-        }, {
-          'photos': ['uploads']
-        }]
+        function (user, cb) {
+          if (!user) {
+            return process.nextTick(function () {
+              cb();
+            });
+          }
+          getPost(postId, user, friend, function (err, post) {
+            cb(err, user, post);
+          });
+        },
+        function (user, post, cb) {
+          if (!post) {
+            return process.nextTick(function () {
+              cb();
+            });
+          }
+          resolveReactionsCommentsAndProfiles([post], function (err) {
+            cb(err, user, post);
+          });
+        },
+        function (user, post, cb) {
+          if (!post) {
+            return process.nextTick(function () {
+              cb();
+            });
+          }
+          resolvePostPhotos([post], function (err) {
+            cb(err, user, post);
+          });
+        }
+      ], function (err, user, post) {
+        var data = {
+          'post': post
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked
+        }, function (err, html) {
+          if (err) {
+            console.log(err);
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+    });
+  });
+
+  router.get(postReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postReactionsRE);
+
+    if (matches.length !== 4) {
+      return res.sendStatus(400);
+    }
+
+    var username = matches[1];
+    var postId = matches[2];
+    var view = matches[3];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolveReactions([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      async.map(post.resolvedReactions, resolveProfiles, function (err) {
+
+        var data = {
+          'reactions': post.resolvedReactions ? post.resolvedReactions : []
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post-reactions.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked
+        }, function (err, html) {
+          if (err) {
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+    });
+  });
+
+  router.get(postCommentsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postCommentsRE);
+
+    if (matches.length !== 4) {
+      return res.sendStatus(400);
+    }
+
+    var username = matches[1];
+    var postId = matches[2];
+    var view = matches[3];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolveComments([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      async.map(post.resolvedComments, resolveProfiles, function (err) {
+        var data = {
+          'comments': post.resolvedComments ? post.resolvedComments : []
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post-comments.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked
+        }, function (err, html) {
+          if (err) {
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+    });
+  });
+
+  router.get(postCommentRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postCommentRE);
+
+    if (matches.length !== 5) {
+      return res.sendStatus(400);
+    }
+
+    var username = matches[1];
+    var postId = matches[2];
+    var commentId = matches[3];
+    var view = matches[4];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolveComments([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      var theComment;
+      for (var i = 0; i < post.resolvedComments.length; i++) {
+        if (post.resolvedComments[i].uuid === commentId) {
+          theComment = post.resolvedComments[i];
+          break;
+        }
+      }
+
+      resolveProfiles(theComment, function (err) {
+
+        var data = {
+          'comment': theComment ? theComment : {}
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post-comments.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked
+        }, function (err, html) {
+          if (err) {
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+    });
+  });
+
+  router.get(postCommentReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postCommentReactionsRE);
+
+    if (matches.length !== 5) {
+      return res.sendStatus(400);
+    }
+
+    var username = matches[1];
+    var postId = matches[2];
+    var commentId = matches[3];
+    var view = matches[4];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolveComments([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      var theComment;
+      for (var i = 0; i < post.resolvedComments.length; i++) {
+        if (post.resolvedComments[i].uuid === commentId) {
+          theComment = post.resolvedComments[i];
+          break;
+        }
+      }
+
+      async.map(theComment.resolvedReactions, resolveProfiles, function (err) {
+
+        var data = {
+          'commentReactions': theComment.resolvedReactions ? theComment.resolvedReactions : []
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post-comment-reactions.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked
+        }, function (err, html) {
+          if (err) {
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+    });
+  });
+
+  router.get(postPhotosRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postPhotosRE);
+
+    if (matches.length !== 4) {
+      return res.sendStatus(400);
+    }
+
+    var username = matches[1];
+    var postId = matches[2];
+    var view = matches[3];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolvePostPhotos([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      var data = {
+        'photos': post.sortedPhotos ? post.sortedPhotos : []
       };
 
-      debug(req.url + ' %j', query);
+      if (view === '.json') {
+        return res.send(encryptIfFriend(friend, data));
+      }
 
-      req.app.models.Post.findOne(query, function (err, post) {
+      pug.renderFile(server.get('views') + '/components/rendered-post-photos.pug', {
+        'data': data,
+        'user': currentUser,
+        'friend': friend,
+        'moment': server.locals.moment,
+        'marked': server.locals.marked
+      }, function (err, html) {
         if (err) {
-          return next(err);
+          return res.sendStatus(500);
         }
+        return res.send(encryptIfFriend(friend, html));
+      });
+    });
+  });
 
-        if (!post) {
-          return res.sendStatus(404);
-        }
+  router.get(postPhotoRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postPhotoRE);
 
-        resolveReactionsCommentsAndProfiles([post], function (err) {
-          getPhotosForPosts([post], req.app.models.PostPhoto, function (err) {
+    if (matches.length !== 5) {
+      return res.sendStatus(400);
+    }
 
-            var data = {
-              'post': post
-            };
+    var username = matches[1];
+    var postId = matches[2];
+    var photoId = matches[3];
+    var view = matches[4];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
 
-            if (view === '.json') {
-              return res.send(encryptIfFriend(friend, data));
-            }
-
-            pug.renderFile(server.get('views') + '/components/rendered-post.pug', {
-              'data': data,
-              'user': currentUser,
-              'friend': friend,
-              'moment': server.locals.moment,
-              'marked': server.locals.marked
-            }, function (err, html) {
-              if (err) {
-                console.log(err);
-                return res.sendStatus(500);
-              }
-              return res.send(encryptIfFriend(friend, html));
-            });
-          });
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
         });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolvePostPhotos([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      for (var i = 0; i < post.sortedPhotos.length; i++) {
+        if (post.sortedPhotos[i].uuid === photoId) {
+          thePhoto = post.sortedPhotos[i];
+          break;
+        }
+      }
+
+      var data = {
+        'photo': thePhoto ? thePhoto : {}
+      };
+
+      if (view === '.json') {
+        return res.send(encryptIfFriend(friend, data));
+      }
+
+      pug.renderFile(server.get('views') + '/components/rendered-post-photo.pug', {
+        'data': data,
+        'user': currentUser,
+        'friend': friend,
+        'moment': server.locals.moment,
+        'marked': server.locals.marked
+      }, function (err, html) {
+        if (err) {
+          return res.sendStatus(500);
+        }
+        return res.send(encryptIfFriend(friend, html));
       });
     });
   });
@@ -265,7 +706,7 @@ module.exports = function (server) {
   //    /username  - html profile page
   //    /username/profile.json - profile as json
   //    /username/posts.json - profile and posts as json (proxied /profile)
-  var oldRE = /^\/([a-zA-Z0-9\-\.]+)(\/zposts.json)?$/;
+  var oldRE = /^\/([a-zA-Z0-9\-\.]+)(\/profileandposts.json)?$/;
   router.get(oldRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var matches = req.url.match(oldRE);
@@ -343,7 +784,7 @@ module.exports = function (server) {
         }
         else if (view === '/posts.json') {
           resolveReactionsCommentsAndProfiles(posts, function (err) {
-            getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
+            resolvePostPhotos(posts, function (err) {
               var response = {
                 'profile': {
                   'name': user.name,
@@ -374,7 +815,7 @@ module.exports = function (server) {
         }
         else {
           resolveReactionsCommentsAndProfiles(posts, function (err) {
-            getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
+            resolvePostPhotos(posts, function (err) {
 
               res.render('pages/profile', {
                 'user': currentUser,
@@ -394,6 +835,50 @@ module.exports = function (server) {
       });
     });
   });
+
+
+  function getUser(username, cb) {
+    server.models.MyUser.findOne({
+      'where': {
+        'username': username
+      },
+      'include': ['uploads']
+    }, function (err, user) {
+      cb(err, user);
+    });
+  }
+
+  function getPost(postId, user, friend, cb) {
+    var query = {
+      'where': {
+        'and': [{
+          'uuid': postId
+        }, {
+          'userId': user.id
+        }, {
+          'visibility': {
+            'inq': friend && friend.audiences ? friend.audiences : ['public']
+          }
+        }]
+      },
+      'order': 'createdOn DESC',
+      'limit': 30,
+      'include': [{
+        'user': ['uploads']
+      }, {
+        'photos': ['uploads']
+      }]
+    };
+
+    server.models.Post.findOne(query, function (err, post) {
+      if (err || !post) {
+        return cb(err);
+      }
+
+      cb(null, post);
+    });
+  }
+
 
   server.use(router);
 };

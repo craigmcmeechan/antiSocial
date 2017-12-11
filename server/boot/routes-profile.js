@@ -10,7 +10,7 @@ var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint')
 var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
-var getPhotosForPosts = require('../lib/resolvePostPhotos');
+var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
 var encryption = require('../lib/encryption');
@@ -55,7 +55,7 @@ module.exports = function (server) {
     // view other profile (not logged in user)
     if (endpoint) {
       var options = {
-        'url': endpoint + '/posts.json',
+        'url': endpoint + '/profileandposts.json',
         'json': true,
         headers: {
           'friend-access-token': friend ? friend.remoteAccessToken : ''
@@ -122,7 +122,7 @@ module.exports = function (server) {
         }
 
         resolveReactionsCommentsAndProfiles(posts, function (err) {
-          getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
+          resolvePostPhotos(posts, function (err) {
             for (var i = 0; i < posts.length; i++) {
               posts[i].counts = {};
               var reactions = posts[i].resolvedReactions;

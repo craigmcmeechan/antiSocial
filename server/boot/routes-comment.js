@@ -64,10 +64,9 @@ module.exports = function (server) {
 
       res.send({
         'status': 'ok',
-        'rendered': rendered
+        'rendered': rendered,
+        'comment': item
       });
-
-
     });
   });
 
