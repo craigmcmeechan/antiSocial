@@ -446,6 +446,25 @@ describe('proxy endpoints', function () {
 		});
 	});
 
+	it('user1 should be able to to get user2 post photo reactions (json)', function (done) {
+		client1.get('http://127.0.0.1:3000/proxy-post-photo-reactions?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/reactions')).end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body).to.be.an('object');
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			console.log('photos reactions %j', res.body);
+			expect(res.body.reactions).to.be.an('array');
+			done();
+		});
+	});
+
+	it('user1 should be able to to get user2 post photo (html)', function (done) {
+		client1.get('http://127.0.0.1:3000/proxy-post-photo-reactions?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/reactions')).end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
+			done();
+		});
+	});
+
 });
 
 function getCookie(headers, id) {
