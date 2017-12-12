@@ -5,6 +5,7 @@ var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
 var resolveReactions = require('../lib/resolveReactions');
 var resolvePhotoReactions = require('../lib/resolvePhotoReactions');
+var resolvePhotoComments = require('../lib/resolvePhotoComments');
 var resolveComments = require('../lib/resolveComments');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var qs = require('querystring');
@@ -28,6 +29,7 @@ module.exports = function (server) {
   // URL forms for getting posts and associated data from
   // the poster's authoritative server (users resident on this server)
 
+  var fullProfileRE = /^\/([a-zA-Z0-9\-\.]+)\/fullprofile(.json)?$/;
   var profileRE = /^\/([a-zA-Z0-9\-\.]+)\/profile(\.json)?$/;
   var postsRE = /^\/([a-zA-Z0-9\-\.]+)\/posts(\.json)?$/;
   var postRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
@@ -39,8 +41,8 @@ module.exports = function (server) {
   var postPhotoRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
   var postPhotoReactionsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/reactions(\.json)?$/;
   var postPhotoCommentsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments(\.json)?$/;
-  var postPhotoCommentRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments\/([a-f0-9\-]+)(\.json)?$/;
-  var postPhotoCommentReactionsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var postPhotoCommentRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
+  var postPhotoCommentReactionsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
 
   router.get(profileRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
@@ -146,7 +148,8 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'moment': server.locals.moment,
-        'marked': server.locals.marked
+        'marked': server.locals.marked,
+        'getUploadForProperty': server.locals.getUploadForProperty
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -220,7 +223,8 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'moment': server.locals.moment,
-        'marked': server.locals.marked
+        'marked': server.locals.marked,
+        'getUploadForProperty': server.locals.getUploadForProperty
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -286,7 +290,8 @@ module.exports = function (server) {
           'user': currentUser,
           'friend': friend,
           'moment': server.locals.moment,
-          'marked': server.locals.marked
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -351,7 +356,8 @@ module.exports = function (server) {
           'user': currentUser,
           'friend': friend,
           'moment': server.locals.moment,
-          'marked': server.locals.marked
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -425,12 +431,13 @@ module.exports = function (server) {
           return res.send(encryptIfFriend(friend, data));
         }
 
-        pug.renderFile(server.get('views') + '/components/rendered-post-comments.pug', {
+        pug.renderFile(server.get('views') + '/components/rendered-post-comment.pug', {
           'data': data,
           'user': currentUser,
           'friend': friend,
           'moment': server.locals.moment,
-          'marked': server.locals.marked
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -509,7 +516,8 @@ module.exports = function (server) {
           'user': currentUser,
           'friend': friend,
           'moment': server.locals.moment,
-          'marked': server.locals.marked
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -573,7 +581,8 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'moment': server.locals.moment,
-        'marked': server.locals.marked
+        'marked': server.locals.marked,
+        'getUploadForProperty': server.locals.getUploadForProperty
       }, function (err, html) {
         if (err) {
           return res.sendStatus(500);
@@ -650,7 +659,8 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'moment': server.locals.moment,
-        'marked': server.locals.marked
+        'marked': server.locals.marked,
+        'getUploadForProperty': server.locals.getUploadForProperty
       }, function (err, html) {
         if (err) {
           return res.sendStatus(500);
@@ -729,7 +739,8 @@ module.exports = function (server) {
           'user': currentUser,
           'friend': friend,
           'moment': server.locals.moment,
-          'marked': server.locals.marked
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -741,14 +752,279 @@ module.exports = function (server) {
     });
   });
 
-  // view profile && posts filtered by friend access
-  //    /username  - html profile page
-  //    /username/profile.json - profile as json
-  //    /username/posts.json - profile and posts as json (proxied /profile)
-  var oldRE = /^\/([a-zA-Z0-9\-\.]+)(\/profileandposts.json)?$/;
-  router.get(oldRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
-    var matches = req.url.match(oldRE);
+    var matches = req.url.match(postPhotoCommentsRE);
+
+    var username = matches[1];
+    var postId = matches[2];
+    var photoId = matches[3];
+    var view = matches[4];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolvePostPhotos([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      var thePhoto;
+
+      for (var i = 0; i < post.sortedPhotos.length; i++) {
+        if (post.sortedPhotos[i].uuid === photoId) {
+          thePhoto = post.sortedPhotos[i];
+          break;
+        }
+      }
+
+      if (!thePhoto) {
+        return res.sendStatus(404);
+      }
+
+      resolvePhotoComments(post, thePhoto, function (err) {
+
+        var data = {
+          'comments': thePhoto.resolvedComments
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post-photo-comments.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
+        }, function (err, html) {
+          if (err) {
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+
+    });
+  });
+
+  router.get(postPhotoCommentRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postPhotoCommentRE);
+
+    var username = matches[1];
+    var postId = matches[2];
+    var photoId = matches[3];
+    var commentId = matches[4];
+    var view = matches[5];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolvePostPhotos([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      var thePhoto;
+
+      for (var i = 0; i < post.sortedPhotos.length; i++) {
+        if (post.sortedPhotos[i].uuid === photoId) {
+          thePhoto = post.sortedPhotos[i];
+          break;
+        }
+      }
+
+      if (!thePhoto) {
+        return res.sendStatus(404);
+      }
+
+      resolvePhotoComments(post, thePhoto, function (err) {
+
+        var theComment;
+        for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
+          if (thePhoto.resolvedComments[i].uuid === commentId) {
+            theComment = thePhoto.resolvedComments[i];
+            break;
+          }
+        }
+
+        if (!theComment) {
+          return res.sendStatus(404);
+        }
+
+        var data = {
+          'comment': theComment
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post-photo-comment.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
+        }, function (err, html) {
+          if (err) {
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+    });
+  });
+
+  router.get(postPhotoCommentReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(postPhotoCommentReactionsRE);
+
+    var username = matches[1];
+    var postId = matches[2];
+    var photoId = matches[3];
+    var commentId = matches[4];
+    var view = matches[5];
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
+
+    async.waterfall([function (cb) {
+      getUser(username, function (err, user) {
+        cb(err, user);
+      });
+    }, function (user, cb) {
+      if (!user) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      getPost(postId, user, friend, function (err, post) {
+        cb(err, user, post);
+      });
+    }, function (user, post, cb) {
+      if (!post) {
+        return process.nextTick(function () {
+          cb();
+        });
+      }
+      resolvePostPhotos([post], function (err) {
+        cb(err, user, post);
+      });
+    }], function (err, user, post) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if (!user || !post) {
+        return res.sendStatus(404);
+      }
+
+      var thePhoto;
+
+      for (var i = 0; i < post.sortedPhotos.length; i++) {
+        if (post.sortedPhotos[i].uuid === photoId) {
+          thePhoto = post.sortedPhotos[i];
+          break;
+        }
+      }
+
+      if (!thePhoto) {
+        return res.sendStatus(404);
+      }
+
+      resolvePhotoComments(post, thePhoto, function (err) {
+
+        var theComment;
+        for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
+          if (thePhoto.resolvedComments[i].uuid === commentId) {
+            theComment = thePhoto.resolvedComments[i];
+            break;
+          }
+        }
+
+        if (!theComment) {
+          return res.sendStatus(404);
+        }
+
+        var data = {
+          'reactions': theComment.resolvedReactions
+        };
+
+        if (view === '.json') {
+          return res.send(encryptIfFriend(friend, data));
+        }
+
+        pug.renderFile(server.get('views') + '/components/rendered-post-photo-comment-reactions.pug', {
+          'data': data,
+          'user': currentUser,
+          'friend': friend,
+          'moment': server.locals.moment,
+          'marked': server.locals.marked,
+          'getUploadForProperty': server.locals.getUploadForProperty
+        }, function (err, html) {
+          if (err) {
+            return res.sendStatus(500);
+          }
+          return res.send(encryptIfFriend(friend, html));
+        });
+      });
+    });
+  });
+
+  router.get(fullProfileRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(fullProfileRE);
     var username = matches[1];
     var view = matches[2];
     var accessToken = req.headers['friend-access-token'];
@@ -756,125 +1032,78 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
-    req.app.models.MyUser.findOne({
-      'where': {
-        'username': username
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          cb(err, user);
+        });
       },
-      'include': ['uploads']
-    }, function (err, user) {
-      if (err || !user) {
-        return res.sendStatus('404');
-      }
-
-      var query = {
-        'where': {
-          'and': [{
-            'userId': user.id
-          }, {
-            'visibility': {
-              'inq': friend && friend.audiences ? friend.audiences : ['public']
-            }
-          }]
-        },
-        'order': 'createdOn DESC',
-        'limit': 10,
-        'include': [{
-          'user': ['uploads']
-        }]
-      };
-
-      if (highwater) {
-        query.where.and.push({
-          'createdOn': {
-            'gt': highwater
-          }
+      function (user, cb) {
+        if (!user) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        getPosts(user, friend, highwater, function (err, posts) {
+          cb(err, user, posts);
+        });
+      },
+      function (user, posts, cb) {
+        if (!posts) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        resolvePostPhotos(posts, function (err) {
+          cb(err, user, posts);
+        });
+      },
+      function (user, posts, cb) {
+        if (!posts) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        resolveReactionsCommentsAndProfiles(posts, function (err) {
+          cb(err, user, posts);
         });
       }
+    ], function (err, user, posts) {
+      var data = {
+        'profile': {
+          'name': user.name,
+          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
+          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+          'endpoint': server.locals.config.publicHost + '/' + user.username,
+          'publicHost': server.locals.config.publicHost
+        },
+        'posts': posts
+      };
 
-      //console.log('query %j', query);
+      if (view === '.json') {
+        return res.send(encryptIfFriend(friend, data));
+      }
 
-      req.app.models.Post.find(query, function (err, posts) {
+      pug.renderFile(server.get('views') + '/pages/profile.pug', {
+        'profile': data.profile,
+        'posts': data.posts,
+        'user': currentUser,
+        'friend': friend,
+        'moment': server.locals.moment,
+        'marked': server.locals.marked,
+        'headshotFPO': server.locals.headshotFPO,
+        'getUploadForProperty': server.locals.getUploadForProperty,
+        'environment': server.locals.environment,
+        'globalSettings': ctx.get('globalSettings')
+      }, function (err, html) {
         if (err) {
-          return next(err);
+          console.log(err);
+          return res.sendStatus(500);
         }
-
-        for (var i = 0; i < posts.length; i++) {
-          posts[i].counts = {};
-          var reactions = posts[i].resolvedReactions ? posts[i].resolvedReactions : [];
-          var counts = {};
-          for (var j = 0; j < reactions.length; j++) {
-            if (!posts[i].counts[reactions[j].reaction]) {
-              posts[i].counts[reactions[j].reaction] = 0;
-            }
-            ++posts[i].counts[reactions[j].reaction];
-          }
-        }
-
-        if (view === '/profile.json') {
-          return res.send({
-            'profile': {
-              'name': user.name,
-              'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-              'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-              'endpoint': server.locals.config.publicHost + '/' + user.username,
-              'publicHost': server.locals.config.publicHost
-            }
-          });
-        }
-        else if (view === '/posts.json') {
-          resolveReactionsCommentsAndProfiles(posts, function (err) {
-            resolvePostPhotos(posts, function (err) {
-              var response = {
-                'profile': {
-                  'name': user.name,
-                  'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-                  'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-                  'endpoint': server.locals.config.publicHost + '/' + user.username
-                },
-                'posts': posts
-              }
-              if (friend) {
-                var privateKey = friend.keys.private;
-                var publicKey = friend.remotePublicKey;
-                var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(response));
-
-                var payload = {
-                  'data': encrypted.data,
-                  'sig': encrypted.sig,
-                  'pass': encrypted.pass
-                };
-              }
-              else {
-                payload = response;
-              }
-
-              return res.send(payload);
-            });
-          });
-        }
-        else {
-          resolveReactionsCommentsAndProfiles(posts, function (err) {
-            resolvePostPhotos(posts, function (err) {
-
-              res.render('pages/profile', {
-                'user': currentUser,
-                'globalSettings': ctx.get('globalSettings'),
-                'posts': posts,
-                'profile': {
-                  'name': user.name,
-                  'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-                  'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-                  'endpoint': server.locals.config.publicHost + '/' + user.username,
-                  'publicHost': server.locals.config.publicHost
-                }
-              });
-            });
-          });
-        }
+        return res.send(encryptIfFriend(friend, html));
       });
     });
   });
-
 
   function getUser(username, cb) {
     server.models.MyUser.findOne({

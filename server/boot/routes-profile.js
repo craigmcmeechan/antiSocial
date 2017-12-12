@@ -55,7 +55,7 @@ module.exports = function (server) {
     // view other profile (not logged in user)
     if (endpoint) {
       var options = {
-        'url': endpoint + '/profileandposts.json',
+        'url': endpoint + '/fullprofile.json',
         'json': true,
         headers: {
           'friend-access-token': friend ? friend.remoteAccessToken : ''

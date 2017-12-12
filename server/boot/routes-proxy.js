@@ -13,7 +13,7 @@ var debugVerbose = require('debug')('proxy:verbose');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	var proxyRE = /^\/proxy\-(post\-reactions|post\-comments|post\-comment\-reactions|post\-comment|post\-photos|post\-photo\-reactions|post\-photo\-comments|post\-photo|profile|posts|post)/;
+	var proxyRE = /^\/proxy\-(post\-reactions|post\-comments|post\-comment\-reactions|post\-comment|post\-photos|post\-photo\-reactions|post\-photo\-comments|post\-photo\-comment\-reactions|post\-photo\-comment|post\-photo|profile|posts|post)/;
 
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
 		var ctx = req.myContext;
