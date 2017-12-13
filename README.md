@@ -8,13 +8,13 @@
 
 - Users operate their own server (or join a group server cooperative) to host their content in the cloud. There are many economical options for this such as aws, docker, etc. and a design goal is to make that process as turnkey as possible. These servers are "always on" and act as portals for the user to post content and see their friends activity and content.
 
-[Manifesto](https://github.com/antiSocialNet/antiSocial/blob/master/README-manifesto.md)
+[Manifesto](https://github.com/antiSocialNet/antiSocial/blob/master/notes/manifesto.md)
 
-[Build for Development](https://github.com/antiSocialNet/antiSocial/blob/master/README-development.md)
+[Build for Development](https://github.com/antiSocialNet/antiSocial/blob/master/notes/development.md)
 
 ### Draft Protocol Descriptions
-* [Friend Protocol ](https://github.com/antiSocialNet/antiSocial/blob/master/README-friends.md)
-* [Realtime Newsfeeds](https://github.com/antiSocialNet/antiSocial/blob/master/README-pushfeeds.md)
+* [Friend Protocol ](https://github.com/antiSocialNet/antiSocial/blob/master/notes/friends.md)
+* [Realtime Newsfeeds](https://github.com/antiSocialNet/antiSocial/blob/master/notes/pushfeeds.md)
 
 ### Primary design goals:
 

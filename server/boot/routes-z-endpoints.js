@@ -27,7 +27,6 @@ module.exports = function (server) {
   // URL forms for getting posts and associated data from
   // the poster's authoritative server (users resident on this server)
 
-  var profilePageRE = /^\/([a-zA-Z0-9\-]+)\/profile-and-recent(.json)?$/;
   var profileRE = /^\/([a-zA-Z0-9\-]+)(\.json)?$/;
   var postsRE = /^\/([a-zA-Z0-9\-]+)\/posts(\.json)?$/;
   var postRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
@@ -1128,89 +1127,6 @@ module.exports = function (server) {
           }
           return res.send(encryptIfFriend(friend, html));
         });
-      });
-    });
-  });
-
-  router.get(profilePageRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
-    var ctx = req.myContext;
-    var matches = req.url.match(profilePageRE);
-    var username = matches[1];
-    var view = matches[2];
-    var accessToken = req.headers['friend-access-token'];
-    var highwater = req.headers['friend-high-water'];
-    var friend = ctx.get('friendAccess');
-    var currentUser = ctx.get('currentUser');
-
-    async.waterfall([
-      function (cb) {
-        getUser(username, function (err, user) {
-          cb(err, user);
-        });
-      },
-      function (user, cb) {
-        if (!user) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
-        getPosts(user, friend, highwater, function (err, posts) {
-          cb(err, user, posts);
-        });
-      },
-      function (user, posts, cb) {
-        if (!posts) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
-        resolvePostPhotos(posts, function (err) {
-          cb(err, user, posts);
-        });
-      },
-      function (user, posts, cb) {
-        if (!posts) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
-        resolveReactionsCommentsAndProfiles(posts, function (err) {
-          cb(err, user, posts);
-        });
-      }
-    ], function (err, user, posts) {
-      var data = {
-        'profile': {
-          'name': user.name,
-          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-          'endpoint': server.locals.config.publicHost + '/' + user.username,
-          'publicHost': server.locals.config.publicHost
-        },
-        'posts': posts
-      };
-
-      if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
-      }
-
-      pug.renderFile(server.get('views') + '/components/rendered-profile.pug', {
-        'profile': data.profile,
-        'posts': data.posts,
-        'user': currentUser,
-        'friend': friend,
-        'moment': server.locals.moment,
-        'marked': server.locals.marked,
-        'headshotFPO': server.locals.headshotFPO,
-        'getUploadForProperty': server.locals.getUploadForProperty,
-        'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings')
-      }, function (err, html) {
-        if (err) {
-          console.log(err);
-          return res.sendStatus(500);
-        }
-        return res.send(encryptIfFriend(friend, html));
       });
     });
   });
