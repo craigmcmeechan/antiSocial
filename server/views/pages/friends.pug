@@ -25,7 +25,7 @@ block content
 								.friend-card(style="background:url("+friend.resolvedProfiles[friend.remoteEndPoint].profile.background.url+");background-size: cover;")
 									img.pull-right(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
 									h3
-										a(href= '/profile?endpoint='+encodeURIComponent(friend.remoteEndPoint))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
+										a(href= '/proxy-profile?endpoint='+encodeURIComponent(friend.remoteEndPoint))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
 
 									if friend.status === 'pending'
 										<br>

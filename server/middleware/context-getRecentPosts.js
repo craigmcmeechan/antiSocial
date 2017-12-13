@@ -14,8 +14,12 @@ module.exports = function () {
 				'userId': user.id
 			},
 			'order': 'createdOn DESC',
-  		'limit': 30,
-			'include': [{'user':['uploads']},'comments','reactions',{'photos':['uploads']}]
+			'limit': 30,
+			'include': [{
+				'user': ['uploads']
+			}, {
+				'photos': ['uploads']
+			}]
 		}, function (err, posts) {
 			if (err) {
 				return next(err);

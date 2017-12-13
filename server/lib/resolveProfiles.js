@@ -36,7 +36,7 @@ module.exports = function resolveProfiles(item, done) {
 		}
 
 		var options = {
-			'url': whoAbout + '/profile.json',
+			'url': whoAbout + '.json',
 			'json': true
 		};
 

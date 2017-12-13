@@ -236,6 +236,7 @@
 			}).done(function (data) {
 				flashAjaxStatus('info', 'reactions loaded');
 				$(targetElement).addClass('open').find('.photo-reactions').html(data);
+				didInjectContent($(targetElement));
 			}).fail(function (jqXHR, textStatus, errorThrown) {
 				flashAjaxStatus('error', 'could not load endpoint ' + endpoint, textStatus);
 			});

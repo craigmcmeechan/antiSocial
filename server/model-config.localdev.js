@@ -78,14 +78,6 @@ module.exports = {
     'dataSource': 'db',
     'public': true
   },
-  'Reaction': {
-    'dataSource': 'db',
-    'public': true
-  },
-  'Comment': {
-    'dataSource': 'db',
-    'public': true
-  },
   'Photo': {
     'dataSource': 'db',
     'public': true

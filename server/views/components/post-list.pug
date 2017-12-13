@@ -4,6 +4,7 @@
 			- var postEndpoint = post.source + '/post/' + post.uuid;
 			- var poster = post.resolvedProfiles[post.source].profile
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
+			- var isPublic = post.visibility.indexOf('public') !== -1
 			
 			.post.live-element(data-watch= post.source + '/post/' + post.uuid)
 				.post-identity
@@ -12,7 +13,7 @@
 							- var endpoint = poster.endpoint
 							- var thumb = poster.photo ? poster.photo.url : ''
 							- var name = poster.name
-							- var posterUrl = '/profile?endpoint=' + encodeURIComponent(endpoint)
+							- var posterUrl = '/proxy-profile?endpoint=' + encodeURIComponent(endpoint)
 							if !user
 								- posterUrl = endpoint
 
@@ -24,10 +25,14 @@
 									a(href= posterUrl)= name
 									if post.about
 										span.glyphicon.glyphicon-arrow-right.target-arrow
-										a(href= '/profile?endpoint=' + encodeURIComponent(post.about))= about.name
+										a(href= '/proxy-profile?endpoint=' + encodeURIComponent(post.about))= about.name
 									small.pull-right
-										= post.visibility.join('|') + ' ' 
-										<i class="fa fa-globe"></i>
+										.visibility
+											= post.visibility.join(', ') + ' ' 
+											<i class="fa fa-globe"></i>
+										if isPublic && !isPermalink
+											.permalink
+												a(href= postEndpoint) Public PermaLink
 								.post-timestamp= moment(post.createdOn).calendar()
 								
 								if post.geoDescription
@@ -65,24 +70,7 @@
 												i.comments.glyphicon.glyphicon-comment
 											p= photo.title
 											em= photo.description
-				- var counts = post.counts
-				- var reactions = post.reactions
 
-				if !user && !isPermalink
-					.permalink
-						a(href= postEndpoint) permalink
+				
 
-
-				#reactions-and-comments
-					if user
-						.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-post-author-name= poster.name data-endpoint= poster.endpoint + '/post/' + post.uuid)
-							include reactions
-
-						- var comments = typeof post.comments === 'function' ? post.comments() : post.comments
-						.post-comments
-							include comments
-
-						-var about= poster.endpoint + '/post/' + post.uuid
-						-var endpoint= "/comment"
-						include comment-form
-							
+				include post-reactions-and-comments
