@@ -15,7 +15,10 @@ block content
 	.profile-hero(data-jsclass="scrollToController,scrollEffectsController" style= 'background-image:url(' + profile.background.url + ');background-size: cover;background-repeat:no-repeat;background-position: center center;' data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
 		.text-gradient
 			.container-fluid.text-overlay
-				h1= profile.name
+				h1
+					= profile.name
+					if isMe
+						= ' (me)'
 
 				if friend
 					if friend.status === 'accepted'
