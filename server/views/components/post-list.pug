@@ -4,6 +4,7 @@
 			- var postEndpoint = post.source + '/post/' + post.uuid;
 			- var poster = post.resolvedProfiles[post.source].profile
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
+			- var isPublic = post.visibility.indexOf('public') !== -1
 			
 			.post.live-element(data-watch= post.source + '/post/' + post.uuid)
 				.post-identity
@@ -26,8 +27,12 @@
 										span.glyphicon.glyphicon-arrow-right.target-arrow
 										a(href= '/proxy-profile?endpoint=' + encodeURIComponent(post.about))= about.name
 									small.pull-right
-										= post.visibility.join('|') + ' ' 
-										<i class="fa fa-globe"></i>
+										.visibility
+											= post.visibility.join(', ') + ' ' 
+											<i class="fa fa-globe"></i>
+										if isPublic && !isPermalink
+											.permalink
+												a(href= postEndpoint) Public PermaLink
 								.post-timestamp= moment(post.createdOn).calendar()
 								
 								if post.geoDescription
@@ -66,8 +71,6 @@
 											p= photo.title
 											em= photo.description
 
-				if !user && !isPermalink
-					.permalink
-						a(href= postEndpoint) permalink
+				
 
 				include post-reactions-and-comments
