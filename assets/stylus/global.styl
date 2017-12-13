@@ -2,6 +2,12 @@
 
 $borderColor = #eee
 
+quick()
+	transition-property: all
+	transition-duration: .25s
+	transition-timing-function: ease
+
+
 body
 	background: linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,.6))
 
@@ -155,6 +161,17 @@ img.avatar
 	#posting-form
 		margin-bottom:-30px
 
+.comments-list
+	.timestamp
+		float:right
+		font-size:11px
+.reaction-summary
+	font-size:11px
+	padding-top: 14px
+.comment-summary
+	font-size:11px
+	padding-top: 5px
+
 #scope-posting-form
 	#posting-form
 		overflow:visible
@@ -275,6 +292,8 @@ img.avatar
 	h1,h2,h3,h4
 		margin-top:0px
 		margin-bottom:.5em
+	a
+		text-decoration:underline
 
 #scope-post-list
 	min-height: calc(100vh - 50px)
@@ -284,6 +303,10 @@ img.avatar
 		border:thin solid $borderColor
 		border-radius:4px
 		margin-bottom:30px
+		.permalink
+			text-align:right
+			margin-top:1em
+			font-size: .75em
 		.post-identity
 			position:relative
 			border-bottom:thin solid $borderColor
@@ -292,6 +315,7 @@ img.avatar
 			.post-avatar
 				img
 					max-width:75px
+					border-radius:4px
 			.target-arrow
 				margin-left:15px
 				margin-right:15px
@@ -323,11 +347,23 @@ img.avatar
 				&:hover
 					opacity:1
 
-#reactions-and-comments
-	.post-reactions
+.reactions-and-comments
+	.rule
 		border-top:thin solid $borderColor
-		padding-top:7px
+
+	.comment-container
+		margin-left:37px
+		font-size: .75em
+		p
+			margin: 0 0 7px
+
+	.comment-separator
 		margin-bottom:7px
+		border-top:thin solid $borderColor
+
+	.post-reactions
+		overflow:hidden
+		position:relative
 		.reaction-button-container
 			position:relative
 			display:inline-block
@@ -335,17 +371,26 @@ img.avatar
 				position:absolute
 				right: -4px
 				top: -4px
+		.greyscale
+			filter: grayscale(100%);
+		.greyscale.color
+			filter: grayscale(0%);
 		.reaction-button
-			font-size:20px
-			padding:4px
-			border:thin solid $borderColor
+			font-size:15px
+			padding:2px
+			border:thin solid white
 			border-radius:2px
-			margin-right:4px
 			cursor:pointer
 			&:hover
 				border-color:red
 			&.selected
 				border-color:orange
+		.more-reactions
+			animation-duration: .25s
+			position:absolute
+			bottom: 0px
+			left: 30px
+			display:none
 		.reaction
 			.profile-thumb
 				width:36px
@@ -354,13 +399,17 @@ img.avatar
 		border-top:thin solid $borderColor
 		padding-top:7px
 		.comments-label
+			padding-bottom:7px
+			border-bottom:thin solid $borderColor
+
 			margin-bottom:7px
 		.comment
 			.profile-thumb
-				width:50px
+				width:30px
 				float:left
 				margin-right:7px
 				margin-bottom:7px
+				border-radius:4px
 			.profile-link
 				margin-right:7px
 
@@ -371,6 +420,7 @@ img.avatar
 	left:0px
 	overflow: hidden
 	background-color:white
+	border-radius:4px
 	.digitopia-xsmall &
 		display:none
 	.status
@@ -406,7 +456,6 @@ img.avatar
 		.news-feed-item
 			height:50px
 			border-bottom:thin dashed $borderColor
-			border-right:thin dashed $borderColor
 			padding-right: 10px
 			margin-left:50px
 			img

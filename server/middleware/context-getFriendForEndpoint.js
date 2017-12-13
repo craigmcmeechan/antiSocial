@@ -29,7 +29,7 @@ module.exports = function () {
 				return next(err);
 			}
 			//console.log('found friend:',friend);
-			reqContext.set('isFriend', friend);
+			reqContext.set('friend', friend);
 			next();
 		});
 	};

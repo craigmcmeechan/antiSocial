@@ -1,7 +1,8 @@
 var async = require('async');
+var server = require('../server');
 
-function getPhotosForPosts(posts, PostPhotosModel, done) {
-	//console.log('getPhotosForPosts');
+function resolvePostPhotos(posts, done) {
+	//console.log('resolvePostPhotos');
 	async.each(posts, function (post, cb) {
 		var query = {
 			'where': {
@@ -12,7 +13,7 @@ function getPhotosForPosts(posts, PostPhotosModel, done) {
 			}],
 			'order': 'sequence ASC'
 		};
-		PostPhotosModel.find(query, function (err, postPhotos) {
+		server.models.PostPhoto.find(query, function (err, postPhotos) {
 			post.sortedPhotos = [];
 			for (var i = 0; i < postPhotos.length; i++) {
 				post.sortedPhotos.push(postPhotos[i].photo());
@@ -24,4 +25,4 @@ function getPhotosForPosts(posts, PostPhotosModel, done) {
 	});
 }
 
-module.exports = getPhotosForPosts;
+module.exports = resolvePostPhotos;

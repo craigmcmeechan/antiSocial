@@ -14,13 +14,6 @@
       "validateUpsert": true
     }
   },
-  "admin": {
-    "editProperties": [
-      "body",
-      "visibility",
-      "userId"
-    ]
-  },
   "properties": {
     "uuid": {
       "type": "string"
@@ -64,22 +57,6 @@
       "type": "belongsTo",
       "model": "MyUser",
       "foreignKey": "userId"
-    },
-    "comments": {
-      "type": "hasMany",
-      "model": "Comment",
-      "polymorphic": {
-        "foreignKey": "foreignId",
-        "discriminator": "foreignType"
-      }
-    },
-    "reactions": {
-      "type": "hasMany",
-      "model": "Reaction",
-      "polymorphic": {
-        "foreignKey": "foreignId",
-        "discriminator": "foreignType"
-      }
     },
     "photos": {
       "type": "hasMany",
