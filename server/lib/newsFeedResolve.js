@@ -52,7 +52,10 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			debug('my friend "' + sourceProfile.profile.name + '" commented on ' + myNewsFeedItem.about);
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + sourceProfile.profile.name + '</a>';
-			myNewsFeedItem.humanReadable += ' commented on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + postDesc + '</a> by ' + author;
+			myNewsFeedItem.humanReadable += ' commented on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + postDesc + '</a>';
+			if (author) {
+				myNewsFeedItem.humanReadable += ' by ' + author;
+			}
 
 			myNewsFeedItem.details = {
 				'rendered': '<div class="comment"><a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '"><img class="profile-thumb" src="' + sourceProfile.profile.photo.url + '"><span class="profile-link">' + sourceProfile.profile.name + '</span></a>' + server.locals.marked(myNewsFeedItem.details.body) + '</div>'
@@ -72,7 +75,10 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			debug('my friend "' + sourceProfile.profile.name + '" liked ' + author);
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + sourceProfile.profile.name + '</a>';
-			myNewsFeedItem.humanReadable += ' ' + reaction + ' <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + postDesc + '</a> by ' + author + '.';
+			myNewsFeedItem.humanReadable += ' ' + reaction + ' <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + postDesc + '</a>';
+			if (author) {
+				myNewsFeedItem.humanReadable += ' by ' + author;
+			}
 		}
 
 		done(null, myNewsFeedItem);

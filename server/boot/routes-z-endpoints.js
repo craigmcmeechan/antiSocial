@@ -52,7 +52,6 @@ module.exports = function (server) {
 
     var isMe = false;
 
-
     getUser(username, function (err, user) {
 
       if (err || !user) {
@@ -86,7 +85,7 @@ module.exports = function (server) {
                 cb();
               });
             }
-            getPosts(user, friend, null, function (err, posts) {
+            getPosts(user, friend, null, isMe, function (err, posts) {
               cb(err, user, posts);
             });
           },
@@ -146,6 +145,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([
       function (cb) {
         getUser(username, function (err, user) {
@@ -158,7 +159,12 @@ module.exports = function (server) {
             cb();
           });
         }
-        getPosts(user, friend, highwater, function (err, posts) {
+        if (currentUser) {
+          if (currentUser.id === user.id) {
+            isMe = true;
+          }
+        }
+        getPosts(user, friend, highwater, isMe, function (err, posts) {
           cb(err, user, posts);
         });
       },
@@ -207,7 +213,8 @@ module.exports = function (server) {
         'headshotFPO': server.locals.headshotFPO,
         'getUploadForProperty': server.locals.getUploadForProperty,
         'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings')
+        'globalSettings': ctx.get('globalSettings'),
+        'isMe': isMe
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -227,6 +234,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([
       function (cb) {
         getUser(username, function (err, user) {
@@ -243,7 +252,12 @@ module.exports = function (server) {
             cb();
           });
         }
-        getPost(postId, user, friend, function (err, post) {
+        if (currentUser) {
+          if (currentUser.id === user.id) {
+            isMe = true;
+          }
+        }
+        getPost(postId, user, friend, isMe, function (err, post) {
           if (err || !post) {
             var e = new VError('post not found');
             return cb(e);
@@ -301,7 +315,8 @@ module.exports = function (server) {
         'getUploadForProperty': server.locals.getUploadForProperty,
         'environment': server.locals.environment,
         'globalSettings': ctx.get('globalSettings'),
-        'isPermalink': true
+        'isPermalink': true,
+        'isMe': isMe
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -322,6 +337,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -332,7 +349,12 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -392,6 +414,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -402,7 +426,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -462,6 +493,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -472,7 +505,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -545,6 +585,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -555,7 +597,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -627,6 +676,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -637,7 +688,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -695,6 +753,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -705,7 +765,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -776,6 +843,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -786,7 +855,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -861,6 +937,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -871,7 +949,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -947,6 +1032,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -957,7 +1044,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -1045,6 +1139,8 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
     async.waterfall([function (cb) {
       getUser(username, function (err, user) {
         cb(err, user);
@@ -1055,7 +1151,14 @@ module.exports = function (server) {
           cb();
         });
       }
-      getPost(postId, user, friend, function (err, post) {
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
+      }
+
+      getPost(postId, user, friend, isMe, function (err, post) {
         cb(err, user, post);
       });
     }, function (user, post, cb) {
@@ -1142,16 +1245,12 @@ module.exports = function (server) {
     });
   }
 
-  function getPosts(user, friend, highwater, cb) {
+  function getPosts(user, friend, highwater, isMe, cb) {
 
     var query = {
       'where': {
         'and': [{
           'userId': user.id
-        }, {
-          'visibility': {
-            'inq': friend && friend.audiences ? friend.audiences : ['public']
-          }
         }]
       },
       'order': 'createdOn DESC',
@@ -1160,6 +1259,14 @@ module.exports = function (server) {
         'user': ['uploads']
       }]
     };
+
+    if (!isMe) {
+      query.where.and.push({
+        'visibility': {
+          'inq': friend && friend.audiences ? friend.audiences : ['public']
+        }
+      });
+    }
 
     if (highwater) {
       query.where.and.push({
@@ -1178,17 +1285,13 @@ module.exports = function (server) {
     });
   }
 
-  function getPost(postId, user, friend, cb) {
+  function getPost(postId, user, friend, isMe, cb) {
     var query = {
       'where': {
         'and': [{
           'uuid': postId
         }, {
           'userId': user.id
-        }, {
-          'visibility': {
-            'inq': friend && friend.audiences ? friend.audiences : ['public']
-          }
         }]
       },
       'order': 'createdOn DESC',
@@ -1199,6 +1302,14 @@ module.exports = function (server) {
         'photos': ['uploads']
       }]
     };
+
+    if (!isMe) {
+      query.where.and.push({
+        'visibility': {
+          'inq': friend && friend.audiences ? friend.audiences : ['public']
+        }
+      });
+    }
 
     server.models.Post.findOne(query, function (err, post) {
       if (err || !post) {
