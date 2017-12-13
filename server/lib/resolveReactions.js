@@ -6,13 +6,15 @@ var WError = require('verror').WError;
 var debug = require('debug')('resolve');
 var debugVerbose = require('debug')('resolve:verbose');
 
-module.exports = function resolveReactions(posts, done) {
-	async.map(posts, function (post, doneMap) {
+module.exports = function resolveReactions(items, itemType, done) {
+	async.map(items, function (item, doneMap) {
+
+		var about = item.about ? item.about : item.source;
 
 		var query = {
 			'where': {
 				'and': [{
-					'about': post.source + '/post/' + post.uuid
+					'about': about + '/' + itemType + '/' + item.uuid
 				}, {
 					'type': 'react'
 				}]
@@ -37,7 +39,7 @@ module.exports = function resolveReactions(posts, done) {
 				reactions = uniqued;
 			}
 
-			post.resolvedReactions = reactions;
+			item.resolvedReactions = reactions;
 
 			doneMap();
 		});

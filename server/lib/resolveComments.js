@@ -5,15 +5,17 @@ var WError = require('verror').WError;
 
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
-var resolveCommentReactions = require('./resolveCommentReactions');
+var resolveReactions = require('./resolveReactions');
 
-module.exports = function resolveReactionsCommentsAndProfiles(posts, done) {
-	async.map(posts, function (post, doneMap) {
+module.exports = function resolveComments(items, itemType, done) {
+	async.map(items, function (item, doneMap) {
+
+		var about = item.about ? item.about : item.source;
 
 		var query = {
 			'where': {
 				'and': [{
-					'about': post.source + '/post/' + post.uuid
+					'about': about + '/' + itemType + '/' + item.uuid
 				}, {
 					'type': 'comment'
 				}]
@@ -21,14 +23,16 @@ module.exports = function resolveReactionsCommentsAndProfiles(posts, done) {
 			'order': 'createdOn ASC'
 		};
 
+		console.log('comments: "' + itemType + '" %j ', query);
+
 		server.models.NewsFeedItem.find(query, function (err, comments) {
 			if (err) {
 				return doneMap(err);
 			}
 
-			post.resolvedComments = comments;
+			item.resolvedComments = comments;
 
-			resolveCommentReactions(post.resolvedComments, function (err) {
+			resolveReactions(item.resolvedComments, 'comment', function (err) {
 				doneMap();
 			});
 

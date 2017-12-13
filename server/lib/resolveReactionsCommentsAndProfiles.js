@@ -15,10 +15,10 @@ module.exports = function resolveReactionsCommentsAndProfiles(posts, done) {
 		var postEndpoint = post.source + '/post/' + post.uuid;
 		async.series([
 			function (cb) {
-				resolveComments(posts, cb);
+				resolveComments(posts, 'post', cb);
 			},
 			function (cb) {
-				resolveReactions(posts, cb);
+				resolveReactions(posts, 'post', cb);
 			}
 		], function (err) {
 			if (err) {

@@ -12,7 +12,7 @@
 							- var endpoint = poster.endpoint
 							- var thumb = poster.photo ? poster.photo.url : ''
 							- var name = poster.name
-							- var posterUrl = '/profile?endpoint=' + encodeURIComponent(endpoint)
+							- var posterUrl = '/proxy-profile?endpoint=' + encodeURIComponent(endpoint)
 							if !user
 								- posterUrl = endpoint
 
@@ -24,7 +24,7 @@
 									a(href= posterUrl)= name
 									if post.about
 										span.glyphicon.glyphicon-arrow-right.target-arrow
-										a(href= '/profile?endpoint=' + encodeURIComponent(post.about))= about.name
+										a(href= '/proxy-profile?endpoint=' + encodeURIComponent(post.about))= about.name
 									small.pull-right
 										= post.visibility.join('|') + ' ' 
 										<i class="fa fa-globe"></i>

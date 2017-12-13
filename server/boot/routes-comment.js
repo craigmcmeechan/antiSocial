@@ -54,7 +54,7 @@ module.exports = function (server) {
       }
     };
 
-    var rendered = '<div class="comment"><a href="/profile?endpoint=' + encodeURIComponent(item.source) + '"><img class="profile-thumb" src="' + req.app.locals.getUploadForProperty('photo', currentUser.uploads(), 'thumb', req.app.locals.headshotFPO).url + '"><span class="profile-link">' + currentUser.name + '</span></a>' + server.locals.marked(item.details.body) + '</div><div class="clearfix"></div>';
+    var rendered = '<div class="comment"><a href="/proxy-profile?endpoint=' + encodeURIComponent(item.source) + '"><img class="profile-thumb" src="' + req.app.locals.getUploadForProperty('photo', currentUser.uploads(), 'thumb', req.app.locals.headshotFPO).url + '"><span class="profile-link">' + currentUser.name + '</span></a>' + server.locals.marked(item.details.body) + '</div><div class="clearfix"></div>';
 
     currentUser.pushNewsFeedItems.create(item, function (err, news) {
       if (err) {

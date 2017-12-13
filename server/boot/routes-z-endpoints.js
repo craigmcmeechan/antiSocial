@@ -4,8 +4,6 @@ var getFriendAccess = require('../middleware/context-getFriendAccess');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
 var resolveReactions = require('../lib/resolveReactions');
-var resolvePhotoReactions = require('../lib/resolvePhotoReactions');
-var resolvePhotoComments = require('../lib/resolvePhotoComments');
 var resolveComments = require('../lib/resolveComments');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var qs = require('querystring');
@@ -29,20 +27,20 @@ module.exports = function (server) {
   // URL forms for getting posts and associated data from
   // the poster's authoritative server (users resident on this server)
 
-  var fullProfileRE = /^\/([a-zA-Z0-9\-\.]+)\/fullprofile(.json)?$/;
-  var profileRE = /^\/([a-zA-Z0-9\-\.]+)\/profile(\.json)?$/;
-  var postsRE = /^\/([a-zA-Z0-9\-\.]+)\/posts(\.json)?$/;
-  var postRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
-  var postReactionsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postCommentsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/comments(\.json)?$/;
-  var postCommentRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
-  var postCommentReactionsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postPhotosRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photos(\.json)?$/;
-  var postPhotoRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
-  var postPhotoReactionsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postPhotoCommentsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments(\.json)?$/;
-  var postPhotoCommentRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
-  var postPhotoCommentReactionsRE = /^\/([a-zA-Z0-9\-\.]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var profilePageRE = /^\/([a-zA-Z0-9\-]+)\/profile-and-recent(.json)?$/;
+  var profileRE = /^\/([a-zA-Z0-9\-]+)(\.json)?$/;
+  var postsRE = /^\/([a-zA-Z0-9\-]+)\/posts(\.json)?$/;
+  var postRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
+  var postReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var postCommentsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comments(\.json)?$/;
+  var postCommentRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
+  var postCommentReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var postPhotosRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photos(\.json)?$/;
+  var postPhotoRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
+  var postPhotoReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var postPhotoCommentsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments(\.json)?$/;
+  var postPhotoCommentRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
+  var postPhotoCommentReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
 
   router.get(profileRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
@@ -73,16 +71,57 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
       else {
-        pug.renderFile(server.get('views') + '/components/rendered-profile.pug', {
-          'data': data,
-          'user': currentUser,
-          'friend': friend
-        }, function (err, html) {
-          if (err) {
-            console.log(err);
-            return res.sendStatus(500);
+        async.waterfall([
+          function (cb) {
+            if (!user) {
+              return process.nextTick(function () {
+                cb();
+              });
+            }
+            getPosts(user, friend, null, function (err, posts) {
+              cb(err, user, posts);
+            });
+          },
+          function (user, posts, cb) {
+            if (!posts) {
+              return process.nextTick(function () {
+                cb();
+              });
+            }
+            resolvePostPhotos(posts, function (err) {
+              cb(err, user, posts);
+            });
+          },
+          function (user, posts, cb) {
+            if (!posts) {
+              return process.nextTick(function () {
+                cb();
+              });
+            }
+            resolveReactionsCommentsAndProfiles(posts, function (err) {
+              cb(err, user, posts);
+            });
           }
-          return res.send(encryptIfFriend(friend, html));
+        ], function (err, user, posts) {
+          data.posts = posts;
+
+          pug.renderFile(server.get('views') + '/components/rendered-profile.pug', {
+            'data': data,
+            'user': currentUser,
+            'friend': friend,
+            'moment': server.locals.moment,
+            'marked': server.locals.marked,
+            'headshotFPO': server.locals.headshotFPO,
+            'getUploadForProperty': server.locals.getUploadForProperty,
+            'environment': server.locals.environment,
+            'globalSettings': ctx.get('globalSettings')
+          }, function (err, html) {
+            if (err) {
+              console.log(err);
+              return res.sendStatus(500);
+            }
+            return res.send(encryptIfFriend(friend, html));
+          });
         });
       }
     });
@@ -136,6 +175,13 @@ module.exports = function (server) {
       }
     ], function (err, user, posts) {
       var data = {
+        'profile': {
+          'name': user.name,
+          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
+          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+          'endpoint': server.locals.config.publicHost + '/' + user.username,
+          'publicHost': server.locals.config.publicHost
+        },
         'posts': posts
       };
 
@@ -149,7 +195,10 @@ module.exports = function (server) {
         'friend': friend,
         'moment': server.locals.moment,
         'marked': server.locals.marked,
-        'getUploadForProperty': server.locals.getUploadForProperty
+        'headshotFPO': server.locals.headshotFPO,
+        'getUploadForProperty': server.locals.getUploadForProperty,
+        'environment': server.locals.environment,
+        'globalSettings': ctx.get('globalSettings')
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -172,6 +221,10 @@ module.exports = function (server) {
     async.waterfall([
       function (cb) {
         getUser(username, function (err, user) {
+          if (err || !user) {
+            var e = new VError('user not found');
+            return cb(e);
+          }
           cb(err, user);
         });
       },
@@ -182,6 +235,10 @@ module.exports = function (server) {
           });
         }
         getPost(postId, user, friend, function (err, post) {
+          if (err || !post) {
+            var e = new VError('post not found');
+            return cb(e);
+          }
           cb(err, user, post);
         });
       },
@@ -211,6 +268,13 @@ module.exports = function (server) {
       }
 
       var data = {
+        'profile': {
+          'name': user.name,
+          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
+          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+          'endpoint': server.locals.config.publicHost + '/' + user.username,
+          'publicHost': server.locals.config.publicHost
+        },
         'post': post
       };
 
@@ -224,7 +288,10 @@ module.exports = function (server) {
         'friend': friend,
         'moment': server.locals.moment,
         'marked': server.locals.marked,
-        'getUploadForProperty': server.locals.getUploadForProperty
+        'headshotFPO': server.locals.headshotFPO,
+        'getUploadForProperty': server.locals.getUploadForProperty,
+        'environment': server.locals.environment,
+        'globalSettings': ctx.get('globalSettings')
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -264,7 +331,7 @@ module.exports = function (server) {
           cb();
         });
       }
-      resolveReactions([post], function (err) {
+      resolveReactions([post], 'post', function (err) {
         cb(err, user, post);
       });
     }], function (err, user, post) {
@@ -291,7 +358,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -331,7 +401,7 @@ module.exports = function (server) {
           cb();
         });
       }
-      resolveComments([post], function (err) {
+      resolveComments([post], 'post', function (err) {
         cb(err, user, post);
       });
     }], function (err, user, post) {
@@ -357,7 +427,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -398,7 +471,7 @@ module.exports = function (server) {
           cb();
         });
       }
-      resolveComments([post], function (err) {
+      resolveComments([post], 'post', function (err) {
         cb(err, user, post);
       });
     }], function (err, user, post) {
@@ -437,7 +510,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -478,7 +554,7 @@ module.exports = function (server) {
           cb();
         });
       }
-      resolveComments([post], function (err) {
+      resolveComments([post], 'post', function (err) {
         cb(err, user, post);
       });
     }], function (err, user, post) {
@@ -517,7 +593,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -582,7 +661,10 @@ module.exports = function (server) {
         'friend': friend,
         'moment': server.locals.moment,
         'marked': server.locals.marked,
-        'getUploadForProperty': server.locals.getUploadForProperty
+        'headshotFPO': server.locals.headshotFPO,
+        'getUploadForProperty': server.locals.getUploadForProperty,
+        'environment': server.locals.environment,
+        'globalSettings': ctx.get('globalSettings')
       }, function (err, html) {
         if (err) {
           return res.sendStatus(500);
@@ -660,7 +742,10 @@ module.exports = function (server) {
         'friend': friend,
         'moment': server.locals.moment,
         'marked': server.locals.marked,
-        'getUploadForProperty': server.locals.getUploadForProperty
+        'headshotFPO': server.locals.headshotFPO,
+        'getUploadForProperty': server.locals.getUploadForProperty,
+        'environment': server.locals.environment,
+        'globalSettings': ctx.get('globalSettings')
       }, function (err, html) {
         if (err) {
           return res.sendStatus(500);
@@ -724,7 +809,7 @@ module.exports = function (server) {
         return res.sendStatus(404);
       }
 
-      resolvePhotoReactions(post, thePhoto, function (err) {
+      resolveReactions([thePhoto], 'photo', function (err) {
 
         var data = {
           'reactions': thePhoto.resolvedReactions
@@ -740,7 +825,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -806,7 +894,7 @@ module.exports = function (server) {
         return res.sendStatus(404);
       }
 
-      resolvePhotoComments(post, thePhoto, function (err) {
+      resolveComments([thePhoto], 'photo', function (err) {
 
         var data = {
           'comments': thePhoto.resolvedComments
@@ -822,7 +910,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -889,7 +980,8 @@ module.exports = function (server) {
         return res.sendStatus(404);
       }
 
-      resolvePhotoComments(post, thePhoto, function (err) {
+      thePhoto.about = post.source + '/post/' + post.uuid;
+      resolveComments([thePhoto], 'photo', function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
@@ -917,7 +1009,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -983,7 +1078,8 @@ module.exports = function (server) {
         return res.sendStatus(404);
       }
 
-      resolvePhotoComments(post, thePhoto, function (err) {
+      thePhoto.about = post.source + '/post/' + post.uuid;
+      resolveComments([thePhoto], 'photo', function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
@@ -1011,7 +1107,10 @@ module.exports = function (server) {
           'friend': friend,
           'moment': server.locals.moment,
           'marked': server.locals.marked,
-          'getUploadForProperty': server.locals.getUploadForProperty
+          'headshotFPO': server.locals.headshotFPO,
+          'getUploadForProperty': server.locals.getUploadForProperty,
+          'environment': server.locals.environment,
+          'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
             return res.sendStatus(500);
@@ -1022,9 +1121,9 @@ module.exports = function (server) {
     });
   });
 
-  router.get(fullProfileRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(profilePageRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
-    var matches = req.url.match(fullProfileRE);
+    var matches = req.url.match(profilePageRE);
     var username = matches[1];
     var view = matches[2];
     var accessToken = req.headers['friend-access-token'];
@@ -1084,7 +1183,7 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
 
-      pug.renderFile(server.get('views') + '/pages/profile.pug', {
+      pug.renderFile(server.get('views') + '/components/rendered-profile.pug', {
         'profile': data.profile,
         'posts': data.posts,
         'user': currentUser,

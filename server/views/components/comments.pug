@@ -22,13 +22,13 @@
 				- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 				- var name = comment.resolvedProfiles[comment.source].profile.name
 				.thumb-container(style="float:left;")
-					a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
+					a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
 						img.profile-thumb(src= thumb)
 				.comment-container
 					.timestamp= moment(comment.createdOn).calendar()
 
 					strong.pull-left
-						a(href= "/profile?endpoint=" + encodeURIComponent(comment.source))
+						a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
 							span.profile-link
 								= name
 

@@ -430,6 +430,7 @@ module.exports = function (server) {
 						'uuid': uuid(),
 						'type': 'pending friend request',
 						'source': friend.remoteEndPoint,
+						'about': friend.remoteEndPoint,
 						'humanReadable': '<img src="' + sourceProfile.profile.photo.url + '"> pending friend request from ' + sourceProfile.profile.name
 					};
 					req.app.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
