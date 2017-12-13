@@ -229,7 +229,7 @@ describe('proxy endpoints', function () {
 		client1.get('http://127.0.0.1:3000/proxy-profile?endpoint=' + encodeURIComponent(endpoint2)).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
-			expect(res.text).to.contain('hello world from User Two')
+			expect(res.text).to.contain('<head>');
 			done();
 		});
 	});
