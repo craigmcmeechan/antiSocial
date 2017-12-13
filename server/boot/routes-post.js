@@ -12,6 +12,7 @@ var resolveProfiles = require('../lib/resolveProfiles');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
+var encryption = require('../lib/encryption');
 
 var uuid = require('uuid');
 
@@ -118,7 +119,7 @@ module.exports = function (server) {
       function (post, postPhotoInstances, cb) { // tell the world
         currentUser.pushNewsFeedItems.create({
           'uuid': uuid(),
-          'type': 'new post',
+          'type': 'post',
           'source': server.locals.config.publicHost + '/' + currentUser.username,
           'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
           'target': post.about,
@@ -141,53 +142,11 @@ module.exports = function (server) {
         });
       }
       res.send({
-        'status': 'ok'
+        'status': 'ok',
+        'uuid': post.uuid,
+        'post': post
       });
     });
-  });
-
-  // proxy post endpoint
-  router.get('/post', getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
-    var ctx = req.myContext;
-    var endpoint = req.query.endpoint;
-    var currentUser = ctx.get('currentUser');
-    var friend = ctx.get('isFriend');
-
-    if (endpoint) {
-      // get it from the remote endpoint
-      var options = {
-        'url': endpoint + '.json',
-        'json': true,
-        headers: {
-          'friend-access-token': friend ? friend.remoteAccessToken : ''
-        }
-      };
-
-      //console.log('proxy post:', options);
-
-      request.get(options, function (err, response, body) {
-        if (err) {
-          var e = new VError(err, 'could not load endpoint ' + endpoint);
-          return next(e);
-        }
-        if (response.statusCode !== 200) {
-          return res.sendStatus(response.statusCode);
-        }
-
-        resolveProfilesForPosts([body.post], function (err) {
-          res.render('pages/post', {
-            'globalSettings': ctx.get('globalSettings'),
-            'profile': body.profile,
-            'posts': [body.post],
-            'isFriend': ctx.get('isFriend'),
-            'user': currentUser
-          });
-        });
-      });
-    }
-    else {
-      res.sendStatus(404);
-    }
   });
 
   server.use(router);

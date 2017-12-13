@@ -430,6 +430,7 @@ module.exports = function (server) {
 						'uuid': uuid(),
 						'type': 'pending friend request',
 						'source': friend.remoteEndPoint,
+						'about': friend.remoteEndPoint,
 						'humanReadable': '<img src="' + sourceProfile.profile.photo.url + '"> pending friend request from ' + sourceProfile.profile.name
 					};
 					req.app.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
@@ -537,7 +538,7 @@ module.exports = function (server) {
 				var item = {
 					'userId': friend.user().id,
 					'uuid': uuid(),
-					'type': 'new friend',
+					'type': 'friend',
 					'source': server.locals.config.publicHost + '/' + friend.user().username,
 					'about': friend.remoteEndPoint,
 					'visibility': ['friends'],
@@ -642,7 +643,7 @@ module.exports = function (server) {
 						var item = {
 							'userId': friend.user().id,
 							'uuid': uuid(),
-							'type': 'new friend',
+							'type': 'friend',
 							'source': server.locals.config.publicHost + '/' + friend.user().username,
 							'about': friend.remoteEndPoint,
 							'visibility': ['friends'],

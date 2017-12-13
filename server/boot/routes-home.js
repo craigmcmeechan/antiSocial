@@ -10,7 +10,7 @@ var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint')
 var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
-var getPhotosForPosts = require('../lib/resolvePostPhotos');
+var resolvePostPhotos = require('../lib/resolvePostPhotos');
 
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
@@ -58,7 +58,7 @@ module.exports = function (server) {
         'limit': 30,
         'include': [{
           'user': ['uploads']
-        }, 'comments', 'reactions', {
+        }, {
           'photos': ['uploads']
         }]
       }, function (err, posts) {
@@ -67,7 +67,7 @@ module.exports = function (server) {
         }
 
         resolveProfilesForPosts(posts, function (err) {
-          getPhotosForPosts(posts, req.app.models.PostPhoto, function (err) {
+          resolvePostPhotos(posts, function (err) {
             res.render('pages/home', {
               'user': ctx.get('currentUser'),
               'globalSettings': ctx.get('globalSettings'),

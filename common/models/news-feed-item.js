@@ -2,6 +2,7 @@ var PassThrough = require('stream').PassThrough;
 
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
+var newsFeedItemResolve = require('../../server/lib/newsFeedResolve');
 
 module.exports = function (NewsFeedItem) {
 
@@ -77,17 +78,20 @@ module.exports = function (NewsFeedItem) {
 					items.reverse();
 
 					for (var i = 0; i < items.length; i++) {
-						var data = items[i];
-						var change = {
-							'target': 'create',
-							'where': {},
-							'data': data,
-							'backfill': true
-						};
+						newsFeedItemResolve(user, items[i], function (err, data) {
 
-						debugVerbose('backfilling NewsFeedItem %j', data);
+							var change = {
+								'target': 'create',
+								'where': {},
+								'data': data,
+								'backfill': true
+							};
 
-						changes.write(change);
+							debugVerbose('backfilling NewsFeedItem %j', data);
+
+							changes.write(change);
+						})
+
 					}
 				}
 			});
@@ -121,11 +125,7 @@ module.exports = function (NewsFeedItem) {
 
 				var hasTarget = target === 0 || !!target;
 
-				var change = {
-					target: target,
-					where: where,
-					data: data
-				};
+
 
 				switch (type) {
 				case 'save':
@@ -142,7 +142,14 @@ module.exports = function (NewsFeedItem) {
 				}
 
 				if (writeable) {
-					changes.write(change);
+					newsFeedItemResolve(user, data, function (err, data) {
+						var change = {
+							target: target,
+							where: where,
+							data: data
+						};
+						changes.write(change);
+					});
 				}
 
 				next();

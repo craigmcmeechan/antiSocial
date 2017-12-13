@@ -8,8 +8,8 @@ One of the goals of this prototype is to achieve more user control through a sec
 
 > Eg. When a friend of mine makes a post or likes one of my posts I get an immediate notification on my screen.
 
-A description of the friending protocol can be found [here](https://github.com/antiSocialNet/antiSocial/blob/master/README-friends.md). At the end of this protocol both users will have a Friend record holding the accessToken and the public key of the friend. With these credentials they can exchange signed encrypted messages for notifying each other of activity in their accounts.
+A description of the friending protocol can be found [here](https://github.com/antiSocialNet/antiSocial/blob/master/notes/friends.md). At the end of this protocol both users will have a Friend record holding the accessToken and the public key of the friend. With these credentials they can exchange signed encrypted messages for notifying each other of activity in their accounts.
 
-Once friend connections are established the anti social network can push events in real time through [secure, encrypted channels](https://github.com/antiSocialNet/antiSocial/blob/master/README-pushfeeds.md) which give the same immediacy as a monolithic, centralized service.
+Once friend connections are established the anti social network can push events in real time through [secure, encrypted channels](https://github.com/antiSocialNet/antiSocial/blob/master/notes/pushfeeds.md) which give the same immediacy as a monolithic, centralized service.
 
 It can also show you pretty pictures...

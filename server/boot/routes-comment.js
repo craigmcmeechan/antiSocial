@@ -44,7 +44,7 @@ module.exports = function (server) {
 
     var item = {
       'uuid': uuid(),
-      'type': 'new comment',
+      'type': 'comment',
       'source': server.locals.config.publicHost + '/' + currentUser.username,
       'about': req.body.about,
       'visibility': ['public'],
@@ -54,7 +54,7 @@ module.exports = function (server) {
       }
     };
 
-    var rendered = '<div class="comment"><a href="/profile?endpoint=' + encodeURIComponent(item.source) + '"><img class="profile-thumb" src="' + req.app.locals.getUploadForProperty('photo', currentUser.uploads(), 'thumb', req.app.locals.headshotFPO).url + '"><span class="profile-link">' + currentUser.name + '</span></a>' + server.locals.marked(item.details.body) + '</div><div class="clearfix"></div>';
+    var rendered = '<div class="comment"><a href="/proxy-profile?endpoint=' + encodeURIComponent(item.source) + '"><img class="profile-thumb" src="' + req.app.locals.getUploadForProperty('photo', currentUser.uploads(), 'thumb', req.app.locals.headshotFPO).url + '"><span class="profile-link">' + currentUser.name + '</span></a>' + server.locals.marked(item.details.body) + '</div><div class="clearfix"></div>';
 
     currentUser.pushNewsFeedItems.create(item, function (err, news) {
       if (err) {
@@ -62,90 +62,11 @@ module.exports = function (server) {
         return next(e);
       }
 
-      // commenting on my own post? make the comment record
-      if (myEndPoint === whoAbout) {
-
-        var findComment = {
-          'where': {
-            'and': [{
-              'userId': currentUser.id
-            }, {
-              'uuid': postuuid
-            }]
-          },
-          'include': ['photos']
-        };
-
-        server.models.Post.findOne(findComment, function (err, post) {
-          if (err || !post) {
-            var e = new VError(err, 'error finding Comment %j', findComment);
-            return next(e);
-          }
-
-          var foreignId;
-          var foreignType;
-
-          if (photoId) {
-            var thePhoto;
-            for (var i = 0; i < post.photos().length; i++) {
-              var photo = post.photos()[i];
-              if (photo.uuid === photo.uuid) {
-                thePhoto = photo;
-                break;
-              }
-            }
-            if (thePhoto) {
-              foreignId = thePhoto.id;
-              foreignType = 'Photo';
-            }
-            else {
-              return cb();
-            }
-          }
-          else {
-            foreignId = post.id;
-            foreignType = 'Post';
-          }
-
-          var foreignId = photoId ? photoId : post.id;
-          var foreignType = photoId ? 'Photo' : 'Post';
-
-          var commentData = {
-            'foreignId': foreignId,
-            'foreignType': foreignType,
-            'uuid': item.uuid,
-            'source': item.source,
-            'about': item.about,
-            'body': item.details.body,
-            'details': {
-              'thumb': item.thumb,
-              'name': item.details.name
-            }
-          };
-
-          debug('saving %j', commentData);
-
-          server.models.Comment.create(commentData, function (err, item) {
-            if (err) {
-              server.locals.logger.error('error saving Comment', commentData);
-              return next(err);
-            }
-
-            var rendered = '<div class="comment"><a href="/profile?endpoint=' + encodeURIComponent(item.source) + '"><img class="profile-thumb" src="' + req.app.locals.getUploadForProperty('photo', currentUser.uploads(), 'thumb', req.app.locals.headshotFPO).url + '"><span class="profile-link">' + currentUser.name + '</span></a>' + server.locals.marked(commentData.body) + '</div><div class="clearfix"></div>';
-
-            res.send({
-              'status': 'ok',
-              'rendered': rendered
-            });
-          });
-        });
-      }
-      else {
-        res.send({
-          'status': 'ok',
-          'rendered': rendered
-        });
-      }
+      res.send({
+        'status': 'ok',
+        'rendered': rendered,
+        'comment': item
+      });
     });
   });
 
