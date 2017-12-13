@@ -25,10 +25,10 @@ block content
 			.container-fluid.text-overlay
 				h1= profile.name
 
-				if isFriend
-					if isFriend.status === 'accepted'
+				if friend
+					if friend.status === 'accepted'
 						| This friend can see my public posts and posts in
-						each audience, i in isFriend.audiences
+						each audience, i in friend.audiences
 							if i
 								| ,
 							= ' ' + audience
@@ -37,10 +37,10 @@ block content
 							i.glyphicon.glyphicon-chevron-down
 
 						#edit-friend-audience.collapse
-							form#form.form-validation(data-jsclass="postingFormController,formValidator,saveOnChange" data-method="PUT" data-endpoint="/api/MyUsers/me/friends/"+ isFriend.id)
+							form#form.form-validation(data-jsclass="postingFormController,formValidator,saveOnChange" data-method="PUT" data-endpoint="/api/MyUsers/me/friends/"+ friend.id)
 								.form-group
 									label Set Audience
-									input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(isFriend.audiences))
+									input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(friend.audiences))
 									.checkbox-group(data-jsclass="checkboxGroupController" data-target="#friend-audiences")
 										label.checkbox-inline
 											input(type="checkbox" data-value="friends")

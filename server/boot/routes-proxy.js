@@ -24,10 +24,14 @@ module.exports = function (server) {
 
 		var template = matches[1];
 		var currentUser = ctx.get('currentUser');
-		var friend = ctx.get('isFriend');
+		var friend = ctx.get('friend');
 
 		if (!endpoint) {
 			return res.sendStatus(400);
+		}
+
+		if (template === 'profile') {
+			endpoint += '/posts';
 		}
 
 		var options = {

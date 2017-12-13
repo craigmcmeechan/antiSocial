@@ -51,10 +51,19 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
 
+    var isMe = false;
+
+
     getUser(username, function (err, user) {
 
       if (err || !user) {
         return res.sendStatus('404');
+      }
+
+      if (currentUser) {
+        if (currentUser.id === user.id) {
+          isMe = true;
+        }
       }
 
       var data = {
@@ -114,7 +123,8 @@ module.exports = function (server) {
             'headshotFPO': server.locals.headshotFPO,
             'getUploadForProperty': server.locals.getUploadForProperty,
             'environment': server.locals.environment,
-            'globalSettings': ctx.get('globalSettings')
+            'globalSettings': ctx.get('globalSettings'),
+            'isMe': isMe
           }, function (err, html) {
             if (err) {
               console.log(err);
