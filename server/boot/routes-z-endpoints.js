@@ -112,7 +112,7 @@ module.exports = function (server) {
         ], function (err, user, posts) {
           data.posts = posts;
 
-          pug.renderFile(server.get('views') + '/components/rendered-profile.pug', {
+          var options = {
             'data': data,
             'user': currentUser,
             'friend': friend,
@@ -123,7 +123,13 @@ module.exports = function (server) {
             'environment': server.locals.environment,
             'globalSettings': ctx.get('globalSettings'),
             'isMe': isMe
-          }, function (err, html) {
+          };
+
+          req.logger({
+            'options': options,
+            'data': data
+          }, '/xxxx')
+          pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
             if (err) {
               console.log(err);
               return res.sendStatus(500);
