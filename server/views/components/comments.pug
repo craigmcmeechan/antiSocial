@@ -1,21 +1,16 @@
 .comments-label
-	= 'Comments '
-	i.glyphicon.glyphicon-comment
-		
-	.comment-summary.pull-right
-		if comments
-			for comment, index in comments
-				if index < 2
-					if index === 1
-						= ', '
-					a(href= '/profile?endoint=' + encodeURIComponent(comment.source))= comment.resolvedProfiles[comment.source].profile.name
-			if comments.length > 2
-				- var remainder = comments.length - 2
-				= ' and ' + remainder + ' other'
-				if comments.length > 2
-					= 's'
+	table
+		tr
+			if comments.length
+				td
+					.badge= comments.length
+			td.comments-label-text
+				| Comments
+			td.comment-summary
+				if commentSummary
+					!= commentSummary
 					
-.comments-list
+.comments-list.want-constrained(data-max-height="150")
 	if comments
 		for comment,index in comments
 			.comment

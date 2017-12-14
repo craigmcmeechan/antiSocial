@@ -22,7 +22,7 @@ html(lang="en")
 			
 		style#override-styles(type="text/css")
 
-	body#document-body(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController")
+	body#document-body(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController")
 		script.
 			var result;
 			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;

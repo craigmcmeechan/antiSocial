@@ -168,9 +168,7 @@ img.avatar
 .reaction-summary
 	font-size:11px
 	padding-top: 14px
-.comment-summary
-	font-size:11px
-	padding-top: 5px
+
 
 #scope-posting-form
 	#posting-form
@@ -295,6 +293,22 @@ img.avatar
 	a
 		text-decoration:underline
 
+.constrained
+	position:relative
+	overflow:hidden
+	cursor:pointer
+	&:after
+		text-align:center
+		content: ""
+		position: absolute
+		z-index: 1
+		bottom: 0
+		left: 0
+		background-image: linear-gradient(to bottom, rgba(255,255,255, 0), rgba(255,255,255, 1) 90%)
+		width: 100%
+		height: 4em
+
+
 #scope-post-list
 	min-height: calc(100vh - 50px)
 	.post
@@ -303,22 +317,6 @@ img.avatar
 		border:thin solid $borderColor
 		border-radius:4px
 		margin-bottom:30px
-		.post-body
-			position : relative
-			&.constrained
-				max-height:200px
-				overflow:hidden
-				cursor:pointer
-				&:after
-					content: ""
-					position: absolute
-					z-index: 1
-					bottom: 0
-					left: 0
-					pointer-events: none
-					background-image: linear-gradient(to bottom, rgba(255,255,255, 0), rgba(255,255,255, 1) 90%)
-					width: 100%
-					height: 4em
 
 		.permalink
 			text-align:right
@@ -418,8 +416,16 @@ img.avatar
 		.comments-label
 			padding-bottom:7px
 			border-bottom:thin solid $borderColor
-
 			margin-bottom:7px
+			font-size:.8em
+			text-align:center
+			line-height:.8em
+			.badge
+				margin-right: 4px
+				font-size:.7em
+			.comments-label-text
+				padding-right: 4px
+				text-transform: uppercase
 		.comment
 			.profile-thumb
 				width:30px

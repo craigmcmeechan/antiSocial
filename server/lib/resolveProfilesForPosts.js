@@ -1,5 +1,6 @@
 var async = require('async');
 var resolveProfiles = require('../lib/resolveProfiles');
+var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
 
 function resolveProfilesForPost(post, done) {
 	async.series([
@@ -13,6 +14,11 @@ function resolveProfilesForPost(post, done) {
 			async.each(comments, resolveProfiles, function (err) {
 				cb(err);
 			});
+		},
+		function (cb) {
+			resolveCommentsSummary(post, function (err) {
+				cb(err);
+			})
 		},
 		function (cb) {
 			var comments = typeof post.resolvedComments === 'function' ? post.resolvedComments() : post.resolvedComments;

@@ -1,11 +1,10 @@
-#scope-post-list(data-jsclass="constrainedController")
+#scope-post-list
 	if posts && posts.length
 		for post in posts
 			- var postEndpoint = post.source + '/post/' + post.uuid;
 			- var poster = post.resolvedProfiles[post.source].profile
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
 			- var isPublic = post.visibility.indexOf('public') !== -1
-			- var wantConstrained = post.body.length > 350 ? 'constrained': ''
 			
 			.post.live-element(data-watch= post.source + '/post/' + post.uuid)
 				.post-identity
@@ -41,7 +40,7 @@
 											= post.geoDescription + ' '
 											<i class="glyphicon glyphicon-map-marker"></i>
 
-				.post-body.markdown(class= wantConstrained)!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
+				.post-body.markdown.want-constrained(data-max-height="250")!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
 				if post.sortedPhotos && post.sortedPhotos.length
 					
@@ -57,7 +56,7 @@
 								<span class="glyphicon glyphicon-chevron-left"></span>
 							a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
 								<span class="glyphicon glyphicon-chevron-right"></span>
-					.container-fluid
+					.container-fluid.want-constrained
 						.row
 							for photo,index in post.sortedPhotos
 								if photo
