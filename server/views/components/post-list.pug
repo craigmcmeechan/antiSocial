@@ -1,10 +1,11 @@
-#scope-post-list
+#scope-post-list(data-jsclass="constrainedController")
 	if posts && posts.length
 		for post in posts
 			- var postEndpoint = post.source + '/post/' + post.uuid;
 			- var poster = post.resolvedProfiles[post.source].profile
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
 			- var isPublic = post.visibility.indexOf('public') !== -1
+			- var wantConstrained = post.body.length > 350 ? 'constrained': ''
 			
 			.post.live-element(data-watch= post.source + '/post/' + post.uuid)
 				.post-identity
@@ -40,7 +41,7 @@
 											= post.geoDescription + ' '
 											<i class="glyphicon glyphicon-map-marker"></i>
 
-				.post-body.markdown!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
+				.post-body.markdown(class= wantConstrained)!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
 				if post.sortedPhotos && post.sortedPhotos.length
 					
