@@ -30,11 +30,12 @@ module.exports = function (server) {
 			return res.sendStatus(400);
 		}
 
-		var myEndPoint = server.locals.config.publicHost + '/' + currentUser.username;
-
-		if (endpoint.match(new RegExp('^' + myEndPoint))) {
-			debug('proxy: endpoint is same as logged in user, redirect ' + endpoint);
-			return res.redirect(endpoint.replace(new RegExp('^' + server.locals.config.publicHost), ''));
+		if (currentUser) {
+			var myEndPoint = server.locals.config.publicHost + '/' + currentUser.username;
+			if (endpoint.match(new RegExp('^' + myEndPoint))) {
+				debug('proxy: endpoint is same as logged in user, redirect ' + endpoint);
+				return res.redirect(endpoint.replace(new RegExp('^' + server.locals.config.publicHost), ''));
+			}
 		}
 
 		if (template === 'profile') {

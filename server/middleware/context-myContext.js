@@ -1,3 +1,5 @@
+var server = require('../server');
+
 module.exports = function () {
 
 	function ReqContext() {
@@ -9,6 +11,15 @@ module.exports = function () {
 
 		this.set = function (key, value) {
 			this.data[key] = value;
+			if (server.raven) {
+				server.raven.captureBreadcrumb({
+					'category': 'setContext',
+					'data': {
+						'key': key,
+						'value': value
+					}
+				});
+			}
 		};
 
 		this.cleanup = function () {

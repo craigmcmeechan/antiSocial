@@ -40,15 +40,14 @@
     }
   },
   "final": {
-    "loopback#urlNotFound": {}
+    "./middleware/error-handler": {}
   },
   "final:after": {
     "strong-error-handler": {
       "params": {
-        "debug": false,
+        "debug": true,
         "log": true
       }
-    },
-    "./middleware/error-handler": {}
+    }
   }
 }

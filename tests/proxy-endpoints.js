@@ -216,7 +216,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 profile (json)', function (done) {
-		client2.get('http://127.0.0.1:3000/proxy-profile?format=json&endpoint=' + encodeURIComponent(endpoint2)).end(function (err, res) {
+		client1.get('http://127.0.0.1:3000/proxy-profile?format=json&endpoint=' + encodeURIComponent(endpoint2)).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
