@@ -59,7 +59,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -126,9 +126,11 @@ module.exports = function (server) {
           };
 
           req.logger.error({
-            'options': options,
-            'data': data
-          }, '/xxxx')
+            'isMe': isMe,
+            'currentUser': currentUser.id,
+            'user': user.id
+          }, '/xxxx');
+
           pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
             if (err) {
               console.log(err);
@@ -166,7 +168,7 @@ module.exports = function (server) {
           });
         }
         if (currentUser) {
-          if (currentUser.id === user.id) {
+          if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
           }
         }
@@ -259,7 +261,7 @@ module.exports = function (server) {
           });
         }
         if (currentUser) {
-          if (currentUser.id === user.id) {
+          if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
           }
         }
@@ -356,7 +358,7 @@ module.exports = function (server) {
         });
       }
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -434,7 +436,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -513,7 +515,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -605,7 +607,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -696,7 +698,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -773,7 +775,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -863,7 +865,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -957,7 +959,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -1052,7 +1054,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -1159,7 +1161,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
