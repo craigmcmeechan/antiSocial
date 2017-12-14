@@ -125,12 +125,6 @@ module.exports = function (server) {
             'isMe': isMe
           };
 
-          req.logger.error({
-            'isMe': isMe,
-            'currentUser': currentUser.id,
-            'user': user.id
-          }, '/xxxx');
-
           pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
             if (err) {
               console.log(err);
