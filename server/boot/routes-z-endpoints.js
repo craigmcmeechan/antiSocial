@@ -125,7 +125,7 @@ module.exports = function (server) {
             'isMe': isMe
           };
 
-          req.logger({
+          req.logger.error({
             'options': options,
             'data': data
           }, '/xxxx')
