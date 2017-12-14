@@ -6,6 +6,7 @@ module.exports = function (server) {
 	var router = server.loopback.Router();
 
 	router.get('/ping', getCurrentUser(), function (req, res, next) {
+		/*
 		req.logger.error({
 			'req': req,
 			'yo': 'yoyo'
@@ -19,8 +20,8 @@ module.exports = function (server) {
 
 		req.logger.error(ee);
 
-
 		throw ('wtf?');
+		*/
 		res.send('ok');
 	});
 
