@@ -122,7 +122,8 @@ module.exports = function (server) {
             'getUploadForProperty': server.locals.getUploadForProperty,
             'environment': server.locals.environment,
             'globalSettings': ctx.get('globalSettings'),
-            'isMe': isMe
+            'isMe': isMe,
+            'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
           };
 
           pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
@@ -216,7 +217,8 @@ module.exports = function (server) {
         'getUploadForProperty': server.locals.getUploadForProperty,
         'environment': server.locals.environment,
         'globalSettings': ctx.get('globalSettings'),
-        'isMe': isMe
+        'isMe': isMe,
+        'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -318,7 +320,8 @@ module.exports = function (server) {
         'environment': server.locals.environment,
         'globalSettings': ctx.get('globalSettings'),
         'isPermalink': true,
-        'isMe': isMe
+        'isMe': isMe,
+        'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
       }, function (err, html) {
         if (err) {
           console.log(err);

@@ -23,14 +23,12 @@
 				if (self.debounce) {
 					clearTimeout(self.debounce);
 				}
-				self.element.find('.greyscale').removeClass('color');
 			});
 
 			this.element.on('mouseenter', function (e) {
 				if (self.debounce) {
 					clearTimeout(self.debounce);
 				}
-				self.element.find('.greyscale').addClass('color');
 				self.debounce = setTimeout(function () {
 					self.debounce = undefined;
 					self.shown = true;

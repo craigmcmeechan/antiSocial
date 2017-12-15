@@ -1,6 +1,7 @@
 var async = require('async');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
+var resolveReactionsSummary = require('../lib/resolveReactionsSummary');
 
 function resolveProfilesForPost(post, done) {
 	async.series([
@@ -18,7 +19,7 @@ function resolveProfilesForPost(post, done) {
 		function (cb) {
 			resolveCommentsSummary(post, function (err) {
 				cb(err);
-			})
+			});
 		},
 		function (cb) {
 			var comments = typeof post.resolvedComments === 'function' ? post.resolvedComments() : post.resolvedComments;
@@ -35,6 +36,11 @@ function resolveProfilesForPost(post, done) {
 			var reactions = typeof post.resolvedReactions === 'function' ? post.resolvedReactions() : post.resolvedReactions;
 
 			async.each(reactions, resolveProfiles, function (err) {
+				cb(err);
+			});
+		},
+		function (cb) {
+			resolveReactionsSummary(post, function (err) {
 				cb(err);
 			});
 		}

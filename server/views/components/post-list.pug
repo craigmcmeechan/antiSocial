@@ -41,6 +41,8 @@
 											<i class="glyphicon glyphicon-map-marker"></i>
 
 				.post-body.markdown.want-constrained(data-max-height="250")!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
+					.pull-tab
+						i.glyphicon.glyphicon-triangle-bottom
 
 				if post.sortedPhotos && post.sortedPhotos.length
 					
@@ -70,7 +72,8 @@
 												i.comments.glyphicon.glyphicon-comment
 											p= photo.title
 											em= photo.description
-
+						.pull-tab
+							i.glyphicon.glyphicon-triangle-bottom
 				
 
 				include post-reactions-and-comments

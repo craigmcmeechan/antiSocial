@@ -15,9 +15,13 @@ body
 	max-width:1024px
 
 .content
-	background: linear-gradient(to right bottom, rgba(255,255,255,.3), rgba(255,255,255,.6))
+	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.3))
 	min-height:100vh
 	color:#333
+
+.left-column
+	.not-digitopia-xsmall &
+		padding-right:0px
 
 #content
 	margin-top:50px
@@ -86,7 +90,7 @@ img.avatar
 	z-index:1030
 
 .profile-hero
-	top:50px
+	top:0px
 	position:fixed
 	height:100vh
 	width:100vw
@@ -95,6 +99,7 @@ img.avatar
 		background: linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)
 		padding-bottom:50px
 	.text-overlay
+		margin-top: 50px;
 		color:white
 		a
 			color:white
@@ -168,6 +173,10 @@ img.avatar
 .reaction-summary
 	font-size:11px
 	padding-top: 14px
+	.reaction-summary-heading
+		padding-right: 4px
+	.reaction-summary-icons
+		padding-right: 4px
 
 
 #scope-posting-form
@@ -306,7 +315,22 @@ img.avatar
 		left: 0
 		background-image: linear-gradient(to bottom, rgba(255,255,255, 0), rgba(255,255,255, 1) 90%)
 		width: 100%
-		height: 4em
+		height: 6em
+
+.pull-tab
+	display:none
+	.constrained &
+		display:block
+		position:absolute
+		bottom:0
+		width:100%
+		text-align:center
+		color: green
+		opacity: .5
+		z-index:2
+		font-size:1.5em
+	&:hover
+		color:red
 
 
 #scope-post-list
@@ -379,23 +403,25 @@ img.avatar
 	.post-reactions
 		overflow:hidden
 		position:relative
+		text-align:right
+		.reaction-button-summary
+			padding-top:7px
+			padding-bottom: 7px
 		.reaction-button-container
 			position:relative
 			display:inline-block
-			.badge
-				position:absolute
-				right: -4px
-				top: -4px
 		.greyscale
 			filter: grayscale(100%);
 		.greyscale.color
 			filter: grayscale(0%);
+
 		.reaction-button
 			font-size:15px
 			padding:2px
 			border:thin solid white
 			border-radius:2px
 			cursor:pointer
+			background-color:white
 			&:hover
 				border-color:red
 			&.selected
@@ -404,7 +430,7 @@ img.avatar
 			animation-duration: .25s
 			position:absolute
 			bottom: 0px
-			left: 30px
+			right: 0px
 			display:none
 		.reaction
 			.profile-thumb
@@ -420,6 +446,8 @@ img.avatar
 			font-size:.8em
 			text-align:center
 			line-height:.8em
+			table
+				margin 0 auto
 			.badge
 				margin-right: 4px
 				font-size:.7em
