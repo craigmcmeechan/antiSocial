@@ -30,11 +30,13 @@ module.exports = function (server) {
 			return res.sendStatus(400);
 		}
 
-		var myEndPoint = server.locals.config.publicHost + '/' + currentUser.username;
-
-		if (endpoint.match(new RegExp('^' + myEndPoint))) {
-			debug('proxy: endpoint is same as logged in user, redirect ' + endpoint);
-			return res.redirect(endpoint.replace(new RegExp('^' + server.locals.config.publicHost), ''));
+		var myEndpoint;
+		if (currentUser) {
+			myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
+			if (endpoint.match(new RegExp('^' + myEndpoint))) {
+				debug('proxy: endpoint is same as logged in user, redirect ' + myEndpoint);
+				return res.redirect(endpoint.replace(new RegExp('^' + server.locals.config.publicHost), ''));
+			}
 		}
 
 		if (template === 'profile') {
@@ -85,7 +87,8 @@ module.exports = function (server) {
 					'globalSettings': ctx.get('globalSettings'),
 					'data': data,
 					'friend': friend,
-					'user': currentUser
+					'user': currentUser,
+					'myEndpoint': myEndpoint
 				});
 			}
 		});

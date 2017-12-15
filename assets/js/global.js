@@ -69,6 +69,7 @@ function didLogOut() {
 function didInjectContent(element) {
 	$('#document-body').trigger('DigitopiaInstantiate');
 	$('#document-body').data('digitopiaHijax').hijaxLinks(element);
+	$('#document-body').data('constrainedController').fixConstrained();
 }
 
 (function ($) {

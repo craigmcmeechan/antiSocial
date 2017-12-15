@@ -36,8 +36,8 @@
 		this.setColors = function (swatches) {
 			var top = swatches.Muted ? swatches.Muted.getHex() : '#eee';
 			var bottom = swatches.DarkMuted ? swatches.DarkMuted.getHex() : '#ccc';
-			var links = swatches.Vibrant ? swatches.Vibrant.getHex() : 'blue';
-			var hover = swatches.DarkVibrant ? swatches.DarkVibrant.getHex() : 'violet';
+			var links = swatches.Vibrant ? swatches.Vibrant.getHex() : 'navy';
+			var hover = swatches.DarkVibrant ? swatches.DarkVibrant.getHex() : 'blue';
 			var text = swatches.DarkMuted ? swatches.DarkMuted.getHex() : '#333';
 
 			//var top = swatches.Muted ? swatches.Muted.getRgb() : '#eee';

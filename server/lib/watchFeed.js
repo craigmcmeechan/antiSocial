@@ -95,7 +95,9 @@ function getListener(server, friend) {
 			var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
 
 			if (!decrypted.valid) { // could not validate signature
-				logger.error('WatchNewsFeedItem decryption signature validation error %j', message);
+				logger.error({
+					'message': message
+				}, 'WatchNewsFeedItem decryption signature validation error');
 				return;
 			}
 
@@ -111,7 +113,10 @@ function getListener(server, friend) {
 
 			server.models.NewsFeedItem.findOne(query, function (err, oldNews) {
 				if (err) {
-					logger.error('error reading NewsFeedItem item', query, err);
+					logger.error({
+						'err': err,
+						'query': query
+					}, 'error reading NewsFeedItem item');
 					return cb(err);
 				}
 
@@ -130,7 +135,9 @@ function getListener(server, friend) {
 
 						server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 							if (err) {
-								logger.error('error saving NewsFeedItem item', myNewsFeedItem);
+								logger.error({
+									'myNewsFeedItem': myNewsFeedItem
+								}, 'error saving NewsFeedItem item');
 								return cb(err);
 							}
 							cb();
@@ -145,7 +152,9 @@ function getListener(server, friend) {
 							'highWater': message.data.createdOn
 						}, function (err, updated) {
 							if (err) {
-								logger.error('error saving highwater %j', err);
+								logger.error({
+									err: err
+								}, 'error saving highwater');
 								return cb(err);
 							}
 							cb();
@@ -153,7 +162,9 @@ function getListener(server, friend) {
 					}
 				], function (e) {
 					if (e) {
-						logger.error('error processing newsfeed %j', e);
+						logger.error({
+							err: e
+						}, 'error processing newsfeed');
 					}
 					return;
 				});

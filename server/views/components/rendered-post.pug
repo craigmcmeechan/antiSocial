@@ -7,7 +7,6 @@ block seo
 		= 'Post by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
 		
 	- var summary = marked(posts[0].body)
-	- summary = summary.replace(/\<table\>/g,'<table class="table table-condensed">')
 	- summary = summary.replace(/<.*?>/g,"")
 	if summary.length > 200
 		- summary= summary.substring(0,200)
@@ -64,7 +63,7 @@ block content
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.background.url)
 		.container-fluid.content-padding-top.content
 			.row
-				.col-sm-8
+				.col-sm-8.left-column
 					include ../components/post-list
 				.col-sm-4
 					if user

@@ -15,14 +15,13 @@ app.locals.pretty = true;
 
 // expose the running environment name to jade
 app.locals.env = app.get('env');
-app.locals.environment = process.env
+app.locals.environment = process.env;
 app.locals.getUploadForProperty = require('./lib/getUploadForProperty');
 app.locals.moment = require('moment');
 app.locals._ = require('lodash');
 app.locals.config = require('./config-' + app.get('env'));
 app.locals.headshotFPO = '/images/slug.png';
 app.locals.FPO = '/images/fpo.jpg';
-app.locals.raven = process.env.RAVEN;
 
 // markdown renderer
 var marked = require('marked');
@@ -35,6 +34,7 @@ myRenderer.link = function (href, title, text) {
     return '<a href="' + href + '" target="_blank">' + text + '</a>';
   }
 };
+
 marked.setOptions({
   renderer: myRenderer
 });
@@ -46,6 +46,7 @@ function renderMarkdown(markdown) {
   return marked(tagged);
 }
 app.locals.marked = renderMarkdown;
+
 
 // localization config
 i18n.configure({
@@ -109,22 +110,35 @@ app.use(myContext);
 
 // logging
 
-// limit output of req object in logs
-function reqSerializer(req) {
-  return {
-    'method': req.method,
-    'url': req.url,
-    'headers': req.headers,
-    'cookies': req.cookies
-  };
-}
-
-app.locals.logger = bunyan.createLogger({
+var options = {
   'name': 'anti-social',
   'serializers': {
-    'req': reqSerializer
-  }
-});
+    'err': bunyan.stdSerializers.err,
+    'req': bunyan.stdSerializers.req
+  },
+  'src': true
+};
+
+options.streams = [{
+  'level': process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'error',
+  'stream': process.stdout
+}];
+
+var ravenClient;
+if (process.env.RAVEN) {
+  app.raven = require('raven');
+  app.raven.config(process.env.RAVEN_DSN, {
+    'environment': process.env.NODE_ENV,
+    'logger': 'default',
+    'autoBreadcrumbs': true,
+    'stacktrace': true
+  }).install();
+
+  var sentryStream = require('bunyan-sentry-stream');
+  options.streams.push(sentryStream(app.raven));
+}
+
+app.locals.logger = bunyan.createLogger(options);
 
 // attach logger to request
 app.use(function (req, res, next) {
