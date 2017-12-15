@@ -22,7 +22,7 @@ html(lang="en")
 			
 		style#override-styles(type="text/css")
 
-	body#document-body(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController")
+	body#document-body(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController")
 		script.
 			var result;
 			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
@@ -82,10 +82,10 @@ html(lang="en")
 		else
 			script(src="/dist/js/jquery.js")
 
-		if raven
+		if environment.RAVEN
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
 			script.
-				Raven.config('https://ef63061ed04d46089284817e8aa9b37d@sentry.io/152485').install();
+				Raven.config(env.RAVEN_DSN_PUBLIC).install();
 
 		if env === 'production'
 			script(src="/dist/js/DigitopiaSocial.min.js")

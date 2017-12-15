@@ -59,7 +59,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -112,7 +112,7 @@ module.exports = function (server) {
         ], function (err, user, posts) {
           data.posts = posts;
 
-          pug.renderFile(server.get('views') + '/components/rendered-profile.pug', {
+          var options = {
             'data': data,
             'user': currentUser,
             'friend': friend,
@@ -122,8 +122,11 @@ module.exports = function (server) {
             'getUploadForProperty': server.locals.getUploadForProperty,
             'environment': server.locals.environment,
             'globalSettings': ctx.get('globalSettings'),
-            'isMe': isMe
-          }, function (err, html) {
+            'isMe': isMe,
+            'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
+          };
+
+          pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
             if (err) {
               console.log(err);
               return res.sendStatus(500);
@@ -160,7 +163,7 @@ module.exports = function (server) {
           });
         }
         if (currentUser) {
-          if (currentUser.id === user.id) {
+          if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
           }
         }
@@ -214,7 +217,8 @@ module.exports = function (server) {
         'getUploadForProperty': server.locals.getUploadForProperty,
         'environment': server.locals.environment,
         'globalSettings': ctx.get('globalSettings'),
-        'isMe': isMe
+        'isMe': isMe,
+        'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -253,7 +257,7 @@ module.exports = function (server) {
           });
         }
         if (currentUser) {
-          if (currentUser.id === user.id) {
+          if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
           }
         }
@@ -316,7 +320,8 @@ module.exports = function (server) {
         'environment': server.locals.environment,
         'globalSettings': ctx.get('globalSettings'),
         'isPermalink': true,
-        'isMe': isMe
+        'isMe': isMe,
+        'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
       }, function (err, html) {
         if (err) {
           console.log(err);
@@ -350,7 +355,7 @@ module.exports = function (server) {
         });
       }
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -428,7 +433,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -507,7 +512,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -599,7 +604,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -690,7 +695,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -767,7 +772,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -857,7 +862,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -951,7 +956,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -1046,7 +1051,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
@@ -1153,7 +1158,7 @@ module.exports = function (server) {
       }
 
       if (currentUser) {
-        if (currentUser.id === user.id) {
+        if (currentUser.id.toString() === user.id.toString()) {
           isMe = true;
         }
       }
