@@ -8,7 +8,9 @@
 				$(this).animate({
 					'max-height': 1000
 				}, 250, function () {
-					$(this).removeClass('constrained').data('released', true);
+					$(this).css({
+						'max-height': 'none'
+					}).removeClass('constrained').data('released', true);
 				});
 			});
 			this.element.on('DigitopiaDidLoadNewPage DigitopiaDidResize', function (e) {
@@ -36,7 +38,9 @@
 						});
 					}
 					else {
-						e.removeClass('constrained');
+						e.removeClass('constrained').css({
+							'max-height': 'none'
+						});
 					}
 				}
 			});
