@@ -84,13 +84,12 @@
 			self.element.find('.status').removeClass('offline');
 			var event = JSON.parse(msg.data);
 			var li = $('<div class="news-feed-item">');
-
 			var formatted = event.data.humanReadable.replace(/>/, '><div>');
 			formatted += '</div>';
 			li.append(formatted);
 			self.element.find('.news-feed-items').prepend(li);
 			if (!event.backfill) {
-				$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.details.rendered]);
+				$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-comment/comment?endpoint=' + encodeURIComponent(event.data.about + '/comment/' + event.data.uuid)]);
 			}
 		};
 

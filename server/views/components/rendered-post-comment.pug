@@ -1,2 +1,42 @@
-strong Comment
-p= data.comment.about + ' ' + data.comment.details.body
+if !comment
+	- comment = data.comment
+
+if wantSummary
+	if !comments
+		- comments = data.comments
+	if !commentSummary
+		- commentSummary = data.commentSummary
+	.comments-label
+		table
+			tr
+				if comments && comments.length
+					td
+						.badge= comments.length
+				td.comments-label-text
+					| Comments
+				td.comment-summary
+					if commentSummary
+						!= commentSummary
+.comment
+	- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
+	- var name = comment.resolvedProfiles[comment.source].profile.name
+	.thumb-container(style="float:left;")
+		a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
+			img.profile-thumb(src= thumb)
+	.comment-container
+		.timestamp= moment(comment.createdOn).calendar()
+
+		strong.pull-left
+			a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
+				span.profile-link
+					= name
+
+		!= marked(comment.details.body)
+		
+		- var reactions = comment.resolvedReactions
+		.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-endpoint= comment.about + '/comment/' + comment.uuid)
+			include reactions
+			
+		.comment-separator
+			
+.clearfix

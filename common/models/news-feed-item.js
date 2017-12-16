@@ -125,28 +125,29 @@ module.exports = function (NewsFeedItem) {
 
 				var hasTarget = target === 0 || !!target;
 
-
+				var mytype;
 
 				switch (type) {
 				case 'save':
 					if (ctx.isNewInstance === undefined) {
-						change.type = hasTarget ? 'update' : 'create';
+						mytype = hasTarget ? 'update' : 'create';
 					}
 					else {
-						change.type = ctx.isNewInstance ? 'create' : 'update';
+						mytype = ctx.isNewInstance ? 'create' : 'update';
 					}
 					break;
 				case 'delete':
-					change.type = 'remove';
+					mytype = 'remove';
 					break;
 				}
 
 				if (writeable) {
 					newsFeedItemResolve(user, data, function (err, data) {
 						var change = {
-							target: target,
-							where: where,
-							data: data
+							'type': mytype,
+							'target': target,
+							'where': where,
+							'data': data
 						};
 						changes.write(change);
 					});

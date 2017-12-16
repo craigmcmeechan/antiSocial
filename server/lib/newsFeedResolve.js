@@ -56,10 +56,6 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			if (author) {
 				myNewsFeedItem.humanReadable += ' by ' + author;
 			}
-
-			myNewsFeedItem.details = {
-				'rendered': '<div class="comment"><a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '"><img class="profile-thumb" src="' + sourceProfile.profile.photo.url + '"><span class="profile-link">' + sourceProfile.profile.name + '</span></a>' + server.locals.marked(myNewsFeedItem.details.body) + '</div>'
-			};
 		}
 
 		if (myNewsFeedItem.type === 'react') {

@@ -107,7 +107,11 @@ function getListener(server, friend) {
 
 			var query = {
 				'where': {
-					'uuid': myNewsFeedItem.uuid
+					'and': [{
+						'uuid': myNewsFeedItem.uuid
+					}, {
+						'userId': friend.userId
+					}]
 				}
 			}
 
@@ -132,6 +136,7 @@ function getListener(server, friend) {
 						delete myNewsFeedItem.visibility;
 						myNewsFeedItem.userId = friend.userId;
 						myNewsFeedItem.friendId = friend.id;
+						myNewsFeedItem.originator = false;
 
 						server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 							if (err) {

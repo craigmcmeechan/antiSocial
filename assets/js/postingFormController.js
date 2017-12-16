@@ -132,10 +132,6 @@
 					else {
 						self.hideForm();
 						flashAjaxStatus('info', 'post saved');
-						if (data.rendered) {
-							self.element.closest('.post').find('.comments-list').append(data.rendered);
-							didInjectContent(self.element.closest('.post').find('.comments-list'));
-						}
 					}
 				}, 'json');
 			});
