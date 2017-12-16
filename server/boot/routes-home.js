@@ -72,7 +72,9 @@ module.exports = function (server) {
               'user': ctx.get('currentUser'),
               'globalSettings': ctx.get('globalSettings'),
               'publicUsers': ctx.get('publicUsers'),
-              'posts': posts,
+              'data': {
+                'posts': posts
+              },
               'passwordResetToken': req.query.access_token
             });
           });
