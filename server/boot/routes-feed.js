@@ -45,7 +45,9 @@ module.exports = function (server) {
               'userId': currentUser.id
 
             }, {
-              'originator': false
+              'originator': {
+                'neq': true
+              }
             }]
           },
           'order': 'createdOn DESC',
