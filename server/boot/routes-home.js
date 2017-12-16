@@ -7,7 +7,6 @@ var getRecentPosts = require('../middleware/context-getRecentPosts');
 var getFriends = require('../middleware/context-getFriends');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
-var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
