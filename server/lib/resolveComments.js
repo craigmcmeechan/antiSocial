@@ -18,6 +18,8 @@ module.exports = function resolveComments(items, itemType, done) {
 					'about': about + '/' + itemType + '/' + item.uuid
 				}, {
 					'type': 'comment'
+				}, {
+					'originator': 'false'
 				}]
 			},
 			'order': 'createdOn ASC'

@@ -13,7 +13,7 @@ if user
 		- var comments = post.resolvedComments
 		- var commentSummary = post.commentSummary
 		.post-comments
-			include comments
+			include rendered-post-comments
 
 		-var about= poster.endpoint + '/post/' + post.uuid
 		-var endpoint= "/comment"

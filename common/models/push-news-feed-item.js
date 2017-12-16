@@ -12,7 +12,7 @@ module.exports = function (PushNewsFeedItem) {
 		var accessToken = ctx.req.headers['friend-access-token'];
 		var highwater = ctx.req.headers['friend-high-water'] ? ctx.req.headers['friend-high-water'] : 0;
 
-		debug('connect request from %s token %s highwater %d', username, accessToken, highwater);
+		debug('connect request from %s token %s highwater %s', username, accessToken, highwater);
 
 		var logger = ctx.req.logger;
 

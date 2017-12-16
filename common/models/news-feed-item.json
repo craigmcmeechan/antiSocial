@@ -33,6 +33,9 @@
     },
     "updatedOn": {
       "type": "date"
+    },
+    "originator": {
+      "type": "boolean"
     }
   },
   "validations": [],

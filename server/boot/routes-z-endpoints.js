@@ -5,6 +5,7 @@ var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
 var resolveReactions = require('../lib/resolveReactions');
 var resolveComments = require('../lib/resolveComments');
+var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var qs = require('querystring');
 var encryption = require('../lib/encryption');
@@ -128,7 +129,7 @@ module.exports = function (server) {
 
           pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
             if (err) {
-              console.log(err);
+              req.logger.error(err);
               return res.sendStatus(500);
             }
             return res.send(encryptIfFriend(friend, html));
@@ -221,7 +222,7 @@ module.exports = function (server) {
         'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
       }, function (err, html) {
         if (err) {
-          console.log(err);
+          req.logger.error(err);
           return res.sendStatus(500);
         }
         return res.send(encryptIfFriend(friend, html));
@@ -324,7 +325,7 @@ module.exports = function (server) {
         'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
       }, function (err, html) {
         if (err) {
-          console.log(err);
+          req.logger.error(err);
           return res.sendStatus(500);
         }
         return res.send(encryptIfFriend(friend, html));
@@ -401,6 +402,7 @@ module.exports = function (server) {
           'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
+            req.logger.error(err);
             return res.sendStatus(500);
           }
           return res.send(encryptIfFriend(friend, html));
@@ -422,35 +424,47 @@ module.exports = function (server) {
     var isMe = false;
 
     async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+        getUser(username, function (err, user) {
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      }, function (user, cb) {
+        if (!user) {
+          return process.nextTick(function () {
+            cb();
+          });
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
+        }
+
+        getPost(postId, user, friend, isMe, function (err, post) {
+          cb(err, user, post);
+        });
+      }, function (user, post, cb) {
+        if (!post) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        resolveComments([post], 'post', function (err) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        var comments = typeof post.resolvedComments === 'function' ? post.resolvedComments() : post.resolvedComments;
+        async.each(comments, resolveProfiles, function (err) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolveCommentsSummary(post, function (err) {
+          cb(err, user, post);
         });
       }
-      resolveComments([post], 'post', function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
         return res.sendStatus(500);
       }
@@ -458,31 +472,31 @@ module.exports = function (server) {
         return res.sendStatus(404);
       }
 
-      async.map(post.resolvedComments, resolveProfiles, function (err) {
-        var data = {
-          'comments': post.resolvedComments ? post.resolvedComments : []
-        };
+      var data = {
+        'comments': post.resolvedComments ? post.resolvedComments : [],
+        'commentSummary': post.commentSummary
+      };
 
-        if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
+      if (view === '.json') {
+        return res.send(encryptIfFriend(friend, data));
+      }
+
+      pug.renderFile(server.get('views') + '/components/rendered-post-comments.pug', {
+        'data': data,
+        'user': currentUser,
+        'friend': friend,
+        'moment': server.locals.moment,
+        'marked': server.locals.marked,
+        'headshotFPO': server.locals.headshotFPO,
+        'getUploadForProperty': server.locals.getUploadForProperty,
+        'environment': server.locals.environment,
+        'globalSettings': ctx.get('globalSettings')
+      }, function (err, html) {
+        if (err) {
+          req.logger.error(err);
+          return res.sendStatus(500);
         }
-
-        pug.renderFile(server.get('views') + '/components/rendered-post-comments.pug', {
-          'data': data,
-          'user': currentUser,
-          'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
-        }, function (err, html) {
-          if (err) {
-            return res.sendStatus(500);
-          }
-          return res.send(encryptIfFriend(friend, html));
-        });
+        return res.send(encryptIfFriend(friend, html));
       });
     });
   });
@@ -501,35 +515,47 @@ module.exports = function (server) {
     var isMe = false;
 
     async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+        getUser(username, function (err, user) {
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      }, function (user, cb) {
+        if (!user) {
+          return process.nextTick(function () {
+            cb();
+          });
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
+        }
+
+        getPost(postId, user, friend, isMe, function (err, post) {
+          cb(err, user, post);
+        });
+      }, function (user, post, cb) {
+        if (!post) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        resolveComments([post], 'post', function (err) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        var comments = typeof post.resolvedComments === 'function' ? post.resolvedComments() : post.resolvedComments;
+        async.each(comments, resolveProfiles, function (err) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolveCommentsSummary(post, function (err) {
+          cb(err, user, post);
         });
       }
-      resolveComments([post], 'post', function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
         return res.sendStatus(500);
       }
@@ -552,7 +578,9 @@ module.exports = function (server) {
       resolveProfiles(theComment, function (err) {
 
         var data = {
-          'comment': theComment
+          'comments': post.resolvedComments,
+          'comment': theComment,
+          'commentSummary': post.commentSummary
         };
 
         if (view === '.json') {
@@ -568,9 +596,11 @@ module.exports = function (server) {
           'headshotFPO': server.locals.headshotFPO,
           'getUploadForProperty': server.locals.getUploadForProperty,
           'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
+          'globalSettings': ctx.get('globalSettings'),
+          'wantSummary': true
         }, function (err, html) {
           if (err) {
+            req.logger.error(err);
             return res.sendStatus(500);
           }
           return res.send(encryptIfFriend(friend, html));
@@ -663,6 +693,7 @@ module.exports = function (server) {
           'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
+            req.logger.error(err);
             return res.sendStatus(500);
           }
           return res.send(encryptIfFriend(friend, html));
@@ -740,6 +771,7 @@ module.exports = function (server) {
         'globalSettings': ctx.get('globalSettings')
       }, function (err, html) {
         if (err) {
+          req.logger.error(err);
           return res.sendStatus(500);
         }
         return res.send(encryptIfFriend(friend, html));
@@ -830,6 +862,7 @@ module.exports = function (server) {
         'globalSettings': ctx.get('globalSettings')
       }, function (err, html) {
         if (err) {
+          req.logger.error(err);
           return res.sendStatus(500);
         }
         return res.send(encryptIfFriend(friend, html));
@@ -922,6 +955,7 @@ module.exports = function (server) {
           'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
+            req.logger.error(err);
             return res.sendStatus(500);
           }
           return res.send(encryptIfFriend(friend, html));
@@ -1016,6 +1050,7 @@ module.exports = function (server) {
           'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
+            req.logger.error(err);
             return res.sendStatus(500);
           }
           return res.send(encryptIfFriend(friend, html));
@@ -1124,6 +1159,7 @@ module.exports = function (server) {
           'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
+            req.logger.error(err);
             return res.sendStatus(500);
           }
           return res.send(encryptIfFriend(friend, html));
@@ -1231,6 +1267,7 @@ module.exports = function (server) {
           'globalSettings': ctx.get('globalSettings')
         }, function (err, html) {
           if (err) {
+            req.logger.error(err);
             return res.sendStatus(500);
           }
           return res.send(encryptIfFriend(friend, html));

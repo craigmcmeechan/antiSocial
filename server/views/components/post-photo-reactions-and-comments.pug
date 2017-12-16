@@ -10,7 +10,7 @@
 
   if user || (comments && comments.length)
     .post-comments
-      include comments
+      include rendered-post-comments
 
     if user
       -var endpoint= "/comment"

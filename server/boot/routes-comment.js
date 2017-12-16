@@ -26,7 +26,6 @@ var multer = require('multer');
 var path = require('path');
 var pug = require('pug');
 
-
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
 
@@ -42,33 +41,86 @@ module.exports = function (server) {
     var postuuid = req.body.about.replace(/^.*\/post\//, '');
     var photoId = req.body.photoId;
 
-    var item = {
-      'uuid': uuid(),
-      'type': 'comment',
-      'source': server.locals.config.publicHost + '/' + currentUser.username,
-      'about': req.body.about,
-      'visibility': ['public'],
-      'details': {
-        'body': req.body.body,
-        'photoId': photoId
+    async.waterfall([
+      function findFriend(cb) {
+        var query = {
+          'where': {
+            'and': [{
+              'userId': currentUser.id
+            }, {
+              'remoteEndPoint': whoAbout
+            }]
+          }
+        };
+
+        req.app.models.Friend.findOne(query, function (err, friend) {
+          if (err) {
+            var e = new VError(err, 'could not find friend');
+            return next(err);
+          }
+          cb(null, friend);
+        });
+      },
+      function makePushNewsFeedItem(friend, cb) { // notify network
+        var item = {
+          'uuid': uuid(),
+          'type': 'comment',
+          'source': server.locals.config.publicHost + '/' + currentUser.username,
+          'about': req.body.about,
+          'visibility': ['public'],
+          'details': {
+            'body': req.body.body,
+            'photoId': photoId
+          }
+        };
+
+        currentUser.pushNewsFeedItems.create(item, function (err, pushNews) {
+          if (err) {
+            var e = new VError(err, 'could not save pushNewsFeedItems');
+            return cb(e);
+          }
+          cb(err, friend, pushNews);
+        });
+      },
+      function makeNewsFeedItem(friend, news, cb) { // notify self
+        var item = {
+          'uuid': news.uuid,
+          'type': 'comment',
+          'source': news.source,
+          'about': news.about,
+          'details': {
+            'body': news.details.body,
+            'photoId': news.details.photoId
+          },
+          'userId': currentUser.id,
+          'friendId': friend ? friend.id : '',
+          'createOn': news.createOn,
+          'updatedOn': news.updatedOn,
+          'originator': true
+        };
+
+        req.app.models.NewsFeedItem.create(item, function (err, item) {
+          if (err) {
+            var e = new VError(err, 'could not save NewsFeedItem');
+            return cb(e);
+          }
+
+          cb(err, item);
+        });
       }
-    };
 
-    var rendered = '<div class="comment"><a href="/proxy-profile?endpoint=' + encodeURIComponent(item.source) + '"><img class="profile-thumb" src="' + req.app.locals.getUploadForProperty('photo', currentUser.uploads(), 'thumb', req.app.locals.headshotFPO).url + '"><span class="profile-link">' + currentUser.name + '</span></a>' + server.locals.marked(item.details.body) + '</div><div class="clearfix"></div>';
-
-    currentUser.pushNewsFeedItems.create(item, function (err, news) {
+    ], function (err, item) {
       if (err) {
-        var e = new VError(err, 'could not save post');
-        return next(e);
+        var e = new WError(err, 'could not save comment');
+        return next(err);
       }
 
       res.send({
         'status': 'ok',
-        'rendered': rendered,
         'comment': item
       });
+
     });
   });
-
   server.use(router);
 };
