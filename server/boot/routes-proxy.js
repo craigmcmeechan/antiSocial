@@ -88,7 +88,8 @@ module.exports = function (server) {
 					'data': data,
 					'friend': friend,
 					'user': currentUser,
-					'myEndpoint': myEndpoint
+					'myEndpoint': myEndpoint,
+					'wall': true
 				});
 			}
 		});
