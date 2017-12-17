@@ -3,6 +3,10 @@ var PassThrough = require('stream').PassThrough;
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 var newsFeedItemResolve = require('../../server/lib/newsFeedResolve');
+var resolveProfiles = require('../../server/lib/resolveProfiles');
+var async = require('async');
+var url = require('url');
+
 
 module.exports = function (NewsFeedItem) {
 
@@ -75,24 +79,88 @@ module.exports = function (NewsFeedItem) {
 				else {
 					debug('backfilling NewsFeedItem %j count', query, items ? items.length : 0);
 
-					items.reverse();
+					async.map(items, resolveProfiles, function (err) {
 
-					for (var i = 0; i < items.length; i++) {
-						newsFeedItemResolve(user, items[i], function (err, data) {
+						var map = {};
+						var grouped = {};
 
-							var change = {
-								'target': 'create',
-								'where': {},
-								'data': data,
-								'backfill': true
-							};
+						// group news feed items by 'about' and 'type'
+						for (var i = 0; i < items.length; i++) {
+							var key = items[i].about + ':' + items[i].type;
+							if (!map[key]) {
+								map[key] = 0;
+								grouped[key] = [];
+							}
+							++map[key];
+							grouped[key].push(items[i]);
+						}
 
-							debugVerbose('backfilling NewsFeedItem %j', data);
+						var newsFeedItems = []
 
-							changes.write(change);
-						})
+						for (var groupAbout in grouped) {
+							var group = grouped[groupAbout];
 
-					}
+							var about = group[0].about;
+							var endpoint = url.parse(group[0].about).pathname;
+
+							var hash = {};
+							var mentions = [];
+							var theItem = group[0];
+
+							for (var j = 0; j < group.length; j++) {
+								var groupItem = group[j];
+								if (groupItem.type === 'comment' || groupItem.type === 'react') {
+									if (!hash[groupItem.source]) {
+										hash[groupItem.source] = true;
+										var mention = '<a href="/proxy-profile?endoint=' + encodeURIComponent(groupItem.source) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
+										mentions.push(mention);
+									}
+								}
+							}
+
+							if (mentions.length) {
+								var summary = mentions.slice(0, 3).join(', ');
+
+								if (mentions.length > 2) {
+									var remainder = mentions.length - 2;
+									summary += ' and ' + remainder + ' other';
+									if (mentions.length > 2) {
+										summary += 's';
+									}
+								}
+
+								theItem.summary = summary;
+								if (theItem.type === 'comment') {
+									theItem.summary += ' commented';
+								}
+								if (theItem.type === 'react') {
+									theItem.summary += ' reacted';
+								}
+							}
+
+							newsFeedItems.push(theItem);
+						}
+
+						items = newsFeedItems;
+						items.reverse();
+
+						for (var i = 0; i < items.length; i++) {
+							console.log(items[i]);
+							newsFeedItemResolve(user, items[i], function (err, data) {
+
+								var change = {
+									'target': 'create',
+									'where': {},
+									'data': data,
+									'backfill': true
+								};
+
+								debugVerbose('backfilling NewsFeedItem %j', data);
+
+								changes.write(change);
+							})
+						}
+					});
 				}
 			});
 		});

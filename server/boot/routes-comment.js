@@ -92,8 +92,7 @@ module.exports = function (server) {
             'photoId': news.details.photoId
           },
           'userId': currentUser.id,
-          'friendId': friend ? friend.id : '',
-          'createOn': news.createOn,
+          'createdOn': news.createdOn,
           'updatedOn': news.updatedOn,
           'originator': true
         };

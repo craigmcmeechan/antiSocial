@@ -129,7 +129,29 @@ module.exports = function (server) {
             var e = new VError(err, 'could push news feed');
             return cb(e);
           }
-          cb(null, post);
+          cb(null, news, post);
+        });
+      },
+      function makeNewsFeedItem(news, post, cb) { // notify self
+        var item = {
+          'uuid': news.uuid,
+          'type': 'post',
+          'source': news.source,
+          'about': news.about,
+          'userId': currentUser.id,
+          'createdOn': news.createdOn,
+          'updatedOn': news.updatedOn,
+          'originator': true,
+          'details': {}
+        };
+
+        req.app.models.NewsFeedItem.create(item, function (err, item) {
+          if (err) {
+            var e = new VError(err, 'could not save NewsFeedItem');
+            return cb(e);
+          }
+
+          cb(err, post);
         });
       }
     ], function (err, post) {

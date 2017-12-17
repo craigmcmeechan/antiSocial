@@ -121,7 +121,7 @@ function getListener(server, friend) {
 						'err': err,
 						'query': query
 					}, 'error reading NewsFeedItem item');
-					return cb(err);
+					return;
 				}
 
 				if (oldNews) {
