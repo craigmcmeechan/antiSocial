@@ -40,9 +40,7 @@
 											= post.geoDescription + ' '
 											<i class="glyphicon glyphicon-map-marker"></i>
 
-				.post-body.markdown.want-constrained(data-max-height="250")!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
-					.pull-tab
-						i.glyphicon.glyphicon-triangle-bottom
+				.post-body.markdown.want-constrained(data-max-height="1000")!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
 				if post.sortedPhotos && post.sortedPhotos.length
 					
@@ -58,7 +56,7 @@
 								<span class="glyphicon glyphicon-chevron-left"></span>
 							a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
 								<span class="glyphicon glyphicon-chevron-right"></span>
-					.container-fluid.want-constrained
+					.container-fluid.want-constrained(data-max-height="1000")
 						.row
 							for photo,index in post.sortedPhotos
 								if photo
@@ -72,7 +70,6 @@
 												i.comments.glyphicon.glyphicon-comment
 											p= photo.title
 											em= photo.description
-						.pull-tab
-							i.glyphicon.glyphicon-triangle-bottom
+						
 				
 				include post-reactions-and-comments

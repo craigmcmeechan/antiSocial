@@ -24,7 +24,7 @@ if wantSummary
 		a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
 			img.profile-thumb(src= thumb)
 	.comment-container
-		.timestamp= moment(comment.createdOn).calendar()
+		
 
 		strong.pull-left
 			a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
@@ -34,9 +34,9 @@ if wantSummary
 		!= marked(comment.details.body)
 		
 		- var reactions = comment.resolvedReactions
+		- var timestamp = moment(comment.createdOn).calendar()
 		.post-reactions(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-endpoint= comment.about + '/comment/' + comment.uuid)
 			include reactions
-			
-		.comment-separator
-			
+						
 .clearfix
+.comment-separator

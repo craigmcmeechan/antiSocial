@@ -1,20 +1,24 @@
-.reaction-summary.pull-right
-	if reactionSummary
-		table
-			tr
+.reaction-summary
+	table
+		tr
+			if !reactionSummary
 				td.reaction-summary-heading
-					!= reactionSummary.summary
+					.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
+						.em.em-thumbsup
+			if reactionSummary
 				td.reaction-summary-icons
 					!= reactionSummary.icons
-				for reaction in reactions
-					if reaction.source === myEndpoint
-						td.reaction-summary-me
-							.reaction-button-summary
-								!= 'me:'
-								span(class= 'em em-' + reaction.details.reaction)
-	else
-		.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
-			.em.em-thumbsup
+				td.reaction-summary-heading
+					!= reactionSummary.summary
+			if timestamp
+				td.reaction-summary-heading
+					!= ' - ' + timestamp
+			for reaction in reactions
+				if reaction.source === myEndpoint
+					td.reaction-summary-me
+						.reaction-button-summary
+							span(class= 'em em-' + reaction.details.reaction)
+				
 .more-reactions
 	.reaction-button-container.reaction-button(data-value="thumbsdown")
 		.em.em-thumbsdown

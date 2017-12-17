@@ -16,7 +16,7 @@
 			self.element.on('mouseleave', function (e) {
 				if (!self.debounce && self.shown) {
 					self.shown = false;
-					self.element.find('.more-reactions').animateCss('fadeOutLeft', function () {
+					self.element.find('.more-reactions').animateCss('fadeOutRight', function () {
 						self.element.find('.more-reactions').hide();
 					});
 				}
@@ -32,7 +32,7 @@
 				self.debounce = setTimeout(function () {
 					self.debounce = undefined;
 					self.shown = true;
-					self.element.find('.more-reactions').show().animateCss('fadeInLeft', function () {
+					self.element.find('.more-reactions').show().animateCss('fadeInRight', function () {
 						self.element.one('mouseleave', function (e) {
 							if (self.debounce) {
 								clearTimeout(self.debounce);
@@ -41,7 +41,7 @@
 								self.debounce = setTimeout(function () {
 									self.debounce = undefined;
 									self.shown = false;
-									self.element.find('.more-reactions').animateCss('fadeOutLeft', function () {
+									self.element.find('.more-reactions').animateCss('fadeOutRight', function () {
 										self.element.find('.more-reactions').hide();
 									});
 								});

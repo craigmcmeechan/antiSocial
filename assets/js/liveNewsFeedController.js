@@ -88,6 +88,7 @@
 			formatted += '</div>';
 			li.append(formatted);
 			self.element.find('.news-feed-items').prepend(li);
+			didInjectContent(self.element);
 			if (!event.backfill) {
 				$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-comment/comment?endpoint=' + encodeURIComponent(event.data.about + '/comment/' + event.data.uuid)]);
 			}
