@@ -10,7 +10,7 @@ module.exports = function resolveCommentsSummary(item, done) {
 			var comment = comments[i];
 			if (!hash[comment.source]) {
 				hash[comment.source] = true;
-				var mention = '<a href="/profile?endoint=' + encodeURIComponent(comment.source) + '">' + comment.resolvedProfiles[comment.source].profile.name + '</a>';
+				var mention = '<a href="/profile?endpoint=' + encodeURIComponent(comment.source) + '">' + comment.resolvedProfiles[comment.source].profile.name + '</a>';
 				mentions.push(mention);
 			}
 		}

@@ -112,7 +112,7 @@ module.exports = function (NewsFeedItem) {
 								if (groupItem.type === 'comment' || groupItem.type === 'react') {
 									if (!hash[groupItem.source]) {
 										hash[groupItem.source] = true;
-										var mention = '<a href="/proxy-profile?endoint=' + encodeURIComponent(groupItem.source) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
+										var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
 										mentions.push(mention);
 									}
 								}
@@ -145,7 +145,6 @@ module.exports = function (NewsFeedItem) {
 						items.reverse();
 
 						for (var i = 0; i < items.length; i++) {
-							console.log(items[i]);
 							newsFeedItemResolve(user, items[i], function (err, data) {
 
 								var change = {
