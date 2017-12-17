@@ -1,8 +1,15 @@
 .reaction-summary
+	if reactions
+		for reaction in reactions
+			if reaction.source === myEndpoint
+				reaction-summary-me
+					.reaction-button-summary.pull-right
+						span(class= 'em em-' + reaction.details.reaction)
+
 	table
 		tr
 			if !reactionSummary
-				td.reaction-summary-heading
+				td.reaction-summary-icons
 					.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
 						.em.em-thumbsup
 			if reactionSummary
@@ -13,11 +20,6 @@
 			if timestamp
 				td.reaction-summary-heading
 					!= ' - ' + timestamp
-			for reaction in reactions
-				if reaction.source === myEndpoint
-					td.reaction-summary-me
-						.reaction-button-summary
-							span(class= 'em em-' + reaction.details.reaction)
 				
 .more-reactions
 	.reaction-button-container.reaction-button(data-value="thumbsdown")
