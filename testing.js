@@ -1,59 +1,13 @@
-var map = {};
-var grouped = {};
-
-// group news feed items by 'about' and 'type'
-for (var i = 0; i < items.length; i++) {
-	var key = items[i].about + ':' + items[i].type;
-	if (!map[key]) {
-		map[key] = 0;
-		grouped[key] = [];
-	}
-	++map[key];
-	grouped[key].push(items[i]);
-}
-
-var newsFeedItems = []
-
-for (var i = 0; i < groups.length; i++) {
-	var group = groups[i];
-
-	var about = group[0].about;
-	var endpoint = url.parse(group[0].about).pathname;
-
-	var hash = {};
-	var mentions = [];
-	var theItem = group[0];
-
-	for (var j = 0; j < group.length; j++) {
-		var groupItem = group[j];
-		if (groupItem.type === 'comment' || groupItem.type === 'react') {
-			if (!hash[groupItem.source]) {
-				hash[groupItem.source] = true;
-				var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
-				mentions.push(mention);
-			}
-		}
-	}
-
-	if (mentions.length) {
-		var summary = mentions.slice(0, 3).join(', ');
-
-		if (mentions.length > 2) {
-			var remainder = mentions.length - 2;
-			summary += ' and ' + remainder + ' other';
-			if (mentions.length > 2) {
-				summary += 's';
-			}
-		}
-
-		theItem.summary = summary;
-		if (theItem.type === 'comment') {
-			theItem.summary += ' commented';
-		}
-		if (theItem.type === 'react') {
-			theItem.summary += ' reacted';
-		}
-	}
-
-	newsFeedItems.push(theItem);
+"19": {
+	"uuid": "0877bc00-2aa6-4755-9720-93007c6d488c",
+	"type": "post",
+	"source": "http://127.0.0.1:3000/user-1",
+	"about": "http://127.0.0.1:3000/user-1/post/f55316a3-c753-487e-93a0-457d792eb90a",
+	"target": "http://127.0.0.1:3000/user-2",
+	"visibility": ["friends"],
+	"details": {},
+	"userId": 1,
+	"createdOn": "2017-12-17T21:46:30.977Z",
+	"updatedOn": "2017-12-17T21:46:30.977Z",
+	"id": 19
 }

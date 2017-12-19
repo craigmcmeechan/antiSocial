@@ -6,7 +6,7 @@ block seo
 	title
 		= 'Post by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
 		
-	- var summary = marked(posts[0].body)
+	- var summary = posts[0].body ? marked(posts[0].body) : ''
 	- summary = summary.replace(/<.*?>/g,"")
 	if summary.length > 200
 		- summary= summary.substring(0,200)

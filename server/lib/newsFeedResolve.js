@@ -9,76 +9,64 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 
 		var sourceProfile = myNewsFeedItem.resolvedProfiles[myNewsFeedItem.source];
 		var aboutProfile = myNewsFeedItem.resolvedProfiles[myNewsFeedItem.about];
+
+		var targetProfile;
+		if (myNewsFeedItem.target) {
+			targetProfile = myNewsFeedItem.resolvedProfiles[myNewsFeedItem.target];
+		}
+
 		var whoAbout = myNewsFeedItem.about.replace(/\/post\/.*$/, '');
 
 		if (myNewsFeedItem.type === 'friend') {
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
 
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
-			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + sourceProfile.profile.name + '</a>';
-			if (whoAbout === myEndPoint) {
-				myNewsFeedItem.humanReadable += ' accepted.';
-			}
-			else {
-				myNewsFeedItem.humanReadable += ' added <a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + aboutProfile.profile.name + '</a>';
-			}
+			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' added <a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.about, aboutProfile.profile.name) + '</a>';
 		}
 
 		if (myNewsFeedItem.type === 'post') {
 			if (myNewsFeedItem.target === myEndPoint) {
-				debug('my friend "' + sourceProfile.profile.name + '" posted ' + myNewsFeedItem.about + ' to my wall');
+				debug(sourceProfile.profile.name + '" posted ' + myNewsFeedItem.about + ' to your wall');
 			}
 			else {
-				debug('my friend "' + sourceProfile.profile.name + '" posted ' + myNewsFeedItem.about);
+				debug(sourceProfile.profile.name + '" posted ' + myNewsFeedItem.about);
 			}
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
-			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + sourceProfile.profile.name + '</a>';
+			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += ' posted <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this</a>';
-			if (myNewsFeedItem.target === myEndPoint) {
-				myNewsFeedItem.humanReadable += ' on my wall';
+			if (myNewsFeedItem.target) {
+				myNewsFeedItem.humanReadable += ' on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.target) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name, true) + '</a> wall';
 			}
 		}
 
 		if (myNewsFeedItem.type === 'comment') {
-			var author = aboutProfile.profile.name;
-
-			var postDesc = 'this post';
-
-			if (whoAbout === myEndPoint) {
-				postDesc = 'my post';
-				author = '';
-			}
-
-			debug('my friend "' + sourceProfile.profile.name + '" commented on ' + myNewsFeedItem.about);
+			debug(sourceProfile.profile.name + '" commented on ' + myNewsFeedItem.about);
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
-			// myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + sourceProfile.profile.name + '</a>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			myNewsFeedItem.humanReadable += ' on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + postDesc + '</a>';
-			if (author) {
-				myNewsFeedItem.humanReadable += ' by ' + author;
-			}
+			myNewsFeedItem.humanReadable += ' on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this post</a>';
+			myNewsFeedItem.humanReadable += ' by <a href="/proxy-post?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 		}
 
 		if (myNewsFeedItem.type === 'react') {
-			var author = aboutProfile.profile.name;
-			var postDesc = 'this post';
-			if (whoAbout === myEndPoint) {
-				postDesc = 'my post';
-				author = '';
-			}
-
+			debug(sourceProfile.profile.name + '" reacted to ' + myNewsFeedItem.about);
 			var reaction = '<span class="em em-' + myNewsFeedItem.details.reaction + '"></span>';
-
-			debug('my friend "' + sourceProfile.profile.name + '" liked ' + author);
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
-			//myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + sourceProfile.profile.name + '</a>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			myNewsFeedItem.humanReadable += ' reacted to <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">' + postDesc + '</a>';
-			if (author) {
-				myNewsFeedItem.humanReadable += ' by ' + author;
-			}
+			myNewsFeedItem.humanReadable += ' reacted to <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this post</a>';
+			myNewsFeedItem.humanReadable += ' by <a href="/proxy-post?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 		}
 
 		done(null, myNewsFeedItem);
 	});
+
+	function fixNameYou(endpoint, myendpoint, name, your) {
+		if (endpoint === myendpoint) {
+			if (your) {
+				return 'your'
+			};
+			return 'you';
+		}
+		return name;
+	}
 };

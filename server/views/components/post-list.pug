@@ -6,70 +6,74 @@
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
 			- var isPublic = post.visibility.indexOf('public') !== -1
 			
-			.post.live-element(data-watch= post.source + '/post/' + post.uuid)
-				.post-identity
-					.post-avatar
-						.media
-							- var endpoint = poster.endpoint
-							- var thumb = poster.photo ? poster.photo.url : ''
-							- var name = poster.name
-							- var posterUrl = '/proxy-profile?endpoint=' + encodeURIComponent(endpoint)
-							if !user
-								- posterUrl = endpoint
+			if post.athoritativeEndpoint
+				.post(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.athoritativeEndpoint))
+			else 
+				.post.live-element(data-watch= post.source + '/post/' + post.uuid)
+					.post-identity
+						.post-avatar
+							.media
+								- var endpoint = poster.endpoint
+								- var thumb = poster.photo ? poster.photo.url : ''
+								- var name = poster.name
+								- var posterUrl = '/proxy-profile?endpoint=' + encodeURIComponent(endpoint)
+								if !user
+									- posterUrl = endpoint
 
-							.media-left
-								a(href= posterUrl)
-									img.media-object(src= thumb)
-							.media-body
-								h4.media-heading
-									a(href= posterUrl)= name
-									if post.about
-										span.glyphicon.glyphicon-arrow-right.target-arrow
-										a(href= '/proxy-profile?endpoint=' + encodeURIComponent(post.about))= about.name
-									small.pull-right
-										.visibility
-											= post.visibility.join(', ') + ' ' 
-											<i class="fa fa-globe"></i>
-										if isPublic && !isPermalink
-											.permalink
-												a(href= postEndpoint) Public PermaLink
-								.post-timestamp= moment(post.createdOn).calendar()
-								
-								if post.geoDescription
-										.post-geo.pull-right
-											= post.geoDescription + ' '
-											<i class="glyphicon glyphicon-map-marker"></i>
+								.media-left
+									a(href= posterUrl)
+										img.media-object(src= thumb)
+								.media-body
+									h4.media-heading
+										a(href= posterUrl)= name
+										if post.about
+											span.glyphicon.glyphicon-arrow-right.target-arrow
+											a(href= '/proxy-profile?endpoint=' + encodeURIComponent(post.about))= about.name
+										small.pull-right
+											.visibility
+												= post.visibility.join(', ') + ' ' 
+												<i class="fa fa-globe"></i>
+											if isPublic && !isPermalink
+												.permalink
+													a(href= postEndpoint) Public PermaLink
+									.post-timestamp= moment(post.createdOn).calendar()
+									
+									if post.geoDescription
+											.post-geo.pull-right
+												= post.geoDescription + ' '
+												<i class="glyphicon glyphicon-map-marker"></i>
 
-				.post-body.markdown.want-constrained(data-max-height="1000")!= marked(post.body).replace(/\<table\>/g,'<table class="table table-condensed">')
+					- var body = post.body ? post.body : '';
+					.post-body.markdown.want-constrained(data-max-height="1000")!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
-				if post.sortedPhotos && post.sortedPhotos.length
-					
-					script#slideshow(data-uuid= post.uuid type="text/x-json")
-						!= JSON.stringify(post.sortedPhotos)
-					.carousel-container(id= post.uuid)
-						div.carousel.slide.lazy-instantiate(id='slideshow-' + post.uuid data-endpoint= postEndpoint data-lazy-jsclass="responsiveCarousel" data-data= "#slideshow[data-uuid='"+post.uuid+"']" data-type="json" data-want-reactions= user ? "true" : "false")
-							ol.carousel-indicators
-							div.inner.carousel-inner
-							a.full-screen(href="#" data-no-hijax="true")
-								<span class="glyphicon glyphicon-resize-full"></span>
-							a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
-								<span class="glyphicon glyphicon-chevron-left"></span>
-							a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
-								<span class="glyphicon glyphicon-chevron-right"></span>
-					.container-fluid.want-constrained(data-max-height="1000")
-						.row
-							for photo,index in post.sortedPhotos
-								if photo
-									- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
-									- var upload = getUploadForProperty('optimized',uploads,'thumb')
-									.img-thumb.col-sm-3.col-xs-6.maintain-aspect-ratio(data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
-										img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
-										.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
-											i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
-											if user
-												i.comments.glyphicon.glyphicon-comment
-											p= photo.title
-											em= photo.description
+					if post.sortedPhotos && post.sortedPhotos.length
 						
-				
-				include post-reactions-and-comments
+						script#slideshow(data-uuid= post.uuid type="text/x-json")
+							!= JSON.stringify(post.sortedPhotos)
+						.carousel-container(id= post.uuid)
+							div.carousel.slide.lazy-instantiate(id='slideshow-' + post.uuid data-endpoint= postEndpoint data-lazy-jsclass="responsiveCarousel" data-data= "#slideshow[data-uuid='"+post.uuid+"']" data-type="json" data-want-reactions= user ? "true" : "false")
+								ol.carousel-indicators
+								div.inner.carousel-inner
+								a.full-screen(href="#" data-no-hijax="true")
+									<span class="glyphicon glyphicon-resize-full"></span>
+								a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
+									<span class="glyphicon glyphicon-chevron-left"></span>
+								a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
+									<span class="glyphicon glyphicon-chevron-right"></span>
+						.container-fluid.want-constrained(data-max-height="1000")
+							.row
+								for photo,index in post.sortedPhotos
+									if photo
+										- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
+										- var upload = getUploadForProperty('optimized',uploads,'thumb')
+										.img-thumb.col-sm-3.col-xs-6.maintain-aspect-ratio(data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
+											img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
+											.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
+												i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
+												if user
+													i.comments.glyphicon.glyphicon-comment
+												p= photo.title
+												em= photo.description
+							
+					
+					include post-reactions-and-comments

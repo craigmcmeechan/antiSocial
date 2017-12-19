@@ -6,6 +6,7 @@ var newsFeedItemResolve = require('../../server/lib/newsFeedResolve');
 var resolveProfiles = require('../../server/lib/resolveProfiles');
 var async = require('async');
 var url = require('url');
+var server = require('../../server/server');
 
 
 module.exports = function (NewsFeedItem) {
@@ -14,6 +15,8 @@ module.exports = function (NewsFeedItem) {
 	NewsFeedItem.live = function (userId, ctx, cb) {
 		var reqContext = ctx.req.getCurrentContext();
 		var user = reqContext.get('currentUser');
+
+		var myEndPoint = server.locals.config.publicHost + '/' + user.username;
 
 		var logger = ctx.req.logger;
 
@@ -112,7 +115,7 @@ module.exports = function (NewsFeedItem) {
 								if (groupItem.type === 'comment' || groupItem.type === 'react') {
 									if (!hash[groupItem.source]) {
 										hash[groupItem.source] = true;
-										var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
+										var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + fixNameYou(groupItem.source, myEndPoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
 										mentions.push(mention);
 									}
 								}
@@ -251,4 +254,11 @@ module.exports = function (NewsFeedItem) {
 			}
 		}
 	);
+
+	function fixNameYou(endpoint, myendpoint, name) {
+		if (endpoint === myendpoint) {
+			return 'you';
+		}
+		return name;
+	}
 };

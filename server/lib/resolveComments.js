@@ -12,6 +12,10 @@ module.exports = function resolveComments(items, itemType, done) {
 
 		var about = item.about ? item.about : item.source;
 
+		if (item.constructor.definition.name === 'Post') { // TODO kludge
+			about = item.source;
+		}
+
 		var query = {
 			'where': {
 				'and': [{

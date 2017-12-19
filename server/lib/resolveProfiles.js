@@ -22,6 +22,11 @@ module.exports = function resolveProfiles(item, done) {
 		profiles[item.about] = {};
 	}
 
+	if (item.target) {
+		endpoints.push(item.target);
+		profiles[item.target] = {};
+	}
+
 
 	// console.log('resolving', item.source, item.about, item);
 

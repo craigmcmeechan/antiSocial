@@ -85,7 +85,7 @@ html(lang="en")
 		if environment.RAVEN
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
 			script.
-				Raven.config(environment.RAVEN_DSN_PUBLIC).install();
+				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
 
 		if env === 'production'
 			script(src="/dist/js/DigitopiaSocial.min.js")
