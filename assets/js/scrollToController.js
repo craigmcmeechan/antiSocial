@@ -22,7 +22,7 @@
 						var body = $("html, body");
 						body.stop().animate({
 							scrollTop: (vh / 3) * 2
-						}, '2000', 'swing');
+						}, '1000', 'swing');
 					}, 1000);
 				}
 			}
