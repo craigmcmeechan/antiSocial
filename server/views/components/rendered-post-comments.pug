@@ -3,7 +3,7 @@ if !comments
 if !commentSummary
 	- commentSummary = data.commentSummary
 
-.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
+.post-comments.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
 	.comments-label
 		table
 			tr

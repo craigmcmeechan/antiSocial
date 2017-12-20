@@ -134,6 +134,9 @@ function getListener(server, friend) {
 				};
 
 				async.series([
+					// TODO need a scheme to ignore echo of target posts I created
+					// when target user creates PushNewsFeedItem to tell his network
+					// probably if origin matches me then ignore
 					function createNewFeedItem(cb) {
 
 						delete myNewsFeedItem.id;

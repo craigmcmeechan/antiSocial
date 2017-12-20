@@ -4,9 +4,6 @@
 		var self = this;
 
 		this.endpoint = this.element.data('endpoint');
-		this.postAuthorName = this.element.data('post-author-name');
-		this.isMe = this.element.data('is-me');
-		this.user = this.element.data('user');
 		this.photoId = this.element.data('photoId');
 
 		this.debounce = null;
@@ -53,20 +50,17 @@
 
 
 			this.element.on('click', '.reaction-button', function (e) {
-				if (self.user && !self.isMe) {
 
-					var prev = self.element.find('.selected');
-					if (prev.length) {
-						prev.removeClass('selected');
-					}
-					var reaction;
-					if (prev[0] !== this) {
-						reaction = $(this).data('value');
-						$(this).addClass('selected');
-					}
-					self.saveReaction(reaction);
-
+				var prev = self.element.find('.selected');
+				if (prev.length) {
+					prev.removeClass('selected');
 				}
+				var reaction;
+				if (prev[0] !== this) {
+					reaction = $(this).data('value');
+					$(this).addClass('selected');
+				}
+				self.saveReaction(reaction);
 			});
 		};
 
@@ -80,7 +74,6 @@
 			var payload = {
 				'reaction': reaction,
 				'endpoint': self.endpoint,
-				'postAuthorName': this.postAuthorName,
 				'photoId': this.photoId
 			};
 			$.post('/react', payload, function (data, status, xhr) {
@@ -90,7 +83,6 @@
 				else {
 					flashAjaxStatus('info', 'reaction saved');
 					self.element.closest('.ajax-load').trigger('ReloadElement');
-					$('body').trigger('DigitopiaReloadPage');
 				}
 			}, 'json');
 		};

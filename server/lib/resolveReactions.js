@@ -23,7 +23,7 @@ module.exports = function resolveReactions(items, itemType, done) {
 					'type': 'react'
 				}]
 			},
-			'order': 'createdOn ASC'
+			'order': 'createdOn DESC'
 		};
 
 		server.models.NewsFeedItem.find(query, function (err, reactions) {
@@ -33,7 +33,7 @@ module.exports = function resolveReactions(items, itemType, done) {
 
 			var hash = {};
 			var uniqued = [];
-			if (reactions) {
+			if (reactions && reactions.length) {
 				for (var i = 0; i < reactions.length; i++) {
 					if (!hash[reactions[i].source]) {
 						hash[reactions[i].source] = true;

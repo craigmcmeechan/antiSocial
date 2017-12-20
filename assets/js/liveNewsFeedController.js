@@ -84,8 +84,7 @@
 			self.element.find('.status').removeClass('offline');
 			var event = JSON.parse(msg.data);
 			var li = $('<div class="news-feed-item">');
-			var formatted = event.data.humanReadable.replace(/>/, '><div>');
-			formatted += '</div>';
+			var formatted = event.data.humanReadable;
 			li.append(formatted);
 			self.element.find('.news-feed-items').prepend(li);
 			didInjectContent(self.element);

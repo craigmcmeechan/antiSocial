@@ -16,7 +16,7 @@ module.exports = function (NewsFeedItem) {
 		var reqContext = ctx.req.getCurrentContext();
 		var user = reqContext.get('currentUser');
 
-		var myEndPoint = server.locals.config.publicHost + '/' + user.username;
+		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
 		var logger = ctx.req.logger;
 
@@ -72,7 +72,7 @@ module.exports = function (NewsFeedItem) {
 					'userId': user.id
 				},
 				'order': 'createdOn DESC',
-				'limit': 30
+				'limit': 60
 			};
 
 			NewsFeedItem.find(query, function (e, items) {
@@ -84,68 +84,9 @@ module.exports = function (NewsFeedItem) {
 
 					async.map(items, resolveProfiles, function (err) {
 
-						var map = {};
-						var grouped = {};
-
-						// group news feed items by 'about' and 'type'
-						for (var i = 0; i < items.length; i++) {
-							var key = items[i].about + ':' + items[i].type;
-							if (!map[key]) {
-								map[key] = 0;
-								grouped[key] = [];
-							}
-							++map[key];
-							grouped[key].push(items[i]);
-						}
-
-						var newsFeedItems = []
-
-						for (var groupAbout in grouped) {
-							var group = grouped[groupAbout];
-
-							var about = group[0].about;
-							var endpoint = url.parse(group[0].about).pathname;
-
-							var hash = {};
-							var mentions = [];
-							var theItem = group[0];
-
-							for (var j = 0; j < group.length; j++) {
-								var groupItem = group[j];
-								if (groupItem.type === 'comment' || groupItem.type === 'react') {
-									if (!hash[groupItem.source]) {
-										hash[groupItem.source] = true;
-										var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + fixNameYou(groupItem.source, myEndPoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
-										mentions.push(mention);
-									}
-								}
-							}
-
-							if (mentions.length) {
-								var summary = mentions.slice(0, 3).join(', ');
-
-								if (mentions.length > 2) {
-									var remainder = mentions.length - 2;
-									summary += ' and ' + remainder + ' other';
-									if (mentions.length > 2) {
-										summary += 's';
-									}
-								}
-
-								theItem.summary = summary;
-								if (theItem.type === 'comment') {
-									theItem.summary += ' commented';
-								}
-								if (theItem.type === 'react') {
-									theItem.summary += ' reacted';
-								}
-							}
-
-							newsFeedItems.push(theItem);
-						}
-
-						items = newsFeedItems;
 						items.reverse();
+
+						items = resolveSummary(items, myEndpoint);
 
 						for (var i = 0; i < items.length; i++) {
 							newsFeedItemResolve(user, items[i], function (err, data) {
@@ -212,14 +153,18 @@ module.exports = function (NewsFeedItem) {
 				}
 
 				if (writeable) {
-					newsFeedItemResolve(user, data, function (err, data) {
-						var change = {
-							'type': mytype,
-							'target': target,
-							'where': where,
-							'data': data
-						};
-						changes.write(change);
+					resolveProfiles(data, function (err) {
+						var items = resolveSummary([data], myEndpoint);
+						data = items[0];
+						newsFeedItemResolve(user, data, function (err, data) {
+							var change = {
+								'type': mytype,
+								'target': target,
+								'where': where,
+								'data': data
+							};
+							changes.write(change);
+						});
 					});
 				}
 
@@ -255,10 +200,75 @@ module.exports = function (NewsFeedItem) {
 		}
 	);
 
-	function fixNameYou(endpoint, myendpoint, name) {
-		if (endpoint === myendpoint) {
+	function fixNameYou(endpoint, myEndpoint, name) {
+		if (endpoint === myEndpoint) {
 			return 'you';
 		}
 		return name;
+	}
+
+	function resolveSummary(items, myEndpoint) {
+
+		var map = {};
+		var grouped = {};
+
+		// group news feed items by 'about' and 'type'
+		for (var i = 0; i < items.length; i++) {
+			var key = items[i].about + ':' + items[i].type;
+			if (!map[key]) {
+				map[key] = 0;
+				grouped[key] = [];
+			}
+			++map[key];
+			grouped[key].push(items[i]);
+		}
+
+		var newsFeedItems = []
+
+		for (var groupAbout in grouped) {
+			var group = grouped[groupAbout];
+
+			var about = group[0].about;
+			var endpoint = url.parse(group[0].about).pathname;
+
+			var hash = {};
+			var mentions = [];
+			var theItem = group[0];
+
+			for (var j = 0; j < group.length; j++) {
+				var groupItem = group[j];
+				if (groupItem.type === 'comment' || groupItem.type === 'react') {
+					if (!hash[groupItem.source]) {
+						hash[groupItem.source] = true;
+						var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
+						mentions.push(mention);
+					}
+				}
+			}
+
+			if (mentions.length) {
+				var summary = mentions.slice(0, 3).join(', ');
+
+				if (mentions.length > 2) {
+					var remainder = mentions.length - 2;
+					summary += ' and ' + remainder + ' other';
+					if (mentions.length > 2) {
+						summary += 's';
+					}
+				}
+
+				theItem.summary = summary;
+				if (theItem.type === 'comment') {
+					theItem.summary += ' commented';
+				}
+				if (theItem.type === 'react') {
+					theItem.summary += ' reacted';
+				}
+			}
+
+			newsFeedItems.push(theItem);
+		}
+
+		return newsFeedItems;
 	}
 };

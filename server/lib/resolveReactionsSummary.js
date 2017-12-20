@@ -18,7 +18,7 @@ module.exports = function resolveReactionsSummary(item, done) {
 					icons[key] = 0;
 				}
 				icons[key]++;
-				var mention = '<a href="/profile?endpoint=' + encodeURIComponent(reaction.source) + '">' + reaction.resolvedProfiles[reaction.source].profile.name + '</a>';
+				var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(reaction.source) + '">' + reaction.resolvedProfiles[reaction.source].profile.name + '</a>';
 				mentions.push(mention);
 			}
 		}
