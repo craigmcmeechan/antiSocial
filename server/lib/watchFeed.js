@@ -134,9 +134,6 @@ function getListener(server, friend) {
 				};
 
 				async.series([
-					// TODO need a scheme to ignore echo of target posts I created
-					// when target user creates PushNewsFeedItem to tell his network
-					// probably if origin matches me then ignore
 					function createNewFeedItem(cb) {
 
 						delete myNewsFeedItem.id;
@@ -182,7 +179,7 @@ function getListener(server, friend) {
 							},
 							function (post, cbPostOnMyWall) { // make a PushNewsFeed record
 								server.models.PushNewsFeedItem.create({
-									'uuid': uuid(),
+									'uuid': message.data.uuid,
 									'type': 'post',
 									'source': server.locals.config.publicHost + '/' + currentUser.username,
 									'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,

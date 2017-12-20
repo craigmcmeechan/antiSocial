@@ -47,7 +47,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += ' posted <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this</a>';
 			if (myNewsFeedItem.target) {
-				myNewsFeedItem.humanReadable += ' on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.target) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name, true) + '</a> wall';
+				myNewsFeedItem.humanReadable += ' on <a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.target) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name, true) + '</a> wall';
 			}
 			myNewsFeedItem.humanReadable += '</div>';
 		}

@@ -519,6 +519,7 @@ module.exports = function (server) {
       }
 
       var data = {
+        'post': post,
         'comments': post.resolvedComments ? post.resolvedComments : [],
         'commentSummary': post.commentSummary
       };
