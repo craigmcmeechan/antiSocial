@@ -3,6 +3,7 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
+var resolveReactionsSummary = require('../lib/resolveReactionsSummary');
 var resolveReactions = require('../lib/resolveReactions');
 var resolveComments = require('../lib/resolveComments');
 var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
@@ -42,9 +43,21 @@ module.exports = function (server) {
   var postPhotoCommentRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
   var postPhotoCommentReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
 
+  function getPOVEndpoint(friend, currentUser) {
+    if (friend) {
+      return friend.remoteEndPoint;
+    }
+    if (currentUser) {
+      return server.locals.config.publicHost + '/' + currentUser.username;
+    }
+  }
+
   router.get(profileRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var matches = req.url.match(profileRE);
+    if (!matches) {
+      return next();
+    }
     var username = matches[1];
     var view = matches[2];
     var accessToken = req.headers['friend-access-token'];
@@ -124,7 +137,7 @@ module.exports = function (server) {
             'environment': server.locals.environment,
             'globalSettings': ctx.get('globalSettings'),
             'isMe': isMe,
-            'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
+            'myEndpoint': getPOVEndpoint(friend, currentUser)
           };
 
           pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
@@ -219,7 +232,7 @@ module.exports = function (server) {
         'environment': server.locals.environment,
         'globalSettings': ctx.get('globalSettings'),
         'isMe': isMe,
-        'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
+        'myEndpoint': getPOVEndpoint(friend, currentUser)
       }, function (err, html) {
         if (err) {
           req.logger.error(err);
@@ -322,7 +335,7 @@ module.exports = function (server) {
         'globalSettings': ctx.get('globalSettings'),
         'isPermalink': true,
         'isMe': isMe,
-        'myEndpoint': currentUser ? server.locals.config.publicHost + '/' + currentUser.username : ''
+        'myEndpoint': getPOVEndpoint(friend, currentUser)
       }, function (err, html) {
         if (err) {
           req.logger.error(err);
@@ -346,33 +359,65 @@ module.exports = function (server) {
     var isMe = false;
 
     async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+        getUser(username, function (err, user) {
+          cb(err, user);
         });
-      }
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      }, function (user, cb) {
+        if (!user) {
+          return process.nextTick(function () {
+            cb();
+          });
         }
-      }
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
+        }
+        getPost(postId, user, friend, isMe, function (err, post) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        if (!post) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        resolveProfiles(post, function (err) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        if (!post) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        resolveReactions([post], 'post', function (err) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        if (!post) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        async.map(post.resolvedReactions, resolveProfiles, function (err) {
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        if (!post) {
+          return process.nextTick(function () {
+            cb();
+          });
+        }
+        resolveReactionsSummary(post, function (err) {
+          cb(err, user, post);
         });
       }
-      resolveReactions([post], 'post', function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
         return res.sendStatus(500);
       }
@@ -380,33 +425,34 @@ module.exports = function (server) {
         return res.sendStatus(404);
       }
 
-      async.map(post.resolvedReactions, resolveProfiles, function (err) {
 
-        var data = {
-          'reactions': post.resolvedReactions ? post.resolvedReactions : []
-        };
+      var data = {
+        'post': post,
+        'reactions': post.resolvedReactions ? post.resolvedReactions : [],
+        'reactionSummary': post.reactionSummary,
+        'poster': post.resolvedProfiles[post.source].profile
+      };
 
-        if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
+      if (view === '.json') {
+        return res.send(encryptIfFriend(friend, data));
+      }
+
+      pug.renderFile(server.get('views') + '/components/rendered-post-reactions.pug', {
+        'data': data,
+        'user': currentUser,
+        'friend': friend,
+        'moment': server.locals.moment,
+        'marked': server.locals.marked,
+        'headshotFPO': server.locals.headshotFPO,
+        'getUploadForProperty': server.locals.getUploadForProperty,
+        'environment': server.locals.environment,
+        'globalSettings': ctx.get('globalSettings')
+      }, function (err, html) {
+        if (err) {
+          req.logger.error(err);
+          return res.sendStatus(500);
         }
-
-        pug.renderFile(server.get('views') + '/components/rendered-post-reactions.pug', {
-          'data': data,
-          'user': currentUser,
-          'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
-        }, function (err, html) {
-          if (err) {
-            req.logger.error(err);
-            return res.sendStatus(500);
-          }
-          return res.send(encryptIfFriend(friend, html));
-        });
+        return res.send(encryptIfFriend(friend, html));
       });
     });
   });
@@ -473,6 +519,7 @@ module.exports = function (server) {
       }
 
       var data = {
+        'post': post,
         'comments': post.resolvedComments ? post.resolvedComments : [],
         'commentSummary': post.commentSummary
       };

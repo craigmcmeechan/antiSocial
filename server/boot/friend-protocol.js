@@ -431,7 +431,6 @@ module.exports = function (server) {
 						'type': 'pending friend request',
 						'source': friend.remoteEndPoint,
 						'about': friend.remoteEndPoint,
-						'humanReadable': '<img src="' + sourceProfile.profile.photo.url + '"> pending friend request from ' + sourceProfile.profile.name,
 						'originator': false
 					};
 					req.app.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {

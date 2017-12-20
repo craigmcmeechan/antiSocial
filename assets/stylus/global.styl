@@ -164,24 +164,24 @@ img.avatar
 		padding-left:25px!important
 
 .post-comments
-	#posting-form
+	.scope-posting-form
 		margin-bottom:-30px
 
 .comments-list
 	.timestamp
-		float:right
 		font-size:11px
 .reaction-summary
-	font-size:11px
-	padding-top: 14px
+	.background-color: #eee
 	.reaction-summary-heading
 		padding-right: 4px
+		font-size:12px
+		padding-top:4px
 	.reaction-summary-icons
 		padding-right: 4px
 
 
 #scope-posting-form
-	#posting-form
+	.scope-posting-form
 		overflow:visible
 		&.focused
 			margin-bottom:0px
@@ -344,11 +344,15 @@ img.avatar
 			padding:7px
 	.post
 		background-color:white
-		padding:7px
 		border:thin solid $borderColor
 		border-radius:4px
 		margin-bottom:30px
-
+		.post-timestamp
+			color:#ccc
+			font-size: .75em
+		.post-body
+			padding-left: 7px
+			padding-right: 7px
 		.permalink
 			text-align:right
 			margin-top:1em
@@ -358,6 +362,9 @@ img.avatar
 			border-bottom:thin solid $borderColor
 			padding-bottom:7px
 			margin-bottom:7px
+			padding-top: 7px
+			padding-left: 7px
+			padding-right: 7px
 			.post-avatar
 				img
 					max-width:75px
@@ -394,6 +401,11 @@ img.avatar
 					opacity:1
 
 .reactions-and-comments
+	background-color:#eee
+	padding-left:7px
+	padding-right: 7px
+	padding-bottom: 7px
+
 	.rule
 		border-top:thin solid $borderColor
 
@@ -405,15 +417,17 @@ img.avatar
 
 	.comment-separator
 		margin-bottom:7px
-		border-top:thin solid $borderColor
+		border-top:thin solid #ccc
 
 	.post-reactions
 		overflow:hidden
 		position:relative
 		text-align:right
+		height:39px
 		.reaction-button-summary
 			padding-top:7px
 			padding-bottom: 7px
+			display:inline-block
 		.reaction-button-container
 			position:relative
 			display:inline-block
@@ -423,12 +437,10 @@ img.avatar
 			filter: grayscale(0%);
 
 		.reaction-button
-			font-size:15px
 			padding:2px
-			border:thin solid white
+			border:thin solid rgba(0,0,0,0)
 			border-radius:2px
 			cursor:pointer
-			background-color:white
 			&:hover
 				border-color:red
 			&.selected
@@ -436,20 +448,20 @@ img.avatar
 		.more-reactions
 			animation-duration: .25s
 			position:absolute
-			bottom: 0px
-			right: 0px
+			top: 4px
+			left: 0px
 			display:none
-			background-color: white
+			background-color: #eee
 		.reaction
 			.profile-thumb
 				width:36px
 				border-radius:50%
 	.post-comments
-		border-top:thin solid $borderColor
+		border-top:thin solid #ccc
 		padding-top:7px
 		.comments-label
 			padding-bottom:7px
-			border-bottom:thin solid $borderColor
+			border-bottom:thin solid #ccc
 			margin-bottom:7px
 			font-size:.8em
 			text-align:center

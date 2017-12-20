@@ -33,6 +33,7 @@ and caches them in NewsFeedItems.
 var es = require('eventsource');
 var url = require('url');
 var async = require('async');
+var uuid = require('uuid');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var encryption = require('./encryption');
@@ -51,7 +52,9 @@ module.exports = function watchFeed(server, friend) {
 
 		debugVerbose('watchFeed', friend);
 
-		var key = friend.user().username + ' <- ' + feed;
+		var currentUser = friend.user();
+
+		var key = currentUser.username + ' <- ' + feed;
 
 		if (listeners[key]) {
 			debug('already listening', friend);
@@ -76,6 +79,7 @@ function listenError(e) {
 }
 
 function getListener(server, friend) {
+	var currentUser = friend.user();
 
 	return function (e) {
 		debugVerbose('listener received:', e);
@@ -110,7 +114,7 @@ function getListener(server, friend) {
 					'and': [{
 						'uuid': myNewsFeedItem.uuid
 					}, {
-						'userId': friend.userId
+						'userId': currentUser.id
 					}]
 				}
 			}
@@ -121,7 +125,7 @@ function getListener(server, friend) {
 						'err': err,
 						'query': query
 					}, 'error reading NewsFeedItem item');
-					return cb(err);
+					return;
 				}
 
 				if (oldNews) {
@@ -134,7 +138,7 @@ function getListener(server, friend) {
 
 						delete myNewsFeedItem.id;
 						delete myNewsFeedItem.visibility;
-						myNewsFeedItem.userId = friend.userId;
+						myNewsFeedItem.userId = currentUser.id;
 						myNewsFeedItem.friendId = friend.id;
 						myNewsFeedItem.originator = false;
 
@@ -148,7 +152,53 @@ function getListener(server, friend) {
 							cb();
 						});
 					},
+					function notifyNetwork(cb) {
+						// somebody posted to my wall
+						if (!message.data.target || message.data.type !== 'post' || message.data.target !== server.locals.config.publicHost + '/' + currentUser.username) {
+							return process.nextTick(function () {
+								cb();
+							});
+						}
 
+						async.waterfall([
+							function (cbPostOnMyWall) { // make a Post record
+								var post = {
+									'uuid': message.data.uuid,
+									'athoritativeEndpoint': message.data.about,
+									'source': message.data.source,
+									'userId': currentUser.id,
+									'visibility': message.data.visibility
+								}
+								server.models.Post.create(post, function (err, post) {
+									if (err) {
+										var e = new VError(err, 'could create Post');
+										return cbPostOnMyWall(e);
+									}
+									cbPostOnMyWall(null, post);
+								});
+							},
+							function (post, cbPostOnMyWall) { // make a PushNewsFeed record
+								server.models.PushNewsFeedItem.create({
+									'uuid': message.data.uuid,
+									'type': 'post',
+									'source': server.locals.config.publicHost + '/' + currentUser.username,
+									'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+									'visibility': post.visibility,
+									'details': {},
+									'userId': currentUser.id
+								}, function (err, news) {
+									if (err) {
+										var e = new VError(err, 'could push news feed');
+										return cb(e);
+									}
+									cbPostOnMyWall(null);
+								});
+							}
+
+						], function (err) {
+							cb(err);
+						})
+					},
 					function updateHighwater(cb) {
 
 						debug('saving highwater %j', message.data.createdOn);

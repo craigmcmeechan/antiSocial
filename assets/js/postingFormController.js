@@ -89,7 +89,7 @@
 				self.element.addClass('focused');
 			});
 
-			this.element.on('click', '#post-submit-button', function (e) {
+			this.element.on('click', '.post-submit-button', function (e) {
 				e.preventDefault();
 
 				// collect id's of files in dropzone
@@ -115,7 +115,7 @@
 				geo = JSON.parse(geo);
 
 				var payload = {
-					'body': self.element.find('#posting-body').val(),
+					'body': self.element.find('.posting-body').val(),
 					'geoDescription': geo.description,
 					'geoLocation': geo.loc,
 					'visibility': self.element.find('#posting-visibility').val(),
@@ -177,7 +177,7 @@
 
 			this.hideForm = function () {
 				self.element.removeClass('focused');
-				self.element.find('#posting-body').val('');
+				self.element.find('.posting-body').val('');
 				if (self.previewMode) {
 					$('#post-preview-button').click();
 				}
@@ -198,7 +198,7 @@
 		};
 
 		this.renderPreview = function () {
-			var markdown = self.element.find('#posting-body').val();
+			var markdown = self.element.find('.posting-body').val();
 
 			markdown = self.parseTags(markdown);
 

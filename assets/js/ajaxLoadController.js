@@ -17,9 +17,11 @@
 						url: self.endpoint
 					}).done(function (html) {
 						$('#' + self.id).find('.DigitopiaInstance').trigger('DigitopiaStop');
-						$('#' + self.id).trigger('DigitopiaStop');
 						var doc = html.split(/(<body[^>]*>|<\/body>)/ig);
-						var docBody = $(doc[2]);
+						var docBody = html;
+						if (doc.length > 1) {
+							docBody = $(doc[2]);
+						}
 						var chunk = '';
 						chunk = $(docBody).find('#' + self.id);
 						if (!chunk || chunk.length === 0) {

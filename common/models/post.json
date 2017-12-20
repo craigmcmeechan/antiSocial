@@ -26,7 +26,6 @@
     },
     "body": {
       "type": "string",
-      "required": true,
       "admin": {
         "inputType": "textarea"
       }
@@ -49,6 +48,10 @@
       "type": [
         "number"
       ]
+    },
+    "athoritativeEndpoint": {
+      "type": "string"
+
     }
   },
   "validations": [],
