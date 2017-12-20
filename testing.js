@@ -1,59 +1,355 @@
-moment.tz.add({
-	"zones": {
-		"America/New_York": [
-			"-4:56:2 - LMT 1883_10_18_12_3_58 -4:56:2",
-			"-5 US E%sT 1920 -5",
-			"-5 NYC E%sT 1942 -5",
-			"-5 US E%sT 1946 -5",
-			"-5 NYC E%sT 1967 -5",
-			"-5 US E%sT"
-		]
-	},
-	"rules": {
-		"US": [
-			"1918 1919 2 0 8 2 0 1 D",
-			"1918 1919 9 0 8 2 0 0 S",
-			"1942 1942 1 9 7 2 0 1 W",
-			"1945 1945 7 14 7 23 1 1 P",
-			"1945 1945 8 30 7 2 0 0 S",
-			"1967 2006 9 0 8 2 0 0 S",
-			"1967 1973 3 0 8 2 0 1 D",
-			"1974 1974 0 6 7 2 0 1 D",
-			"1975 1975 1 23 7 2 0 1 D",
-			"1976 1986 3 0 8 2 0 1 D",
-			"1987 2006 3 1 0 2 0 1 D",
-			"2007 9999 2 8 0 2 0 1 D",
-			"2007 9999 10 1 0 2 0 0 S"
-		],
-		"NYC": [
-			"1920 1920 2 0 8 2 0 1 D",
-			"1920 1920 9 0 8 2 0 0 S",
-			"1921 1966 3 0 8 2 0 1 D",
-			"1921 1954 8 0 8 2 0 0 S",
-			"1955 1966 9 0 8 2 0 0 S"
-		]
-	},
-	"links": {}
+(function ($) {
+	function socialButtons(elem, options) {
+		this.element = $(elem);
+		var self = this;
+
+		this.start = function () {};
+
+		this.stop = function () {};
+
+		this.render = function (chunk) {
+
+			if (FB) {
+				FB.XFBML.parse($(chunk)[0]);
+			}
+			else {
+				console.log('facebook not loaded yet?');
+			}
+
+			if (twttr) {
+				twttr.widgets.load();
+			}
+			else {
+				console.log('twitter not loaded yet?');
+			}
+
+		};
+	}
+
+	$.fn.socialButtons = GetJQueryPlugin('socialButtons', socialButtons);
+
+})(jQuery);
+
+this.element.on('click', '.social-share-fb', function () {
+	FB.ui({
+			method: 'share',
+			href: $(this).data('href'),
+		},
+		function (response) {
+			if (response && !response.error_code) {
+				//alert('Posting completed.');
+			}
+			else {
+				//alert('Error while posting.');
+			}
+		}
+	);
 });
 
-tz = moment.tz('America/New_York').zone() - moment().zone();
+(function (d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {
+		return;
+	}
+	js = d.createElement(s);
+	js.id = id;
+	js.src = "//connect.facebook.net/en_US/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
-this.updateTimestamps = setInterval(function () {
-	$('.timestamp:in-viewport').each(function () {
-		if ($(this).data('timestamp')) {
-			var delta = self.getDeltaTime($(this).data('timestamp'));
-			$(this).html(delta);
-		}
+// facebook API
+window.fbAsyncInit = function () {
+	FB.init({
+		appId: '765213753523438',
+		xfbml: true,
+		version: 'v2.1'
 	});
-}, 10000);
-
-this.getDeltaTime = function (timestamp) {
-	var delta = undefined;
-	if (moment().diff(moment(timestamp), 'hours') > 24) {
-		delta = moment(timestamp).calendar();
-	}
-	else {
-		delta = moment(timestamp).fromNow();
-	}
-	return delta;
 };
+
+
+
+{
+	"profile": {
+		"name": "User Two",
+		"photo": {
+			"url": "/images/slug.png"
+		},
+		"background": {
+			"url": "/images/fpo.jpg"
+		},
+		"endpoint": "http://127.0.0.1:3000/user-2",
+		"publicHost": "http://127.0.0.1:3000"
+	},
+	"post": {
+		"uuid": "b9cf60f7-dc41-46ff-8695-9b7795d31784",
+		"source": "http://127.0.0.1:3000/user-2",
+		"body": "Hello world",
+		"visibility": ["friends"],
+		"id": 2,
+		"userId": 2,
+		"createdOn": "2017-12-20T05:44:07.633Z",
+		"updatedOn": "2017-12-20T05:44:07.633Z",
+		"sortedPhotos": [{
+			"status": "complete",
+			"title": "photo Title",
+			"description": "photo Description",
+			"uuid": "db478059-207d-47a6-85c7-b5c93ebf9825",
+			"id": 1,
+			"userId": 2,
+			"createdOn": "2017-12-20T05:44:07.089Z",
+			"updatedOn": "2017-12-20T05:44:07.640Z",
+			"uploads": [{
+				"property": "optimized",
+				"type": "JPEG",
+				"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
+				"bucket": "site-uploads",
+				"imageSet": {
+					"large": {
+						"suffix": "large",
+						"quality": 90,
+						"maxHeight": 2048,
+						"maxWidth": 2048,
+						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg",
+						"width": 3071,
+						"height": 2048,
+						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg"
+					},
+					"thumb": {
+						"suffix": "thumb",
+						"quality": 90,
+						"maxHeight": 300,
+						"maxWidth": 300,
+						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg",
+						"width": 450,
+						"height": 300,
+						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg"
+					},
+					"original": {
+						"original": true,
+						"width": "1024",
+						"height": "683",
+						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
+						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg"
+					}
+				},
+				"id": 1,
+				"uploadableId": 1,
+				"uploadableType": "Photo",
+				"createdOn": "2017-12-20T05:44:07.592Z",
+				"updatedOn": "2017-12-20T05:44:07.592Z"
+			}]
+		}],
+		"resolvedComments": [{
+			"uuid": "c53a78f3-f4fa-49c9-b415-7bc7ae31017d",
+			"type": "comment",
+			"source": "http://127.0.0.1:3000/user-1",
+			"about": "http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784",
+			"details": {
+				"body": "a comment"
+			},
+			"createdOn": "2017-12-20T05:44:07.725Z",
+			"updatedOn": "2017-12-20T05:44:07.725Z",
+			"originator": false,
+			"id": 10,
+			"userId": 2,
+			"friendId": 2,
+			"resolvedReactions": [{
+				"uuid": "132a0ddf-81dc-4d5d-be2d-2da1ef51f1a7",
+				"type": "react",
+				"source": "http://127.0.0.1:3000/user-1",
+				"about": "http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784/comment/c53a78f3-f4fa-49c9-b415-7bc7ae31017d",
+				"details": {},
+				"createdOn": "2017-12-20T05:44:07.767Z",
+				"updatedOn": "2017-12-20T05:44:07.767Z",
+				"originator": true,
+				"id": 11,
+				"userId": 1,
+				"resolvedProfiles": {
+					"http://127.0.0.1:3000/user-1": {
+						"status": 200,
+						"profile": {
+							"name": "User One",
+							"photo": {
+								"url": "/images/slug.png"
+							},
+							"background": {
+								"url": "/images/fpo.jpg"
+							},
+							"endpoint": "http://127.0.0.1:3000/user-1",
+							"publicHost": "http://127.0.0.1:3000"
+						}
+					},
+					"http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784/comment/c53a78f3-f4fa-49c9-b415-7bc7ae31017d": {
+						"status": 200,
+						"profile": {
+							"name": "User Two",
+							"photo": {
+								"url": "/images/slug.png"
+							},
+							"background": {
+								"url": "/images/fpo.jpg"
+							},
+							"endpoint": "http://127.0.0.1:3000/user-2",
+							"publicHost": "http://127.0.0.1:3000"
+						}
+					}
+				}
+			}],
+			"resolvedProfiles": {
+				"http://127.0.0.1:3000/user-1": {
+					"status": 200,
+					"profile": {
+						"name": "User One",
+						"photo": {
+							"url": "/images/slug.png"
+						},
+						"background": {
+							"url": "/images/fpo.jpg"
+						},
+						"endpoint": "http://127.0.0.1:3000/user-1",
+						"publicHost": "http://127.0.0.1:3000"
+					}
+				},
+				"http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784": {
+					"status": 200,
+					"profile": {
+						"name": "User Two",
+						"photo": {
+							"url": "/images/slug.png"
+						},
+						"background": {
+							"url": "/images/fpo.jpg"
+						},
+						"endpoint": "http://127.0.0.1:3000/user-2",
+						"publicHost": "http://127.0.0.1:3000"
+					}
+				}
+			}
+		}],
+		"resolvedReactions": [{
+			"uuid": "57f8d94f-3c9f-4adc-8318-c20d299b5696",
+			"type": "react",
+			"source": "http://127.0.0.1:3000/user-1",
+			"about": "http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784",
+			"details": {
+				"reaction": "thumbsup"
+			},
+			"createdOn": "2017-12-20T05:44:07.665Z",
+			"updatedOn": "2017-12-20T05:44:07.665Z",
+			"originator": false,
+			"id": 8,
+			"userId": 2,
+			"friendId": 2,
+			"resolvedProfiles": {
+				"http://127.0.0.1:3000/user-1": {
+					"status": 200,
+					"profile": {
+						"name": "User One",
+						"photo": {
+							"url": "/images/slug.png"
+						},
+						"background": {
+							"url": "/images/fpo.jpg"
+						},
+						"endpoint": "http://127.0.0.1:3000/user-1",
+						"publicHost": "http://127.0.0.1:3000"
+					}
+				},
+				"http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784": {
+					"status": 200,
+					"profile": {
+						"name": "User Two",
+						"photo": {
+							"url": "/images/slug.png"
+						},
+						"background": {
+							"url": "/images/fpo.jpg"
+						},
+						"endpoint": "http://127.0.0.1:3000/user-2",
+						"publicHost": "http://127.0.0.1:3000"
+					}
+				}
+			}
+		}],
+		"resolvedProfiles": {
+			"http://127.0.0.1:3000/user-2": {
+				"status": 200,
+				"profile": {
+					"name": "User Two",
+					"photo": {
+						"url": "/images/slug.png"
+					},
+					"background": {
+						"url": "/images/fpo.jpg"
+					},
+					"endpoint": "http://127.0.0.1:3000/user-2",
+					"publicHost": "http://127.0.0.1:3000"
+				}
+			}
+		},
+		"commentSummary": "by <a href=\"/proxy-profile?endpoint=http%3A%2F%2F127.0.0.1%3A3000%2Fuser-1\">User One</a>",
+		"reactionSummary": {
+			"summary": "<a href=\"/proxy-profile?endpoint=http%3A%2F%2F127.0.0.1%3A3000%2Fuser-1\">User One</a>",
+			"icons": "<div class=\"reaction-button-summary\"><span class=\"em em-thumbsup\"></div>"
+		},
+		"user": {
+			"name": "User Two",
+			"username": "user-2",
+			"email": "mrhodes+test+proxy2@myantisocial.net",
+			"id": 2,
+			"createdOn": "2017-12-20T05:44:00.661Z",
+			"updatedOn": "2017-12-20T05:44:00.697Z",
+			"uploads": []
+		},
+		"photos": [{
+			"status": "complete",
+			"title": "photo Title",
+			"description": "photo Description",
+			"uuid": "db478059-207d-47a6-85c7-b5c93ebf9825",
+			"id": 1,
+			"userId": 2,
+			"createdOn": "2017-12-20T05:44:07.089Z",
+			"updatedOn": "2017-12-20T05:44:07.640Z",
+			"uploads": [{
+				"property": "optimized",
+				"type": "JPEG",
+				"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
+				"bucket": "site-uploads",
+				"imageSet": {
+					"large": {
+						"suffix": "large",
+						"quality": 90,
+						"maxHeight": 2048,
+						"maxWidth": 2048,
+						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg",
+						"width": 3071,
+						"height": 2048,
+						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg"
+					},
+					"thumb": {
+						"suffix": "thumb",
+						"quality": 90,
+						"maxHeight": 300,
+						"maxWidth": 300,
+						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg",
+						"width": 450,
+						"height": 300,
+						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg"
+					},
+					"original": {
+						"original": true,
+						"width": "1024",
+						"height": "683",
+						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
+						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg"
+					}
+				},
+				"id": 1,
+				"uploadableId": 1,
+				"uploadableType": "Photo",
+				"createdOn": "2017-12-20T05:44:07.592Z",
+				"updatedOn": "2017-12-20T05:44:07.592Z"
+			}]
+		}]
+	}
+}
