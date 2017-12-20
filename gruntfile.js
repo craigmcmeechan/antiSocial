@@ -12,6 +12,7 @@ module.exports = function (grunt) {
 		'node_modules/bootstrap/dist/js/bootstrap.js',
 		'node_modules/digitopia/dist/js/digitopia.js',
 		'node_modules/moment/moment.js',
+		"node_modules/moment-timezone/builds/moment-timezone-with-data.js",
 		'node_modules/lodash/lodash.js',
 		'node_modules/jquery-serializejson/jquery.serializejson.js',
 		'node_modules/async/dist/async.js',

@@ -2688,6 +2688,11 @@
       "from": "moment@>=2.18.1 <3.0.0",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.19.1.tgz"
     },
+    "moment-timezone": {
+      "version": "0.5.14",
+      "from": "moment-timezone@latest",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.14.tgz"
+    },
     "mongodb": {
       "version": "2.2.33",
       "from": "mongodb@>=2.1.21 <3.0.0",

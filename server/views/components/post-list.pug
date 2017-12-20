@@ -36,7 +36,7 @@
 											if isPublic && !isPermalink
 												.permalink
 													a(href= postEndpoint) Public PermaLink
-									.post-timestamp= moment(post.createdOn).calendar()
+									.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())= moment(post.createdOn).calendar()
 									
 									if post.geoDescription
 											.post-geo.pull-right

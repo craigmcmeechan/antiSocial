@@ -58,7 +58,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
 			myNewsFeedItem.humanReadable += ' on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this post</a>';
-			myNewsFeedItem.humanReadable += ' by <a href="/proxy-post?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' by <a href="/proxy-profile?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
@@ -69,7 +69,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
 			myNewsFeedItem.humanReadable += ' reacted to <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this post</a>';
-			myNewsFeedItem.humanReadable += ' by <a href="/proxy-post?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' by <a href="/proxy-profile?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
