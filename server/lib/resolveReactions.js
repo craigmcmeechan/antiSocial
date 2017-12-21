@@ -21,6 +21,8 @@ module.exports = function resolveReactions(items, itemType, done) {
 					'about': about + '/' + itemType + '/' + item.uuid
 				}, {
 					'type': 'react'
+				}, {
+					'userId': item.userId
 				}]
 			},
 			'order': 'createdOn DESC'

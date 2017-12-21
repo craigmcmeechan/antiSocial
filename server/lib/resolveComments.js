@@ -23,9 +23,7 @@ module.exports = function resolveComments(items, itemType, done) {
 				}, {
 					'type': 'comment'
 				}, {
-					'originator': {
-						'neq': true
-					}
+					'userId': item.userId
 				}]
 			},
 			'order': 'createdOn ASC'

@@ -173,7 +173,7 @@ module.exports = function (server) {
       function (user, cb) {
         if (!user) {
           return process.nextTick(function () {
-            cb();
+            cb(null, null, null);
           });
         }
         if (currentUser) {
@@ -188,7 +188,7 @@ module.exports = function (server) {
       function (user, posts, cb) {
         if (!posts) {
           return process.nextTick(function () {
-            cb();
+            cb(null, null, null);
           });
         }
         resolvePostPhotos(posts, function (err) {
@@ -198,7 +198,7 @@ module.exports = function (server) {
       function (user, posts, cb) {
         if (!posts) {
           return process.nextTick(function () {
-            cb();
+            cb(null, null, null);
           });
         }
         resolveReactionsCommentsAndProfiles(posts, function (err) {
@@ -206,6 +206,10 @@ module.exports = function (server) {
         });
       }
     ], function (err, user, posts) {
+      if (err || !user || !posts) {
+        req.logger.error(err);
+        return res.sendStatus(404);
+      }
       var data = {
         'profile': {
           'name': user.name,
