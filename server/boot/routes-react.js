@@ -72,7 +72,10 @@ module.exports = function (server) {
           'createdOn': news.createdOn,
           'updatedOn': news.updatedOn,
           'originator': true,
-          'details': {}
+          'details': {
+            'reaction': reaction,
+            'photoId': photoId
+          }
         };
 
         req.app.models.NewsFeedItem.create(item, function (err, item) {

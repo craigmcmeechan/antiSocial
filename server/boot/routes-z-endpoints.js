@@ -446,7 +446,8 @@ module.exports = function (server) {
         'headshotFPO': server.locals.headshotFPO,
         'getUploadForProperty': server.locals.getUploadForProperty,
         'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings')
+        'globalSettings': ctx.get('globalSettings'),
+        'myEndpoint': getPOVEndpoint(friend, currentUser)
       }, function (err, html) {
         if (err) {
           req.logger.error(err);
