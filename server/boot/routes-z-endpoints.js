@@ -17,9 +17,6 @@ var async = require('async');
 var _ = require('lodash');
 var path = require('path');
 var pug = require('pug');
-
-var VError = require('verror').VError;
-var WError = require('verror').WError;
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
 
@@ -67,9 +64,8 @@ module.exports = function (server) {
     var isMe = false;
 
     getUser(username, function (err, user) {
-
-      if (err || !user) {
-        return res.sendStatus('404');
+      if (err) {
+        return next(err);
       }
 
       if (currentUser) {
@@ -94,31 +90,16 @@ module.exports = function (server) {
       else {
         async.waterfall([
           function (cb) {
-            if (!user) {
-              return process.nextTick(function () {
-                cb();
-              });
-            }
             getPosts(user, friend, null, isMe, function (err, posts) {
               cb(err, user, posts);
             });
           },
           function (user, posts, cb) {
-            if (!posts) {
-              return process.nextTick(function () {
-                cb();
-              });
-            }
             resolvePostPhotos(posts, function (err) {
               cb(err, user, posts);
             });
           },
           function (user, posts, cb) {
-            if (!posts) {
-              return process.nextTick(function () {
-                cb();
-              });
-            }
             resolveReactionsCommentsAndProfiles(posts, function (err) {
               cb(err, user, posts);
             });
@@ -129,21 +110,15 @@ module.exports = function (server) {
           var options = {
             'data': data,
             'user': currentUser,
+
             'friend': friend,
-            'moment': server.locals.moment,
-            'marked': server.locals.marked,
-            'headshotFPO': server.locals.headshotFPO,
-            'getUploadForProperty': server.locals.getUploadForProperty,
-            'environment': server.locals.environment,
-            'globalSettings': ctx.get('globalSettings'),
             'isMe': isMe,
             'myEndpoint': getPOVEndpoint(friend, currentUser)
           };
 
-          pug.renderFile(server.get('views') + '/components/rendered-profile.pug', options, function (err, html) {
+          renderFile('/components/rendered-profile.pug', options, req, function (err, html) {
             if (err) {
-              req.logger.error(err);
-              return res.sendStatus(500);
+              return next(err);
             }
             return res.send(encryptIfFriend(friend, html));
           });
@@ -167,15 +142,13 @@ module.exports = function (server) {
     async.waterfall([
       function (cb) {
         getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
           cb(err, user);
         });
       },
       function (user, cb) {
-        if (!user) {
-          return process.nextTick(function () {
-            cb(null, null, null);
-          });
-        }
         if (currentUser) {
           if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
@@ -186,30 +159,20 @@ module.exports = function (server) {
         });
       },
       function (user, posts, cb) {
-        if (!posts) {
-          return process.nextTick(function () {
-            cb(null, null, null);
-          });
-        }
         resolvePostPhotos(posts, function (err) {
           cb(err, user, posts);
         });
       },
       function (user, posts, cb) {
-        if (!posts) {
-          return process.nextTick(function () {
-            cb(null, null, null);
-          });
-        }
         resolveReactionsCommentsAndProfiles(posts, function (err) {
           cb(err, user, posts);
         });
       }
     ], function (err, user, posts) {
-      if (err || !user || !posts) {
-        req.logger.error(err);
-        return res.sendStatus(404);
+      if (err) {
+        return next(err);
       }
+
       var data = {
         'profile': {
           'name': user.name,
@@ -225,22 +188,17 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
 
-      pug.renderFile(server.get('views') + '/components/rendered-posts.pug', {
+      var options = {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'moment': server.locals.moment,
-        'marked': server.locals.marked,
-        'headshotFPO': server.locals.headshotFPO,
-        'getUploadForProperty': server.locals.getUploadForProperty,
-        'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings'),
         'isMe': isMe,
         'myEndpoint': getPOVEndpoint(friend, currentUser)
-      }, function (err, html) {
+      };
+
+      renderFile('/components/rendered-posts.pug', options, req, function (err, html) {
         if (err) {
-          req.logger.error(err);
-          return res.sendStatus(500);
+          return next(err);
         }
         return res.send(encryptIfFriend(friend, html));
       });
@@ -253,63 +211,53 @@ module.exports = function (server) {
     var username = matches[1];
     var postId = matches[2];
     var view = matches[3];
-    var friend = ctx.get('friendAccess');
-    var currentUser = ctx.get('currentUser');
+    var friend;
+    var currentUser;
 
     var isMe = false;
+
+    // special case - direct access to html view is 'permalink' which
+    // should be the public view of the post
+    if (view === '.json') {
+      friend = ctx.get('friendAccess');
+      currentUser = ctx.get('currentUser');
+    }
 
     async.waterfall([
       function (cb) {
         getUser(username, function (err, user) {
-          if (err || !user) {
-            var e = new VError('user not found');
-            return cb(e);
+          if (err) {
+            return cb(err);
           }
           cb(err, user);
         });
       },
       function (user, cb) {
-        if (!user) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
         if (currentUser) {
           if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
           }
         }
         getPost(postId, user, friend, isMe, function (err, post) {
-          if (err || !post) {
-            var e = new VError('post not found');
-            return cb(e);
+          if (err) {
+            return cb(err);
           }
           cb(err, user, post);
         });
       },
       function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
         resolvePostPhotos([post], function (err) {
           cb(err, user, post);
         });
       },
       function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
         resolveReactionsCommentsAndProfiles([post], function (err) {
           cb(err, user, post);
         });
       }
     ], function (err, user, post) {
-      if (!post) {
-        return res.sendStatus(404);
+      if (err) {
+        return next(err);
       }
 
       var data = {
@@ -327,23 +275,18 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
 
-      pug.renderFile(server.get('views') + '/components/rendered-post.pug', {
+      var options = {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'moment': server.locals.moment,
-        'marked': server.locals.marked,
-        'headshotFPO': server.locals.headshotFPO,
-        'getUploadForProperty': server.locals.getUploadForProperty,
-        'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings'),
         'isPermalink': true,
         'isMe': isMe,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
-      }, function (err, html) {
+        'myEndpoint': getPOVEndpoint(friend, currentUser),
+      };
+
+      renderFile('/components/rendered-post.pug', options, req, function (err, html) {
         if (err) {
-          req.logger.error(err);
-          return res.sendStatus(500);
+          return next(err);
         }
         return res.send(encryptIfFriend(friend, html));
       });
@@ -362,73 +305,54 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
+    async.waterfall([
+      function (cb) {
         getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
           cb(err, user);
         });
-      }, function (user, cb) {
-        if (!user) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
+      },
+      function (user, cb) {
         if (currentUser) {
           if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
           }
         }
         getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
           cb(err, user, post);
         });
       },
       function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
+
         resolveProfiles(post, function (err) {
           cb(err, user, post);
         });
       },
       function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
+
         resolveReactions([post], 'post', function (err) {
           cb(err, user, post);
         });
       },
       function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
         async.map(post.resolvedReactions, resolveProfiles, function (err) {
           cb(err, user, post);
         });
       },
       function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
         resolveReactionsSummary(post, function (err) {
           cb(err, user, post);
         });
       }
     ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
+        return next(err);
       }
-      if (!user || !post) {
-        return res.sendStatus(404);
-      }
-
 
       var data = {
         'post': post,
@@ -441,21 +365,16 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
 
-      pug.renderFile(server.get('views') + '/components/rendered-post-reactions.pug', {
+      var options = {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'moment': server.locals.moment,
-        'marked': server.locals.marked,
-        'headshotFPO': server.locals.headshotFPO,
-        'getUploadForProperty': server.locals.getUploadForProperty,
-        'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings'),
         'myEndpoint': getPOVEndpoint(friend, currentUser)
-      }, function (err, html) {
+      };
+
+      renderFile('/components/rendered-post-reactions.pug', options, req, function (err, html) {
         if (err) {
-          req.logger.error(err);
-          return res.sendStatus(500);
+          return next(err);
         }
         return res.send(encryptIfFriend(friend, html));
       });
@@ -474,17 +393,16 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
+    async.waterfall([
+      function (cb) {
         getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
           cb(err, user);
         });
-      }, function (user, cb) {
-        if (!user) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
-
+      },
+      function (user, cb) {
         if (currentUser) {
           if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
@@ -492,14 +410,13 @@ module.exports = function (server) {
         }
 
         getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
           cb(err, user, post);
         });
-      }, function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
+      },
+      function (user, post, cb) {
         resolveComments([post], 'post', function (err) {
           cb(err, user, post);
         });
@@ -517,10 +434,7 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var data = {
@@ -533,20 +447,15 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
 
-      pug.renderFile(server.get('views') + '/components/rendered-post-comments.pug', {
+      var options = {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'moment': server.locals.moment,
-        'marked': server.locals.marked,
-        'headshotFPO': server.locals.headshotFPO,
-        'getUploadForProperty': server.locals.getUploadForProperty,
-        'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings')
-      }, function (err, html) {
+      };
+
+      renderFile('/components/rendered-post-comments.pug', options, req, function (err, html) {
         if (err) {
-          req.logger.error(err);
-          return res.sendStatus(500);
+          return next(err);
         }
         return res.send(encryptIfFriend(friend, html));
       });
@@ -566,17 +475,16 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
+    async.waterfall([
+      function (cb) {
         getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
           cb(err, user);
         });
-      }, function (user, cb) {
-        if (!user) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
-
+      },
+      function (user, cb) {
         if (currentUser) {
           if (currentUser.id.toString() === user.id.toString()) {
             isMe = true;
@@ -584,14 +492,13 @@ module.exports = function (server) {
         }
 
         getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
           cb(err, user, post);
         });
-      }, function (user, post, cb) {
-        if (!post) {
-          return process.nextTick(function () {
-            cb();
-          });
-        }
+      },
+      function (user, post, cb) {
         resolveComments([post], 'post', function (err) {
           cb(err, user, post);
         });
@@ -609,10 +516,7 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var theComment;
@@ -624,7 +528,9 @@ module.exports = function (server) {
       }
 
       if (!theComment) {
-        return res.sendStatus(404);
+        var err = new Error('Comment not found');
+        err.statusCode = 404;
+        return next(err);
       }
 
       resolveProfiles(theComment, function (err) {
@@ -639,21 +545,16 @@ module.exports = function (server) {
           return res.send(encryptIfFriend(friend, data));
         }
 
-        pug.renderFile(server.get('views') + '/components/rendered-post-comment.pug', {
+        var options = {
           'data': data,
           'user': currentUser,
           'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings'),
           'wantSummary': true
-        }, function (err, html) {
+        };
+
+        renderFile('/components/rendered-post-comment.pug', options, req, function (err, html) {
           if (err) {
-            req.logger.error(err);
-            return res.sendStatus(500);
+            return next(err);
           }
           return res.send(encryptIfFriend(friend, html));
         });
@@ -674,41 +575,37 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolveComments([post], 'post', function (err) {
+          cb(err, user, post);
         });
       }
-      resolveComments([post], 'post', function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var theComment;
@@ -720,7 +617,9 @@ module.exports = function (server) {
       }
 
       if (!theComment) {
-        return res.sendStatus(404);
+        var e = new Error('Comment not found');
+        e.statusCode = 404;
+        return next(e);
       }
 
       async.map(theComment.resolvedReactions, resolveProfiles, function (err) {
@@ -733,20 +632,15 @@ module.exports = function (server) {
           return res.send(encryptIfFriend(friend, data));
         }
 
-        pug.renderFile(server.get('views') + '/components/rendered-post-comment-reactions.pug', {
+        var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
-        }, function (err, html) {
+          'friend': friend
+        };
+
+        renderFile('/components/rendered-post-comment-reactions.pug', options, req, function (err, html) {
           if (err) {
-            req.logger.error(err);
-            return res.sendStatus(500);
+            return next(err);
           }
           return res.send(encryptIfFriend(friend, html));
         });
@@ -766,41 +660,37 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolvePostPhotos([post], function (err) {
+          cb(err, user, post);
         });
       }
-      resolvePostPhotos([post], function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var data = {
@@ -811,20 +701,15 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
 
-      pug.renderFile(server.get('views') + '/components/rendered-post-photos.pug', {
+      var options = {
         'data': data,
         'user': currentUser,
-        'friend': friend,
-        'moment': server.locals.moment,
-        'marked': server.locals.marked,
-        'headshotFPO': server.locals.headshotFPO,
-        'getUploadForProperty': server.locals.getUploadForProperty,
-        'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings')
-      }, function (err, html) {
+        'friend': friend
+      };
+
+      renderFile('/components/rendered-post-photos.pug', options, req, function (err, html) {
         if (err) {
-          req.logger.error(err);
-          return res.sendStatus(500);
+          return next(err);
         }
         return res.send(encryptIfFriend(friend, html));
       });
@@ -844,41 +729,37 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolvePostPhotos([post], function (err) {
+          cb(err, user, post);
         });
       }
-      resolvePostPhotos([post], function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var thePhoto;
@@ -891,7 +772,9 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        return res.sendStatus(404);
+        var e = new Error('Photo not found');
+        e.statusCode = 404;
+        return next(e);
       }
 
       var data = {
@@ -902,20 +785,15 @@ module.exports = function (server) {
         return res.send(encryptIfFriend(friend, data));
       }
 
-      pug.renderFile(server.get('views') + '/components/rendered-post-photo.pug', {
+      var options = {
         'data': data,
         'user': currentUser,
-        'friend': friend,
-        'moment': server.locals.moment,
-        'marked': server.locals.marked,
-        'headshotFPO': server.locals.headshotFPO,
-        'getUploadForProperty': server.locals.getUploadForProperty,
-        'environment': server.locals.environment,
-        'globalSettings': ctx.get('globalSettings')
-      }, function (err, html) {
+        'friend': friend
+      };
+
+      renderFile('/components/rendered-post-photo.pug', options, req, function (err, html) {
         if (err) {
-          req.logger.error(err);
-          return res.sendStatus(500);
+          return next(err);
         }
         return res.send(encryptIfFriend(friend, html));
       });
@@ -935,41 +813,37 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolvePostPhotos([post], function (err) {
+          cb(err, user, post);
         });
       }
-      resolvePostPhotos([post], function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var thePhoto;
@@ -982,7 +856,9 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        return res.sendStatus(404);
+        var e = new Error('Photo not found');
+        e.statusCode = 404;
+        return next(e);
       }
 
       resolveReactions([thePhoto], 'photo', function (err) {
@@ -995,25 +871,19 @@ module.exports = function (server) {
           return res.send(encryptIfFriend(friend, data));
         }
 
-        pug.renderFile(server.get('views') + '/components/rendered-post-photo-reactions.pug', {
+        var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
-        }, function (err, html) {
+          'friend': friend
+        };
+
+        renderFile('/components/rendered-post-photo-reactions.pug', options, req, function (err, html) {
           if (err) {
-            req.logger.error(err);
-            return res.sendStatus(500);
+            return next(err);
           }
           return res.send(encryptIfFriend(friend, html));
         });
       });
-
     });
   });
 
@@ -1030,41 +900,37 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolvePostPhotos([post], function (err) {
+          cb(err, user, post);
         });
       }
-      resolvePostPhotos([post], function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var thePhoto;
@@ -1077,7 +943,9 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        return res.sendStatus(404);
+        var e = new Error('Photo not found');
+        e.statusCode = 404;
+        return next(e);
       }
 
       resolveComments([thePhoto], 'photo', function (err) {
@@ -1090,20 +958,15 @@ module.exports = function (server) {
           return res.send(encryptIfFriend(friend, data));
         }
 
-        pug.renderFile(server.get('views') + '/components/rendered-post-photo-comments.pug', {
+        var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
-        }, function (err, html) {
+          'friend': friend
+        };
+
+        renderFile('/components/rendered-post-photo-comments.pug', options, req, function (err, html) {
           if (err) {
-            req.logger.error(err);
-            return res.sendStatus(500);
+            return next(err);
           }
           return res.send(encryptIfFriend(friend, html));
         });
@@ -1126,41 +989,37 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolvePostPhotos([post], function (err) {
+          cb(err, user, post);
         });
       }
-      resolvePostPhotos([post], function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var thePhoto;
@@ -1173,7 +1032,9 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        return res.sendStatus(404);
+        var e = new Error('Photo not found');
+        e.statusCode = 404;
+        return next(e);
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
@@ -1188,7 +1049,9 @@ module.exports = function (server) {
         }
 
         if (!theComment) {
-          return res.sendStatus(404);
+          var e = new Error('Comment not found');
+          e.statusCode = 404;
+          return next(e);
         }
 
         var data = {
@@ -1199,20 +1062,15 @@ module.exports = function (server) {
           return res.send(encryptIfFriend(friend, data));
         }
 
-        pug.renderFile(server.get('views') + '/components/rendered-post-photo-comment.pug', {
+        var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
-        }, function (err, html) {
+          'friend': friend
+        };
+
+        renderFile('/components/rendered-post-photo-comment.pug', options, req, function (err, html) {
           if (err) {
-            req.logger.error(err);
-            return res.sendStatus(500);
+            return next(err);
           }
           return res.send(encryptIfFriend(friend, html));
         });
@@ -1234,41 +1092,37 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    async.waterfall([function (cb) {
-      getUser(username, function (err, user) {
-        cb(err, user);
-      });
-    }, function (user, cb) {
-      if (!user) {
-        return process.nextTick(function () {
-          cb();
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
         });
-      }
-
-      if (currentUser) {
-        if (currentUser.id.toString() === user.id.toString()) {
-          isMe = true;
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
         }
-      }
 
-      getPost(postId, user, friend, isMe, function (err, post) {
-        cb(err, user, post);
-      });
-    }, function (user, post, cb) {
-      if (!post) {
-        return process.nextTick(function () {
-          cb();
+        getPost(postId, user, friend, isMe, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, post);
+        });
+      },
+      function (user, post, cb) {
+        resolvePostPhotos([post], function (err) {
+          cb(err, user, post);
         });
       }
-      resolvePostPhotos([post], function (err) {
-        cb(err, user, post);
-      });
-    }], function (err, user, post) {
+    ], function (err, user, post) {
       if (err) {
-        return res.sendStatus(500);
-      }
-      if (!user || !post) {
-        return res.sendStatus(404);
+        return next(err);
       }
 
       var thePhoto;
@@ -1281,7 +1135,9 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        return res.sendStatus(404);
+        var e = new Error('Photo not found');
+        e.statusCode = 404;
+        return next(e);
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
@@ -1296,7 +1152,9 @@ module.exports = function (server) {
         }
 
         if (!theComment) {
-          return res.sendStatus(404);
+          var e = new Error('Comment not found');
+          e.statusCode = 404;
+          return next(e);
         }
 
         var data = {
@@ -1307,20 +1165,15 @@ module.exports = function (server) {
           return res.send(encryptIfFriend(friend, data));
         }
 
-        pug.renderFile(server.get('views') + '/components/rendered-post-photo-comment-reactions.pug', {
+        var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'moment': server.locals.moment,
-          'marked': server.locals.marked,
-          'headshotFPO': server.locals.headshotFPO,
-          'getUploadForProperty': server.locals.getUploadForProperty,
-          'environment': server.locals.environment,
-          'globalSettings': ctx.get('globalSettings')
-        }, function (err, html) {
+          'friend': friend
+        };
+
+        renderFile('/components/rendered-post-photo-comment-reactions.pug', options, req, function (err, html) {
           if (err) {
-            req.logger.error(err);
-            return res.sendStatus(500);
+            return next(err);
           }
           return res.send(encryptIfFriend(friend, html));
         });
@@ -1335,7 +1188,15 @@ module.exports = function (server) {
       },
       'include': ['uploads']
     }, function (err, user) {
-      cb(err, user);
+      if (err) {
+        return cb(err);
+      }
+      if (!user) {
+        err = new Error('User Not Found');
+        err.statusCode = 404;
+        return cb(err);
+      }
+      cb(null, user);
     });
   }
 
@@ -1406,7 +1267,13 @@ module.exports = function (server) {
     }
 
     server.models.Post.findOne(query, function (err, post) {
-      if (err || !post) {
+      if (err) {
+        return cb(err);
+      }
+
+      if (!post) {
+        err = new Error('Post not found');
+        err.statusCode = 404;
         return cb(err);
       }
 
@@ -1414,6 +1281,28 @@ module.exports = function (server) {
     });
   }
 
+  function renderFile(template, data, req, cb) {
+    var ctx = req.myContext;
+
+    var options = {};
+
+    for (var prop in data) {
+      options[prop] = data[prop];
+    }
+
+    for (var prop in server.locals) {
+      options[prop] = server.locals[prop];
+    }
+
+    options.globalSettings = ctx.get('globalSettings');
+
+    pug.renderFile(server.get('views') + template, options, function (err, html) {
+      if (err) {
+        return cb(err);
+      }
+      cb(null, html);
+    });
+  }
   server.use(router);
 };
 

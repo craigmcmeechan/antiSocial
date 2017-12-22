@@ -1,3 +1,40 @@
+function getUserAndPosts
+async.waterfall([
+	function (cb) {
+		getUser(username, function (err, user) {
+			if (err) {
+				return cb(err);
+			}
+			cb(err, user);
+		});
+	},
+	function (user, cb) {
+		if (currentUser) {
+			if (currentUser.id.toString() === user.id.toString()) {
+				isMe = true;
+			}
+		}
+		getPosts(user, friend, highwater, isMe, function (err, posts) {
+			cb(err, user, posts);
+		});
+	},
+	function (user, posts, cb) {
+		resolvePostPhotos(posts, function (err) {
+			cb(err, user, posts);
+		});
+	},
+	function (user, posts, cb) {
+		resolveReactionsCommentsAndProfiles(posts, function (err) {
+			cb(err, user, posts);
+		});
+	}
+], function (err, user, posts) {
+	if (err) {
+		return next(err);
+	}
+});
+
+
 (function ($) {
 	function socialButtons(elem, options) {
 		this.element = $(elem);

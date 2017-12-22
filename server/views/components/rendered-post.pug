@@ -18,8 +18,11 @@ block seo
 		- summary= summary.replace(/[^ ]+$/,'')  + '...'
 	
 	- var image = profile.background.url;
-	if posts[0].sortedPhotos && posts[0].sortedPhotos.length && posts[0].sortedPhotos[0].uploads && posts[0].sortedPhotos[0].uploads.length
-		- image= posts[0].sortedPhotos[0].uploads()[0].imageSet.large.url
+	if _.has(posts[0],'sortedPhotos[0].uploads')
+		if typeof posts[0].sortedPhotos[0].uploads === 'function'
+			- image= posts[0].sortedPhotos[0].uploads()[0].imageSet.large.url
+		else
+			- image= posts[0].sortedPhotos[0].uploads[0].imageSet.large.url
 	
 	title= title
 	meta(property="og:type" content="article")

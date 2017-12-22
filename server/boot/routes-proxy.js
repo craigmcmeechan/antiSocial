@@ -36,24 +36,28 @@ module.exports = function (server) {
 			return res.sendStatus(400);
 		}
 
-		var myEndpoint;
-		if (currentUser) {
-			myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
-			if (endpoint.match(new RegExp('^' + myEndpoint))) {
-				debug('proxy: endpoint is same as logged in user, redirect ' + myEndpoint);
-				return res.redirect(endpoint.replace(new RegExp('^' + server.locals.config.publicHost), ''));
-			}
-		}
-
 		if (template === 'profile') {
 			endpoint += '/posts';
 		}
 
+		/*
+		if (currentUser) {
+			var myEndpoint;
+
+			myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
+			if (endpoint.match(new RegExp('^' + myEndpoint))) {
+				debug('proxy: endpoint is same as logged in user, redirect ' + myEndpoint);
+				endpoint = endpoint.replace(new RegExp('^' + server.locals.config.publicHost), '');
+			}
+		}
+		*/
+
 		var options = {
 			'url': endpoint + '.json',
 			'json': true,
-			headers: {
-				'friend-access-token': friend ? friend.remoteAccessToken : ''
+			'headers': {
+				'friend-access-token': friend ? friend.remoteAccessToken : '',
+				'access_token': !friend && req.signedCookies.access_token ? req.signedCookies.access_token : ''
 			}
 		};
 
