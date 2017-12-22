@@ -106,7 +106,7 @@ module.exports = function (grunt) {
 		concat: {
 			js: {
 				options: {
-					separator: ';'
+					separator: grunt.util.linefeed + ';' + grunt.util.linefeed
 				},
 				src: jsFiles,
 				dest: '<%=jsDistDir%><%= pkg.name %>.js',
