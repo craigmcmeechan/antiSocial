@@ -18,6 +18,7 @@ module.exports = function (grunt) {
 		'node_modules/async/dist/async.js',
 		'node_modules/marked/lib/marked.js',
 		'node_modules/autosize/dist/autosize.js',
+		'node_modules/node-vibrant/dist/vibrant.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];

@@ -10,27 +10,26 @@
 				self.setColors(cache[self.element.data('image')]);
 				return;
 			}
-			var img = document.createElement('img');
-			img.crossOrigin = "Anonymous";
-			img.setAttribute('src', self.element.data('image'));
 
-			img.addEventListener('load', function () {
-				var vibrant = new Vibrant(img);
-				var swatches = vibrant.swatches();
-				cache[self.element.data('image')] = swatches;
-				self.setColors(swatches);
 
-				/*
-				for (var swatch in swatches) {
-					if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
-						console.log(swatch, swatches[swatch].getHex());
-						console.log(swatch + 'title', swatches[swatch].getTitleTextColor());
-						console.log(swatch + 'body', swatches[swatch].getBodyTextColor());
-					}
+			var vibrant = new Vibrant(self.element.data('image'));
+			var swatches = vibrant.getPalette(function (err, palette) {
+				if (!err) {
+					cache[self.element.data('image')] = palette;
+					self.setColors(palette);
 				}
-				*/
-
 			});
+
+			/*
+			for (var swatch in swatches) {
+				if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
+					console.log(swatch, swatches[swatch].getHex());
+					console.log(swatch + 'title', swatches[swatch].getTitleTextColor());
+					console.log(swatch + 'body', swatches[swatch].getBodyTextColor());
+				}
+			}
+			*/
+
 		};
 
 		this.setColors = function (swatches) {
