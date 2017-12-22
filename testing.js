@@ -1,3 +1,20 @@
+{
+	"_id": "5a3b26952b32dc00074b3077",
+	"uuid": "87165210-70bc-487e-a2fc-17edbb0aa843",
+	"type": "comment",
+	"source": "https://devel.myantisocial.net/devel-user",
+	"about": "https://devel.myantisocial.net/devel-user/post/68aff60a-4931-475a-8b78-d13a40c07f68",
+	"visibility": ["public"],
+	"details": {
+		"body": "sdfs"
+	},
+	"userId": "5a22fcee1b5eee000752e79c",
+	"createdOn": "2017-12-21T03:12:21.401Z",
+	"updatedOn": "2017-12-21T03:12:21.401Z"
+}
+
+
+
 (function ($) {
 	function socialButtons(elem, options) {
 		this.element = $(elem);
