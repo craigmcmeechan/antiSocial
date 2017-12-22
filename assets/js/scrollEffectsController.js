@@ -1,6 +1,33 @@
 // css replacement scheme by https://github.com/Prinzhorn/skrollr
 
 (function ($) {
+	var pendingAnimationFrame = undefined;
+	var animationQueue = [];
+
+	function flushAnimationQueue() {
+		if (pendingAnimationFrame) {
+			cancelAnimationFrame(pendingAnimationFrame);
+			pendingAnimationFrame = undefined;
+		}
+		animationQueue = [];
+	}
+
+	function queueAnimation(frame) {
+		animationQueue.push(frame);
+		if (!pendingAnimationFrame) {
+			pendingAnimationFrame = requestAnimationFrame(processAnimationQueue);
+		}
+	}
+
+	function processAnimationQueue() {
+		pendingAnimationFrame = undefined;
+		var toProcess = animationQueue;
+		animationQueue = [];
+		for (var i = 0; i < toProcess.length; i++) {
+			toProcess[i]();
+		}
+	}
+
 	function scrollEffectsController(elem, options) {
 		this.element = $(elem);
 
@@ -19,15 +46,11 @@
 		this.start = function () {
 			this.startCSS = this.parseCSS($(this.element).data('effect-start-css'));
 			this.endCSS = this.parseCSS($(this.element).data('effect-end-css'));
-
-			$(window).scroll(function () {
-				self.doEffect();
-			});
 			self.doEffect(true);
 		};
 
 		this.stop = function () {
-
+			flushAnimationQueue();
 		};
 
 		this.doEffect = function (force) {
@@ -105,6 +128,10 @@
 				}
 				self.element.css(newCSS);
 			}
+
+			queueAnimation(function () {
+				self.doEffect();
+			});
 		};
 
 		this.parseCSS = function (cssString) {
