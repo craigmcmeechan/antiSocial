@@ -79,6 +79,7 @@ module.exports = function (server) {
           'name': user.name,
           'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
           'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
           'endpoint': server.locals.config.publicHost + '/' + user.username,
           'publicHost': server.locals.config.publicHost
         }
@@ -178,6 +179,7 @@ module.exports = function (server) {
           'name': user.name,
           'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
           'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
           'endpoint': server.locals.config.publicHost + '/' + user.username,
           'publicHost': server.locals.config.publicHost
         },
@@ -265,6 +267,7 @@ module.exports = function (server) {
           'name': user.name,
           'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
           'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
           'endpoint': server.locals.config.publicHost + '/' + user.username,
           'publicHost': server.locals.config.publicHost
         },

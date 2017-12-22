@@ -40,17 +40,16 @@ module.exports = function (server) {
 			endpoint += '/posts';
 		}
 
-		/*
+		var isMe = false;
 		if (currentUser) {
 			var myEndpoint;
 
 			myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
 			if (endpoint.match(new RegExp('^' + myEndpoint))) {
-				debug('proxy: endpoint is same as logged in user, redirect ' + myEndpoint);
-				endpoint = endpoint.replace(new RegExp('^' + server.locals.config.publicHost), '');
+				debug('proxy: endpoint is same as logged in user');
+				isMe = true;
 			}
 		}
-		*/
 
 		var options = {
 			'url': endpoint + '.json',
@@ -99,6 +98,7 @@ module.exports = function (server) {
 					'friend': friend,
 					'user': currentUser,
 					'wall': true,
+					'isMe': isMe,
 					'myEndpoint': getPOVEndpoint(currentUser),
 					'wantSummary': template === 'post-comment'
 				});

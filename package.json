@@ -45,6 +45,7 @@
     "multiparty": "^4.1.2",
     "node-cache": "^4.1.1",
     "node-forge": "^0.7.1",
+    "node-vibrant": "^3.0.0",
     "nodemailer": "^4.3.1",
     "nodemailer-ses-transport": "^1.5.1",
     "open-graph-scraper": "git+https://github.com/mediapolis/openGraphScraper.git",
