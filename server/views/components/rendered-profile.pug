@@ -10,9 +10,9 @@ block seo
 	meta(property="og:image" content= profile.background.url)
 
 block content
-	img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-effect-start="0.5" data-effect-end="0.98" data-effect-units="viewport" data-effect-transform-units="" data-effect-start-css="border-radius:10px;width:150px;top:190px;right:calc(10% - 0px);" data-effect-end-css="border-radius:75px;width:42px;top:4px;right:calc(50% - 25px);" data-effect-ease="linear")
+	img.avatar(src= profile.photo.url data-jsclass="scrollToController,scrollEffectsController" data-effect-start="0.4" data-effect-end="0.6" data-effect-units="viewport" data-effect-transform-units="" data-effect-start-css="border-radius:10px;width:150px;top:190px;right:calc(10% - 0px);" data-effect-end-css="border-radius:75px;width:42px;top:4px;right:calc(50% - 25px);" data-effect-ease="linear")
 
-	.profile-hero(data-jsclass="scrollToController,scrollEffectsController" style= 'background-image:url(' + profile.background.url + ');background-size: cover;background-repeat:no-repeat;background-position: center center;' data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
+	.profile-hero(data-jsclass="scrollEffectsController" style= 'background-image:url(' + profile.background.url + ');background-size: cover;background-repeat:no-repeat;background-position: center center;' data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
 		.text-gradient
 			.container-fluid.text-overlay
 				h1
@@ -54,7 +54,7 @@ block content
 						| this user can see my public posts.
 
 
-	.profile-parallax(data-jsclass="vibrantController" data-image= profile.background.url)
+	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 		.container-fluid.content-padding-top.content
 			.row
 				.col-sm-8.left-column

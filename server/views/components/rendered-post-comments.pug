@@ -2,6 +2,8 @@ if !comments
 	- comments = data.comments
 if !commentSummary
 	- commentSummary = data.commentSummary
+if !post
+	- post = data.post
 
 .post-comments.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
 	.comments-label

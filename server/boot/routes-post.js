@@ -138,6 +138,7 @@ module.exports = function (server) {
           'type': 'post',
           'source': news.source,
           'about': news.about,
+          'target': post.about,
           'userId': currentUser.id,
           'createdOn': news.createdOn,
           'updatedOn': news.updatedOn,

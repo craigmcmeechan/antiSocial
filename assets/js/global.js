@@ -71,6 +71,7 @@ function didInjectContent(element) {
 	$('#document-body').data('digitopiaHijax').hijaxLinks(element);
 	$('#document-body').data('aspectRatioController').fixAspectRatio();
 	$('#document-body').data('constrainedController').fixConstrained();
+	$('#document-body').data('liveTimeController').updateTimes();
 }
 
 (function ($) {
