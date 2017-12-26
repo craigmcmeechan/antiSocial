@@ -17,7 +17,8 @@
 			.form-group.input-relative.button-zone
 				button.post-submit-button.btn.btn-primary Post
 				a#post-upload-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
-				a#post-geo-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-map-marker"></i>
+				if environment.GOOGLE_MAPS_API_KEY
+					a#post-geo-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-map-marker"></i>
 				a#post-preview-button.btn.btn-default(href="#") Preview
 				a#post-cancel-button.btn.btn-default.pull-right(href="#") Cancel
 
