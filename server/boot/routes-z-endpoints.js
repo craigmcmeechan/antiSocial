@@ -1,6 +1,8 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
+var checkNeedProxyRewrite = require('../middleware/rewriteUrls');
+
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
 var resolveReactionsSummary = require('../lib/resolveReactionsSummary');
@@ -49,7 +51,7 @@ module.exports = function (server) {
     }
   }
 
-  router.get(profileRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(profileRE, getCurrentUser(), checkNeedProxyRewrite('profile'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var matches = req.url.match(profileRE);
     if (!matches) {
@@ -60,6 +62,10 @@ module.exports = function (server) {
     var accessToken = req.headers['friend-access-token'];
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
 
     var isMe = false;
 
@@ -128,7 +134,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postsRE, getCurrentUser(), checkNeedProxyRewrite('posts'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var matches = req.url.match(postsRE);
     var username = matches[1];
@@ -137,6 +143,10 @@ module.exports = function (server) {
     var highwater = req.headers['friend-high-water'];
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
 
     var isMe = false;
 
@@ -207,7 +217,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postRE, getCurrentUser(), checkNeedProxyRewrite('post'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var matches = req.url.match(postRE);
     var username = matches[1];
@@ -215,7 +225,10 @@ module.exports = function (server) {
     var view = matches[3];
     var friend;
     var currentUser;
-
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
     var isMe = false;
 
     // special case - direct access to html view is 'permalink' which

@@ -31,18 +31,18 @@
 												span.glyphicon.glyphicon-arrow-right.target-arrow
 												a(href= '/proxy-profile?endpoint=' + encodeURIComponent(post.about))= about.name
 										div.secondary
+											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())= moment(post.createdOn).calendar()
 											.visibility
-												= post.visibility.join(', ') + ' ' 
 												if post.visibility.indexOf('public') !== -1
 													i.glyphicon.glyphicon-globe
 												else
-													i.glyphicon.glyphicon-user
+													i.glyphicon.glyphicon-eye-open
+												= ' ' + post.visibility.join(', ')
 											if isPublic && !isPermalink
 												.permalink
 													a(href= postEndpoint)
 														i.glyphicon.glyphicon-link
 																
-											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())= moment(post.createdOn).calendar()
 											
 											if post.geoDescription
 												.post-geo
