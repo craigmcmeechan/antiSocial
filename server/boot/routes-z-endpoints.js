@@ -306,8 +306,12 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
     var matches = req.url.match(postReactionsRE);
 
     var username = matches[1];
@@ -394,8 +398,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentsRE, getCurrentUser(), checkNeedProxyRewrite('post-comments'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postCommentsRE);
 
     var username = matches[1];
@@ -475,8 +484,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentRE, getCurrentUser(), checkNeedProxyRewrite('post-comment'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postCommentRE);
 
     var username = matches[1];
@@ -575,8 +589,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-comment-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postCommentReactionsRE);
 
     var username = matches[1];
@@ -661,8 +680,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotosRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotosRE, getCurrentUser(), checkNeedProxyRewrite('post-photos'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotosRE);
 
     var username = matches[1];
@@ -729,8 +753,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoRE, getCurrentUser(), checkNeedProxyRewrite('post-photo'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoRE);
 
     var username = matches[1];
@@ -813,8 +842,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoReactionsRE);
 
     var username = matches[1];
@@ -900,8 +934,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoCommentsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comments'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoCommentsRE);
 
     var username = matches[1];
@@ -988,8 +1027,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoCommentRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comment'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoCommentRE);
 
     var username = matches[1];
@@ -1091,8 +1135,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoCommentReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comment-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoCommentReactionsRE);
 
     var username = matches[1];
