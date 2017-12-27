@@ -12,6 +12,7 @@ module.exports = function () {
 
 		var query;
 
+		//friend-access-token header is defined, look up friend
 		if (accessToken) {
 			query = {
 				'where': {
@@ -19,9 +20,10 @@ module.exports = function () {
 				}
 			}
 		}
-		else {
+		else { // find Friend by endpoint for currentUser
 			var endpoint = req.app.locals.config.publicHost + url.parse(req.url).pathname;
 			endpoint = endpoint.replace(/\/post.*$/, '');
+			endpoint = endpoint.replace(/\.json$/, '');
 
 			query = {
 				'where': {
