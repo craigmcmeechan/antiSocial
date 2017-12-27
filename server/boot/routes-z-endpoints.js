@@ -1,6 +1,8 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
+var checkNeedProxyRewrite = require('../middleware/rewriteUrls');
+
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsCommentsAndProfiles = require('../lib/resolveReactionsCommentsAndProfiles');
 var resolveReactionsSummary = require('../lib/resolveReactionsSummary');
@@ -26,19 +28,19 @@ module.exports = function (server) {
   // URL forms for getting posts and associated data from
   // the poster's authoritative server (users resident on this server)
 
-  var profileRE = /^\/([a-zA-Z0-9\-]+)(\.json)?$/;
-  var postsRE = /^\/([a-zA-Z0-9\-]+)\/posts(\.json)?$/;
-  var postRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
-  var postReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postCommentsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comments(\.json)?$/;
-  var postCommentRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
-  var postCommentReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postPhotosRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photos(\.json)?$/;
-  var postPhotoRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
-  var postPhotoReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postPhotoCommentsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments(\.json)?$/;
-  var postPhotoCommentRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
-  var postPhotoCommentReactionsRE = /^\/([a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var profileRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)(\.json)?$/;
+  var postsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/posts(\.json)?$/;
+  var postRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
+  var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var postCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comments(\.json)?$/;
+  var postCommentRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
+  var postCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var postPhotosRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photos(\.json)?$/;
+  var postPhotoRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
+  var postPhotoReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var postPhotoCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments(\.json)?$/;
+  var postPhotoCommentRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
+  var postPhotoCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
 
   function getPOVEndpoint(friend, currentUser) {
     if (friend) {
@@ -49,12 +51,13 @@ module.exports = function (server) {
     }
   }
 
-  router.get(profileRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(profileRE, getCurrentUser(), checkNeedProxyRewrite('profile'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
-    var matches = req.url.match(profileRE);
-    if (!matches) {
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
       return next();
     }
+    var matches = req.url.match(profileRE);
     var username = matches[1];
     var view = matches[2];
     var accessToken = req.headers['friend-access-token'];
@@ -128,8 +131,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postsRE, getCurrentUser(), checkNeedProxyRewrite('posts'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postsRE);
     var username = matches[1];
     var view = matches[2];
@@ -137,7 +145,6 @@ module.exports = function (server) {
     var highwater = req.headers['friend-high-water'];
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
-
     var isMe = false;
 
     async.waterfall([
@@ -207,15 +214,18 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postRE, getCurrentUser(), checkNeedProxyRewrite('post'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
     var matches = req.url.match(postRE);
     var username = matches[1];
     var postId = matches[2];
     var view = matches[3];
     var friend;
     var currentUser;
-
     var isMe = false;
 
     // special case - direct access to html view is 'permalink' which
@@ -296,8 +306,12 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
     var matches = req.url.match(postReactionsRE);
 
     var username = matches[1];
@@ -384,8 +398,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentsRE, getCurrentUser(), checkNeedProxyRewrite('post-comments'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postCommentsRE);
 
     var username = matches[1];
@@ -465,8 +484,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentRE, getCurrentUser(), checkNeedProxyRewrite('post-comment'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postCommentRE);
 
     var username = matches[1];
@@ -565,8 +589,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-comment-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postCommentReactionsRE);
 
     var username = matches[1];
@@ -651,8 +680,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotosRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotosRE, getCurrentUser(), checkNeedProxyRewrite('post-photos'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotosRE);
 
     var username = matches[1];
@@ -719,8 +753,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoRE, getCurrentUser(), checkNeedProxyRewrite('post-photo'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoRE);
 
     var username = matches[1];
@@ -803,8 +842,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoReactionsRE);
 
     var username = matches[1];
@@ -890,8 +934,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoCommentsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comments'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoCommentsRE);
 
     var username = matches[1];
@@ -978,8 +1027,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoCommentRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comment'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoCommentRE);
 
     var username = matches[1];
@@ -1081,8 +1135,13 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoCommentReactionsRE, getCurrentUser(), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comment-reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
     var matches = req.url.match(postPhotoCommentReactionsRE);
 
     var username = matches[1];

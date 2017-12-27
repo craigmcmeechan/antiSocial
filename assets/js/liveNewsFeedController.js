@@ -21,7 +21,7 @@
 
 		// check if state has changed and connect/disconnect if needed
 		this.checkActive = function () {
-			var state = $('#document-body').hasClass('is-logged-in') && !$('#document-body').hasClass('digitopia-xsmall');
+			var state = $('#document-body').hasClass('is-logged-in');
 
 			if (state !== self.active) {
 				if (self.active) {
@@ -49,7 +49,10 @@
 						'width': width,
 						'left': left
 					});
-					self.element.show();
+
+					if (!$('#document-body').hasClass('digitopia-xsmall')) {
+						self.element.show();
+					}
 				}
 				else {
 					self.element.hide();

@@ -9,15 +9,16 @@ quick()
 
 
 body
-	background: linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,.6))
+	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
 
 .container-fluid
 	max-width:1024px
 
 .content
-	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.3))
+	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
 	min-height:100vh
 	color:#333
+
 
 .left-column
 	.not-digitopia-xsmall &
@@ -28,7 +29,10 @@ body
 	.content-padding-top
 		padding-top:15px
 		padding-bottom:15px
-
+	.container-fluid
+		.zdigitopia-xsmall &
+			padding-left:7px
+			padding-right:7px
 
 #sidebar
 	background-color:#ccc
@@ -342,21 +346,33 @@ img.avatar
 		.news-summary
 			text-align:right
 			padding:7px
+
 	.post
 		background-color:white
 		border:thin solid $borderColor
 		border-radius:4px
-		margin-bottom:30px
-		.post-timestamp
-			color:#ccc
+		margin-bottom:15px
+		h4
+			.digitopia-xsmall &
+				font-size:18px
+		.secondary
 			font-size: .75em
+			color: #ccc
+			a
+				color: #ccc
+		.visibility
+			display: inline-block
+			text-transform:capitalize
+		.permalink
+			display: inline-block
+		.post-geo
+			white-space: nowrap
+			overflow: hidden
+			text-overflow: ellipsis
+			max-width: 250px
 		.post-body
 			padding-left: 7px
 			padding-right: 7px
-		.permalink
-			text-align:right
-			margin-top:1em
-			font-size: .75em
 		.post-identity
 			position:relative
 			border-bottom:thin solid $borderColor
@@ -374,10 +390,7 @@ img.avatar
 				margin-right:15px
 				color: #999
 				font-size:.8em
-			.post-geo
-				position:absolute
-				bottom:7px
-				right:0px
+
 
 		.form-group
 			margin-bottom:0
@@ -423,7 +436,7 @@ img.avatar
 		overflow:hidden
 		position:relative
 		text-align:right
-		height:39px
+		font-size:.75em
 		.reaction-button-summary
 			padding-top:7px
 			padding-bottom: 7px
