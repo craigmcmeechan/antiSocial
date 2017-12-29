@@ -20,8 +20,9 @@ if !poster
 				tr
 					if !reactionSummary
 						td.reaction-summary-icons
-							.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
-								.em.em-thumbsup
+							.reaction-button-summary
+								.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
+									.em.em-thumbsup
 					if reactionSummary
 						td.reaction-summary-icons
 							!= reactionSummary.icons
