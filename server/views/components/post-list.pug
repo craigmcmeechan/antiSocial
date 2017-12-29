@@ -53,34 +53,7 @@
 						- var body = post.body ? post.body : '';
 						.post-body.markdown.want-constrained(data-max-height="1000")!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
-						if post.sortedPhotos && post.sortedPhotos.length
-							
-							script#slideshow(data-uuid= post.uuid type="text/x-json")
-								!= JSON.stringify(post.sortedPhotos)
-							.carousel-container(id= post.uuid)
-								div.carousel.slide.lazy-instantiate(id='slideshow-' + post.uuid data-endpoint= postEndpoint data-lazy-jsclass="responsiveCarousel" data-data= "#slideshow[data-uuid='"+post.uuid+"']" data-type="json" data-want-reactions= user ? "true" : "false")
-									ol.carousel-indicators
-									div.inner.carousel-inner
-									a.full-screen(href="#" data-no-hijax="true")
-										<span class="glyphicon glyphicon-resize-full"></span>
-									a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
-										<span class="glyphicon glyphicon-chevron-left"></span>
-									a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
-										<span class="glyphicon glyphicon-chevron-right"></span>
-							.container-fluid.want-constrained(data-max-height="1000")
-								.row
-									for photo,index in post.sortedPhotos
-										if photo
-											- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
-											- var upload = getUploadForProperty('optimized',uploads,'thumb')
-											.img-thumb.col-sm-3.col-xs-6.maintain-aspect-ratio(data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
-												img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
-												.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
-													i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
-													if user
-														i.comments.glyphicon.glyphicon-comment
-													p= photo.title
-													em= photo.description
-								
+						- var photos = post.sortedPhotos
+						include rendered-post-photos
 						
 						include post-reactions-and-comments

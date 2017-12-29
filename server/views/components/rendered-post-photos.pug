@@ -1,3 +1,40 @@
-strong Photos
-for photo in data.photos
-	p= photo.title
+if !post
+	- post= data.post
+if !photos
+	if data && data.photos
+		- photos= data.photos
+	else 
+		- photos = post.sortedPhotos
+	
+if photos && photos.length
+	
+	script#slideshow(data-uuid= post.uuid type="text/x-json")
+		!= JSON.stringify(photos)
+	.carousel-container(id= post.uuid)
+		div.carousel.slide.lazy-instantiate(id='slideshow-' + post.uuid data-endpoint= postEndpoint data-lazy-jsclass="responsiveCarousel" data-data= "#slideshow[data-uuid='"+post.uuid+"']" data-type="json" data-want-reactions= user ? "true" : "false")
+			ol.carousel-indicators
+			div.inner.carousel-inner
+			a.full-screen(href="#" data-no-hijax="true")
+				<span class="glyphicon glyphicon-resize-full"></span>
+			a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
+				<span class="glyphicon glyphicon-chevron-right"></span>
+	.container-fluid.want-constrained(data-max-height="1000")
+		.row
+			for photo,index in photos
+				if photo
+					- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
+					- var upload = getUploadForProperty('optimized',uploads,'thumb')
+					- var cssClass = 'col-sm-3 col-xs-6 .maintain-aspect-ratio'
+					if photos.length === 1
+						- cssClass = 'col-sm-12 full-width'
+					.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
+						img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
+						.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
+							i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
+							if user
+								i.comments.glyphicon.glyphicon-comment
+							p= photo.title
+							em= photo.description
+		

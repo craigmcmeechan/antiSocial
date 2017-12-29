@@ -8,7 +8,6 @@
 				e.stopPropagation();
 				self.element.find('.live-element[data-watch="' + about + '"]').each(function () {
 					var element = $(this);
-					var commentList = element.find('.comments-list');
 					element.addClass('changed');
 					if (type === 'comment' && element.data('watch-type') === type) {
 						var item = $('<div>');
@@ -17,6 +16,14 @@
 							var summary = item.find('.comments-label').html();
 							self.element.find('.comments').append(comment);
 							self.element.find('.comments-label').empty().append(summary);
+							didInjectContent(element);
+						})
+					}
+					else if (type === 'react' && element.data('watch-type') === type) {
+						var item = $('<div>');
+						item.load(endpoint, function () {
+							var reactions = item.find('.post-reactions').html();
+							self.element.find('.post-reactions').empty().append(reactions);
 							didInjectContent(element);
 						})
 					}
