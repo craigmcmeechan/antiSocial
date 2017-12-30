@@ -29,10 +29,12 @@
       "type": "string"
     },
     "createdOn": {
-      "type": "date"
+      "type": "date",
+      "defaultFn": "now"
     },
     "updatedOn": {
-      "type": "date"
+      "type": "date",
+      "defaultFn": "now"
     },
     "originator": {
       "type": "boolean"

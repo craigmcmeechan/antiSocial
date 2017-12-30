@@ -6,7 +6,7 @@ if !reactionSummary
 	- reactionSummary = data.reactionSummary
 if !poster
 	- poster = data.poster
-.ajax-load(id= 'reactions-' + post.uuid data-jsclass="ajaxLoadController" data-endpoint= '/proxy-post-reactions?endpoint=' + encodeURIComponent(postEndpoint + '/reactions'))
+.ajax-load.live-element(id= 'reactions-' + post.uuid data-watch= post.source + '/post/' + post.uuid data-watch-type="react")
 	.post-reactions(data-jsclass="reactionController" data-endpoint= poster.endpoint + '/post/' + post.uuid)
 		.reaction-summary
 			if reactions
@@ -20,8 +20,9 @@ if !poster
 				tr
 					if !reactionSummary
 						td.reaction-summary-icons
-							.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
-								.em.em-thumbsup
+							.reaction-button-summary
+								.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
+									.em.em-thumbsup
 					if reactionSummary
 						td.reaction-summary-icons
 							!= reactionSummary.icons

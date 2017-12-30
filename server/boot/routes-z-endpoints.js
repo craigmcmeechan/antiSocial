@@ -731,6 +731,7 @@ module.exports = function (server) {
       }
 
       var data = {
+        'post': post,
         'photos': post.sortedPhotos ? post.sortedPhotos : []
       };
 

@@ -82,7 +82,7 @@
 				}
 				else {
 					flashAjaxStatus('info', 'reaction saved');
-					self.element.closest('.ajax-load').trigger('ReloadElement');
+					//self.element.closest('.ajax-load').trigger('ReloadElement');
 				}
 			}, 'json');
 		};
