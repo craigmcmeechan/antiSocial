@@ -14,8 +14,8 @@
 						item.load(endpoint, function () {
 							var comment = item.find('.a-comment');
 							var summary = item.find('.comments-label').html();
-							self.element.find('.comments').append(comment);
-							self.element.find('.comments-label').empty().append(summary);
+							element.find('.comments').append(comment);
+							element.find('.comments-label').empty().append(summary);
 							didInjectContent(element);
 						})
 					}
@@ -23,7 +23,7 @@
 						var item = $('<div>');
 						item.load(endpoint, function () {
 							var reactions = item.find('.post-reactions').html();
-							self.element.find('.post-reactions').empty().append(reactions);
+							element.find('.post-reactions').empty().append(reactions);
 							didInjectContent(element);
 						})
 					}
