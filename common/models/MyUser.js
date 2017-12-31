@@ -9,11 +9,19 @@ var WError = require('verror').WError;
 var async = require('async');
 var mailer = require('../../server/lib/mail');
 var qs = require('querystring');
+var RemoteRouting = require('loopback-remote-routing');
 
 var debug = require('debug')('user');
 var debugVerbose = require('debug')('user:verbose');
 
 module.exports = function (MyUser) {
+	/*
+	if (!process.env.ADMIN) {
+		RemoteRouting(MyUser, {
+			'only': []
+		});
+	}
+	*/
 
 	if (process.env.ADMIN) {
 		admin.setUpRoleToggleAPI(MyUser);
@@ -370,6 +378,69 @@ module.exports = function (MyUser) {
 			returns: {
 				arg: 'found',
 				type: 'string'
+			}
+		}
+	);
+
+	MyUser.tag = function (id, value, ctx, cb) {
+		var myContext = ctx.req.myContext;
+		var currentUser = myContext.get('currentUser');
+		var pattern = new RegExp('^' + value + '.*', 'i');
+
+		server.models.Friend.find({
+			'where': {
+				'and': [{
+					'remoteName': {
+						'like': pattern
+					}
+				}, {
+					'id': currentUser.id
+				}]
+			},
+			'limit': 10
+		}, function (err, friends) {
+			if (err) {
+				return cb(err);
+			}
+			var matches = [];
+			for (var i = 0; i < friends.length; i++) {
+				matches.push({
+					'id': friends[i].id.toString(),
+					'endPoint': friends[i].remoteEndPoint,
+					'name': friends[i].remoteName
+				})
+			}
+			return cb(err, matches);
+		});
+	};
+
+	MyUser.remoteMethod(
+		'tag', {
+			http: {
+				path: '/:id/tag',
+				verb: 'get'
+			},
+			accepts: [{
+				arg: 'id',
+				type: 'string',
+				required: true
+			}, {
+				arg: 'value',
+				type: 'string',
+				required: true,
+				http: {
+					source: 'query'
+				}
+			}, {
+				arg: 'options',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				arg: 'found',
+				type: 'array'
 			}
 		}
 	);

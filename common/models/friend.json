@@ -27,6 +27,18 @@
     "remoteEndPoint": {
       "type": "string"
     },
+    "remotePublicKey": {
+      "type": "string"
+    },
+    "remoteUsername": {
+      "type": "string"
+    },
+    "remoteHost": {
+      "type": "string"
+    },
+    "remoteName": {
+      "type": "string"
+    },
     "localRequestToken": {
       "type": "string"
     },
@@ -47,9 +59,6 @@
     },
     "keys": {
       "type": "object"
-    },
-    "remotePublicKey": {
-      "type": "string"
     }
   },
   "validations": [],

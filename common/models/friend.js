@@ -1,3 +1,1 @@
-module.exports = function(Friend) {
-
-};
+module.exports = function (Friend) {};

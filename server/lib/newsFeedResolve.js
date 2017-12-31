@@ -52,6 +52,22 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
+		if (myNewsFeedItem.type === 'tag') {
+			if (myNewsFeedItem.target === myEndPoint) {
+				debug(sourceProfile.profile.name + '" tagged me in ' + myNewsFeedItem.about);
+			}
+			else {
+				debug(sourceProfile.profile.name + '" tagged ' + myNewsFeedItem.target + ' in ' + myNewsFeedItem.about);
+			}
+			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
+			myNewsFeedItem.humanReadable += '<div>';
+			myNewsFeedItem.humanReadable += '<a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.source) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' tagged ';
+			myNewsFeedItem.humanReadable += '  <a href="/proxy-profile?endpoint=' + encodeURIComponent(myNewsFeedItem.target) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name) + '</a> in ';
+			myNewsFeedItem.humanReadable += ' <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this post</a>';
+			myNewsFeedItem.humanReadable += '</div>';
+		}
+
 		if (myNewsFeedItem.type === 'comment') {
 			debug(sourceProfile.profile.name + '" commented on ' + myNewsFeedItem.about);
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
