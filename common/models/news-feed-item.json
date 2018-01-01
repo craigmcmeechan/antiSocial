@@ -35,9 +35,6 @@
     "updatedOn": {
       "type": "date",
       "defaultFn": "now"
-    },
-    "originator": {
-      "type": "boolean"
     }
   },
   "validations": [],

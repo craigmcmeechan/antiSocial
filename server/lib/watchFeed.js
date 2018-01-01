@@ -140,7 +140,6 @@ function getListener(server, friend) {
 						delete myNewsFeedItem.visibility;
 						myNewsFeedItem.userId = currentUser.id;
 						myNewsFeedItem.friendId = friend.id;
-						myNewsFeedItem.originator = false;
 
 						server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 							if (err) {
