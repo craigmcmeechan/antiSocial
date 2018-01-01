@@ -387,18 +387,20 @@ module.exports = function (MyUser) {
 		var currentUser = myContext.get('currentUser');
 		var pattern = new RegExp('^' + value + '.*', 'i');
 
-		server.models.Friend.find({
+		var clause = {
 			'where': {
 				'and': [{
 					'remoteName': {
-						'like': pattern
+						'regexp': pattern
 					}
 				}, {
-					'id': currentUser.id
+					'userId': currentUser.id.toString()
 				}]
 			},
 			'limit': 10
-		}, function (err, friends) {
+		};
+
+		server.models.Friend.find(clause, function (err, friends) {
 			if (err) {
 				return cb(err);
 			}
