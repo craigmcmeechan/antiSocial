@@ -16,7 +16,7 @@ http://rhodes.com/mr/post/xxxxxx
 
 #### Proxied requests
 Michael can view his friend Alan's timeline using his server as a proxy which
-delivers all the information that Alan has allowed Michael to see. The request to the endpoint includes the `friend-access-token` which Alan's server uses to determine what information will be delivered. (These requests can also deliver JSON if desired when the parameter &format=json is provided.)
+delivers all the information that Alan has allowed Michael to see. The request to the endpoint includes the `friend-access-token` header which Alan's server uses to determine what information will be delivered. (These requests can also deliver JSON if desired when the parameter &format=json is provided.)
 ```
 http://rhodes.com/proxy-profile?endpoint=http://emtage.com/ae
 http://rhodes.com/proxy-post?endpoint=http://emtage.com/post/xxxx

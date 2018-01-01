@@ -31,7 +31,10 @@ myRenderer.link = function (href, title, text) {
     return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div>';
   }
   else {
-    return '<a href="' + href + '" target="_blank">' + text + '</a>';
+    if (href.match(/^http/i)) {
+      return '<a href="' + href + '" target="_blank">' + text + '</a>';
+    }
+    return '<a href="' + href + '">' + text + '</a>';
   }
 };
 
@@ -43,10 +46,17 @@ function renderMarkdown(markdown) {
   var tagged = markdown.replace(/\#([A-Za-z0-9\-\_\.])+/g, function (tag) {
     return '[' + tag + '](' + tag + ')';
   });
+
+  tagged = tagged.replace(/\(tag\:([^\)]+)\)/g, function (tag) {
+    var friendEndPoint = tag;
+    friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
+    friendEndPoint = friendEndPoint.replace(/\)$/, '');
+    return '(/proxy-profile?endpoint=' + encodeURIComponent(friendEndPoint) + ')';
+  });
+
   return marked(tagged);
 }
 app.locals.marked = renderMarkdown;
-
 
 // localization config
 i18n.configure({

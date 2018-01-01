@@ -87,7 +87,7 @@ var flashAjaxStatusTimeout;
 
 function flashAjaxStatus(level, message) {
 
-	var alert = '<div class="alert alert-' + level + '">' + message + '</div>';
+	var alert = '<div class="alert-container"><div class="alert alert-' + level + '">' + message + '</div></div>';
 
 	$('#ajax-status').empty().html(alert);
 
