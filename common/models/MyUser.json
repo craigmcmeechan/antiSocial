@@ -34,20 +34,17 @@
       "posts",
       "settings"
     ],
-    "helpers": [
-      {
-        "type": "upload",
-        "name": "Upload Photo",
-        "property": "photo",
-        "endpoint": "/api/MyUsers/:id/upload/photo"
-      },
-      {
-        "type": "upload",
-        "name": "Upload Background",
-        "property": "background",
-        "endpoint": "/api/MyUsers/:id/upload/background"
-      }
-    ]
+    "helpers": [{
+      "type": "upload",
+      "name": "Upload Photo",
+      "property": "photo",
+      "endpoint": "/api/MyUsers/:id/upload/photo"
+    }, {
+      "type": "upload",
+      "name": "Upload Background",
+      "property": "background",
+      "endpoint": "/api/MyUsers/:id/upload/background"
+    }]
   },
   "properties": {
     "name": {
@@ -109,70 +106,66 @@
       "foreignKey": "userId"
     }
   },
-  "acls": [
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "upload"
-    },
-    {
-      "accessType": "*",
-      "principalType": "ROLE",
-      "principalId": "admin",
-      "permission": "ALLOW",
-      "property": "*"
-    },
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "isunique"
-    },
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "register"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "__create__invitations"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "__create__posts"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "__updateById__friends"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "__destroyById__photos"
-    },
-    {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "__get__photos"
-    }
-  ],
+  "acls": [{
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "upload"
+  }, {
+    "accessType": "*",
+    "principalType": "ROLE",
+    "principalId": "admin",
+    "permission": "ALLOW",
+    "property": "*"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW",
+    "property": "isunique"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW",
+    "property": "register"
+  }, {
+    "accessType": "WRITE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "__create__invitations"
+  }, {
+    "accessType": "WRITE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "__create__posts"
+  }, {
+    "accessType": "WRITE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "__updateById__friends"
+  }, {
+    "accessType": "WRITE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "__destroyById__photos"
+  }, {
+    "accessType": "READ",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "__get__photos"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "tag"
+  }],
   "methods": {}
 }

@@ -7,7 +7,6 @@ var getRecentPosts = require('../middleware/context-getRecentPosts');
 var getFriends = require('../middleware/context-getFriends');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
-var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var nodemailer = require('nodemailer');
@@ -130,7 +129,62 @@ module.exports = function (server) {
             var e = new VError(err, 'could push news feed');
             return cb(e);
           }
-          cb(null, post);
+          cb(null, news, post);
+        });
+      },
+      function notifyTagged(news, post, cb) { // notify tagged
+        var re = /\(tag\:([^\)]+)\)/g;
+        var tags = post.body.match(re);
+        async.map(tags, function (tag, doneTag) {
+          var friendEndPoint = tag;
+          friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
+          friendEndPoint = friendEndPoint.replace(/\)$/, '');
+          server.models.Friend.findOne({
+            'where': {
+              'remoteEndPoint': friendEndPoint
+            }
+          }, function (err, friend) {
+            currentUser.pushNewsFeedItems.create({
+              'uuid': uuid(),
+              'type': 'tag',
+              'source': server.locals.config.publicHost + '/' + currentUser.username,
+              'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+              'target': friend.remoteEndPoint,
+              'visibility': post.visibility,
+              'details': {}
+            }, function (err, news) {
+              if (err) {
+                var e = new VError(err, 'could push news feed');
+                return doneTag(e);
+              }
+              doneTag(null);
+            });
+          });
+        }, function (err) {
+          cb(null, news, post);
+        });
+      },
+      function makeNewsFeedItem(news, post, cb) { // notify self
+        var item = {
+          'uuid': news.uuid,
+          'type': 'post',
+          'source': news.source,
+          'about': news.about,
+          'target': post.about,
+          'userId': currentUser.id,
+          'createdOn': news.createdOn,
+          'updatedOn': news.updatedOn,
+          'originator': true,
+          'details': {}
+        };
+
+        req.app.models.NewsFeedItem.create(item, function (err, item) {
+          if (err) {
+            var e = new VError(err, 'could not save NewsFeedItem');
+            return cb(e);
+          }
+
+          cb(err, post);
         });
       }
     ], function (err, post) {

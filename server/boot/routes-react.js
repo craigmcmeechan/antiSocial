@@ -7,7 +7,6 @@ var getRecentPosts = require('../middleware/context-getRecentPosts');
 var getFriends = require('../middleware/context-getFriends');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
-var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
 var nodemailer = require('nodemailer');
 var qs = require('querystring');
@@ -38,33 +37,64 @@ module.exports = function (server) {
   router.post('/react', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var reaction = req.body.reaction;
     var endpoint = req.body.endpoint;
-    var postAuthorName = req.body.postAuthorName;
     var photoId = req.body.photoId;
 
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
 
-    currentUser.pushNewsFeedItems.create({
-      'uuid': uuid(),
-      'type': 'react',
-      'source': server.locals.config.publicHost + '/' + currentUser.username,
-      'about': endpoint,
-      'visibility': ['friends'],
-      'details': {
-        'reaction': reaction,
-        'photoId': photoId
+    async.waterfall([
+      function (cb) { // save comment and notify network
+        currentUser.pushNewsFeedItems.create({
+          'uuid': uuid(),
+          'type': 'react',
+          'source': server.locals.config.publicHost + '/' + currentUser.username,
+          'about': endpoint,
+          'visibility': ['friends'],
+          'details': {
+            'reaction': reaction,
+            'photoId': photoId
+          }
+        }, function (err, news) {
+          if (err) {
+            var e = new VError(err, 'could not create reaction');
+            return cb(e);
+          }
+          cb(null, news);
+        });
+      },
+      function (news, cb) { // notify self
+        var item = {
+          'uuid': news.uuid,
+          'type': 'react',
+          'source': news.source,
+          'about': news.about,
+          'userId': currentUser.id,
+          'createdOn': news.createdOn,
+          'updatedOn': news.updatedOn,
+          'originator': true,
+          'details': {
+            'reaction': reaction,
+            'photoId': photoId
+          }
+        };
+
+        req.app.models.NewsFeedItem.create(item, function (err, item) {
+          if (err) {
+            var e = new VError(err, 'could not save NewsFeedItem');
+            return cb(e);
+          }
+          cb();
+        });
       }
-    }, function (err, news) {
+    ], function (err) {
       if (err) {
-        var e = new VError(err, 'could not reaction');
-        return next(e);
+        return next(err);
       }
       res.send({
         'status': 'ok'
       });
     });
   });
-
 
   server.use(router);
 };

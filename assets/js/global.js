@@ -69,7 +69,9 @@ function didLogOut() {
 function didInjectContent(element) {
 	$('#document-body').trigger('DigitopiaInstantiate');
 	$('#document-body').data('digitopiaHijax').hijaxLinks(element);
+	$('#document-body').data('aspectRatioController').fixAspectRatio();
 	$('#document-body').data('constrainedController').fixConstrained();
+	$('#document-body').data('liveTimeController').updateTimes();
 }
 
 (function ($) {
@@ -85,7 +87,7 @@ var flashAjaxStatusTimeout;
 
 function flashAjaxStatus(level, message) {
 
-	var alert = '<div class="alert alert-' + level + '">' + message + '</div>';
+	var alert = '<div class="alert-container"><div class="alert alert-' + level + '">' + message + '</div></div>';
 
 	$('#ajax-status').empty().html(alert);
 

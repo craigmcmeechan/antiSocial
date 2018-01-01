@@ -4,13 +4,28 @@
 		var self = this;
 
 		this.start = function () {
-			this.element.on('NotifyLiveElement', function (e, type, endpoint, rendered) {
+			this.element.on('NotifyLiveElement', function (e, type, about, endpoint) {
 				e.stopPropagation();
-				self.element.find('.live-element[data-watch="' + endpoint + '"]').each(function () {
-					$(this).addClass('changed');
-					if (type === 'comment') {
-						$(this).find('.comments-list').append(rendered).append('<div class="clearfix"></div>');
-						didInjectContent($(this).find('.comments-list'));
+				self.element.find('.live-element[data-watch="' + about + '"]').each(function () {
+					var element = $(this);
+					element.addClass('changed');
+					if (type === 'comment' && element.data('watch-type') === type) {
+						var item = $('<div>');
+						item.load(endpoint, function () {
+							var comment = item.find('.a-comment');
+							var summary = item.find('.comments-label').html();
+							element.find('.comments').append(comment);
+							element.find('.comments-label').empty().append(summary);
+							didInjectContent(element);
+						})
+					}
+					else if (type === 'react' && element.data('watch-type') === type) {
+						var item = $('<div>');
+						item.load(endpoint, function () {
+							var reactions = item.find('.post-reactions').html();
+							element.find('.post-reactions').empty().append(reactions);
+							didInjectContent(element);
+						})
 					}
 				});
 			});

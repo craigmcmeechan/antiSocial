@@ -7,7 +7,6 @@ var getRecentPosts = require('../middleware/context-getRecentPosts');
 var getFriends = require('../middleware/context-getFriends');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
-var collectFeed = require('../middleware/context-collectFeed');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
@@ -72,7 +71,9 @@ module.exports = function (server) {
               'user': ctx.get('currentUser'),
               'globalSettings': ctx.get('globalSettings'),
               'publicUsers': ctx.get('publicUsers'),
-              'posts': posts,
+              'data': {
+                'posts': posts
+              },
               'passwordResetToken': req.query.access_token
             });
           });

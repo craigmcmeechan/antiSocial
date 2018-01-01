@@ -21,7 +21,7 @@
 
 		// check if state has changed and connect/disconnect if needed
 		this.checkActive = function () {
-			var state = $('#document-body').hasClass('is-logged-in') && !$('#document-body').hasClass('digitopia-xsmall');
+			var state = $('#document-body').hasClass('is-logged-in');
 
 			if (state !== self.active) {
 				if (self.active) {
@@ -49,7 +49,10 @@
 						'width': width,
 						'left': left
 					});
-					self.element.show();
+
+					if (!$('#document-body').hasClass('digitopia-xsmall')) {
+						self.element.show();
+					}
 				}
 				else {
 					self.element.hide();
@@ -84,13 +87,17 @@
 			self.element.find('.status').removeClass('offline');
 			var event = JSON.parse(msg.data);
 			var li = $('<div class="news-feed-item">');
-
-			var formatted = event.data.humanReadable.replace(/>/, '><div>');
-			formatted += '</div>';
+			var formatted = event.data.humanReadable;
 			li.append(formatted);
 			self.element.find('.news-feed-items').prepend(li);
+			didInjectContent(self.element);
 			if (!event.backfill) {
-				$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.details.rendered]);
+				if (event.data.type === 'comment') {
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-comment?endpoint=' + encodeURIComponent(event.data.about + '/comment/' + event.data.uuid)]);
+				}
+				else if (event.data.type === 'react') {
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-reactions?endpoint=' + encodeURIComponent(event.data.about + '/reactions')]);
+				}
 			}
 		};
 

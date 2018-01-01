@@ -1,3 +1,26 @@
-strong Comments
-for comment in data.comments
-	p= comment.about + ' ' + comment.details.body
+if !comments
+	- comments = data.comments
+if !commentSummary
+	- commentSummary = data.commentSummary
+if !post
+	- post = data.post
+
+.post-comments.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
+	.comments-label
+		table
+			tr
+				if comments && comments.length
+					td
+						.badge= comments.length
+				td.comments-label-text
+					i.glyphicon.glyphicon-comment
+				td.comment-summary
+					if commentSummary
+						!= commentSummary
+						
+	.comments-list
+		.comments
+			if comments
+				for comment,index in comments
+					include rendered-post-comment
+		

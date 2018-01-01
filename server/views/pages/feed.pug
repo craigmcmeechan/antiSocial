@@ -9,10 +9,13 @@ block content
 		.row
 			.col-sm-8.left-column
 				include ../components/posting-form
+				#scope-post-list
+					for item in items
+						if item.type === 'post' || item.type === 'interaction'
+							.newsfeed-item
+								.news-summary!= item.feedSummary
+								.post(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(item.about))
 
-				include ../components/post-list
-				
-				
 				.text-center
 					.loader(data-jsclass="loadMoreController")
 					

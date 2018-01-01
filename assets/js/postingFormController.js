@@ -13,6 +13,7 @@
 		this.currentTop = 0;
 		self.categories = [];
 		self.dropzone = undefined;
+		this.lookupDebounce = null;
 
 		this.renderer.link = function (href, title, text) {
 			if (text && text.match(/^http/i)) {
@@ -25,6 +26,40 @@
 
 		this.start = function () {
 			autosize(this.element.find('textarea'));
+
+			self.element.on('keyup', '.posting-body', function (e) {
+				if (self.lookupDebounce) {
+					clearTimeout(self.lookupDebounce);
+				}
+				var theElement = $(this);
+				self.lookupDebounce = setTimeout(function () {
+					self.lookupDebounce = undefined;
+					var matches = theElement.val().match(/\[\@([^\]]+)\]/g);
+					async.map(matches, function (match, cb) {
+						var q = match.replace(/^\[@/, '');
+						q = q.replace(/\]$/, '');
+						var get = $.get('/api/MyUsers/me/tag?value=' + encodeURIComponent(q))
+							.done(function (data, textStatus, jqXHR) {
+								console.log(match, data);
+								data.match = match;
+								data.q = q;
+								cb(null, data);
+							})
+							.fail(function () {
+								cb(null);
+							});
+					}, function (err, replacements) {
+						var value = theElement.val();
+						for (var i = 0; i < replacements.length; i++) {
+							if (replacements[i].found.length) {
+								var formatted = '[' + replacements[i].found[0].name + '](tag:' + replacements[i].found[0].endPoint + ')';
+								value = value.replace(replacements[i].match, formatted);
+							}
+						}
+						theElement.val(value);
+					});
+				}, 500);
+			})
 
 			if (self.element.find('.upload-zone')) {
 				self.element.find('.upload-zone').addClass('dropzone').dropzone({
@@ -89,7 +124,7 @@
 				self.element.addClass('focused');
 			});
 
-			this.element.on('click', '#post-submit-button', function (e) {
+			this.element.on('click', '.post-submit-button', function (e) {
 				e.preventDefault();
 
 				// collect id's of files in dropzone
@@ -115,7 +150,7 @@
 				geo = JSON.parse(geo);
 
 				var payload = {
-					'body': self.element.find('#posting-body').val(),
+					'body': self.element.find('.posting-body').val(),
 					'geoDescription': geo.description,
 					'geoLocation': geo.loc,
 					'visibility': self.element.find('#posting-visibility').val(),
@@ -132,10 +167,6 @@
 					else {
 						self.hideForm();
 						flashAjaxStatus('info', 'post saved');
-						if (data.rendered) {
-							self.element.closest('.post').find('.comments-list').append(data.rendered);
-							didInjectContent(self.element.closest('.post').find('.comments-list'));
-						}
 					}
 				}, 'json');
 			});
@@ -181,7 +212,7 @@
 
 			this.hideForm = function () {
 				self.element.removeClass('focused');
-				self.element.find('#posting-body').val('');
+				self.element.find('.posting-body').val('');
 				if (self.previewMode) {
 					$('#post-preview-button').click();
 				}
@@ -199,10 +230,11 @@
 			this.element.off('click', '#post-preview');
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
+			self.element.off('keyup', '.posting-body');
 		};
 
 		this.renderPreview = function () {
-			var markdown = self.element.find('#posting-body').val();
+			var markdown = self.element.find('.posting-body').val();
 
 			markdown = self.parseTags(markdown);
 

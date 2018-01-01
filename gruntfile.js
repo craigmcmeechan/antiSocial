@@ -12,11 +12,13 @@ module.exports = function (grunt) {
 		'node_modules/bootstrap/dist/js/bootstrap.js',
 		'node_modules/digitopia/dist/js/digitopia.js',
 		'node_modules/moment/moment.js',
+		"node_modules/moment-timezone/builds/moment-timezone-with-data.js",
 		'node_modules/lodash/lodash.js',
 		'node_modules/jquery-serializejson/jquery.serializejson.js',
 		'node_modules/async/dist/async.js',
 		'node_modules/marked/lib/marked.js',
 		'node_modules/autosize/dist/autosize.js',
+		'node_modules/node-vibrant/dist/vibrant.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];
@@ -104,7 +106,7 @@ module.exports = function (grunt) {
 		concat: {
 			js: {
 				options: {
-					separator: ';'
+					separator: grunt.util.linefeed + ';' + grunt.util.linefeed
 				},
 				src: jsFiles,
 				dest: '<%=jsDistDir%><%= pkg.name %>.js',

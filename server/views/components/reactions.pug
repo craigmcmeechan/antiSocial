@@ -1,44 +1,53 @@
-.reaction-summary.pull-right
-	if reactionSummary
+.post-reactions
+
+	.reaction-summary
+		if reactions
+			for reaction in reactions
+				if reaction.source === myEndpoint
+					reaction-summary-me
+						.reaction-button-summary.pull-right
+							span(class= 'em em-' + reaction.details.reaction)
+
 		table
 			tr
-				td.reaction-summary-heading
-					!= reactionSummary.summary
-				td.reaction-summary-icons
-					!= reactionSummary.icons
-				for reaction in reactions
-					if reaction.source === myEndpoint
-						td.reaction-summary-me
-							.reaction-button-summary
-								!= 'me:'
-								span(class= 'em em-' + reaction.details.reaction)
-	else
-		.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
+				if !reactionSummary
+					td.reaction-summary-icons
+						.reaction-button-summary
+							.reaction-button-container.reaction-button.greyscale(data-value="thumbsup")
+								.em.em-thumbsup
+				if reactionSummary
+					td.reaction-summary-icons
+						!= reactionSummary.icons
+					td.reaction-summary-heading
+						!= reactionSummary.summary
+				if timestamp
+					td.reaction-summary-heading
+						!= ' - ' + timestamp
+					
+	.more-reactions
+		.reaction-button-container.reaction-button(data-value="thumbsdown")
+			.em.em-thumbsdown
+		.reaction-button-container.reaction-button(data-value="rage")
+			.em.em-rage
+		.reaction-button-container.reaction-button(data-value="angry")
+			.em.em-angry
+		.reaction-button-container.reaction-button(data-value="cry")
+			.em.em-cry
+		.reaction-button-container.reaction-button(data-value="worried")
+			.em.em-worried
+		.reaction-button-container.reaction-button(data-value="heart_eyes")
+			.em.em-heart_eyes
+		.reaction-button-container.reaction-button(data-value="yum")
+			.em.em-yum
+		.reaction-button-container.reaction-button(data-value="smirk")
+			.em.em-smirk
+		.reaction-button-container.reaction-button(data-value="smiley")
+			.em.em-smiley
+		.reaction-button-container.reaction-button(data-value="thumbsup")
 			.em.em-thumbsup
-.more-reactions
-	.reaction-button-container.reaction-button(data-value="thumbsdown")
-		.em.em-thumbsdown
-	.reaction-button-container.reaction-button(data-value="rage")
-		.em.em-rage
-	.reaction-button-container.reaction-button(data-value="angry")
-		.em.em-angry
-	.reaction-button-container.reaction-button(data-value="cry")
-		.em.em-cry
-	.reaction-button-container.reaction-button(data-value="worried")
-		.em.em-worried
-	.reaction-button-container.reaction-button(data-value="heart_eyes")
-		.em.em-heart_eyes
-	.reaction-button-container.reaction-button(data-value="yum")
-		.em.em-yum
-	.reaction-button-container.reaction-button(data-value="smirk")
-		.em.em-smirk
-	.reaction-button-container.reaction-button(data-value="smiley")
-		.em.em-smiley
-	.reaction-button-container.reaction-button(data-value="thumbsup")
-		.em.em-thumbsup
+			
 		
-	
-		
+			
 	
 		
 

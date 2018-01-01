@@ -15,6 +15,12 @@ module.exports = function (server) {
 
 	var proxyRE = /^\/proxy\-(post\-reactions|post\-comments|post\-comment\-reactions|post\-comment|post\-photos|post\-photo\-reactions|post\-photo\-comments|post\-photo\-comment\-reactions|post\-photo\-comment|post\-photo|profile|posts|post)/;
 
+	function getPOVEndpoint(currentUser) {
+		if (currentUser) {
+			return server.locals.config.publicHost + '/' + currentUser.username;
+		}
+	}
+
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
@@ -30,24 +36,27 @@ module.exports = function (server) {
 			return res.sendStatus(400);
 		}
 
-		var myEndpoint;
-		if (currentUser) {
-			myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
-			if (endpoint.match(new RegExp('^' + myEndpoint))) {
-				debug('proxy: endpoint is same as logged in user, redirect ' + myEndpoint);
-				return res.redirect(endpoint.replace(new RegExp('^' + server.locals.config.publicHost), ''));
-			}
-		}
-
 		if (template === 'profile') {
 			endpoint += '/posts';
+		}
+
+		var isMe = false;
+		if (currentUser) {
+			var myEndpoint;
+
+			myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
+			if (endpoint.match(new RegExp('^' + myEndpoint))) {
+				debug('proxy: endpoint is same as logged in user');
+				isMe = true;
+			}
 		}
 
 		var options = {
 			'url': endpoint + '.json',
 			'json': true,
-			headers: {
-				'friend-access-token': friend ? friend.remoteAccessToken : ''
+			'headers': {
+				'friend-access-token': friend ? friend.remoteAccessToken : '',
+				'access_token': !friend && req.signedCookies.access_token ? req.signedCookies.access_token : ''
 			}
 		};
 
@@ -88,7 +97,10 @@ module.exports = function (server) {
 					'data': data,
 					'friend': friend,
 					'user': currentUser,
-					'myEndpoint': myEndpoint
+					'wall': true,
+					'isMe': isMe,
+					'myEndpoint': getPOVEndpoint(currentUser),
+					'wantSummary': template === 'post-comment'
 				});
 			}
 		});

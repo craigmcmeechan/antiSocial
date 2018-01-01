@@ -181,7 +181,8 @@ module.exports = function (server) {
 					friend.updateAttributes({
 						'remoteRequestToken': requestToken,
 						'remoteAccessToken': body.accessToken,
-						'remotePublicKey': body.publicKey
+						'remotePublicKey': body.publicKey,
+						'remoteName': body.name
 					}, function (err) {
 						cb(null, friend);
 					});
@@ -273,7 +274,8 @@ module.exports = function (server) {
 			var payload = {
 				'status': 'ok',
 				'accessToken': friend.localAccessToken,
-				'publicKey': friend.keys.public
+				'publicKey': friend.keys.public,
+				'name': friend.user().name
 			};
 
 			res.send(payload);
@@ -401,15 +403,16 @@ module.exports = function (server) {
 						return cb(e);
 					}
 
-					cb(null, user, friend, body.accessToken, body.publicKey);
+					cb(null, user, friend, body.accessToken, body.publicKey, body.name);
 				});
 			},
-			function saveCredentials(user, friend, token, key, cb) {
+			function saveCredentials(user, friend, token, key, name, cb) {
 				debug('/friend-request saveCredentials');
 
 				friend.updateAttributes({
 					'remoteAccessToken': token,
-					'remotePublicKey': key
+					'remotePublicKey': key,
+					'remoteName': name
 				}, function (err) {
 					if (err) {
 						var e = new VError(err, '/friend-request saveCredentials error saving');
@@ -431,7 +434,7 @@ module.exports = function (server) {
 						'type': 'pending friend request',
 						'source': friend.remoteEndPoint,
 						'about': friend.remoteEndPoint,
-						'humanReadable': '<img src="' + sourceProfile.profile.photo.url + '"> pending friend request from ' + sourceProfile.profile.name
+						'originator': false
 					};
 					req.app.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 						if (err) {

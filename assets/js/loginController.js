@@ -6,7 +6,7 @@
 		this.start = function () {
 
 			$('#login-form').on('shown.bs.modal', function () {
-				$('#login-email-address').focus()
+				self.element.find('.login-email-address').focus()
 			});
 
 			this.element.on('submit', function (e) {

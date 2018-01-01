@@ -9,10 +9,12 @@
 					.done(function () {
 						flashAjaxStatus('info', 'logged out');
 						didLogOut();
-						$('body').trigger('DigitopiaReloadPage');
+						loadPage('/');
 					})
 					.fail(function () {
 						flashAjaxStatus('error', 'problem logging out');
+						didLogOut();
+						loadPage('/');
 					});
 			});
 		};
