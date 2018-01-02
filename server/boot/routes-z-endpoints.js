@@ -235,10 +235,6 @@ module.exports = function (server) {
       currentUser = ctx.get('currentUser');
     }
 
-    debug('request  currentUser %j', currentUser);
-    debug('request  acessToken %j', req.accessToken);
-    debug('request  access_token header', req.get('access_token'));
-
     async.waterfall([
       function (cb) {
         getUser(username, function (err, user) {
