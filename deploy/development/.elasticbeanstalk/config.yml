@@ -1,4 +1,6 @@
 branch-defaults:
+  development:
+    environment: devel-antisocial
   master:
     environment: devel-antisocial
   small-issues:

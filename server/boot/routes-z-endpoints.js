@@ -1294,6 +1294,8 @@ module.exports = function (server) {
       });
     }
 
+    debug('getPosts: %j', query);
+
     server.models.Post.find(query, function (err, posts) {
       if (err) {
         return cb(err);
@@ -1312,8 +1314,6 @@ module.exports = function (server) {
           'userId': user.id
         }]
       },
-      'order': 'createdOn DESC',
-      'limit': 30,
       'include': [{
         'user': ['uploads']
       }, {
@@ -1328,6 +1328,8 @@ module.exports = function (server) {
         }
       });
     }
+
+    debug('getPost: %j', query);
 
     server.models.Post.findOne(query, function (err, post) {
       if (err) {

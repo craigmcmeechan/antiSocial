@@ -22,6 +22,7 @@ module.exports = function (server) {
 	}
 
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
+
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
 		var json = req.query.format === 'json';
@@ -54,11 +55,17 @@ module.exports = function (server) {
 		var options = {
 			'url': endpoint + '.json',
 			'json': true,
-			'headers': {
-				'friend-access-token': friend ? friend.remoteAccessToken : '',
-				'access_token': !friend && req.signedCookies.access_token ? req.signedCookies.access_token : ''
-			}
+			'headers': {}
 		};
+
+		if (friend) {
+			options.headers['friend-access-token'] = friend.remoteAccessToken;
+		}
+		else {
+			if (req.signedCookies.access_token) {
+				options.headers['access_token'] = req.signedCookies.access_token;
+			}
+		}
 
 		debug('proxy request: %j', options);
 
