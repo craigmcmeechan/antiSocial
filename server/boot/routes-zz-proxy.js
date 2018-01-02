@@ -55,11 +55,17 @@ module.exports = function (server) {
 		var options = {
 			'url': endpoint + '.json',
 			'json': true,
-			'headers': {
-				'friend-access-token': friend ? friend.remoteAccessToken : '',
-				'access_token': !friend && req.signedCookies.access_token ? req.signedCookies.access_token : ''
-			}
+			'headers': {}
 		};
+
+		if (friend) {
+			options.headers['friend-access-token'] = friend.remoteAccessToken;
+		}
+		else {
+			if (req.signedCookies.access_token) {
+				options.headers['access_token'] = req.signedCookies.access_token;
+			}
+		}
 
 		debug('proxy request: %j', options);
 
