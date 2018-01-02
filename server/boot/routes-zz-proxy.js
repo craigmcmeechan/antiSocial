@@ -22,6 +22,8 @@ module.exports = function (server) {
 	}
 
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
+		debug('request: %j', req);
+
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
 		var json = req.query.format === 'json';
