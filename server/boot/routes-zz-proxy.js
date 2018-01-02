@@ -33,11 +33,6 @@ module.exports = function (server) {
 		var currentUser = ctx.get('currentUser');
 		var friend = ctx.get('friend');
 
-		debug('request  currentUser %j', currentUser);
-		debug('request  acessToken %j', req.accessToken);
-		debug('request  headers', req.get('access_token'));
-
-
 		if (!endpoint) {
 			return res.sendStatus(400);
 		}
