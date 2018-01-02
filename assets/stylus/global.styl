@@ -29,10 +29,20 @@ body
 	.content-padding-top
 		padding-top:15px
 		padding-bottom:15px
-	.container-fluid
-		.zdigitopia-xsmall &
-			padding-left:7px
-			padding-right:7px
+
+	.no-gutters
+		.digitopia-xsmall &
+			padding-right: 0
+			padding-left: 0
+			.newsfeed-item
+				border-radius: 0px
+			.row
+				margin-right: 0
+				margin-left: 0
+				& > [class^="col-"], & > [class*=" col-"]
+					padding-right: 0
+					padding-left: 0
+
 
 #sidebar
 	background-color:#ccc
@@ -46,7 +56,7 @@ body
 
 #tmks
 	text-align:left
-	color:#ccc
+	color:#999
 
 .copy-left
 	display: inline-block
@@ -515,7 +525,7 @@ img.avatar
 	background-color:white
 	border-radius:4px
 	.digitopia-xsmall &
-		display:none
+		display:none!important
 	.status
 		width:8px
 		height:8px
