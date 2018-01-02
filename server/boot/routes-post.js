@@ -174,7 +174,6 @@ module.exports = function (server) {
           'userId': currentUser.id,
           'createdOn': news.createdOn,
           'updatedOn': news.updatedOn,
-          'originator': true,
           'details': {}
         };
 
