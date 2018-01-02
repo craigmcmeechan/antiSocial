@@ -22,7 +22,6 @@ module.exports = function (server) {
 	}
 
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
-		debug('request: %j', req);
 
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
@@ -33,6 +32,11 @@ module.exports = function (server) {
 		var template = matches[1];
 		var currentUser = ctx.get('currentUser');
 		var friend = ctx.get('friend');
+
+		debug('request  currentUser %j', currentUser);
+		debug('request  acessToken %j', req.accessToken);
+		debug('request  headers', req.get('access_token'));
+
 
 		if (!endpoint) {
 			return res.sendStatus(400);
