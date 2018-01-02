@@ -237,7 +237,7 @@ module.exports = function (server) {
 
     debug('request  currentUser %j', currentUser);
     debug('request  acessToken %j', req.accessToken);
-    debug('request  headers', req.get('access_token'));
+    debug('request  access_token header', req.get('access_token'));
 
     async.waterfall([
       function (cb) {
