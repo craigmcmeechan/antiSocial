@@ -20,6 +20,7 @@ module.exports = function (MyUser) {
 				'@upload',
 				'@isunique',
 				'@register',
+				'@login',
 				'updateAttributes',
 				'__create__invitations',
 				'__updateById__friends',
