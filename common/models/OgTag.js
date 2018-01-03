@@ -11,8 +11,14 @@ var path = require('path');
 var urlParse = require('url');
 var mime = require('mime-types');
 var uuid = require('uuid');
+var RemoteRouting = require('loopback-remote-routing');
 
 module.exports = function (OgTag) {
+	if (!process.env.ADMIN) {
+		RemoteRouting(OgTag, {
+			'only': []
+		});
+	}
 
 	var verbose = process.env.VERBOSE;
 

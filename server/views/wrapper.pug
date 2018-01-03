@@ -121,8 +121,9 @@ html(lang="en")
 						.modal-footer
 							.pull-left
 								a(href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal") Forgot Password
-								| &nbsp;|&nbsp;
-								a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
+								if globalSettings.multiUser === 'open'
+									| &nbsp;|&nbsp;
+									a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
 							button#login-button.btn.btn-primary(type="submit") Login
 
 		#password-request-reset-form.modal.fade(tabindex="-1" role="dialog")
@@ -143,46 +144,49 @@ html(lang="en")
 										.validation-help
 						.modal-footer
 							.pull-left
-								a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
+								a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Login
+								if globalSettings.multiUser === 'open'
+									a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
 							button#reset-request-button.btn.btn-primary(type="submit") Password Reset
 
-		#register-form.modal.fade(tabindex="-1" role="dialog")
-			.modal-dialog(role="document")
-				
-				form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
-					.modal-content
-						.modal-header
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							<h4 class="modal-title">Register</h4>
-						.modal-body
-							.form-group.input-relative
-								input.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email")
-								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
-								.validation-help
-									
-							.form-group.input-relative
-								input.form-control(type="text" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']")
-								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
-								.validation-help
+		if globalSettings.multiUser === 'open'
+			#register-form.modal.fade(tabindex="-1" role="dialog")
+				.modal-dialog(role="document")
+					
+					form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
+						.modal-content
+							.modal-header
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title">Register</h4>
+							.modal-body
+								.form-group.input-relative
+									input.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email")
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
+										
+								.form-group.input-relative
+									input.form-control(type="text" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']")
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
 
-							.form-group.input-relative
-								input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
-								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
-								.validation-help
-									
-							.form-group.input-relative
-								input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
-								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
-								.validation-help
-						.modal-footer
-							.pull-left
-								a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Already Have Account
-							button#register-button.btn.btn-primary Sign Up
-							
+								.form-group.input-relative
+									input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
+										
+								.form-group.input-relative
+									input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
+							.modal-footer
+								.pull-left
+									a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Already Have Account
+								button#register-button.btn.btn-primary Sign Up
+								
 		#password-reset-form.modal.fade(tabindex="-1" role="dialog")
 			.modal-dialog(role="document")
 				form.form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
@@ -204,6 +208,9 @@ html(lang="en")
 									span.glyphicon.glyphicon-ok
 								.validation-help
 						.modal-footer
+							.pull-left
+								a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Login
+
 							button#reset-button.btn.btn-primary Reset Password
 
 		#request-invite-form.modal.fade(tabindex="-1" role="dialog")

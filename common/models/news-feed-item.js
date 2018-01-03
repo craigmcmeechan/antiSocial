@@ -7,9 +7,16 @@ var resolveProfiles = require('../../server/lib/resolveProfiles');
 var async = require('async');
 var url = require('url');
 var server = require('../../server/server');
+var RemoteRouting = require('loopback-remote-routing');
 
 
 module.exports = function (NewsFeedItem) {
+
+	if (!process.env.ADMIN) {
+		RemoteRouting(NewsFeedItem, {
+			'only': ['@live']
+		});
+	}
 
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
 	NewsFeedItem.live = function (userId, ctx, cb) {

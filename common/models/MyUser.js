@@ -10,18 +10,26 @@ var async = require('async');
 var mailer = require('../../server/lib/mail');
 var qs = require('querystring');
 var RemoteRouting = require('loopback-remote-routing');
-
 var debug = require('debug')('user');
 var debugVerbose = require('debug')('user:verbose');
 
 module.exports = function (MyUser) {
-	/*
 	if (!process.env.ADMIN) {
 		RemoteRouting(MyUser, {
-			'only': []
+			'only': [
+				'@upload',
+				'@isunique',
+				'@register',
+				'__create__invitations',
+				'__updateById__friends',
+				'__destroyById__photos',
+				'__updateById__photos',
+				'__create__photos',
+				'__get__photos',
+				'@tag'
+			]
 		});
 	}
-	*/
 
 	if (process.env.ADMIN) {
 		admin.setUpRoleToggleAPI(MyUser);

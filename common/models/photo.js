@@ -1,6 +1,13 @@
 var uploadable = require('../../server/lib/uploadable')();
+var RemoteRouting = require('loopback-remote-routing');
 
 module.exports = function (Photo) {
+	if (!process.env.ADMIN) {
+		RemoteRouting(Photo, {
+			'only': []
+		});
+	}
+
 	Photo.on('attached', function () {
 		// on Upload make versions for various UI uses
 		var versions = {

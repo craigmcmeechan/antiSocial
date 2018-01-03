@@ -23,14 +23,12 @@
   },
   "admin": {
     "defaultProperty": "url",
-    "helpers": [
-      {
-        "type": "upload",
-        "name": "Image",
-        "property": "image",
-        "endpoint": "/api/OgTags/:id/upload/image"
-      }
-    ]
+    "helpers": [{
+      "type": "upload",
+      "name": "Image",
+      "property": "image",
+      "endpoint": "/api/OgTags/:id/upload/image"
+    }]
   },
   "properties": {
     "url": {
@@ -44,21 +42,30 @@
   },
   "validations": [],
   "relations": {},
-  "acls": [
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "lookup"
-    },
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "scrape"
-    }
-  ],
+  "acls": [{
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "DENY"
+  }, {
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "admin",
+    "permission": "ALLOW"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW",
+    "property": "lookup"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW",
+    "property": "scrape"
+  }],
   "methods": {}
 }
