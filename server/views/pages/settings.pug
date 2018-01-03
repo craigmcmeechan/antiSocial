@@ -20,7 +20,7 @@ block content
 									else
 										input(type="checkbox" name="discoverable")
 
-									| Discoverable
+									| Discoverable (Public posts and profile visible to search engines)
 
 					if !user.username
 						.form-group
@@ -51,47 +51,47 @@ block content
 							.input-relative
 								label Audiences
 								- var canEdit = user.audiences !== ""
-								- var audiences = JSON.stringify(user.audiences ? user.audiences : ['besties','family','colleagues','acquaintances'])
+								- var audiences = JSON.stringify(user.audiences ? user.audiences : ['close','family','colleagues','acquaintances'])
 								input#audience-list.form-control(type="hidden" name="audiences" placeholder="Audiences" data-validate="required" value= audiences)
 								.list-edit(data-jsclass="editListController" data-target="#audience-list" data-add-only= !init)
 								.input-ok-indicator
 									span.glyphicon.glyphicon-ok
 								.validation-help
 
-					.form-group
-							.input-relative
-								label Post Categories
-								- var init = user.categories === ""
-								- var categories = JSON.stringify(user.categories ? user.categories : ['LOL','WTF','politics'])
-								input#category-list.form-control(type="hidden" name="categories" placeholder="Categories" data-validate="required" value= categories)
-								.list-edit(data-jsclass="editListController" data-target="#category-list" data-add-only= !init)
-								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
-								.validation-help
+					//
+						.form-group
+								.input-relative
+									label Post Categories
+									- var init = user.categories === ""
+									- var categories = JSON.stringify(user.categories ? user.categories : ['LOL','WTF','politics'])
+									input#category-list.form-control(type="hidden" name="categories" placeholder="Categories" data-validate="required" value= categories)
+									.list-edit(data-jsclass="editListController" data-target="#category-list" data-add-only= !init)
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
 
-				- var fb,tw
-
-				if user.identities()
-					for identity in user.identities()
-						if identity.provider === 'facebook'
-							- fb= identity
-						if identity.provider === 'twitter'
-							- tw= identity
-
-				.row
-					.col-xs-12
-						if fb
-							p Linked w/facebook account
-						else
-							p
-								a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
-				.row
-					.col-xs-12
-						if tw
-							p Linked w/twitter account
-						else
-							p
-								a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
+				//
+					- var fb,tw
+					if user.identities()
+						for identity in user.identities()
+							if identity.provider === 'facebook'
+								- fb= identity
+							if identity.provider === 'twitter'
+								- tw= identity
+					.row
+						.col-xs-12
+							if fb
+								p Linked w/facebook account
+							else
+								p
+									a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
+					.row
+						.col-xs-12
+							if tw
+								p Linked w/twitter account
+							else
+								p
+									a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
 
 		#scope-upload
 			.row
