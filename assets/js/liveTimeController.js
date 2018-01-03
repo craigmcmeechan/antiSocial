@@ -3,12 +3,10 @@
 		this.element = $(elem);
 		var self = this;
 
-		this.tz;
-		this.updateTimestamps;
+		this.updateTimestamps = null;
+		this.tz = moment.tz.guess();
 
 		this.start = function () {
-
-			self.tz = moment.tz(moment.tz.guess()).zone() - moment().zone();
 
 			self.updateTimestamps = setInterval(function () {
 				self.updateTimes();
@@ -41,7 +39,7 @@
 		this.getDeltaTime = function (timestamp) {
 			var delta;
 			if (moment().diff(moment(timestamp), 'hours') > 24) {
-				delta = moment(timestamp).calendar();
+				delta = moment(timestamp).tz(self.tz).calendar();
 			}
 			else {
 				delta = moment(timestamp).fromNow();

@@ -1,38 +1,91 @@
-function getUserAndPosts
-async.waterfall([
-	function (cb) {
-		getUser(username, function (err, user) {
-			if (err) {
-				return cb(err);
-			}
-			cb(err, user);
-		});
-	},
-	function (user, cb) {
-		if (currentUser) {
-			if (currentUser.id.toString() === user.id.toString()) {
-				isMe = true;
-			}
+this.start = function () {
+
+	if (Modernizr.touchevents) {
+		self.element[0].addEventListener("touchstart", self.touchStart);
+	}
+};
+}
+
+this.stop = function () {
+	if (Modernizr.touchevents) {
+		self.element[0].removeEventListener("touchstart", self.touchStart);
+	}
+};
+
+this.touchStart = function (e) {
+
+	self.slideWidth = self.element.width();
+	self.maxMove = self.slides.length * self.slideWidth;
+	self.currentPosition = (self.slides.length * self.slideWidth) * -1;
+
+	self.startX = event.touches[0].pageX;
+	self.startY = event.touches[0].pageY;
+	var canvas = self.element.find('.canvas');
+
+	self.startLeft = parseInt(canvas.css('margin-left'));
+
+	self.timerCounter = 0;
+	self.timer = setInterval(function () {
+		self.timerCounter++;
+	}, 10);
+	self.touching = true;
+
+	self.element[0].addEventListener("touchmove", self.touchMove);
+
+	self.element[0].addEventListener("touchend", self.touchEnd);
+}
+
+this.touchMove = function (event) {
+	if (self.touching) {
+		self.deltaX = event.touches[0].pageX - self.startX;
+		self.deltaY = event.touches[0].pageY - self.startY;
+
+		if (Math.abs(self.deltaY) > Math.abs(self.deltaX)) {
+			self.comeBack();
+			self.touchDone();
 		}
-		getPosts(user, friend, highwater, isMe, function (err, posts) {
-			cb(err, user, posts);
-		});
-	},
-	function (user, posts, cb) {
-		resolvePostPhotos(posts, function (err) {
-			cb(err, user, posts);
-		});
-	},
-	function (user, posts, cb) {
-		resolveReactionsCommentsAndProfiles(posts, function (err) {
-			cb(err, user, posts);
-		});
+		else {
+			event.preventDefault();
+			var left = self.startLeft + self.deltaX;
+			var canvas = self.element.find('.canvas');
+			console.log('oldleft:', self.startLeft, 'delta:', self.deltaX, 'new left:', left);
+			$(canvas).css('margin-left', left);
+		}
 	}
-], function (err, user, posts) {
-	if (err) {
-		return next(err);
+}
+
+this.touchEnd = function (event) {
+	if (self.touching) {
+		if ((self.deltaX > 0 && self.currentPosition == 0) || (self.deltaX < 0 && self.currentPosition == -(self.maxMove - self.slideWidth))) {
+			self.scroll(null, self.currentIndex);
+		}
+		else if ((self.timerCounter < 30 && self.deltaX > 100) || (self.deltaX >= (self.slideWidth / 2))) {
+			self.scroll(null, self.currentIndex - 1);
+		}
+		else if ((self.timerCounter < 30 && self.deltaX < -100) || (self.deltaX <= -(self.slideWidth / 2))) {
+			self.scroll(null, self.currentIndex + 1);
+		}
+		else {
+			self.scroll(null, self.currentIndex);
+		}
+
+		clearInterval(this.timer);
+		self.timerCounter = 0;
+		self.touching = false;
+		self.deltaX = 0;
+		self.element[0].removeEventListener("touchmove", self.touchMove);
+		self.element[0].removeEventListener("touchend", self.souchEnd);
 	}
-});
+}
+
+
+this.touchDone = function () {
+	self.touching = false;
+}
+
+this.comeBack = function () {
+	this.scroll(null, this.currentIndex);
+}
 
 
 (function ($) {
@@ -102,291 +155,3 @@ window.fbAsyncInit = function () {
 		version: 'v2.1'
 	});
 };
-
-
-
-{
-	"profile": {
-		"name": "User Two",
-		"photo": {
-			"url": "/images/slug.png"
-		},
-		"background": {
-			"url": "/images/fpo.jpg"
-		},
-		"endpoint": "http://127.0.0.1:3000/user-2",
-		"publicHost": "http://127.0.0.1:3000"
-	},
-	"post": {
-		"uuid": "b9cf60f7-dc41-46ff-8695-9b7795d31784",
-		"source": "http://127.0.0.1:3000/user-2",
-		"body": "Hello world",
-		"visibility": ["friends"],
-		"id": 2,
-		"userId": 2,
-		"createdOn": "2017-12-20T05:44:07.633Z",
-		"updatedOn": "2017-12-20T05:44:07.633Z",
-		"sortedPhotos": [{
-			"status": "complete",
-			"title": "photo Title",
-			"description": "photo Description",
-			"uuid": "db478059-207d-47a6-85c7-b5c93ebf9825",
-			"id": 1,
-			"userId": 2,
-			"createdOn": "2017-12-20T05:44:07.089Z",
-			"updatedOn": "2017-12-20T05:44:07.640Z",
-			"uploads": [{
-				"property": "optimized",
-				"type": "JPEG",
-				"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
-				"bucket": "site-uploads",
-				"imageSet": {
-					"large": {
-						"suffix": "large",
-						"quality": 90,
-						"maxHeight": 2048,
-						"maxWidth": 2048,
-						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg",
-						"width": 3071,
-						"height": 2048,
-						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg"
-					},
-					"thumb": {
-						"suffix": "thumb",
-						"quality": 90,
-						"maxHeight": 300,
-						"maxWidth": 300,
-						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg",
-						"width": 450,
-						"height": 300,
-						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg"
-					},
-					"original": {
-						"original": true,
-						"width": "1024",
-						"height": "683",
-						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
-						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg"
-					}
-				},
-				"id": 1,
-				"uploadableId": 1,
-				"uploadableType": "Photo",
-				"createdOn": "2017-12-20T05:44:07.592Z",
-				"updatedOn": "2017-12-20T05:44:07.592Z"
-			}]
-		}],
-		"resolvedComments": [{
-			"uuid": "c53a78f3-f4fa-49c9-b415-7bc7ae31017d",
-			"type": "comment",
-			"source": "http://127.0.0.1:3000/user-1",
-			"about": "http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784",
-			"details": {
-				"body": "a comment"
-			},
-			"createdOn": "2017-12-20T05:44:07.725Z",
-			"updatedOn": "2017-12-20T05:44:07.725Z",
-			"originator": false,
-			"id": 10,
-			"userId": 2,
-			"friendId": 2,
-			"resolvedReactions": [{
-				"uuid": "132a0ddf-81dc-4d5d-be2d-2da1ef51f1a7",
-				"type": "react",
-				"source": "http://127.0.0.1:3000/user-1",
-				"about": "http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784/comment/c53a78f3-f4fa-49c9-b415-7bc7ae31017d",
-				"details": {},
-				"createdOn": "2017-12-20T05:44:07.767Z",
-				"updatedOn": "2017-12-20T05:44:07.767Z",
-				"originator": true,
-				"id": 11,
-				"userId": 1,
-				"resolvedProfiles": {
-					"http://127.0.0.1:3000/user-1": {
-						"status": 200,
-						"profile": {
-							"name": "User One",
-							"photo": {
-								"url": "/images/slug.png"
-							},
-							"background": {
-								"url": "/images/fpo.jpg"
-							},
-							"endpoint": "http://127.0.0.1:3000/user-1",
-							"publicHost": "http://127.0.0.1:3000"
-						}
-					},
-					"http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784/comment/c53a78f3-f4fa-49c9-b415-7bc7ae31017d": {
-						"status": 200,
-						"profile": {
-							"name": "User Two",
-							"photo": {
-								"url": "/images/slug.png"
-							},
-							"background": {
-								"url": "/images/fpo.jpg"
-							},
-							"endpoint": "http://127.0.0.1:3000/user-2",
-							"publicHost": "http://127.0.0.1:3000"
-						}
-					}
-				}
-			}],
-			"resolvedProfiles": {
-				"http://127.0.0.1:3000/user-1": {
-					"status": 200,
-					"profile": {
-						"name": "User One",
-						"photo": {
-							"url": "/images/slug.png"
-						},
-						"background": {
-							"url": "/images/fpo.jpg"
-						},
-						"endpoint": "http://127.0.0.1:3000/user-1",
-						"publicHost": "http://127.0.0.1:3000"
-					}
-				},
-				"http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784": {
-					"status": 200,
-					"profile": {
-						"name": "User Two",
-						"photo": {
-							"url": "/images/slug.png"
-						},
-						"background": {
-							"url": "/images/fpo.jpg"
-						},
-						"endpoint": "http://127.0.0.1:3000/user-2",
-						"publicHost": "http://127.0.0.1:3000"
-					}
-				}
-			}
-		}],
-		"resolvedReactions": [{
-			"uuid": "57f8d94f-3c9f-4adc-8318-c20d299b5696",
-			"type": "react",
-			"source": "http://127.0.0.1:3000/user-1",
-			"about": "http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784",
-			"details": {
-				"reaction": "thumbsup"
-			},
-			"createdOn": "2017-12-20T05:44:07.665Z",
-			"updatedOn": "2017-12-20T05:44:07.665Z",
-			"originator": false,
-			"id": 8,
-			"userId": 2,
-			"friendId": 2,
-			"resolvedProfiles": {
-				"http://127.0.0.1:3000/user-1": {
-					"status": 200,
-					"profile": {
-						"name": "User One",
-						"photo": {
-							"url": "/images/slug.png"
-						},
-						"background": {
-							"url": "/images/fpo.jpg"
-						},
-						"endpoint": "http://127.0.0.1:3000/user-1",
-						"publicHost": "http://127.0.0.1:3000"
-					}
-				},
-				"http://127.0.0.1:3000/user-2/post/b9cf60f7-dc41-46ff-8695-9b7795d31784": {
-					"status": 200,
-					"profile": {
-						"name": "User Two",
-						"photo": {
-							"url": "/images/slug.png"
-						},
-						"background": {
-							"url": "/images/fpo.jpg"
-						},
-						"endpoint": "http://127.0.0.1:3000/user-2",
-						"publicHost": "http://127.0.0.1:3000"
-					}
-				}
-			}
-		}],
-		"resolvedProfiles": {
-			"http://127.0.0.1:3000/user-2": {
-				"status": 200,
-				"profile": {
-					"name": "User Two",
-					"photo": {
-						"url": "/images/slug.png"
-					},
-					"background": {
-						"url": "/images/fpo.jpg"
-					},
-					"endpoint": "http://127.0.0.1:3000/user-2",
-					"publicHost": "http://127.0.0.1:3000"
-				}
-			}
-		},
-		"commentSummary": "by <a href=\"/proxy-profile?endpoint=http%3A%2F%2F127.0.0.1%3A3000%2Fuser-1\">User One</a>",
-		"reactionSummary": {
-			"summary": "<a href=\"/proxy-profile?endpoint=http%3A%2F%2F127.0.0.1%3A3000%2Fuser-1\">User One</a>",
-			"icons": "<div class=\"reaction-button-summary\"><span class=\"em em-thumbsup\"></div>"
-		},
-		"user": {
-			"name": "User Two",
-			"username": "user-2",
-			"email": "mrhodes+test+proxy2@myantisocial.net",
-			"id": 2,
-			"createdOn": "2017-12-20T05:44:00.661Z",
-			"updatedOn": "2017-12-20T05:44:00.697Z",
-			"uploads": []
-		},
-		"photos": [{
-			"status": "complete",
-			"title": "photo Title",
-			"description": "photo Description",
-			"uuid": "db478059-207d-47a6-85c7-b5c93ebf9825",
-			"id": 1,
-			"userId": 2,
-			"createdOn": "2017-12-20T05:44:07.089Z",
-			"updatedOn": "2017-12-20T05:44:07.640Z",
-			"uploads": [{
-				"property": "optimized",
-				"type": "JPEG",
-				"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
-				"bucket": "site-uploads",
-				"imageSet": {
-					"large": {
-						"suffix": "large",
-						"quality": 90,
-						"maxHeight": 2048,
-						"maxWidth": 2048,
-						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg",
-						"width": 3071,
-						"height": 2048,
-						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380large.jpeg"
-					},
-					"thumb": {
-						"suffix": "thumb",
-						"quality": 90,
-						"maxHeight": 300,
-						"maxWidth": 300,
-						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg",
-						"width": 450,
-						"height": 300,
-						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380thumb.jpeg"
-					},
-					"original": {
-						"original": true,
-						"width": "1024",
-						"height": "683",
-						"path": "client/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg",
-						"url": "http://127.0.0.1:3000/uploads/48aed737-4e21-4f75-ace1-74d4c7de0380.jpeg"
-					}
-				},
-				"id": 1,
-				"uploadableId": 1,
-				"uploadableType": "Photo",
-				"createdOn": "2017-12-20T05:44:07.592Z",
-				"updatedOn": "2017-12-20T05:44:07.592Z"
-			}]
-		}]
-	}
-}
