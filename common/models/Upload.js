@@ -1,7 +1,13 @@
 var async = require('async');
 var fs = require('fs');
+var RemoteRouting = require('loopback-remote-routing');
 
 module.exports = function (Upload) {
+	if (!process.env.ADMIN) {
+		RemoteRouting(Upload, {
+			'only': []
+		});
+	}
 	// Remove dangling files from s3 before deleting instance
 	Upload.observe('before delete', function (ctx, doneObserving) {
 		var File = ctx.Model;

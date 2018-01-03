@@ -6,8 +6,15 @@ var mailer = require('../../server/lib/mail');
 
 var debug = require('debug')('invites');
 var debugVerbose = require('debug')('invites:verbose');
+var RemoteRouting = require('loopback-remote-routing');
 
 module.exports = function (Invitation) {
+
+	if (!process.env.ADMIN) {
+		RemoteRouting(Invitation, {
+			'only': []
+		});
+	}
 
 	Invitation.observe('before save', setToken);
 	Invitation.observe('after save', sendInvite);

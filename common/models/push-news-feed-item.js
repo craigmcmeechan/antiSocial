@@ -4,8 +4,14 @@ var debugVerbose = require('debug')('feeds:verbose');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var encryption = require('../../server/lib/encryption');
+var RemoteRouting = require('loopback-remote-routing');
 
 module.exports = function (PushNewsFeedItem) {
+	if (!process.env.ADMIN) {
+		RemoteRouting(PushNewsFeedItem, {
+			'only': ['@streamUpdates']
+		});
+	}
 
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
 	PushNewsFeedItem.streamUpdates = function (username, ctx, cb) {
