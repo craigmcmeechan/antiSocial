@@ -98,7 +98,8 @@
 				else if (event.data.type === 'react') {
 					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-reactions?endpoint=' + encodeURIComponent(event.data.about + '/reactions')]);
 				}
-				notifyUser(event.data.type, event.data.humanReadable, 'proxy-post?endpoint=' + encodeURIComponent(event.data.about));
+				// TODO: need icon and text delimited
+				// notifyUser(event.data.type, message, icon, '/proxy-post?endpoint=' + encodeURIComponent(event.data.about));
 			}
 		};
 

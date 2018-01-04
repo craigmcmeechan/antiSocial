@@ -39,7 +39,8 @@ myRenderer.link = function (href, title, text) {
 };
 
 marked.setOptions({
-  renderer: myRenderer
+  'renderer': myRenderer,
+  'smartypants': true
 });
 
 function renderMarkdown(markdown) {
@@ -52,6 +53,10 @@ function renderMarkdown(markdown) {
     friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
     friendEndPoint = friendEndPoint.replace(/\)$/, '');
     return '(/proxy-profile?endpoint=' + encodeURIComponent(friendEndPoint) + ')';
+  });
+
+  tagged = tagged.replace(/:([A-Za-z0-9_\-\+]+?):/g, function (emoji) {
+    return '<span class="em em-' + emoji.replace(/:/g, '') + '"></span>';
   });
 
   return marked(tagged);
