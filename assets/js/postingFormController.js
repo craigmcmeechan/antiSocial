@@ -239,9 +239,14 @@
 			markdown = self.parseTags(markdown);
 
 			var rendered = marked(markdown, {
-				renderer: self.renderer
+				'renderer': self.renderer,
+				'smartypants': true
 			});
-			var rendered = rendered.replace(/\<table\>/g, '<table class="table">');
+			rendered = rendered.replace(/\<table\>/g, '<table class="table">');
+			rendered = rendered.replace(/:([A-Za-z0-9_\-\+]+?):/g, function (emoji) {
+				return '<span class="em em-' + emoji.replace(/:/g, '') + '"></span>';
+			});
+
 			self.element.find('#preview-tab').empty().html(rendered);
 			didInjectContent('#preview-tab');
 		};

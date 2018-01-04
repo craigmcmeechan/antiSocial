@@ -6,42 +6,14 @@ block seo
 
 block content
 	.container-fluid.content-padding-top.content
+		.page-header
+			h3 Friends
+		
 		.row
-			.col-sm-6
-				.page-header
-					h1 Friends
-			.col-sm-6
-				#sidebar
-					h4 Your Public Page
-					p= config.publicHost + '/' + user.username
-		.row
-			.col-sm-6
-				if !friends.length
-					p Oops. No friends yet.
-				else
-					.row
-						for friend in friends
-							.col-lg-6
-								.friend-card(style="background:url("+friend.resolvedProfiles[friend.remoteEndPoint].profile.background.url+");background-size: cover;")
-									img.pull-right(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
-									h3
-										a(href= '/proxy-profile?endpoint='+encodeURIComponent(friend.remoteEndPoint))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
-
-									if friend.status === 'pending'
-										<br>
-										if !friend.originator
-											button.btn.btn-primary.btn-md(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
-											| [decline] [block]
-										else
-											| Request Pending [cancel]
-									else
-										<br>
-										|  [delete]
-
-			.col-sm-6
+			.col-sm-6.fold-column
 							
 				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
-					label Add friend by Public Page URL
+					h4 Add friend by Public Page URL
 					.form-group
 						.input-group
 							.input-relative
@@ -49,19 +21,7 @@ block content
 							.input-group-btn
 								button#lookup-button.btn.btn-primary Lookup
 							
-
-				if error
-					.alert.alert-error= error
-
-				if profile
-					// p= JSON.stringify(profile)
-					.friend-card(style="background:url("+profile.profile.background.url+");;background-size: cover;")
-						img.pull-right(src= profile.profile.photo.url)
-						h3= profile.profile.name
-
-						button.btn.btn-primary.btn-sm(data-jsclass="getEndpointController" data-endpoint= '/friend?endpoint=' + encodeURIComponent(endpoint)) Add Friend
-
-				h3 Invite a friend via Email
+				h4 - or - Invite a friend via Email
 
 				form#invite-friend-form.form.form-validation(method="POST" action="/api/MyUsers/me/invitations" data-jsclass="formValidator" data-submitter="#lookup-button")
 					input(type="hidden" name="type" value="friend")
@@ -79,3 +39,31 @@ block content
 								span.glyphicon.glyphicon-ok
 							.validation-help
 					button.btn.btn-primary.btn-sm(data-jsclass="postEndpointController" data-target="#invite-friend-form" data-endpoint= '/api/MyUsers/me/invitations') Send
+
+					#sidebar(style="margin-top:30px;")
+						h4 Your Public Endpoint
+						p= config.publicHost + '/' + user.username
+
+			.col-sm-6
+				if !friends.length
+					p Oops. No friends yet.
+				else
+					.row
+						for friend in friends
+							.col-4.col-sm-6
+								.media.friend-card
+									.media-left.media-top
+										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
+									.media-body
+										h4
+											a(href= '/proxy-profile?endpoint='+encodeURIComponent(friend.remoteEndPoint))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
+										p
+											if friend.status === 'pending'
+											
+												if !friend.originator
+													button.btn.btn-primary.btn-md(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
+													| [decline] [block]
+												else
+													| Request Pending [cancel]
+											else
+												|  [delete]

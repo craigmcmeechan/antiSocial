@@ -35,9 +35,6 @@
     "updatedOn": {
       "type": "date",
       "defaultFn": "now"
-    },
-    "originator": {
-      "type": "boolean"
     }
   },
   "validations": [],
@@ -53,6 +50,24 @@
       "foreignKey": "friendId"
     }
   },
-  "acls": [],
+  "acls": [{
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "DENY"
+  }, {
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "admin",
+    "permission": "ALLOW"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW",
+    "property": "live"
+  }],
   "methods": {}
 }

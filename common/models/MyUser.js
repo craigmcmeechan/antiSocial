@@ -10,18 +10,28 @@ var async = require('async');
 var mailer = require('../../server/lib/mail');
 var qs = require('querystring');
 var RemoteRouting = require('loopback-remote-routing');
-
 var debug = require('debug')('user');
 var debugVerbose = require('debug')('user:verbose');
 
 module.exports = function (MyUser) {
-	/*
 	if (!process.env.ADMIN) {
 		RemoteRouting(MyUser, {
-			'only': []
+			'only': [
+				'@upload',
+				'@isunique',
+				'@register',
+				'@login',
+				'updateAttributes',
+				'__create__invitations',
+				'__updateById__friends',
+				'__destroyById__photos',
+				'__updateById__photos',
+				'__create__photos',
+				'__get__photos',
+				'@tag'
+			]
 		});
 	}
-	*/
 
 	if (process.env.ADMIN) {
 		admin.setUpRoleToggleAPI(MyUser);
@@ -387,18 +397,20 @@ module.exports = function (MyUser) {
 		var currentUser = myContext.get('currentUser');
 		var pattern = new RegExp('^' + value + '.*', 'i');
 
-		server.models.Friend.find({
+		var clause = {
 			'where': {
 				'and': [{
 					'remoteName': {
-						'like': pattern
+						'regexp': pattern
 					}
 				}, {
-					'id': currentUser.id
+					'userId': currentUser.id.toString()
 				}]
 			},
 			'limit': 10
-		}, function (err, friends) {
+		};
+
+		server.models.Friend.find(clause, function (err, friends) {
 			if (err) {
 				return cb(err);
 			}

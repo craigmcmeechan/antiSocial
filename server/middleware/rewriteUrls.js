@@ -1,6 +1,6 @@
 var checkProxyRE = /^\/([a-zA-Z0-9\-]+)/;
-var debug = require('debug')('routes');
-var debugVerbose = require('debug')('routes:verbose');
+var debug = require('debug')('proxy');
+var debugVerbose = require('debug')('proxy:verbose');
 
 module.exports = function (view) {
 	return function rewriteUrls(req, res, next) {

@@ -121,6 +121,9 @@ module.exports = function (grunt) {
 		},
 		uglify: {
 			dist: {
+				options: {
+					sourceMap: true
+				},
 				files: {
 					'<%=jsDistDir%><%= pkg.name %>.min.js': ['<%= concat.js.dest %>']
 				}
