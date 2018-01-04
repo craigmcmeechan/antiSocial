@@ -5,7 +5,6 @@
 ##### h5 Heading
 ###### h6 Heading
 
-
 ## Horizontal Rules
 
 ___
@@ -14,19 +13,9 @@ ___
 
 ***
 
-
 ## Typographic replacements
 
-Enable typographer option to see result.
-
-(c) (C) (r) (R) (tm) (TM) (p) (P) +-
-
-test.. test... test..... test?..... test!....
-
-!!!!!! ???? ,,  -- ---
-
 "Smartypants, double quotes" and 'single quotes'
-
 
 ## Emphasis
 
@@ -40,14 +29,11 @@ _This is italic text_
 
 ~~Strikethrough~~
 
-
 ## Blockquotes
-
 
 > Blockquotes can also be nested...
 >> ...by using additional greater-than signs right next to each other...
 > > > ...or with spaces between arrows.
-
 
 ## Lists
 
@@ -70,22 +56,6 @@ Ordered
 ## Code
 
 Inline `code`
-
-Indented code
-
-    // Some comments
-    line 1 of code
-    line 2 of code
-    line 3 of code
-
-
-Block code "fences"
-
-```
-Sample text here...
-```
-
-Syntax highlighting
 
 ```javascript
 var foo = function (bar) {
@@ -112,31 +82,21 @@ Right aligned columns
 | ext    | extension to be used for dest files. |
 
 
-## Links
 
-[link text](http://dev.nodeca.com)
+### Emojies
 
-[link with title](http://nodeca.github.io/pica/demo/ "title text!")
-
-Autoconverted link https://github.com/nodeca/pica (enable linkify to see)
+> Classic markup: :wink: :heart_eyes: :cry: :yum:
 
 
-## Images
+### Links can be made in several forms and there can be many per post
 
-![Minion](https://octodex.github.com/images/minion.png)
-![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+[inline](http://www.google.com)
 
-Like links, Images also have a footnote style syntax
+__Link w/preview__
+https://www.rogerebert.com/reviews/mommie-dearest-1981
 
-![Alt text][id]
+__Embedded video__
+https://www.youtube.com/watch?v=eupg3AYpULY
 
-With a reference later in the document defining the URL location:
-
-[id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
-
-
-### [Emojies](https://github.com/markdown-it/markdown-it-emoji)
-
-> Classic markup: :wink: :heart_eyes: :cry: :middle_finger: :laughing: :yum:
-
-see [how to change output](https://github.com/markdown-it/markdown-it-emoji#change-output) with twemoji.
+__Embedded offsite photo__
+http://images5.fanpop.com/image/user_images/3662000/QwertyQueer-3662088_853_480.jpg
