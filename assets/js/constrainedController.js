@@ -5,8 +5,9 @@
 
 		this.start = function () {
 			this.element.on('click', '.constrained', function () {
+				$(this).data('opened', true);
 				$(this).animate({
-					'max-height': 1000
+					'max-height': 2000
 				}, 250, function () {
 					$(this).css({
 						'max-height': 'none'
@@ -27,20 +28,23 @@
 		this.fixConstrained = function () {
 			self.element.find('.want-constrained').each(function () {
 				var e = $(this);
-				var maxHeight = e.data('max-height') ? e.data('max-height') : 200;
-				if (!e.data.released) {
-					e.css({
-						'max-height': maxHeight + 1 + 'px'
-					});
-					if (e.height() > maxHeight) {
-						e.addClass('constrained').css({
-							'max-height': maxHeight + 'px'
+				if (!e.data('opened')) {
+
+					var maxHeight = e.data('max-height') ? e.data('max-height') : 200;
+					if (!e.data.released) {
+						e.css({
+							'max-height': maxHeight + 1 + 'px'
 						});
-					}
-					else {
-						e.removeClass('constrained').css({
-							'max-height': 'none'
-						});
+						if (e.height() > maxHeight) {
+							e.addClass('constrained').css({
+								'max-height': maxHeight + 'px'
+							});
+						}
+						else {
+							e.removeClass('constrained').css({
+								'max-height': 'none'
+							});
+						}
 					}
 				}
 			});

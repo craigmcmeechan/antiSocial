@@ -332,31 +332,18 @@ img.avatar
 	overflow:hidden
 	cursor:pointer
 	&:after
-		text-align:center
-		content: ""
+		font-size: 11px
+		text-align: center
+		content: "MORE \2193"
 		position: absolute
 		z-index: 1
 		bottom: 0
 		left: 0
-		background-image: linear-gradient(to bottom, rgba(255,255,255, 0), rgba(255,255,255, 1) 90%)
+		background-image: linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.6) 100%)
 		width: 100%
-		height: 6em
-
-.pull-tab
-	display:none
-	.constrained &
-		display:block
-		position:absolute
-		bottom:-12px
-		width:100%
-		text-align:center
-		color: green
-		opacity: .5
-		z-index:2
-		font-size:1.5em
-	&:hover
-		color:red
-
+		height: 3em
+		color: white
+		padding-top: 16px
 
 #scope-post-list
 	min-height: calc(100vh - 50px)

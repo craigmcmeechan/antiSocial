@@ -5,37 +5,28 @@
 ##### h5 Heading
 ###### h6 Heading
 
-## Horizontal Rules
-
+### Horizontal Rules
 ___
 
----
-
-***
-
-## Typographic replacements
+### Typographic replacements
 
 "Smartypants, double quotes" and 'single quotes'
 
-## Emphasis
+### Emphasis
 
-**This is bold text**
-
-__This is bold text__
-
-*This is italic text*
-
-_This is italic text_
+**This is bold text** this is plain text __This is bold *This is italic text* text__ _This is italic text_
 
 ~~Strikethrough~~
 
-## Blockquotes
+### Emojies
 
-> Blockquotes can also be nested...
->> ...by using additional greater-than signs right next to each other...
-> > > ...or with spaces between arrows.
+Anywhere in text :wink: :heart_eyes: :cry: :yum:
 
-## Lists
+### Blockquotes
+
+> This is a quote. This is a quote. This is a quote.
+
+### Lists
 
 Unordered
 
@@ -73,19 +64,13 @@ console.log(foo(5));
 | engine | engine to be used for processing templates. Handlebars is the default. |
 | ext    | extension to be used for dest files. |
 
-Right aligned columns
+Right aligned columns for some reason
 
 | Option | Description |
 | ------:| -----------:|
 | data   | path to data files to supply the data that will be passed into templates. |
 | engine | engine to be used for processing templates. Handlebars is the default. |
 | ext    | extension to be used for dest files. |
-
-
-
-### Emojies
-
-> Classic markup: :wink: :heart_eyes: :cry: :yum:
 
 
 ### Links can be made in several forms and there can be many per post
