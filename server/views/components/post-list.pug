@@ -51,7 +51,8 @@
 													
 
 						- var body = post.body ? post.body : '';
-						.post-body.markdown.want-constrained(data-max-height="1000")!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
+						- var maxHeight = !isPermalink ? 500 : 50000
+						.post-body.markdown.want-constrained(data-max-height= maxHeight)!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
 						- var photos = post.sortedPhotos
 						include rendered-post-photos

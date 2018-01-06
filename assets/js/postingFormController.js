@@ -34,10 +34,9 @@
 				var theElement = $(this);
 				self.lookupDebounce = setTimeout(function () {
 					self.lookupDebounce = undefined;
-					var matches = theElement.val().match(/\[\@([^\]]+)\]/g);
+					var matches = theElement.val().match(/\@\[([^\]]+)\]/g);
 					async.map(matches, function (match, cb) {
-						var q = match.replace(/^\[@/, '');
-						q = q.replace(/\]$/, '');
+						var q = match.replace(/[\@\[\]]/, '');
 						var get = $.get('/api/MyUsers/me/tag?value=' + encodeURIComponent(q))
 							.done(function (data, textStatus, jqXHR) {
 								console.log(match, data);
@@ -166,7 +165,8 @@
 					}
 					else {
 						self.hideForm();
-						flashAjaxStatus('info', 'post saved');
+						//$('body').trigger('DigitopiaReloadPage');
+						//flashAjaxStatus('info', 'post saved');
 					}
 				}, 'json');
 			});
@@ -213,13 +213,15 @@
 			this.hideForm = function () {
 				self.element.removeClass('focused');
 				self.element.find('.posting-body').val('');
+				self.element.find('.touched').removeClass('touched input-error input-ok');
 				if (self.previewMode) {
 					$('#post-preview-button').click();
 				}
+				self.element.find('.posting-body').css('height', 'auto');
 
-				if (self.endpoint !== '/comment') {
-					$('body').trigger('DigitopiaReloadPage');
-				}
+				//if (self.endpoint !== '/comment') {
+				//	$('body').trigger('DigitopiaReloadPage');
+				//}
 			};
 		};
 
