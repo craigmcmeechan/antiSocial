@@ -18,7 +18,7 @@ block seo
 		- summary= summary.replace(/[^ ]+$/,'')  + '...'
 	
 	- var image = profile.background.url;
-	if _.has(posts[0],'sortedPhotos[0].uploads')
+	if _.has(posts[0],'sortedPhotos[0]')
 		if typeof posts[0].sortedPhotos[0].uploads === 'function'
 			- image= posts[0].sortedPhotos[0].uploads()[0].imageSet.large.url
 		else
