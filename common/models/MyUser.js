@@ -21,6 +21,7 @@ module.exports = function (MyUser) {
 				'@isunique',
 				'@register',
 				'@login',
+				'@logout',
 				'updateAttributes',
 				'__create__invitations',
 				'__updateById__friends',
