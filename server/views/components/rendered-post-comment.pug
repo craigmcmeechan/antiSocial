@@ -21,7 +21,7 @@ if wantSummary
 	.comment
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 		- var name = comment.resolvedProfiles[comment.source].profile.name
-		.thumb-container(style="float:left;")
+		.thumb-container
 			a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
 				img.profile-thumb(src= thumb)
 		.comment-container

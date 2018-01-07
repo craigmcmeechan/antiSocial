@@ -22,6 +22,7 @@ app.locals._ = require('lodash');
 app.locals.config = require('./config-' + app.get('env'));
 app.locals.headshotFPO = '/images/slug.png';
 app.locals.FPO = '/images/fpo.jpg';
+app.locals.nonce = uuid.v4();
 
 // markdown renderer
 var marked = require('marked');
@@ -162,6 +163,31 @@ app.use(function (req, res, next) {
   });
   next();
 });
+
+var csp = require('helmet-csp')
+
+app.use(csp({
+  // Specify directives as normal.
+  'directives': {
+    'defaultSrc': ['\'self\''],
+    'scriptSrc': ['\'self\'', "maps.googleapis.com", "csi.gstatic.com", function (req, res) {
+      return "'nonce-" + app.locals.nonce + "'"
+    }],
+    'fontSrc': ['\'self\'', "fonts.googleapis.com", "fonts.gstatic.com"],
+    'styleSrc': ['\'self\'', "fonts.googleapis.com", "'unsafe-inline'"],
+    'imgSrc': ['\'self\'', "csi.gstatic.com"],
+    'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin'],
+    'reportUri': '/csp-violation',
+    'objectSrc': ["'none'"],
+    'upgradeInsecureRequests': false
+  },
+  'loose': false,
+  'reportOnly': false,
+  'setAllHeaders': false,
+  'disableAndroid': false,
+  'browserSniff': false
+}));
+
 
 // attach settings to req
 var globalSettings = require('./middleware/context-globalSettings')();

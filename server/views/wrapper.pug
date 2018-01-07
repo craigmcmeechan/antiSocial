@@ -6,8 +6,8 @@ html(lang="en")
 		meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
 		meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no")
 		meta(name="apple-mobile-web-app-capable" content="yes")
-		meta(name="apple-mobile-web-app-status-bar-style" content="black-translucent")
-		meta(name="mobile-web-app-capable" content="yes")
+		meta(name="apple-mobile-web-app-status-bar-style" content="black")
+		meta(name="format-detection" content="telephone=no")
 
 		link(href='//fonts.googleapis.com/css?family=Titillium+Web:100,300,400,600' rel='stylesheet' type='text/css')
 
@@ -20,10 +20,10 @@ html(lang="en")
 
 		block css
 			
-		style#override-styles(type="text/css")
+		style(nonce= nonce)#override-styles(type="text/css")
 
 	body#document-body(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController,liveTimeController")
-		script.
+		script(nonce= nonce).
 			var result;
 			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
 			if(cookie){document.body.className = cookie;}
@@ -84,7 +84,7 @@ html(lang="en")
 
 		if environment.RAVEN
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
-			script.
+			script(nonce= nonce).
 				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
 
 		if env === 'production'
