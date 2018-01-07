@@ -175,7 +175,7 @@ app.use(csp({
     }],
     'fontSrc': ['\'self\'', "fonts.googleapis.com", "fonts.gstatic.com"],
     'styleSrc': ['\'self\'', "fonts.googleapis.com", "'unsafe-inline'"],
-    'imgSrc': ['\'self\'', "csi.gstatic.com", "s3.amazonaws.com/myantisocial-mr"],
+    'imgSrc': ['\'self\'', "csi.gstatic.com", "s3.amazonaws.com"],
     'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin'],
     'reportUri': '/csp-violation',
     'objectSrc': ["'none'"],
