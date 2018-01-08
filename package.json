@@ -15,7 +15,7 @@
     "bunyan-sentry-stream": "^1.2.1",
     "compression": "^1.0.3",
     "cookie-parser": "^1.4.1",
-    "cors": "https://registry.npmjs.org/cors/-/cors-2.8.4.tgz",
+    "cors": "^2.8.4",
     "debug": "^3.1.0",
     "digitopia": "git+https://github.com/mediapolis/digitopia.git#jquery-3-working",
     "digitopia-admin": "*",
@@ -69,20 +69,20 @@
     "webshot": "^0.18.0"
   },
   "devDependencies": {
+    "bootstrap": "^3.3.6",
+    "expect.js": "^0.3.1",
     "grunt": "*",
     "grunt-contrib-concat": "*",
+    "grunt-contrib-copy": "*",
     "grunt-contrib-cssmin": "*",
     "grunt-contrib-less": "*",
     "grunt-contrib-stylus": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*",
-    "grunt-contrib-copy": "*",
     "grunt-mkdir": "*",
     "grunt-postcss": "*",
     "jshint": "^2.5.6",
-    "expect.js": "^0.3.1",
-    "superagent": "^3.8.2",
-    "bootstrap": "^3.3.6"
+    "superagent": "^3.8.2"
   },
   "repository": {
     "type": "",
