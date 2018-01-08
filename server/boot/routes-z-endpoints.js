@@ -660,7 +660,8 @@ module.exports = function (server) {
         var data = {
           'post': post,
           'comment': theComment,
-          'reactions': theComment.resolvedReactions ? theComment.resolvedReactions : []
+          'reactions': theComment.resolvedReactions ? theComment.resolvedReactions : [],
+          'reactionSummary': theComment.reactionSummary
         };
 
         if (view === '.json') {
