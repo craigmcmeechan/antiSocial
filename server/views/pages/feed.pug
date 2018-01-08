@@ -11,10 +11,12 @@ block content
 				include ../components/posting-form
 				#scope-post-list
 					for item in items
-						if item.type === 'post' || item.type === 'interaction'
+						if item.type === 'post' || item.type === 'interaction' || item.type === 'tag'
+							- var post = item.about
+							- post = post.replace(/\/(comment|photo)\/.*/,'')
 							.newsfeed-item
 								.news-summary!= item.feedSummary
-								.post(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(item.about))
+								.post(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post))
 
 				.text-center
 					.loader(data-jsclass="loadMoreController")
