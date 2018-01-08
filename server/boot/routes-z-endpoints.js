@@ -563,6 +563,7 @@ module.exports = function (server) {
       resolveProfiles(theComment, function (err) {
 
         var data = {
+          'post': post,
           'comments': post.resolvedComments,
           'comment': theComment,
           'commentSummary': post.commentSummary
@@ -657,7 +658,10 @@ module.exports = function (server) {
       async.map(theComment.resolvedReactions, resolveProfiles, function (err) {
 
         var data = {
-          'commentReactions': theComment.resolvedReactions ? theComment.resolvedReactions : []
+          'post': post,
+          'comment': theComment,
+          'reactions': theComment.resolvedReactions ? theComment.resolvedReactions : [],
+          'reactionSummary': theComment.reactionSummary
         };
 
         if (view === '.json') {

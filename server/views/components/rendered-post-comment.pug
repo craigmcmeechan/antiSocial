@@ -1,3 +1,5 @@
+if !post
+	- post = data.post
 if !comment
 	- comment = data.comment
 
@@ -21,7 +23,7 @@ if wantSummary
 	.comment
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 		- var name = comment.resolvedProfiles[comment.source].profile.name
-		.thumb-container(style="float:left;")
+		.thumb-container
 			a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
 				img.profile-thumb(src= thumb)
 		.comment-container
@@ -32,12 +34,13 @@ if wantSummary
 
 			!= marked(comment.details.body)
 			
-			//
-				- var reactions = comment.resolvedReactions
-				- var timestamp = moment(comment.createdOn).calendar()
-				- var poster = comment.resolvedProfiles[comment.source].profile
-				div(data-jsclass="reactionController" data-user= user ? 'true' : '' data-is-me= isMe ? 'true' : '' data-endpoint= comment.about + '/comment/' + comment.uuid)
-					include rendered-post-reactions
+			span.timestamp(data-timestamp= moment(comment.createdOn).toISOString())
+				!= ' - ' + moment(comment.createdOn).calendar()
+
+			
+			- var reactions = comment.resolvedReactions
+			- var reactionSummary = comment.reactionSummary
+			include rendered-post-comment-reactions
 							
 	.clearfix
 	.comment-separator

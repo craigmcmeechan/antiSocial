@@ -4,10 +4,9 @@ if !reactions
 	- reactions = data.reactions
 if !reactionSummary
 	- reactionSummary = data.reactionSummary
-if !poster
-	- poster = data.poster
+
 .ajax-load.live-element(id= 'reactions-' + post.uuid data-watch= post.source + '/post/' + post.uuid data-watch-type="react")
-	.post-reactions(data-jsclass="reactionController" data-endpoint= poster.endpoint + '/post/' + post.uuid)
+	.post-reactions(data-jsclass="reactionController" data-endpoint= post.source + '/post/' + post.uuid)
 		.reaction-summary
 			if reactions
 				for reaction in reactions
@@ -53,12 +52,3 @@ if !poster
 				.em.em-smiley
 			.reaction-button-container.reaction-button(data-value="thumbsup")
 				.em.em-thumbsup
-				
-			
-				
-		
-			
-
-			
-		
-				

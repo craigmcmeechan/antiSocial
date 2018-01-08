@@ -57,4 +57,5 @@
 						- var photos = post.sortedPhotos
 						include rendered-post-photos
 						
-						include post-reactions-and-comments
+						if !noComments
+							include post-reactions-and-comments

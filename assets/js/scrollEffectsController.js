@@ -44,6 +44,9 @@
 		var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
 
 		this.start = function () {
+			if (self.element.data('bg')) {
+				self.element.css('background-image', 'url(' + self.element.data('bg') + ')');
+			}
 			this.startCSS = this.parseCSS($(this.element).data('effect-start-css'));
 			this.endCSS = this.parseCSS($(this.element).data('effect-end-css'));
 			self.doEffect(true);

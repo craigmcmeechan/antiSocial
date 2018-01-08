@@ -53,14 +53,26 @@
 
 			self.pulldown.on('click', '.address', function (e) {
 				var loc = $(this).data('location');
-				var desc = self.getDescription(loc);
-				self.element.val(desc);
-				var geo = {
-					'description': desc,
-					'loc': [
-						loc.geometry.location.lng(),
-						loc.geometry.location.lat()
-					]
+				var geo = {};
+				if (loc.freeform) {
+					geo = {
+						'description': loc.description,
+						'loc': [
+							self.position.lng(),
+							self.position.lat()
+						]
+					}
+				}
+				else {
+					var desc = self.getDescription(loc);
+					self.element.val(desc);
+					geo = {
+						'description': desc,
+						'loc': [
+							loc.geometry.location.lng(),
+							loc.geometry.location.lat()
+						]
+					}
 				}
 				self.target.val(JSON.stringify(geo));
 				self.pulldown.parent().removeClass("open");
@@ -144,6 +156,16 @@
 				self.placesService.textSearch(request, function (results, status) {
 					if (status == google.maps.places.PlacesServiceStatus.OK) {
 						self.pulldown.empty().parent().addClass("open");
+
+						var loc = $('<li class="address">');
+						loc.data('location', {
+							'freeform': true,
+							'loc': self.location,
+							'description': address
+						});
+						loc.html(address);
+						self.pulldown.append(loc);
+
 						for (var i = 0; i < results.length; i++) {
 							var loc = $('<li class="address">');
 							loc.data('location', results[i]);

@@ -1,4 +1,5 @@
 var async = require('async');
+var _ = require('lodash');
 
 module.exports = function resolveReactionsSummary(item, done) {
 	var reactions = typeof item.resolvedReactions === 'function' ? item.resolvedReactions() : item.resolvedReactions;
@@ -18,7 +19,12 @@ module.exports = function resolveReactionsSummary(item, done) {
 					icons[key] = 0;
 				}
 				icons[key]++;
-				var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(reaction.source) + '">' + reaction.resolvedProfiles[reaction.source].profile.name + '</a>';
+
+				var name = _.get(reaction, 'resolvedProfiles["' + reaction.source + '"].profile.name');
+				if (!name) {
+					name = reaction.source;
+				}
+				var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(reaction.source) + '">' + name + '</a>';
 				mentions.push(mention);
 			}
 		}
