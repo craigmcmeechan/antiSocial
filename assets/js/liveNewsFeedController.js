@@ -113,8 +113,8 @@
 		};
 
 		this.errors = function (e) {
-			self.element.find('.news-feed-items').empty();
-			self.element.find('.status').addClass('offline');
+			self.disconnect();
+			self.connect();
 		};
 	}
 
