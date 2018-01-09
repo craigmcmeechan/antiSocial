@@ -73,7 +73,7 @@ module.exports = function resolveProfiles(item, done) {
 				payload.profile.photo.url = payload.profile.photo.url;
 				payload.profile.background.url = payload.profile.background.url;
 			}
-			//myCache.set(endpoint, payload, 86400);
+			myCache.set(endpoint, payload, 86400);
 			profiles[endpoint] = payload;
 			cb();
 		});
