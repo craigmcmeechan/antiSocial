@@ -3,6 +3,7 @@ var boot = require('loopback-boot');
 var i18n = require('i18n');
 var bunyan = require('bunyan');
 var uuid = require('uuid');
+var NodeCache = require("node-cache");
 
 var app = module.exports = loopback();
 
@@ -23,6 +24,7 @@ app.locals.config = require('./config-' + app.get('env'));
 app.locals.headshotFPO = '/images/slug.png';
 app.locals.FPO = '/images/fpo.jpg';
 app.locals.nonce = uuid.v4();
+app.locals.myCache = new NodeCache();
 
 // markdown renderer
 var marked = require('marked');

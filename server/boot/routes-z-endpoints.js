@@ -28,7 +28,7 @@ module.exports = function (server) {
   // URL forms for getting posts and associated data from
   // the poster's authoritative server (users resident on this server)
 
-  var profileRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)(\.json)?$/;
+  var profileRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)(\.json)?(\?.*)?$/;
   var postsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/posts(\.json)?$/;
   var postRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
   var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
@@ -63,6 +63,7 @@ module.exports = function (server) {
     var accessToken = req.headers['friend-access-token'];
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
+    var highwater = req.query.highwater;
 
     var isMe = false;
 
@@ -94,7 +95,7 @@ module.exports = function (server) {
       else {
         async.waterfall([
           function (cb) {
-            getPosts(user, friend, null, isMe, function (err, posts) {
+            getPosts(user, friend, highwater, isMe, function (err, posts) {
               cb(err, user, posts);
             });
           },
@@ -110,6 +111,7 @@ module.exports = function (server) {
           }
         ], function (err, user, posts) {
           data.posts = posts;
+          data.highwater = data.posts && data.posts.length ? data.posts[data.posts.length - 1].createdOn.toISOString() : '';
 
           var options = {
             'data': data,
@@ -117,8 +119,12 @@ module.exports = function (server) {
 
             'friend': friend,
             'isMe': isMe,
-            'myEndpoint': getPOVEndpoint(friend, currentUser)
+            'myEndpoint': getPOVEndpoint(friend, currentUser),
           };
+
+          if (data.posts && data.posts.length) {
+            res.header('x-highwater', data.highwater);
+          }
 
           renderFile('/components/rendered-profile.pug', options, req, function (err, html) {
             if (err) {
@@ -1293,7 +1299,7 @@ module.exports = function (server) {
     if (highwater) {
       query.where.and.push({
         'createdOn': {
-          'gt': highwater
+          'lt': highwater
         }
       });
     }
