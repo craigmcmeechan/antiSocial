@@ -3,6 +3,7 @@ var debugVerbose = require('debug')('cache:verbose');
 
 var cache = {};
 
+
 module.exports.init = function (app) {};
 
 module.exports.get = function (ns, key, callback) {

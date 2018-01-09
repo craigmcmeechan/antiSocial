@@ -2,7 +2,6 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var resolveProfiles = require('../lib/resolveProfiles');
 
-var cache = require('../lib/cache');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');
@@ -15,6 +14,7 @@ var debugVerbose = require('debug')('feed:verbose');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
+  var cache = server.locals.myCache;
 
   // my news feed
   router.get('/feed', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
@@ -23,7 +23,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function getScrollSession(cb) {
-        var session = cache.get('scrollSession', currentUser.id.toString());
+        var session = cache.get('scrollSession-' + currentUser.id.toString());
         // new session
         if (!req.query.more || !session) {
           session = {
@@ -198,7 +198,7 @@ module.exports = function (server) {
       },
       function saveScrollSession(session, items, cb) {
         debug('save scroll session %j', session);
-        cache.put('scrollSession', currentUser.id.toString(), session, function (err) {
+        cache.set('scrollSession-' + currentUser.id.toString(), session, 3600, function (err) {
           cb(err, items);
         });
       }
