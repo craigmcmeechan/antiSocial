@@ -61,6 +61,8 @@ block content
 					if user
 						include ../components/posting-form
 					include ../components/post-list
+					.text-center
+						.loader(data-jsclass="loadMoreController" data-highwater= data.highwater)
 				.col-sm-4
 					if user
 						#newsfeed-here

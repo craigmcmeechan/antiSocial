@@ -35,6 +35,7 @@ module.exports = function (server) {
               'end': 0
             }
           };
+          debug('new scroll session');
         }
         cb(null, session);
       },
@@ -58,6 +59,8 @@ module.exports = function (server) {
           });
         }
 
+        debug('get more items %j', query);
+
         server.models.NewsFeedItem.find(query, function (err, items) {
           if (err) {
             var e = new VError(err, 'error reading NewsFeedItems');
@@ -80,6 +83,7 @@ module.exports = function (server) {
             // group news feed items by 'about'
             for (var i = 0; i < items.length; i++) {
               var key = items[i].about;
+              key = key.replace(/\/(comment|photo)\/.*/, '');
               if (!map[key]) {
                 map[key] = 0;
                 grouped[key] = [];
@@ -104,12 +108,12 @@ module.exports = function (server) {
       },
       function computeSummary(session, cb) {
         if (req.query.more) {
-          session.currentSlice.start += 30;
+          session.currentSlice.start += 6;
           if (session.currentSlice.start > session.queue.length - 1) {
             session.currentSlice.start = session.queue.length - 1;
           }
         }
-        session.currentSlice.end = session.currentSlice.start + 30;
+        session.currentSlice.end = session.currentSlice.start + 5;
         if (session.currentSlice.end > session.queue.length - 1) {
           session.currentSlice.end = session.queue.length - 1;
         }
@@ -193,6 +197,7 @@ module.exports = function (server) {
 
       },
       function saveScrollSession(session, items, cb) {
+        debug('save scroll session %j', session);
         cache.put('scrollSession', currentUser.id.toString(), session, function (err) {
           cb(err, items);
         });
