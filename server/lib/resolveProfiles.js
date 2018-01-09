@@ -1,9 +1,11 @@
-var NodeCache = require("node-cache");
 var async = require('async');
-var myCache = new NodeCache();
 var request = require('request');
+var app = require('../server');
+var debug = require('debug')('cache');
 
 module.exports = function resolveProfiles(item, done) {
+	var myCache = app.locals.myCache;
+
 	var endpoints = [];
 	var profiles = {};
 
@@ -34,8 +36,9 @@ module.exports = function resolveProfiles(item, done) {
 
 		var whoAbout = endpoint.replace(/\/post\/.*$/, '');
 
-		var cached = myCache.get(endpoint);
+		var cached = myCache.get('profile-' + whoAbout);
 		if (cached) {
+			debug('got ' + whoAbout + ' from cache ' + endpoint);
 			profiles[endpoint] = cached;
 			return cb();
 		}
@@ -73,7 +76,7 @@ module.exports = function resolveProfiles(item, done) {
 				payload.profile.photo.url = payload.profile.photo.url;
 				payload.profile.background.url = payload.profile.background.url;
 			}
-			//myCache.set(endpoint, payload, 86400);
+			myCache.set('profile-' + whoAbout, payload, 3600);
 			profiles[endpoint] = payload;
 			cb();
 		});

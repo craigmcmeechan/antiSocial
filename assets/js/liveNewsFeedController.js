@@ -92,7 +92,16 @@
 			self.element.find('.news-feed-items').prepend(li);
 			didInjectContent(self.element);
 			if (!event.backfill) {
-				if (event.data.type === 'comment') {
+				if (event.data.type === 'post') {
+					var item = $('<div>');
+					var endpoint = '/proxy-post?endpoint=' + encodeURIComponent(event.data.about);
+					item.load(endpoint, function () {
+						var post = item.find('.newsfeed-item');
+						$('#scope-post-list').prepend(post);
+						didInjectContent($('#scope-post-list').find('.newsfeed-item')[0]);
+					})
+				}
+				else if (event.data.type === 'comment') {
 					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-comment?endpoint=' + encodeURIComponent(event.data.about + '/comment/' + event.data.uuid)]);
 				}
 				else if (event.data.type === 'react') {

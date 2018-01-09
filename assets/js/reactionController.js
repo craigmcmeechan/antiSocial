@@ -81,7 +81,7 @@
 					flashAjaxStatus('error', xhr.statusText);
 				}
 				else {
-					flashAjaxStatus('info', 'reaction saved');
+					//flashAjaxStatus('info', 'reaction saved');
 					//self.element.closest('.ajax-load').trigger('ReloadElement');
 				}
 			}, 'json');

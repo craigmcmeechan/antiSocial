@@ -2,6 +2,8 @@ var server = require('../server');
 var async = require('async');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
+var resolveProfiles = require('../lib/resolveProfiles');
+var resolveReactionsSummary = require('../lib/resolveReactionsSummary');
 
 var debug = require('debug')('resolve');
 var debugVerbose = require('debug')('resolve:verbose');
@@ -47,7 +49,12 @@ module.exports = function resolveReactions(items, itemType, done) {
 
 			item.resolvedReactions = reactions;
 
-			doneMap();
+			async.each(item.resolvedReactions, resolveProfiles, function (err) {
+				resolveReactionsSummary(item, function (err) {
+					doneMap();
+				});
+			});
+
 		});
 	}, function (err) {
 		done();

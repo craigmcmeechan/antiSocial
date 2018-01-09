@@ -352,7 +352,7 @@ describe('proxy endpoints', function () {
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
 			console.log('comment reactions %j', res.body);
-			expect(res.body.commentReactions).to.be.an('array');
+			expect(res.body.reactions).to.be.an('array');
 			done();
 		});
 	});

@@ -3,8 +3,10 @@
 		this.element = $(elem);
 		this.loading = false;
 		this.atEnd = false;
+		this.highwater = this.element.data('highwater');
 
 		var self = this;
+
 		this.start = function () {
 			$(window).scroll(function () {
 				if (self.element.is(':in-viewport')) {
@@ -21,7 +23,12 @@
 			}
 			self.loading = true;
 			var endpoint = location.pathname + '?more=1';
-			$.get(endpoint, function (html) {
+			if (self.highwater) {
+				endpoint += '&highwater=' + self.highwater;
+			}
+
+			var req = $.get(endpoint).done(function (html, textStatus, jqXHR) {
+				self.highwater = jqXHR.getResponseHeader('x-highwater');
 				var doc = html.split(/(<body[^>]*>|<\/body>)/ig);
 				var docBody = $(doc[2]);
 				var chunk = $(docBody).find('#scope-post-list');
@@ -35,10 +42,12 @@
 					});
 				}
 				else {
-					self.element.before(chunk);
-					didInjectContent(chunk);
+					$('#scope-post-list').append(chunk.html());
+					didInjectContent('#scope-post-list');
 					self.loading = false;
 				}
+			}).fail(function (jqXHR, textStatus, errorThrown) {
+				alert('error loading');
 			});
 		};
 	}

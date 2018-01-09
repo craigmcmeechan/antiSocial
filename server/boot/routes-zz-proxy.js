@@ -99,6 +99,10 @@ module.exports = function (server) {
 				res.send(data);
 			}
 			else {
+				var isPermalink = false;
+				if (template === 'post') {
+					isPermalink = true;
+				}
 				res.render('components/rendered-' + template, {
 					'globalSettings': ctx.get('globalSettings'),
 					'data': data,
@@ -107,7 +111,8 @@ module.exports = function (server) {
 					'wall': true,
 					'isMe': isMe,
 					'myEndpoint': getPOVEndpoint(currentUser),
-					'wantSummary': template === 'post-comment'
+					'wantSummary': template === 'post-comment',
+					'isPermalink': isPermalink
 				});
 			}
 		});
