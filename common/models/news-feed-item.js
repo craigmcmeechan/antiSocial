@@ -91,11 +91,9 @@ module.exports = function (NewsFeedItem) {
 
 					async.map(items, resolveProfiles, function (err) {
 
-						items.reverse();
-
 						items = resolveSummary(items, myEndpoint);
 
-						for (var i = 0; i < items.length; i++) {
+						for (var i = items.length - 1; i >= 0; i--) {
 							newsFeedItemResolve(user, items[i], function (err, data) {
 
 								var change = {

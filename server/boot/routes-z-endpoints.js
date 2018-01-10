@@ -29,7 +29,7 @@ module.exports = function (server) {
   // the poster's authoritative server (users resident on this server)
 
   var profileRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)(\.json)?(\?.*)?$/;
-  var postsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/posts(\.json)?$/;
+  var postsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/posts(\.json)?(\?.*)?$/;
   var postRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
   var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
   var postCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comments(\.json)?$/;
@@ -148,7 +148,7 @@ module.exports = function (server) {
     var username = matches[1];
     var view = matches[2];
     var accessToken = req.headers['friend-access-token'];
-    var highwater = req.headers['friend-high-water'];
+    var highwater = req.query.highwater;
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var isMe = false;
@@ -196,7 +196,8 @@ module.exports = function (server) {
           'endpoint': server.locals.config.publicHost + '/' + user.username,
           'publicHost': server.locals.config.publicHost
         },
-        'posts': posts
+        'posts': posts,
+        'highwater': posts && posts.length ? posts[posts.length - 1].createdOn.toISOString() : ''
       };
 
       if (view === '.json') {

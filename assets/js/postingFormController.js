@@ -67,7 +67,7 @@
 					'parallelUploads': 1,
 					'dictDefaultMessage': 'Drop photos here to attach to this post',
 					'addRemoveLinks': true,
-					'previewTemplate': '<div class="dz-preview dz-file-preview container-fluid"><div class="row"><div class="col-xs-3"><div class="dz-image"><img data-dz-thumbnail></div><div class="dz-details"><div class="dz-size"><span data-dz-size></span></div><div class="dz-filename"><span data-dz-name></span></div></div><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div><div class="dz-error-message"><span data-dz-errormessage></span></div></div><div class="metadata col-xs-9"><div class="form-group"><input type="text" class="form-control title" placeholder="Title"><br><textarea class="form-control description" type="text" placeholder="Description"></textarea></div></div></div>',
+					'previewTemplate': '<div class="dz-preview dz-file-preview container-fluid"><div class="row"><div class="col-sm-3"><div class="dz-image"><img data-dz-thumbnail></div><div class="dz-details"><div class="dz-size"><span data-dz-size></span></div><div class="dz-filename"><span data-dz-name></span></div></div><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div><div class="dz-error-message"><span data-dz-errormessage></span></div></div><div class="metadata col-sm-9"><div class="form-group"><input type="text" class="form-control title" placeholder="Title"><br><textarea class="form-control description" type="text" placeholder="Description"></textarea></div></div></div>',
 					init: function () {
 						this.on('success', function (file, response) {
 							file.serverPhotoId = response.id;
