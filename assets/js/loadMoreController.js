@@ -22,7 +22,16 @@
 				return;
 			}
 			self.loading = true;
-			var endpoint = location.pathname + '?more=1';
+			var endpoint = location.pathname;
+			if (location.search) {
+				endpoint += location.search + '&';
+			}
+			else {
+				endpoint += '?';
+			}
+
+			endpoint += 'more=1';
+
 			if (self.highwater) {
 				endpoint += '&highwater=' + self.highwater;
 			}

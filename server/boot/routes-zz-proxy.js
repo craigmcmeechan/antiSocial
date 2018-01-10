@@ -58,6 +58,13 @@ module.exports = function (server) {
 			'headers': {}
 		};
 
+		if (req.query.more) {
+			options.url += '?more=1';
+			if (req.query.highwater) {
+				options.url += '&highwater=' + req.query.highwater;
+			}
+		}
+
 		if (friend) {
 			options.headers['friend-access-token'] = friend.remoteAccessToken;
 		}
@@ -94,6 +101,8 @@ module.exports = function (server) {
 
 				data = JSON.parse(decrypted.data);
 			}
+
+			res.header('x-highwater', data.highwater);
 
 			if (json) {
 				res.send(data);
