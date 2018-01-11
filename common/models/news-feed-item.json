@@ -7,6 +7,13 @@
   },
   "strictObjectIDCoercion": true,
   "mixins": {},
+  "indexes": {
+    "NewsFeedItem_about": {
+      "keys": {
+        "about": 1
+      }
+    }
+  },
   "properties": {
     "uuid": {
       "type": "string",

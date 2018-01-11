@@ -6,6 +6,18 @@
     "validateUpsert": true
   },
   "strictObjectIDCoercion": true,
+  "indexes": {
+    "PostPhoto_postId": {
+      "keys": {
+        "postId": 1
+      }
+    },
+    "PostPhoto_photoId": {
+      "keys": {
+        "photoId": 1
+      }
+    }
+  },
   "properties": {
     "sequence": {
       "type": "number"
