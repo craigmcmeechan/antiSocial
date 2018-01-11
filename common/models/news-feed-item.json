@@ -12,6 +12,11 @@
       "keys": {
         "about": 1
       }
+    },
+    "NewsFeedItem_type": {
+      "keys": {
+        "type": 1
+      }
     }
   },
   "properties": {

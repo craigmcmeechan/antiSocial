@@ -121,7 +121,8 @@ module.exports = function (server) {
 					'isMe': isMe,
 					'myEndpoint': getPOVEndpoint(currentUser),
 					'wantSummary': template === 'post-comment',
-					'isPermalink': isPermalink
+					'isPermalink': isPermalink,
+					'cache': true
 				});
 			}
 		});

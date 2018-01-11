@@ -120,6 +120,7 @@ module.exports = function (server) {
             'friend': friend,
             'isMe': isMe,
             'myEndpoint': getPOVEndpoint(friend, currentUser),
+            'cache': true
           };
 
           if (data.posts && data.posts.length) {
@@ -209,7 +210,8 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'isMe': isMe,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
+        'myEndpoint': getPOVEndpoint(friend, currentUser),
+        'cache': true
       };
 
       renderFile('/components/rendered-posts.pug', options, req, function (err, html) {
@@ -302,6 +304,7 @@ module.exports = function (server) {
         'isPermalink': true,
         'isMe': isMe,
         'myEndpoint': getPOVEndpoint(friend, currentUser),
+        'cache': true
       };
 
       renderFile('/components/rendered-post.pug', options, req, function (err, html) {
@@ -393,7 +396,8 @@ module.exports = function (server) {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
+        'myEndpoint': getPOVEndpoint(friend, currentUser),
+        'cache': true
       };
 
       renderFile('/components/rendered-post-reactions.pug', options, req, function (err, html) {
@@ -480,6 +484,7 @@ module.exports = function (server) {
         'data': data,
         'user': currentUser,
         'friend': friend,
+        'cache': true
       };
 
       renderFile('/components/rendered-post-comments.pug', options, req, function (err, html) {
@@ -584,7 +589,8 @@ module.exports = function (server) {
           'data': data,
           'user': currentUser,
           'friend': friend,
-          'wantSummary': true
+          'wantSummary': true,
+          'cache': true
         };
 
         renderFile('/components/rendered-post-comment.pug', options, req, function (err, html) {
@@ -678,7 +684,8 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend
+          'friend': friend,
+          'cache': true
         };
 
         renderFile('/components/rendered-post-comment-reactions.pug', options, req, function (err, html) {
@@ -753,7 +760,8 @@ module.exports = function (server) {
       var options = {
         'data': data,
         'user': currentUser,
-        'friend': friend
+        'friend': friend,
+        'cache': true
       };
 
       renderFile('/components/rendered-post-photos.pug', options, req, function (err, html) {
@@ -842,7 +850,8 @@ module.exports = function (server) {
       var options = {
         'data': data,
         'user': currentUser,
-        'friend': friend
+        'friend': friend,
+        'cache': true
       };
 
       renderFile('/components/rendered-post-photo.pug', options, req, function (err, html) {
@@ -933,7 +942,8 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend
+          'friend': friend,
+          'cache': true
         };
 
         renderFile('/components/rendered-post-photo-reactions.pug', options, req, function (err, html) {
@@ -1025,7 +1035,8 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend
+          'friend': friend,
+          'cache': true
         };
 
         renderFile('/components/rendered-post-photo-comments.pug', options, req, function (err, html) {
@@ -1134,7 +1145,8 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend
+          'friend': friend,
+          'cache': true
         };
 
         renderFile('/components/rendered-post-photo-comment.pug', options, req, function (err, html) {
@@ -1242,7 +1254,8 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend
+          'friend': friend,
+          'cache': true
         };
 
         renderFile('/components/rendered-post-photo-comment-reactions.pug', options, req, function (err, html) {
