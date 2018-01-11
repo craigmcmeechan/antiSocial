@@ -14,6 +14,13 @@
       "validateUpsert": true
     }
   },
+  "indexes": {
+    "Friend_remoteEndPoint": {
+      "keys": {
+        "remoteEndPoint": 1
+      }
+    }
+  },
   "properties": {
     "status": {
       "type": "string"

@@ -16,7 +16,7 @@ block content
 							- post = post.replace(/\/(comment|photo)\/.*/,'')
 							.newsfeed-item
 								.news-summary!= item.feedSummary
-								.post(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post))
+								.post(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?embed=1&endpoint=' + encodeURIComponent(post))
 
 				.text-center
 					.loader(data-jsclass="loadMoreController")
