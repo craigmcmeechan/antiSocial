@@ -1,4 +1,6 @@
 branch-defaults:
+  development:
+    environment: mr-antisocial
   master:
     environment: mr-antisocial
 global:
