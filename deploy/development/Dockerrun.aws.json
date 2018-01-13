@@ -13,8 +13,8 @@
 		"essential": true,
 		"memory": 512,
 		"portMappings": [{
-			"hostPort": 3000,
-			"containerPort": 8080
+			"hostPort": 80,
+			"containerPort": 3000
 		}],
 		"mountPoints": [{
 			"sourceVolume": "webapp-antisocial-data",
