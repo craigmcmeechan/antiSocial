@@ -27,16 +27,22 @@ if photos && photos.length
 					- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
 					- var upload = getUploadForProperty('optimized',uploads,'thumb')
 					- var cssClass = 'col-sm-3 col-xs-6 maintain-aspect-ratio'
+					
 					if photos.length === 1
 						- cssClass = 'col-sm-12 full-width'
 						- upload = getUploadForProperty('optimized',uploads,'large')
+						if !upload
+							- upload = getUploadForProperty('optimized',uploads,'original')
 
-					.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
-						img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
-						.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
-							i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
-							if user
-								i.comments.glyphicon.glyphicon-comment
-							p= photo.title
-							em= photo.description
+					if !upload
+						p= JSON.stringify(photos)
+					else
+						.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
+							img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
+							.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
+								i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
+								if user
+									i.comments.glyphicon.glyphicon-comment
+								p= photo.title
+								em= photo.description
 		

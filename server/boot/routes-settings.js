@@ -3,21 +3,8 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var isInitialized = require('../middleware/context-initialized');
 var publicUsers = require('../middleware/context-publicUsers');
 var pendingFriendRequests = require('../middleware/context-pendingFriendRequests');
-var getRecentPosts = require('../middleware/context-getRecentPosts');
-var getFriends = require('../middleware/context-getFriends');
-var getFriendAccess = require('../middleware/context-getFriendAccess');
-var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
-var resolveProfiles = require('../lib/resolveProfiles');
-var nodemailer = require('nodemailer');
-var qs = require('querystring');
-
-
-var uuid = require('uuid');
 
 var url = require('url');
-var uuid = require('uuid');
-var VError = require('verror').VError;
-var WError = require('verror').WError;
 var async = require('async');
 var request = require('request');
 var _ = require('lodash');

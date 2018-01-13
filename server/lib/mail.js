@@ -1,4 +1,3 @@
-var uuid = require('uuid');
 var nodemailer = require('nodemailer');
 var VError = require('verror').VError;
 var WError = require('verror').WError;

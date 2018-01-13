@@ -1,7 +1,5 @@
 var server = require('../server');
 var async = require('async');
-var VError = require('verror').VError;
-var WError = require('verror').WError;
 
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');

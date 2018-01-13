@@ -2,9 +2,6 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var mime = require('mime');
 var uuid = require('uuid');
-
-var VError = require('verror').VError;
-var WError = require('verror').WError;
 var multer = require('multer');
 
 var debug = require('debug')('routes');
@@ -28,7 +25,7 @@ module.exports = function (server) {
 
 	router.post('/pending-upload', getCurrentUser(), ensureLoggedIn(), upload.single('file'), function (req, res, next) {
 
-		console.log(req.file);
+		//console.log(req.file);
 
 		if (!req.file.mimetype.match(/^image\//)) {
 			return res.status(422).send({

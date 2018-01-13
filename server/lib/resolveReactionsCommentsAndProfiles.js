@@ -4,9 +4,6 @@ var resolveComments = require('../lib/resolveComments');
 var resolveReactions = require('../lib/resolveReactions');
 
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
-var VError = require('verror').VError;
-var WError = require('verror').WError;
-
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 

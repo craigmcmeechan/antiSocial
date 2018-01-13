@@ -1,7 +1,5 @@
 var server = require('../server');
 var async = require('async');
-var VError = require('verror').VError;
-var WError = require('verror').WError;
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveReactionsSummary = require('../lib/resolveReactionsSummary');
 

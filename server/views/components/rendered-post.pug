@@ -19,10 +19,15 @@ block seo
 	
 	- var image = profile.background.url;
 	if _.has(posts[0],'sortedPhotos[0]')
+		- var imageSet
 		if typeof posts[0].sortedPhotos[0].uploads === 'function'
-			- image= posts[0].sortedPhotos[0].uploads()[0].imageSet.large.url
+			- imageSet= posts[0].sortedPhotos[0].uploads()[0].imageSet
 		else
-			- image= posts[0].sortedPhotos[0].uploads[0].imageSet.large.url
+			- imageSet= posts[0].sortedPhotos[0].uploads[0].imageSet
+		if imageSet.large 
+			- image = imageSet.large.url
+		else
+			- image = imageSet.original.url
 	
 	title= title
 	meta(property="og:type" content="article")
