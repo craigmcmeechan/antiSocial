@@ -4,7 +4,7 @@ var app = require('../server');
 var debug = require('debug')('resolve');
 
 module.exports = function resolveProfiles(item, done) {
-	debug('resolveProfiles');
+	debug('resolveProfiles ' + item.uuid);
 
 	var myCache = app.locals.myCache;
 

@@ -4,8 +4,9 @@ var debug = require('debug')('resolve');
 var debugVerbose = require('debug')('resolve:verbose');
 
 function resolvePostPhotos(posts, done) {
-	debug('resolvePostPhotos');
 	async.each(posts, function (post, cb) {
+		debug('resolvePostPhotos ' + post.uuid);
+
 		var query = {
 			'where': {
 				'postId': post.id

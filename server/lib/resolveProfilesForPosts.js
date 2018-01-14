@@ -5,7 +5,7 @@ var resolveReactionsSummary = require('../lib/resolveReactionsSummary');
 var debug = require('debug')('resolve');
 
 function resolveProfilesForPost(post, done) {
-	debug('resolveProfilesForPost');
+	debug('resolveProfilesForPost ' + post.uuid);
 	async.series([
 		function (cb) {
 			async.each([post], resolveProfiles, function (err) {

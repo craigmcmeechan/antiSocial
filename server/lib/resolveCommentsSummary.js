@@ -4,7 +4,7 @@ var debugVerbose = require('debug')('resolve:verbose');
 
 
 module.exports = function resolveCommentsSummary(item, done) {
-	debug('resolveCommentsSummary');
+	debug('resolveCommentsSummary ' + item.uuid);
 
 	var comments = typeof item.resolvedComments === 'function' ? item.resolvedComments() : item.resolvedComments;
 

@@ -7,9 +7,9 @@ var debug = require('debug')('resolve');
 var debugVerbose = require('debug')('resolve:verbose');
 
 module.exports = function resolveReactions(items, itemType, done) {
-	debug('resolveReactions');
 
 	async.map(items, function (item, doneMap) {
+		debug('resolveReactions ' + itemType + ' ' + item.uuid);
 
 		var about = item.about ? item.about : item.source;
 
