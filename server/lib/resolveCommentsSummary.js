@@ -1,6 +1,11 @@
 var async = require('async');
+var debug = require('debug')('resolve');
+var debugVerbose = require('debug')('resolve:verbose');
+
 
 module.exports = function resolveCommentsSummary(item, done) {
+	debug('resolveCommentsSummary ' + item.uuid);
+
 	var comments = typeof item.resolvedComments === 'function' ? item.resolvedComments() : item.resolvedComments;
 
 	if (comments && comments.length) {

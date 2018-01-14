@@ -13,25 +13,12 @@
 		"essential": true,
 		"memory": 512,
 		"portMappings": [{
-			"hostPort": 3000,
+			"hostPort": 80,
 			"containerPort": 3000
 		}],
 		"mountPoints": [{
 			"sourceVolume": "webapp-antisocial-data",
 			"containerPath": "/var/app/current/client/uploads"
 		}]
-	}, {
-		"name": "nginx-antisocial",
-		"image": "980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-production:nginx-antisocial",
-		"essential": true,
-		"memory": 128,
-		"portMappings": [{
-			"hostPort": 80,
-			"containerPort": 8080
-		}],
-		"links": [
-			"webapp-antisocial"
-		],
-		"mountPoints": []
 	}]
 }

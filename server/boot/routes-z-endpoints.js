@@ -10,7 +10,6 @@ var resolveReactions = require('../lib/resolveReactions');
 var resolveComments = require('../lib/resolveComments');
 var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
-var qs = require('querystring');
 var encryption = require('../lib/encryption');
 var uuid = require('uuid');
 var url = require('url');
@@ -1296,10 +1295,7 @@ module.exports = function (server) {
         }]
       },
       'order': 'createdOn DESC',
-      'limit': 10,
-      'include': [{
-        'user': ['uploads']
-      }]
+      'limit': 10
     };
 
     if (!isMe) {
@@ -1337,12 +1333,7 @@ module.exports = function (server) {
         }, {
           'userId': user.id
         }]
-      },
-      'include': [{
-        'user': ['uploads']
-      }, {
-        'photos': ['uploads']
-      }]
+      }
     };
 
     if (!isMe) {

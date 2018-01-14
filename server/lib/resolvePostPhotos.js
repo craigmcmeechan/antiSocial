@@ -1,9 +1,12 @@
 var async = require('async');
 var server = require('../server');
+var debug = require('debug')('resolve');
+var debugVerbose = require('debug')('resolve:verbose');
 
 function resolvePostPhotos(posts, done) {
-	//console.log('resolvePostPhotos');
 	async.each(posts, function (post, cb) {
+		debug('resolvePostPhotos ' + post.uuid);
+
 		var query = {
 			'where': {
 				'postId': post.id

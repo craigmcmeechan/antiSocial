@@ -13,6 +13,9 @@ module.exports = function (view) {
 
 		var username = matches[1];
 		var currentUser = ctx.get('currentUser');
+		if (!currentUser) {
+			return next();
+		}
 
 		req.app.models.MyUser.findOne({
 			'where': {

@@ -1,14 +1,14 @@
 var server = require('../server');
 var async = require('async');
-var VError = require('verror').VError;
-var WError = require('verror').WError;
 
-var debug = require('debug')('feeds');
-var debugVerbose = require('debug')('feeds:verbose');
+var debug = require('debug')('resolve');
+var debugVerbose = require('debug')('resolve:verbose');
+
 var resolveReactions = require('./resolveReactions');
 
 module.exports = function resolveComments(items, itemType, done) {
 	async.map(items, function (item, doneMap) {
+		debug('resolveComments ' + itemType + ' ' + item.uuid);
 
 		var about = item.about ? item.about : item.source;
 

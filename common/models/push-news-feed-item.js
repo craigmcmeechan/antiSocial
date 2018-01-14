@@ -1,8 +1,6 @@
 var PassThrough = require('stream').PassThrough;
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
-var VError = require('verror').VError;
-var WError = require('verror').WError;
 var encryption = require('../../server/lib/encryption');
 var RemoteRouting = require('loopback-remote-routing');
 
