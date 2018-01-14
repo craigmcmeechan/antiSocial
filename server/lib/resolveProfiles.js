@@ -1,9 +1,11 @@
 var async = require('async');
 var request = require('request');
 var app = require('../server');
-var debug = require('debug')('cache');
+var debug = require('debug')('resolve');
 
 module.exports = function resolveProfiles(item, done) {
+	debug('resolveProfiles');
+
 	var myCache = app.locals.myCache;
 
 	var endpoints = [];

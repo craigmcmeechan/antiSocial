@@ -1271,7 +1271,8 @@ module.exports = function (server) {
     server.models.MyUser.findOne({
       'where': {
         'username': username
-      }
+      },
+      'include': ['uploads']
     }, function (err, user) {
       if (err) {
         return cb(err);
