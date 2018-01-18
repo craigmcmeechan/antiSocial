@@ -14,6 +14,7 @@
 				else {
 					self.element.html(element.find(self.target).html());
 				}
+				self.element.removeClass('loading');
 				didInjectContent(self.element);
 			})
 		};

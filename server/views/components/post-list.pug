@@ -8,7 +8,7 @@
 			
 			.newsfeed-item
 				if post.athoritativeEndpoint
-					.post(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?embed=1&endpoint=' + encodeURIComponent(post.athoritativeEndpoint))
+					.post.loading(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?embed=1&endpoint=' + encodeURIComponent(post.athoritativeEndpoint))
 				else 
 					.post.live-element(data-watch= post.source + '/post/' + post.uuid)
 						.post-identity
