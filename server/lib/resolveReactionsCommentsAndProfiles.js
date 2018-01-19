@@ -4,21 +4,21 @@ var resolveComments = require('../lib/resolveComments');
 var resolveReactions = require('../lib/resolveReactions');
 
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
-var VError = require('verror').VError;
-var WError = require('verror').WError;
-
-var debug = require('debug')('feeds');
-var debugVerbose = require('debug')('feeds:verbose');
+var debug = require('debug')('resolve');
+var debugVerbose = require('debug')('resolve:verbose');
 
 module.exports = function resolveReactionsCommentsAndProfiles(posts, done) {
+
 	async.map(posts, function (post, doneMap) {
+		debug('resolveReactionsCommentsAndProfiles ' + post.uuid);
+
 		var postEndpoint = post.source + '/post/' + post.uuid;
 		async.series([
 			function (cb) {
-				resolveComments(posts, 'post', cb);
+				resolveComments([post], 'post', cb);
 			},
 			function (cb) {
-				resolveReactions(posts, 'post', cb);
+				resolveReactions([post], 'post', cb);
 			}
 		], function (err) {
 			if (err) {

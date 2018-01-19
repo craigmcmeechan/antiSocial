@@ -1,7 +1,10 @@
 var async = require('async');
 var _ = require('lodash');
+var debug = require('debug')('resolve');
+var debugVerbose = require('debug')('resolve:verbose');
 
 module.exports = function resolveReactionsSummary(item, done) {
+	debug('resolveReactionsSummary ' + item.uuid);
 	var reactions = typeof item.resolvedReactions === 'function' ? item.resolvedReactions() : item.resolvedReactions;
 
 	if (reactions && reactions.length) {

@@ -1,9 +1,10 @@
 var resolveProfiles = require('./resolveProfiles');
 var server = require('../server');
-var debug = require('debug')('feeds');
-var debugVerbose = require('debug')('feeds:verbose');
+var debug = require('debug')('resolve');
+var debugVerbose = require('debug')('resolve:verbose');
 
 module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done) {
+	debug('newsFeedItemResolve');
 	resolveProfiles(myNewsFeedItem, function (err) {
 		var myEndPoint = server.locals.config.publicHost + '/' + currentUser.username;
 
@@ -69,22 +70,28 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 		}
 
 		if (myNewsFeedItem.type === 'comment') {
+			var about = myNewsFeedItem.about;
+			about = about.replace(/\/(comment|photo)\/.*/, '');
+
 			debug(sourceProfile.profile.name + '" commented on ' + myNewsFeedItem.about);
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			myNewsFeedItem.humanReadable += ' on <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this post</a>';
+			myNewsFeedItem.humanReadable += ' on <a href="/proxy-post?endpoint=' + encodeURIComponent(about) + '">this post</a>';
 			myNewsFeedItem.humanReadable += ' by <a href="/proxy-profile?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
 		if (myNewsFeedItem.type === 'react') {
+			var about = myNewsFeedItem.about;
+			about = about.replace(/\/(comment|photo)\/.*/, '');
+
 			debug(sourceProfile.profile.name + '" reacted to ' + myNewsFeedItem.about);
 			var reaction = '<span class="em em-' + myNewsFeedItem.details.reaction + '"></span>';
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			myNewsFeedItem.humanReadable += ' reacted to <a href="/proxy-post?endpoint=' + encodeURIComponent(myNewsFeedItem.about) + '">this post</a>';
+			myNewsFeedItem.humanReadable += ' reacted to <a href="/proxy-post?endpoint=' + encodeURIComponent(about) + '">this post</a>';
 			myNewsFeedItem.humanReadable += ' by <a href="/proxy-profile?endpoint=' + encodeURIComponent(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}

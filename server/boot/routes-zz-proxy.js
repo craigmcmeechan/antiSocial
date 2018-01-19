@@ -109,7 +109,7 @@ module.exports = function (server) {
 			}
 			else {
 				var isPermalink = false;
-				if (template === 'post') {
+				if (template === 'post' && !req.query.embed) {
 					isPermalink = true;
 				}
 				res.render('components/rendered-' + template, {
@@ -121,7 +121,8 @@ module.exports = function (server) {
 					'isMe': isMe,
 					'myEndpoint': getPOVEndpoint(currentUser),
 					'wantSummary': template === 'post-comment',
-					'isPermalink': isPermalink
+					'isPermalink': isPermalink,
+					'cache': true
 				});
 			}
 		});

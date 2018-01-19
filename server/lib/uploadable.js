@@ -348,7 +348,7 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 					original: true,
 					width: meta.width,
 					height: meta.height,
-					url: publicHost + localCopy
+					url: publicHost + localCopy.replace(/^client/, '')
 				});
 				cb(null, instance, meta, images);
 			}
