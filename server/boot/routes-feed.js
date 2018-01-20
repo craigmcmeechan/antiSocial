@@ -9,8 +9,8 @@ var request = require('request');
 var _ = require('lodash');
 var url = require('url');
 
-var debug = require('debug')('feed');
-var debugVerbose = require('debug')('feed:verbose');
+var debug = require('debug')('scroll');
+var debugVerbose = require('debug')('scroll:verbose');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -40,6 +40,10 @@ module.exports = function (server) {
         cb(null, session);
       },
       function getMoreItems(session, cb) {
+        if (session.atEnd) {
+          return cb(null, session);
+        }
+
         var query = {
           'where': {
             'and': [{
@@ -54,7 +58,7 @@ module.exports = function (server) {
         if (session.feedHighwater) {
           query.where.and.push({
             'createdOn': {
-              'gt': session.feedHighwater
+              'lt': session.feedHighwater
             }
           });
         }
@@ -71,8 +75,10 @@ module.exports = function (server) {
 
             if (items && items.length) {
               session.feedHighwater = items[items.length - 1].createdOn;
+              debug('got items', items.length, session.feedHighwater, items[items.length - 1].uuid);
             }
             else {
+              debug('at end');
               session.atEnd = true;
               return cb(null, session);
             }
@@ -113,10 +119,14 @@ module.exports = function (server) {
             session.currentSlice.start = session.queue.length - 1;
           }
         }
+
         session.currentSlice.end = session.currentSlice.start + 5;
         if (session.currentSlice.end > session.queue.length - 1) {
           session.currentSlice.end = session.queue.length - 1;
         }
+
+        debug('queue.length:', session.queue.length);
+        debug('currentSlice', session.currentSlice);
 
         var items = [];
 
@@ -197,7 +207,7 @@ module.exports = function (server) {
 
       },
       function saveScrollSession(session, items, cb) {
-        debug('save scroll session %j', session);
+        debug('save scroll session');
         cache.set('scrollSession-' + currentUser.id.toString(), session, 3600, function (err) {
           cb(err, items);
         });
