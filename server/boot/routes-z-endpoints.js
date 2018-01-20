@@ -40,6 +40,7 @@ module.exports = function (server) {
   var postPhotoCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments(\.json)?$/;
   var postPhotoCommentRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
   var postPhotoCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
+  var photoRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
 
   function getPOVEndpoint(friend, currentUser) {
     if (friend) {
@@ -1267,6 +1268,81 @@ module.exports = function (server) {
     });
   });
 
+  router.get(photoRE, getCurrentUser(), checkNeedProxyRewrite('photo'), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+    var matches = req.url.match(photoRE);
+    var username = matches[1];
+    var photoId = matches[2];
+    var view = matches[3];
+    var friend;
+    var currentUser;
+    var isMe = false;
+
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user);
+        });
+      },
+      function (user, cb) {
+        if (currentUser) {
+          if (currentUser.id.toString() === user.id.toString()) {
+            isMe = true;
+          }
+        }
+        getPhoto(photoId, user, friend, function (err, photo) {
+          if (err) {
+            return cb(err);
+          }
+          cb(err, user, photo);
+        });
+      }
+    ], function (err, user, photo) {
+      if (err) {
+        return next(err);
+      }
+
+      var data = {
+        'profile': {
+          'name': user.name,
+          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
+          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
+          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
+          'endpoint': server.locals.config.publicHost + '/' + user.username,
+          'publicHost': server.locals.config.publicHost
+        },
+        'photo': photo
+      };
+
+      if (view === '.json') {
+        return res.send(encryptIfFriend(friend, data));
+      }
+
+      var options = {
+        'data': data,
+        'user': currentUser,
+        'friend': friend,
+        'isMe': isMe,
+        'myEndpoint': getPOVEndpoint(friend, currentUser),
+        'cache': true
+      };
+
+      renderFile('/components/rendered-photo.pug', options, req, function (err, html) {
+        if (err) {
+          return next(err);
+        }
+        return res.send(encryptIfFriend(friend, html));
+      });
+    });
+  });
+
   function getUser(username, cb) {
     server.models.MyUser.findOne({
       'where': {
@@ -1358,6 +1434,35 @@ module.exports = function (server) {
       }
 
       cb(null, post);
+    });
+  }
+
+  function getPhoto(photoId, user, friend, cb) {
+    var query = {
+      'where': {
+        'and': [{
+          'uuid': photoId
+        }, {
+          'userId': user.id
+        }]
+      },
+      'include': ['uploads']
+    };
+
+    debug('getPhoto: %j', query);
+
+    server.models.Photo.findOne(query, function (err, photo) {
+      if (err) {
+        return cb(err);
+      }
+
+      if (!photo) {
+        err = new Error('Photo not found');
+        err.statusCode = 404;
+        return cb(err);
+      }
+
+      cb(null, photo);
     });
   }
 

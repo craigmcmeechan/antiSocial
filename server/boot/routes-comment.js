@@ -40,7 +40,26 @@ module.exports = function (server) {
           cb(null, friend);
         });
       },
-      function makePushNewsFeedItem(friend, cb) { // notify network
+      function attachPhoto(friend, cb) {
+        if (!req.body.photos || !req.body.photos.length) {
+          return cb(null, friend, null);
+        }
+        server.models.Photo.findById(req.body.photos[0].id, function (err, photo) {
+          if (err) {
+            return cb(err);
+          }
+          if (!photo) {
+            return cb(err, friend, null);
+          }
+
+          photo.updateAttributes({
+            'status': 'complete'
+          }, function (err) {
+            return cb(err, friend, photo);
+          });
+        });
+      },
+      function makePushNewsFeedItem(friend, photo, cb) { // notify network
         var item = {
           'uuid': uuid(),
           'type': 'comment',
@@ -49,7 +68,7 @@ module.exports = function (server) {
           'visibility': ['public'],
           'details': {
             'body': req.body.body,
-            'photoId': photoId
+            'photo': photo ? server.locals.config.publicHost + '/' + currentUser.username + '/photo/' + photo.uuid : ''
           }
         };
 
@@ -69,7 +88,7 @@ module.exports = function (server) {
           'about': news.about,
           'details': {
             'body': news.details.body,
-            'photoId': news.details.photoId
+            'photo': news.details.photo
           },
           'userId': currentUser.id,
           'createdOn': news.createdOn,

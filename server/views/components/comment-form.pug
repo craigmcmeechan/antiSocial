@@ -2,7 +2,7 @@
 
 #scope-posting-form
 	.clearfix
-	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= about data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body")
+	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= about data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body" data-single-upload= "1")
 		.tabbed
 			#form-tab
 				.form-group.input-relative
@@ -11,8 +11,10 @@
 						span.glyphicon.glyphicon-ok
 					.validation-help.hide-until-subject-focus
 			#preview-tab.markdown
-
+		.hide-until-subject-focus
+			.upload-zone
 		.form-group.input-relative.hide-until-subject-focus.comment-button-zone
 			button.post-submit-button.btn.btn-primary Post
 			a#post-preview-button.btn.btn-default(href="#") Preview
+			a#post-upload-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
 			a#post-cancel-button.btn.btn-default.pull-right(href="#") Cancel

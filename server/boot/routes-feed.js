@@ -116,7 +116,7 @@ module.exports = function (server) {
         if (req.query.more) {
           session.currentSlice.start += 6;
           if (session.currentSlice.start > session.queue.length - 1) {
-            session.currentSlice.start = session.queue.length - 1;
+            return cb(null, session, []);
           }
         }
 
