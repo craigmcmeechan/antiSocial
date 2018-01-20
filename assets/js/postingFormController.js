@@ -14,6 +14,7 @@
 		self.categories = [];
 		self.dropzone = undefined;
 		this.lookupDebounce = null;
+		this.singleUpload = this.element.data('single-upload');
 
 		this.renderer.link = function (href, title, text) {
 			if (text && text.match(/^http/i)) {
@@ -58,17 +59,83 @@
 						theElement.val(value);
 					});
 				}, 500);
-			})
+			});
 
 			if (self.element.find('.upload-zone')) {
+				var previewTemplate =
+					'\
+					<div class="dz-preview dz-file-preview container-fluid">\
+						<div class="row">\
+							<div class="col-sm-3">\
+								<div class="dz-image">\
+									<img data-dz-thumbnail>\
+								</div>\
+								<div class="dz-details">\
+									<div class="dz-size">\
+										<span data-dz-size></span>\
+									</div>\
+									<div class="dz-filename">\
+										<span data-dz-name></span>\
+									</div>\
+								</div>\
+							<div class="dz-progress">\
+								<span class="dz-upload" data-dz-uploadprogress></span>\
+							</div>\
+							<div class="dz-error-message">\
+								<span data-dz-errormessage></span>\
+							</div>\
+						</div>\
+						<div class="metadata col-sm-9">\
+							<div class="form-group">\
+								<input type="text" class="form-control title" placeholder="Title">\
+								<br>\
+								<textarea class="form-control description" type="text" placeholder="Description"></textarea>\
+							</div>\
+						</div>\
+					</div>';
+
+				if (self.singleUpload) {
+					previewTemplate =
+						'\
+						<div class="dz-preview dz-file-preview container-fluid">\
+							<div class="row">\
+								<div class="col-sm-3">\
+									<div class="dz-image">\
+										<img data-dz-thumbnail>\
+									</div>\
+									<div class="dz-details">\
+										<div class="dz-size">\
+											<span data-dz-size></span>\
+										</div>\
+										<div class="dz-filename">\
+											<span data-dz-name></span>\
+										</div>\
+									</div>\
+								<div class="dz-progress">\
+									<span class="dz-upload" data-dz-uploadprogress></span>\
+								</div>\
+								<div class="dz-error-message">\
+									<span data-dz-errormessage></span>\
+								</div>\
+							</div>\
+						</div>';
+				}
+
 				self.element.find('.upload-zone').addClass('dropzone').dropzone({
 					'url': '/pending-upload',
 					'autoProcessQueue': true,
 					'parallelUploads': 1,
 					'dictDefaultMessage': 'Drop photos here to attach to this post',
 					'addRemoveLinks': true,
-					'previewTemplate': '<div class="dz-preview dz-file-preview container-fluid"><div class="row"><div class="col-sm-3"><div class="dz-image"><img data-dz-thumbnail></div><div class="dz-details"><div class="dz-size"><span data-dz-size></span></div><div class="dz-filename"><span data-dz-name></span></div></div><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div><div class="dz-error-message"><span data-dz-errormessage></span></div></div><div class="metadata col-sm-9"><div class="form-group"><input type="text" class="form-control title" placeholder="Title"><br><textarea class="form-control description" type="text" placeholder="Description"></textarea></div></div></div>',
-					init: function () {
+					'previewTemplate': previewTemplate,
+					'maxFiles': self.singleUpload ? 1 : undefined,
+					'uploadMultiple': self.singleUpload ? false : undefined,
+					'paramName': 'file',
+					'init': function () {
+						this.on('maxfilesexceeded', function (file) {
+							this.removeAllFiles();
+							this.addFile(file);
+						});
 						this.on('success', function (file, response) {
 							file.serverPhotoId = response.id;
 							//file.previewTemplate.appendChild(document.createTextNode(file.serverPhotoId));

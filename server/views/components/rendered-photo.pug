@@ -1,0 +1,12 @@
+if data.photo
+	- var photo = data.photo
+	- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
+	- var upload = getUploadForProperty('optimized',uploads,'thumb')
+	- var cssClass = 'col-sm-3 col-xs-6 maintain-aspect-ratio'
+	
+	- upload = getUploadForProperty('optimized',uploads,'large')
+	if !upload
+		- upload = getUploadForProperty('optimized',uploads,'original')
+
+	.comment-photo
+		img(src= upload.url)

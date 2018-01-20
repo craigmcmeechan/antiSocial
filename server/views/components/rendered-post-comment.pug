@@ -34,6 +34,9 @@ if wantSummary
 
 			!= marked(comment.details.body)
 			
+			if comment.details.photo
+				.comment-photo.loading.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".comment-photo" data-endpoint= '/proxy-photo?endpoint=' + encodeURIComponent(comment.details.photo))
+			
 			span.timestamp(data-timestamp= moment(comment.createdOn).toISOString())
 				!= ' - ' + moment(comment.createdOn).calendar()
 
