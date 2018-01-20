@@ -41,7 +41,7 @@ module.exports = function (server) {
         });
       },
       function attachPhoto(friend, cb) {
-        if (!req.body.photos && !req.body.photos.length) {
+        if (!req.body.photos || !req.body.photos.length) {
           return cb(null, friend, null);
         }
         server.models.Photo.findById(req.body.photos[0].id, function (err, photo) {
