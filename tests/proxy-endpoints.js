@@ -11,16 +11,24 @@ describe('proxy endpoints', function () {
 
 	var client1 = request.agent();
 	var client2 = request.agent();
+	var client3 = request.agent();
+
 	var clientAnon = request.agent();
 
 	var email1 = 'mrhodes+test+proxy1@myantisocial.net';
 	var email2 = 'mrhodes+test+proxy2@myantisocial.net';
+	var email3 = 'mrhodes+test+proxy3@myantisocial.net';
+
 	var endpoint1 = 'http://127.0.0.1:3000/user-1';
 	var endpoint2 = 'http://127.0.0.1:3000/user-2';
+	var endpoint3 = 'http://127.0.0.1:3000/user-3';
+
 	var password = 'testing123';
 	var post1;
 	var post2;
 	var postPhoto;
+	var postCommentPhoto;
+	var postCommentPhotoUUID;
 	var postPhotoUUID;
 	var commentId;
 	var photoCommentId;
@@ -99,6 +107,33 @@ describe('proxy endpoints', function () {
 			client2.patch('http://127.0.0.1:3000/api/MyUsers/me').send({
 				username: 'user-2',
 				name: 'User Two'
+			}).end(function (err, res) {
+				expect(res.status).to.be(200);
+				done();
+			});
+		});
+
+		it('should be able to create account 3', function (done) {
+			client3.post('http://127.0.0.1:3000/api/MyUsers/register')
+				.type('form')
+				.send({
+					'email': email3,
+					'password': password,
+					'username': 'user-3'
+				})
+				.end(function (err, res) {
+					expect(err).to.be(null);
+					expect(res.status).to.equal(200);
+					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
+					expect(accessToken).to.be.a('string');
+					done();
+				});
+		});
+
+		it('should be able to update user3', function (done) {
+			client3.patch('http://127.0.0.1:3000/api/MyUsers/me').send({
+				username: 'user-3',
+				name: 'User Three'
 			}).end(function (err, res) {
 				expect(res.status).to.be(200);
 				done();
@@ -215,8 +250,40 @@ describe('proxy endpoints', function () {
 		});
 	});
 
+	it('user 2 should be able to upload a post comment photo', function (done) {
+		var url = 'http://localhost:3000/pending-upload';
+		var file = 'tests/images/test-image.jpg';
+
+		client1.post(url).attach('file', file)
+			.end(function (err, res) {
+				expect(err).to.be(null);
+				expect(res.status).to.be(200);
+				console.log('upload photo %j', res.body);
+				postCommentPhoto = res.body.id;
+				postCommentPhotoUUID = res.body.uuid;
+				done();
+			});
+	});
+
+	it('user1 should be able to comment on user2 post with a photo', function (done) {
+		client1.post('http://127.0.0.1:3000/comment').send({
+			'body': 'a comment with a photo',
+			'about': endpoint2 + '/post/' + post2,
+			'photos': [{
+				'id': postCommentPhoto
+			}]
+		}).end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			console.log('comment on post %j', res.body);
+			expect(res.body.status).to.be('ok');
+			commentId = res.body.comment.uuid;
+			done();
+		});
+	});
+
 	it('user1 should be able to get user2 profile (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-profile?format=json&endpoint=' + encodeURIComponent(endpoint2)).end(function (err, res) {
+		client1.get(endpoint2 + '.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -226,7 +293,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 profile (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-profile?endpoint=' + encodeURIComponent(endpoint2)).end(function (err, res) {
+		client1.get(endpoint2).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			expect(res.text).to.contain('<head>');
@@ -235,7 +302,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 posts (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-posts?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/posts')).end(function (err, res) {
+		client1.get(endpoint2 + '/posts.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -246,7 +313,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 posts (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-posts?endpoint=' + encodeURIComponent(endpoint2 + '/posts')).end(function (err, res) {
+		client1.get(endpoint2 + '/posts').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			expect(res.text).to.contain('<div id="scope-post-list">');
@@ -255,7 +322,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('anon user should be able to get user2 public posts (json)', function (done) {
-		clientAnon.get('http://127.0.0.1:3000/proxy-posts?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/posts')).end(function (err, res) {
+		clientAnon.get(endpoint2 + '/posts.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -266,7 +333,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post1)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post1 + '.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -278,7 +345,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			expect(res.text).to.contain('<div id="scope-post-list">');
@@ -287,7 +354,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post reactions (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-reactions?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/reactions.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -299,7 +366,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post reactions (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-reactions?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/reactions').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -307,19 +374,19 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post comments (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-comments?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/comments')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/comments.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
 			console.log('comments %j', res.body);
 			expect(res.body.comments).to.be.an('object');
-			expect(res.body.comments.length).to.be(1);
+			expect(res.body.comments.length).to.be(2);
 			done();
 		});
 	});
 
 	it('user1 should be able to get user2 post comments (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-comments?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/comments')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/comments').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -327,7 +394,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post comment (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-comment?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/comment/' + commentId)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/comment/' + commentId + '.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -339,7 +406,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post comment (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-comment?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/comment/' + commentId)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/comment/' + commentId).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -347,7 +414,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post comment reactions (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-comment-reactions?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/comment/' + commentId + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/comment/' + commentId + '/reactions.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -358,7 +425,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post comment reactions (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-comment-reactions?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/comment/' + commentId + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/comment/' + commentId + '/reactions').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -367,7 +434,7 @@ describe('proxy endpoints', function () {
 
 
 	it('user1 should be able to get user2 post photos (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photos?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photos')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photos.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -380,7 +447,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photos (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photos?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photos')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photos').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -428,7 +495,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -439,7 +506,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -447,7 +514,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo reactions (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-reactions?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/reactions.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -458,7 +525,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo reactions (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-reactions?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/reactions').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -466,7 +533,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo comments (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-comments?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comments')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comments.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -477,7 +544,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo comments (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-comments?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comments')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comments').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -485,7 +552,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo comment (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-comment?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId + '.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -496,7 +563,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo comment (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-comment?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId)).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
@@ -504,7 +571,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo comment reactions (json)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-comment-reactions?format=json&endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId + '/reactions.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
@@ -515,13 +582,32 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 post photo comment reactions (html)', function (done) {
-		client1.get('http://127.0.0.1:3000/proxy-post-photo-comment-reactions?endpoint=' + encodeURIComponent(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId + '/reactions')).end(function (err, res) {
+		client1.get(endpoint2 + '/post/' + post2 + '/photo/' + postPhotoUUID + '/comment/' + photoCommentId + '/reactions').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
 			done();
 		});
 	});
 
+
+	it('user1 should be able to get user1 comment photo (json)', function (done) {
+		client2.get(endpoint1 + '/photo/' + postCommentPhotoUUID + '.json').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body).to.be.an('object');
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			console.log('photo %j', res.body);
+			expect(res.body.photo).to.be.an('object');
+			done();
+		});
+	});
+
+	it('user1 should be able to get user1 comment photo (html)', function (done) {
+		client2.get(endpoint1 + '/photo/' + postCommentPhotoUUID).end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
+			done();
+		});
+	});
 });
 
 function getCookie(headers, id) {

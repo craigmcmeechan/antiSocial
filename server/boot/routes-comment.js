@@ -35,7 +35,7 @@ module.exports = function (server) {
         req.app.models.Friend.findOne(query, function (err, friend) {
           if (err) {
             var e = new VError(err, 'could not find friend');
-            return next(err);
+            return next(e);
           }
           cb(null, friend);
         });
@@ -46,15 +46,21 @@ module.exports = function (server) {
         }
         server.models.Photo.findById(req.body.photos[0].id, function (err, photo) {
           if (err) {
-            return cb(err);
+            var e = new VError(err, 'could not read photo');
+            return cb(e);
           }
           if (!photo) {
-            return cb(err, friend, null);
+            var e = new VError('photo not found');
+            return cb(e);
           }
 
           photo.updateAttributes({
             'status': 'complete'
           }, function (err) {
+            if (err) {
+              var e = new VError(err, 'could not update photo status');
+              return cb(e);
+            }
             return cb(err, friend, photo);
           });
         });
