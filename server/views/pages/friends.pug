@@ -56,7 +56,7 @@ block content
 										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
 									.media-body
 										h4
-											a(href= '/proxy-profile?endpoint='+encodeURIComponent(friend.remoteEndPoint))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
+											a(href= proxyEndPoint(friend.remoteEndPoint))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
 										p
 											if friend.status === 'pending'
 											

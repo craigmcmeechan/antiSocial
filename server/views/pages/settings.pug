@@ -26,7 +26,7 @@ block content
 						.form-group
 								label User Name (one time edit)
 								.input-relative
-									input.form-control(type="text" name="username" placeholder="Username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-unique-endpoint= "/api/MyUsers/isunique?field=username")
+									input.form-control(type="text" name="username" placeholder="Username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-suffix= user.unique data-unique-endpoint= "/api/MyUsers/isunique?field=username")
 									.input-ok-indicator
 										span.glyphicon.glyphicon-ok
 									.validation-help

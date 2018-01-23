@@ -7,7 +7,7 @@
 		this.start = function () {
 			this.element.on('submit', function (e) {
 				e.preventDefault();
-				loadPage('/proxy-profile?endpoint=' + encodeURIComponent(self.element.find('[name="endpoint"]').val()));
+				loadPage(proxyEndPoint(self.element.find('[name="endpoint"]').val()));
 			});
 		};
 

@@ -4,6 +4,7 @@ var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 var newsFeedItemResolve = require('../../server/lib/newsFeedResolve');
 var resolveProfiles = require('../../server/lib/resolveProfiles');
+var proxyEndPoint = require('../../server/lib/proxy-endpoint');
 var async = require('async');
 var url = require('url');
 var server = require('../../server/server');
@@ -245,7 +246,7 @@ module.exports = function (NewsFeedItem) {
 				if (groupItem.type === 'comment' || groupItem.type === 'react') {
 					if (!hash[groupItem.source]) {
 						hash[groupItem.source] = true;
-						var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
+						var mention = '<a href="' + proxyEndPoint(groupItem.source) + '">' + fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
 						mentions.push(mention);
 					}
 				}

@@ -12,6 +12,7 @@ var qs = require('querystring');
 var RemoteRouting = require('loopback-remote-routing');
 var debug = require('debug')('user');
 var debugVerbose = require('debug')('user:verbose');
+var sh = require('shorthash');
 
 module.exports = function (MyUser) {
 	if (!process.env.ADMIN) {
@@ -223,7 +224,8 @@ module.exports = function (MyUser) {
 
 		var adminUser = {
 			'email': email,
-			'password': password
+			'password': password,
+			'unique': sh.unique(server.locals.config.publicHost + '/' + uuid())
 		};
 
 		debugVerbose('createUser', adminUser);

@@ -61,6 +61,9 @@
     },
     "categories": {
       "type": "array"
+    },
+    "unique": {
+      "type": "string"
     }
   },
   "validations": [],

@@ -1,6 +1,7 @@
 var checkProxyRE = /^\/([a-zA-Z0-9\-]+)/;
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
+var url = require('url');
 
 module.exports = function (view) {
 	return function rewriteUrls(req, res, next) {
@@ -13,6 +14,7 @@ module.exports = function (view) {
 
 		var username = matches[1];
 		var currentUser = ctx.get('currentUser');
+
 		if (!currentUser) {
 			return next();
 		}
@@ -27,7 +29,8 @@ module.exports = function (view) {
 				return next(err);
 			}
 
-			if (user) {
+			if (user && user.id.toString() === currentUser.id.toString()) {
+				debug('rewriteUrls /user/ is current user');
 				return next();
 			}
 
@@ -46,10 +49,15 @@ module.exports = function (view) {
 					return next(err);
 				}
 				if (!friend) {
+					debug('rewriteUrls friend of currentUser matching /user/ not found');
 					return next();
 				}
-				debug('found non resident user as a friend of currentUser rewite url as proxy:', friend.remoteEndPoint);
-				var rewrite = req.url;
+				debug('rewriteUrls found friend of currentUser matching /user/ rewite url as proxy:', friend.remoteEndPoint);
+				var rewrite = url.parse(req.url).pathname;
+				if (rewrite.match(/\.json$/)) {
+					rewrite = rewrite.replace(/\.json$/, '');
+					req.query.format = 'json';
+				}
 				req.query.endpoint = friend.remoteHost + rewrite;
 				req.url = '/proxy-' + view;
 				ctx.set('redirectProxy', true);
