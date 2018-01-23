@@ -8,7 +8,7 @@
 			
 			.newsfeed-item
 				if post.athoritativeEndpoint
-					.post.loading(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?embed=1&endpoint=' + encodeURIComponent(post.athoritativeEndpoint))
+					.post.loading(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint))
 				else 
 					.post.live-element(data-watch= post.source + '/post/' + post.uuid)
 						.post-identity
@@ -17,7 +17,7 @@
 									- var endpoint = poster.endpoint
 									- var thumb = poster.photo ? poster.photo.url : ''
 									- var name = poster.name
-									- var posterUrl = '/proxy-profile?endpoint=' + encodeURIComponent(endpoint)
+									- var posterUrl = proxyEndPoint(endpoint)
 									if !user
 										- posterUrl = endpoint
 
@@ -29,7 +29,7 @@
 											a(href= posterUrl)= name
 											if post.about
 												span.glyphicon.glyphicon-arrow-right.target-arrow
-												a(href= '/proxy-profile?endpoint=' + encodeURIComponent(post.about))= about.name
+												a(href= proxyEndPoint(post.about))= about.name
 										div.secondary
 											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())= moment(post.createdOn).calendar()
 											.visibility

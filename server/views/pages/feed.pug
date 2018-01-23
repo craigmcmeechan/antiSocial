@@ -16,7 +16,7 @@ block content
 							- post = post.replace(/\/(comment|photo)\/.*/,'')
 							.newsfeed-item
 								.news-summary!= item.feedSummary
-								.post.loading.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?embed=1&endpoint=' + encodeURIComponent(post))
+								.post.loading.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post) + '?embed=1')
 
 				.text-center
 					.loader(data-jsclass="loadMoreController")

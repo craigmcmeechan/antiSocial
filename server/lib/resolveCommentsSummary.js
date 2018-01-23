@@ -1,6 +1,7 @@
 var async = require('async');
 var debug = require('debug')('resolve');
 var debugVerbose = require('debug')('resolve:verbose');
+var proxyEndPoint = require('./proxy-endpoint');
 
 
 module.exports = function resolveCommentsSummary(item, done) {
@@ -15,7 +16,7 @@ module.exports = function resolveCommentsSummary(item, done) {
 			var comment = comments[i];
 			if (!hash[comment.source]) {
 				hash[comment.source] = true;
-				var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(comment.source) + '">' + comment.resolvedProfiles[comment.source].profile.name + '</a>';
+				var mention = '<a href="' + proxyEndPoint(comment.source) + '">' + comment.resolvedProfiles[comment.source].profile.name + '</a>';
 				mentions.push(mention);
 			}
 		}

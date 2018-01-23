@@ -1,6 +1,7 @@
 var checkProxyRE = /^\/([a-zA-Z0-9\-]+)/;
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
+var url = require('url');
 
 module.exports = function (view) {
 	return function rewriteUrls(req, res, next) {
@@ -52,7 +53,7 @@ module.exports = function (view) {
 					return next();
 				}
 				debug('rewriteUrls found friend of currentUser matching /user/ rewite url as proxy:', friend.remoteEndPoint);
-				var rewrite = req.url;
+				var rewrite = url.parse(req.url).pathname;
 				if (rewrite.match(/\.json$/)) {
 					rewrite = rewrite.replace(/\.json$/, '');
 					req.query.format = 'json';

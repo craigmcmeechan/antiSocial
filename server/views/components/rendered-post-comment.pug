@@ -24,18 +24,18 @@ if wantSummary
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 		- var name = comment.resolvedProfiles[comment.source].profile.name
 		.thumb-container
-			a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
+			a(href= proxyEndPoint(comment.source))
 				img.profile-thumb(src= thumb)
 		.comment-container
 			strong.pull-left
-				a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
+				a(href= proxyEndPoint(comment.source))
 					span.profile-link
 						= name
 
 			!= marked(comment.details.body)
 			
 			if comment.details.photo
-				.comment-photo.loading.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".comment-photo" data-endpoint= '/proxy-photo?endpoint=' + encodeURIComponent(comment.details.photo))
+				.comment-photo.loading.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".comment-photo" data-endpoint= proxyEndPoint(comment.details.photo))
 			
 			span.timestamp(data-timestamp= moment(comment.createdOn).toISOString())
 				!= ' - ' + moment(comment.createdOn).calendar()
