@@ -11,7 +11,7 @@
 					element.addClass('changed');
 					if (type === 'comment' && element.data('watch-type') === type) {
 						var item = $('<div>');
-						item.load(endpoint, function () {
+						item.load(proxyEndPoint(endpoint), function () {
 							var comment = item.find('.a-comment');
 							var summary = item.find('.comments-label').html();
 							element.find('.comments').append(comment);
