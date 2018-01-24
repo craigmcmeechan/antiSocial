@@ -88,6 +88,7 @@ module.exports = function (server) {
 			var data = body;
 
 			if (friend && body.sig) {
+				debug('got encrypted response');
 				var privateKey = friend.keys.private;
 				var publicKey = friend.remotePublicKey;
 				var toDecrypt = body.data;

@@ -29,7 +29,7 @@ module.exports = function (server) {
 
   var profileRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)(\.json)?(\?.*)?$/;
   var postsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/posts(\.json)?(\?.*)?$/;
-  var postRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?$/;
+  var postRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?(\?embed=1)?$/;
   var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
   var postCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comments(\.json)?$/;
   var postCommentRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
@@ -233,16 +233,9 @@ module.exports = function (server) {
     var username = matches[1];
     var postId = matches[2];
     var view = matches[3];
-    var friend;
-    var currentUser;
+    var friend = ctx.get('friendAccess');
+    var currentUser = ctx.get('currentUser');
     var isMe = false;
-
-    // special case - direct access to html view is 'permalink' which
-    // should be the public view of the post
-    if (view === '.json') {
-      friend = ctx.get('friendAccess');
-      currentUser = ctx.get('currentUser');
-    }
 
     async.waterfall([
       function (cb) {
