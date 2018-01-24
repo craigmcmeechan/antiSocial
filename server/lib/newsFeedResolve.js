@@ -23,7 +23,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
-			myNewsFeedItem.humanReadable += 'Pending friend request from <a href="' + proxyEndPoint(myNewsFeedItem.source) + '">' + sourceProfile.profile.name + '</a>';
+			myNewsFeedItem.humanReadable += 'Pending friend request from <a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + sourceProfile.profile.name + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
@@ -32,8 +32,8 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
-			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
-			myNewsFeedItem.humanReadable += ' is now friends with <a href="' + proxyEndPoint(myNewsFeedItem.about) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.about, aboutProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' is now friends with <a href="' + proxyEndPoint(myNewsFeedItem.about, currentUser) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.about, aboutProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
@@ -47,9 +47,9 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
-			myNewsFeedItem.humanReadable += ' posted <a href="' + proxyEndPoint(myNewsFeedItem.about) + '">this</a>';
+			myNewsFeedItem.humanReadable += ' posted <a href="' + proxyEndPoint(myNewsFeedItem.about, currentUser) + '">this</a>';
 			if (myNewsFeedItem.target) {
-				myNewsFeedItem.humanReadable += ' on <a href="' + proxyEndPoint(myNewsFeedItem.target) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name, true) + '</a> wall';
+				myNewsFeedItem.humanReadable += ' on <a href="' + proxyEndPoint(myNewsFeedItem.target, currentUser) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name, true) + '</a> wall';
 			}
 			myNewsFeedItem.humanReadable += '</div>';
 		}
@@ -63,10 +63,10 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			}
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
-			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += ' tagged ';
-			myNewsFeedItem.humanReadable += '  <a href="' + proxyEndPoint(myNewsFeedItem.target) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name) + '</a> in ';
-			myNewsFeedItem.humanReadable += ' <a href="' + proxyEndPoint(myNewsFeedItem.about) + '">this post</a>';
+			myNewsFeedItem.humanReadable += '  <a href="' + proxyEndPoint(myNewsFeedItem.target, currentUser) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name) + '</a> in ';
+			myNewsFeedItem.humanReadable += ' <a href="' + proxyEndPoint(myNewsFeedItem.about, currentUser) + '">this post</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
@@ -78,8 +78,8 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			myNewsFeedItem.humanReadable += ' on <a href="' + proxyEndPoint(about) + '">this post</a>';
-			myNewsFeedItem.humanReadable += ' by <a href="' + proxyEndPoint(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' on <a href="' + proxyEndPoint(about, currentUser) + '">this post</a>';
+			myNewsFeedItem.humanReadable += ' by <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
@@ -92,8 +92,8 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			myNewsFeedItem.humanReadable += ' reacted to <a href="' + proxyEndPoint(about) + '">this post</a>';
-			myNewsFeedItem.humanReadable += ' by <a href="' + proxyEndPoint(whoAbout) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' reacted to <a href="' + proxyEndPoint(about, currentUser) + '">this post</a>';
+			myNewsFeedItem.humanReadable += ' by <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 

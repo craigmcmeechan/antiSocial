@@ -28,7 +28,7 @@ module.exports = function resolveReactionsSummary(item, done) {
 				if (!name) {
 					name = reaction.source;
 				}
-				var mention = '<a href="' + proxyEndPoint(reaction.source) + '">' + name + '</a>';
+				var mention = '<a href="' + reaction.source + '">' + name + '</a>';
 				mentions.push(mention);
 			}
 		}
