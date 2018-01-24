@@ -1,7 +1,7 @@
 var loopback = require('loopback');
 var debug = require('debug')('authentication');
 
-module.exports = function() {
+module.exports = function () {
 	return function contextCurrentUser(req, res, next) {
 		if (!req.accessToken) {
 			debug('no accessToken');
@@ -9,12 +9,11 @@ module.exports = function() {
 		}
 
 		req.app.models.MyUser.findById(req.accessToken.userId, {
-			include: ['uploads', 'identities']
-		}, function(err, user) {
+			include: ['uploads', 'identities', 'friends']
+		}, function (err, user) {
 
 			if (err) {
-				debug('no user forund for ', req.accessToken);
-
+				debug('no user found for ', req.accessToken);
 				return next(err);
 			}
 
@@ -32,7 +31,7 @@ module.exports = function() {
 				'include': ['role']
 			};
 
-			req.app.models.RoleMapping.find(q, function(err, roles) {
+			req.app.models.RoleMapping.find(q, function (err, roles) {
 				var reqContext = req.getCurrentContext();
 				reqContext.set('currentUser', user);
 				reqContext.set('ip', req.ip);

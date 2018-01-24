@@ -177,7 +177,7 @@ module.exports = function (server) {
             if (groupItem.type === 'comment' || groupItem.type === 'react') {
               if (!hash[groupItem.source]) {
                 hash[groupItem.source] = true;
-                var mention = '<a href="' + proxyEndPoint(groupItem.source) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
+                var mention = '<a href="' + groupItem.source + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
                 mentions.push(mention);
               }
             }

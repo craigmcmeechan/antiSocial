@@ -8,16 +8,20 @@ module.exports = function (view) {
 
 		var ctx = req.myContext;
 		var matches = req.url.match(checkProxyRE);
+
+		// bad url
 		if (!matches) {
 			return next();
 		}
 
-		var username = matches[1];
 		var currentUser = ctx.get('currentUser');
 
+		// not logged in
 		if (!currentUser) {
 			return next();
 		}
+
+		var username = matches[1];
 
 		req.app.models.MyUser.findOne({
 			'where': {
@@ -29,10 +33,13 @@ module.exports = function (view) {
 				return next(err);
 			}
 
+			// if user is found it is the currentUser, no proxy needed.
 			if (user && user.id.toString() === currentUser.id.toString()) {
 				debug('rewriteUrls /user/ is current user');
 				return next();
 			}
+
+			// try to find Friend instance
 
 			var query = {
 				'where': {
@@ -52,7 +59,7 @@ module.exports = function (view) {
 					debug('rewriteUrls friend of currentUser matching /user/ not found');
 					return next();
 				}
-				debug('rewriteUrls found friend of currentUser matching /user/ rewite url as proxy:', friend.remoteEndPoint);
+				debug('rewriteUrls found friend of currentUser matching /user/ rewite url in proxy form:', friend.remoteEndPoint);
 				var rewrite = url.parse(req.url).pathname;
 				if (rewrite.match(/\.json$/)) {
 					rewrite = rewrite.replace(/\.json$/, '');

@@ -16,7 +16,7 @@ module.exports = function resolveCommentsSummary(item, done) {
 			var comment = comments[i];
 			if (!hash[comment.source]) {
 				hash[comment.source] = true;
-				var mention = '<a href="' + proxyEndPoint(comment.source) + '">' + comment.resolvedProfiles[comment.source].profile.name + '</a>';
+				var mention = '<a href="' + comment.source + '">' + comment.resolvedProfiles[comment.source].profile.name + '</a>';
 				mentions.push(mention);
 			}
 		}
