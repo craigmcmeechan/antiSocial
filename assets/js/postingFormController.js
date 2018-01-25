@@ -66,7 +66,7 @@
 					'\
 					<div class="dz-preview dz-file-preview container-fluid">\
 						<div class="row">\
-							<div class="col-sm-3">\
+							<div class="col-sm-4">\
 								<div class="dz-image">\
 									<img data-dz-thumbnail>\
 								</div>\
@@ -85,7 +85,7 @@
 								<span data-dz-errormessage></span>\
 							</div>\
 						</div>\
-						<div class="metadata col-sm-9">\
+						<div class="metadata col-sm-8">\
 							<div class="form-group">\
 								<input type="text" class="form-control title" placeholder="Title">\
 								<br>\
