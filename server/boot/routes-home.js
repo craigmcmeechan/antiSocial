@@ -34,6 +34,10 @@ module.exports = function (server) {
       res.redirect('/setup');
     }
     else {
+      if (ctx.get('currentUser')) {
+        return res.redirect('/feed');
+      }
+
       req.app.models.Post.find({
         'where': {
           'visibility': {
