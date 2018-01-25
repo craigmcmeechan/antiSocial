@@ -20,7 +20,7 @@ if photos && photos.length
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
 				<span class="glyphicon glyphicon-chevron-right"></span>
-	.container-fluid.want-constrained(data-max-height="10000")
+	.container-fluid.post-photos.want-constrained(data-max-height="10000")
 		.row
 			for photo,index in photos
 				if photo
@@ -43,6 +43,7 @@ if photos && photos.length
 								i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
 								if user
 									i.comments.glyphicon.glyphicon-comment
-								p= photo.title
-								em= photo.description
+								.caption-text.hidden-digitopia-xsmall
+									h3= photo.title
+									p= photo.description
 		

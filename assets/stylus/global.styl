@@ -198,7 +198,12 @@ img.avatar
 		font-size:11px
 	.comment-photo
 		img
-			max-height:50vh
+			.not-digitopia-xsmall &,.not-digitopia-small &
+				max-height:50vh
+			.digitopia-xsmall &, .digitopia-small &
+				max-width: 100%
+				max-height: auto
+
 .reaction-summary
 	.background-color: #eee
 	.reaction-summary-heading
@@ -357,7 +362,8 @@ img.avatar
 		background-color: rgba(255,255,255,.9)
 
 #scope-post-list
-	min-height: calc(100vh - 50px)
+	.not-digitopia-xsmall &
+		min-height: calc(100vh - 50px)
 	.newsfeed-item
 		background-color:#eee
 		border-radius:4px
@@ -395,6 +401,10 @@ img.avatar
 		.post-body
 			padding-left: 7px
 			padding-right: 7px
+		.post-photos
+			.digitopia-xsmall &
+				padding-left: 7px
+				padding-right: 7px
 		.post-identity
 			position:relative
 			border-bottom:thin solid $borderColor
@@ -436,6 +446,9 @@ img.avatar
 				opacity:0
 				&:hover
 					opacity:1
+				.caption-text
+					position: absolute
+					bottom: 0px
 
 .reactions-and-comments
 	background-color:#eee
@@ -538,6 +551,8 @@ img.avatar
 	background-color:white
 	border-radius:4px
 	.digitopia-xsmall &
+		display:none!important
+	.digitopia-small &
 		display:none!important
 	.status
 		width:8px
