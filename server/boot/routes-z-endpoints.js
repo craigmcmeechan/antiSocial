@@ -79,6 +79,13 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'accessToken': accessToken ? true : false,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'profile': {
           'name': user.name,
           'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),

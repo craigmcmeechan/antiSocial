@@ -18,7 +18,7 @@ module.exports = function () {
 				'where': {
 					'localAccessToken': accessToken
 				}
-			}
+			};
 		}
 		else { // find Friend by endpoint for currentUser
 			var endpoint = req.app.locals.config.publicHost + url.parse(req.url).pathname;
