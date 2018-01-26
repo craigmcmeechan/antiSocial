@@ -559,7 +559,7 @@ module.exports = function (server) {
 
 				friend.updateAttributes({
 					'status': 'accepted',
-					'audiences': ['public', 'friends']
+					'audiences': ['public', 'community', 'friends']
 				}, function (err) {
 					if (err) {
 						return cb(new VError(err, '/accept-friend writeBackFriend failed'));
@@ -635,7 +635,7 @@ module.exports = function (server) {
 
 						friend.updateAttributes({
 							status: 'accepted',
-							audiences: ['public', 'friends']
+							audiences: ['public', 'community', 'friends']
 						}, function (err) {
 							cb(err, friend);
 						});

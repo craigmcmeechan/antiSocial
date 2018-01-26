@@ -60,7 +60,6 @@ module.exports = function (server) {
     var matches = req.url.match(profileRE);
     var username = matches[1];
     var view = matches[2];
-    var accessToken = req.headers['friend-access-token'];
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var highwater = req.query.highwater;
@@ -82,7 +81,6 @@ module.exports = function (server) {
         'pov': {
           'user': user.username,
           'isMe': isMe,
-          'accessToken': accessToken ? true : false,
           'friend': friend ? friend.remoteUsername : false,
           'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
         },
@@ -154,7 +152,6 @@ module.exports = function (server) {
     var matches = req.url.match(postsRE);
     var username = matches[1];
     var view = matches[2];
-    var accessToken = req.headers['friend-access-token'];
     var highwater = req.query.highwater;
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
@@ -195,6 +192,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'profile': {
           'name': user.name,
           'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
@@ -280,6 +283,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'profile': {
           'name': user.name,
           'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
@@ -379,6 +388,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'post': post,
         'reactions': post.resolvedReactions ? post.resolvedReactions : [],
         'reactionSummary': post.reactionSummary,
@@ -467,6 +482,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'post': post,
         'comments': post.resolvedComments ? post.resolvedComments : [],
         'commentSummary': post.commentSummary
@@ -570,6 +591,12 @@ module.exports = function (server) {
       resolveProfiles(theComment, function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'post': post,
           'comments': post.resolvedComments,
           'comment': theComment,
@@ -665,6 +692,12 @@ module.exports = function (server) {
       async.map(theComment.resolvedReactions, resolveProfiles, function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'post': post,
           'comment': theComment,
           'reactions': theComment.resolvedReactions ? theComment.resolvedReactions : [],
@@ -742,6 +775,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'post': post,
         'photos': post.sortedPhotos ? post.sortedPhotos : []
       };
@@ -832,6 +871,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'photo': thePhoto
       };
 
@@ -923,6 +968,12 @@ module.exports = function (server) {
       resolveReactions([thePhoto], 'photo', function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'reactions': thePhoto.resolvedReactions
         };
 
@@ -1015,6 +1066,12 @@ module.exports = function (server) {
       resolveComments([thePhoto], 'photo', function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'comments': thePhoto.resolvedComments
         };
 
@@ -1124,6 +1181,12 @@ module.exports = function (server) {
         }
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'comment': theComment
         };
 
@@ -1232,6 +1295,12 @@ module.exports = function (server) {
         }
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'reactions': theComment.resolvedReactions
         };
 
@@ -1297,6 +1366,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'profile': {
           'name': user.name,
           'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
