@@ -24,7 +24,7 @@ module.exports = function (server) {
   router.get('/community', getCurrentUser(), ensureLoggedIn(), publicUsers(), function (req, res, next) {
     var ctx = req.myContext;
 
-    req.app.models.Post.find({
+    var query = {
       'where': {
         'visibility': {
           'inq': ['community']
@@ -37,13 +37,29 @@ module.exports = function (server) {
       }, {
         'photos': ['uploads']
       }]
-    }, function (err, posts) {
+    };
+
+    var highwater = 30;
+
+    if (req.query.more) {
+      if (!req.query.highwater) {
+        query.skip = 30; // first load more invocation
+      }
+      else {
+        query.skip = req.query.highwater;
+      }
+    }
+
+    highwater += 30;
+
+    req.app.models.Post.find(query, function (err, posts) {
       if (err) {
         return next(err);
       }
 
       resolveProfilesForPosts(posts, function (err) {
         resolvePostPhotos(posts, function (err) {
+          res.header('x-highwater', highwater);
           res.render('pages/community', {
             'user': ctx.get('currentUser'),
             'globalSettings': ctx.get('globalSettings'),
