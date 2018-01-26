@@ -8,9 +8,11 @@ block content
 	.profile-hero(data-jsclass="scrollToController,scrollEffectsController" data-bg= community.background.url data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
 		.text-gradient
 			.container-fluid.text-overlay
-				h1 Community Name
-				p Community tag line
-	.profile-parallax(data-jsclass="vibrantController" data-image= community.background.smallUrl)
+				if community.name
+					h1= community.name
+				if community.tagline
+					p= community.tagline
+	.profile-parallax(data-jsclass="vibrantController" data-image= community.background.urlSmall)
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
 				.col-sm-8.left-column

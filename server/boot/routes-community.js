@@ -57,24 +57,19 @@ module.exports = function (server) {
         return next(err);
       }
 
+      var settings = ctx.get('globalSettings');
+
       resolveProfilesForPosts(posts, function (err) {
         resolvePostPhotos(posts, function (err) {
           res.header('x-highwater', highwater);
           res.render('pages/community', {
             'user': ctx.get('currentUser'),
-            'globalSettings': ctx.get('globalSettings'),
+            'globalSettings': settings,
             'publicUsers': ctx.get('publicUsers'),
             'data': {
               'posts': posts
             },
-            'community': {
-              'name': 'My Community Name',
-              'tagline': 'My Community Tagline',
-              'background': {
-                'url': '/images/fpo.jpg',
-                'smallUrl': '/images/fpo.jpg'
-              }
-            }
+            'community': settings.community
           });
         });
       });
