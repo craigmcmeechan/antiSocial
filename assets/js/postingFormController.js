@@ -188,6 +188,7 @@
 
 			this.element.on('focus', this.element.data('focus-target'), function () {
 				self.element.addClass('focused');
+				didInjectContent(self.element);
 			});
 
 			this.element.on('click', '.post-submit-button', function (e) {
