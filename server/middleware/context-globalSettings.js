@@ -14,7 +14,15 @@ module.exports = function () {
 				'serverName': 'AntiSocial',
 				'serverTitle': 'User centered Distibuted Social Networking',
 				'serverDescription': 'Your server. Your data. Your network.',
-				'communityChannel': true
+				'communityChannel': true,
+				'community': {
+					'name': 'Community Name',
+					'tagline': 'Community tagline',
+					'background': {
+						'url': '/images/fpo',
+						'urlSmall': '/images/fpo'
+					}
+				}
 			});
 			next();
 		});
