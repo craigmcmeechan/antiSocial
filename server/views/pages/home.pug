@@ -5,11 +5,10 @@ block seo
 		!= globalSettings.serverTitle
 
 block content
-	.container-fluid.content-padding-top.content.no-gutters
+	.container-fluid.content-padding-top.content
 		.row
 			.col-sm-8.left-column
 				-var posts = data.posts
-
 				if posts && posts.length
 					h4
 						= 'Recent Public Posts On This Server'
@@ -17,7 +16,7 @@ block content
 					include ../components/post-list
 				else
 					.page-header
-						h4 No public posts on this server at the moment
+						h4 No public posts on this server at the moment.
 
 			.col-sm-4
 				if user

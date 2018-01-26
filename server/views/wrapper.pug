@@ -39,14 +39,30 @@ html(lang="en")
 					<a class="navbar-brand" href="/">antiSocialNet</a>
 				#navbar.collapse.navbar-collapse(data-jsclass="navController")
 					ul.nav.navbar-nav
+						if globalSettings.communityChannel
+							li#nav-community.hidden-logged-out
+								a(href="/community")
+									| Community Feed
 						li#nav-feed.hidden-logged-out
-							<a href="/feed">Feed</a>
+							a(href="/feed")
+								<i class="fa fa-users fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Friends Feed
 						li#nav-page.hidden-logged-out
-							<a href="/profile">Wall</a>
+							a(href="/profile")
+								<i class="fa fa-user fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Your Posts
 						li#nav-settings.hidden-logged-out
-							<a href="/settings">Settings</a>
+							a(href="/friends")
+								<i class="fa fa-user-plus fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Friends
 						li#nav-settings.hidden-logged-out
-							<a href="/friends">Friends</a>
+							a(href="/settings")
+								<i class="fa fa-cog fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Settings
 					ul.nav.navbar-nav.navbar-right
 						if globalSettings.multiUser === 'invite'
 							li.hidden-logged-in
@@ -58,7 +74,7 @@ html(lang="en")
 							a(href="#" data-toggle="modal" data-target="#login-form") Login
 						li.hidden-logged-out
 							a(href="" data-jsclass="logoutController") Logout
-						li.menu-icon-placeholder
+						li.menu-icon-placeholder.hidden-digitopia-xsmall
 							#menu-icon(data-hijax="true")
 								if user
 									img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)

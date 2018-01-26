@@ -1,0 +1,33 @@
+extends ../wrapper
+
+block seo
+	title
+		!= globalSettings.serverTitle
+
+block content
+	.profile-hero(data-jsclass="scrollToController,scrollEffectsController" data-bg= community.background.url data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
+		.text-gradient
+			.container-fluid.text-overlay
+				h1 Community Name
+				p Community tag line
+	.profile-parallax(data-jsclass="vibrantController" data-image= community.background.smallUrl)
+		.container-fluid.content-padding-top.content.no-gutters
+			.row
+				.col-sm-8.left-column
+					if !user
+						h4 You must be logged in to view this page
+					else
+						-var posts = data.posts
+						if posts && posts.length
+							
+							include ../components/post-list
+							
+							.text-center
+								.loader(data-jsclass="loadMoreController")
+									
+						else
+							.page-header
+								h4 No public community posts on this server at the moment.
+
+				.col-sm-4
+					#newsfeed-here

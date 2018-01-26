@@ -45,7 +45,7 @@
 					chunk = $(docBody).filter('#scope-post-list');
 				}
 
-				if (!chunk.html().replace(/^\s+$/, '')) {
+				if (!chunk.html() || !chunk.html().replace(/^\s+$/, '')) {
 					self.element.css({
 						'opacity': 0
 					});

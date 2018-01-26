@@ -33,13 +33,13 @@
 			.form-group.input-relative.text-center
 				input#posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= '["friends"]')
 				.checkbox-group.lazy-instantiate(data-lazy-jsclass="checkboxGroupController" data-target="#posting-visibility")
-					label.checkbox-inline Visibility:
-					label.checkbox-inline
-						input(type="checkbox" data-value="private")
-						| private
+					label.checkbox-inline Audience:
 					label.checkbox-inline
 						input(type="checkbox" data-value="public")
 						| public
+					label.checkbox-inline
+						input(type="checkbox" data-value="community")
+						| community
 					label.checkbox-inline
 						input(type="checkbox" data-value="friends")
 						| friends

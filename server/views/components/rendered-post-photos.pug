@@ -16,10 +16,11 @@ if photos && photos.length
 			div.inner.carousel-inner
 			a.full-screen(href="#" data-no-hijax="true")
 				<span class="glyphicon glyphicon-resize-full"></span>
-			a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
-				<span class="glyphicon glyphicon-chevron-left"></span>
-			a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
-				<span class="glyphicon glyphicon-chevron-right"></span>
+			if photos.length > 1
+				a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
+					<span class="glyphicon glyphicon-chevron-right"></span>
 	.container-fluid.post-photos.want-constrained(data-max-height="10000")
 		.row
 			for photo,index in photos

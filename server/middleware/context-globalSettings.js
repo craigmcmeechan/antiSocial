@@ -13,7 +13,8 @@ module.exports = function () {
 				'multiUser': process.env.REGISTER_POLICY ? process.env.REGISTER_POLICY : 'invite',
 				'serverName': 'AntiSocial',
 				'serverTitle': 'User centered Distibuted Social Networking',
-				'serverDescription': 'Your server. Your data. Your network.'
+				'serverDescription': 'Your server. Your data. Your network.',
+				'communityChannel': true
 			});
 			next();
 		});
