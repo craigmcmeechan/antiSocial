@@ -496,7 +496,7 @@ module.exports = function (server) {
 						return cb(new VError('/accept-friend readFriend friend not found'));
 					}
 					if (friend.userId.toString() !== currentUser.id.toString()) {
-						return cb(new VError('/accept-friend readFriend access denied'));
+						return cb(new VError('/accept-friend readFriend access denied %s %s', friend.userId.toString(), currentUser.id.toString()));
 					}
 					cb(err, friend);
 				});
