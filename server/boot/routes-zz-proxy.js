@@ -37,7 +37,7 @@ module.exports = function (server) {
 			return res.sendStatus(400);
 		}
 
-		if (template === 'profile') {
+		if (template === 'profile' && !json) {
 			endpoint += '/posts';
 		}
 
@@ -106,6 +106,10 @@ module.exports = function (server) {
 			res.header('x-highwater', data.highwater);
 
 			if (json) {
+				data.pov.proxy = {
+					'endpoint': options.url,
+					'encrypted-response': friend && body.sig ? true : false
+				};
 				res.send(data);
 			}
 			else {

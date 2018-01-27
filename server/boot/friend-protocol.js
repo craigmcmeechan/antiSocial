@@ -483,7 +483,13 @@ module.exports = function (server) {
 
 				req.app.models.Friend.findOne({
 					'where': {
-						'remoteEndPoint': endpoint
+						'and': [{
+							'userId': currentUser.id
+						}, {
+							'remoteEndPoint': endpoint
+						}, {
+							'status': 'pending'
+						}]
 					},
 					'include': [{
 						'user': ['uploads']
@@ -493,10 +499,10 @@ module.exports = function (server) {
 						return cb(new VError(err, '/accept-friend readFriend failed'));
 					}
 					if (!friend) {
-						return cb(new VError('/accept-friend readFriend friend not found'));
+						return cb(new VError('/accept-friend readFriend pending friend not found'));
 					}
 					if (friend.userId.toString() !== currentUser.id.toString()) {
-						return cb(new VError('/accept-friend readFriend access denied'));
+						return cb(new VError('/accept-friend readFriend access denied %s %s', friend.userId.toString(), currentUser.id.toString()));
 					}
 					cb(err, friend);
 				});
@@ -559,7 +565,7 @@ module.exports = function (server) {
 
 				friend.updateAttributes({
 					'status': 'accepted',
-					'audiences': ['public', 'friends']
+					'audiences': ['public', 'community', 'friends']
 				}, function (err) {
 					if (err) {
 						return cb(new VError(err, '/accept-friend writeBackFriend failed'));
@@ -635,7 +641,7 @@ module.exports = function (server) {
 
 						friend.updateAttributes({
 							status: 'accepted',
-							audiences: ['public', 'friends']
+							audiences: ['public', 'community', 'friends']
 						}, function (err) {
 							cb(err, friend);
 						});

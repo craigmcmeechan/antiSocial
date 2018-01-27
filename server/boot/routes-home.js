@@ -35,6 +35,9 @@ module.exports = function (server) {
     }
     else {
       if (ctx.get('currentUser')) {
+        if (req.headers['x-digitopia-hijax']) {
+          return res.set('x-digitopia-hijax-location', '/feed').send('redirect to ' + '/feed');
+        }
         return res.redirect('/feed');
       }
 

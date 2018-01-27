@@ -60,7 +60,6 @@ module.exports = function (server) {
     var matches = req.url.match(profileRE);
     var username = matches[1];
     var view = matches[2];
-    var accessToken = req.headers['friend-access-token'];
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var highwater = req.query.highwater;
@@ -79,14 +78,13 @@ module.exports = function (server) {
       }
 
       var data = {
-        'profile': {
-          'name': user.name,
-          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
-          'endpoint': server.locals.config.publicHost + '/' + user.username,
-          'publicHost': server.locals.config.publicHost
-        }
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
+        'profile': getProfile(user)
       };
 
       if (view === '.json') {
@@ -147,7 +145,6 @@ module.exports = function (server) {
     var matches = req.url.match(postsRE);
     var username = matches[1];
     var view = matches[2];
-    var accessToken = req.headers['friend-access-token'];
     var highwater = req.query.highwater;
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
@@ -188,14 +185,13 @@ module.exports = function (server) {
       }
 
       var data = {
-        'profile': {
-          'name': user.name,
-          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
-          'endpoint': server.locals.config.publicHost + '/' + user.username,
-          'publicHost': server.locals.config.publicHost
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
         },
+        'profile': getProfile(user),
         'posts': posts,
         'highwater': posts && posts.length ? posts[posts.length - 1].createdOn.toISOString() : ''
       };
@@ -273,14 +269,13 @@ module.exports = function (server) {
       }
 
       var data = {
-        'profile': {
-          'name': user.name,
-          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
-          'endpoint': server.locals.config.publicHost + '/' + user.username,
-          'publicHost': server.locals.config.publicHost
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
         },
+        'profile': getProfile(user),
         'post': post
       };
 
@@ -372,11 +367,20 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'post': post,
         'reactions': post.resolvedReactions ? post.resolvedReactions : [],
         'reactionSummary': post.reactionSummary,
         'poster': post.resolvedProfiles[post.source].profile
       };
+
+      delete data.post.resolvedReactions;
+      delete data.post.reactionSummary;
 
       if (view === '.json') {
         return res.send(encryptIfFriend(friend, data));
@@ -460,10 +464,19 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'post': post,
         'comments': post.resolvedComments ? post.resolvedComments : [],
         'commentSummary': post.commentSummary
       };
+
+      delete data.post.resolvedComments;
+      delete data.post.commentSummary;
 
       if (view === '.json') {
         return res.send(encryptIfFriend(friend, data));
@@ -563,11 +576,20 @@ module.exports = function (server) {
       resolveProfiles(theComment, function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'post': post,
           'comments': post.resolvedComments,
           'comment': theComment,
           'commentSummary': post.commentSummary
         };
+
+        delete data.post.resolvedComments;
+        delete data.post.commentSummary;
 
         if (view === '.json') {
           return res.send(encryptIfFriend(friend, data));
@@ -658,11 +680,21 @@ module.exports = function (server) {
       async.map(theComment.resolvedReactions, resolveProfiles, function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'post': post,
           'comment': theComment,
           'reactions': theComment.resolvedReactions ? theComment.resolvedReactions : [],
           'reactionSummary': theComment.reactionSummary
         };
+
+        delete data.post.resolvedComments;
+        delete theComment.resolvedReactions;
+        delete theComment.reactionSummary;
 
         if (view === '.json') {
           return res.send(encryptIfFriend(friend, data));
@@ -735,9 +767,17 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'post': post,
         'photos': post.sortedPhotos ? post.sortedPhotos : []
       };
+
+      delete data.post.sortedPhotos;
 
       if (view === '.json') {
         return res.send(encryptIfFriend(friend, data));
@@ -825,6 +865,12 @@ module.exports = function (server) {
       }
 
       var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
         'photo': thePhoto
       };
 
@@ -916,6 +962,12 @@ module.exports = function (server) {
       resolveReactions([thePhoto], 'photo', function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'reactions': thePhoto.resolvedReactions
         };
 
@@ -1008,6 +1060,12 @@ module.exports = function (server) {
       resolveComments([thePhoto], 'photo', function (err) {
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'comments': thePhoto.resolvedComments
         };
 
@@ -1117,6 +1175,12 @@ module.exports = function (server) {
         }
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'comment': theComment
         };
 
@@ -1225,6 +1289,12 @@ module.exports = function (server) {
         }
 
         var data = {
+          'pov': {
+            'user': user.username,
+            'isMe': isMe,
+            'friend': friend ? friend.remoteUsername : false,
+            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+          },
           'reactions': theComment.resolvedReactions
         };
 
@@ -1290,14 +1360,13 @@ module.exports = function (server) {
       }
 
       var data = {
-        'profile': {
-          'name': user.name,
-          'photo': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO),
-          'background': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO),
-          'backgroundSmall': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO),
-          'endpoint': server.locals.config.publicHost + '/' + user.username,
-          'publicHost': server.locals.config.publicHost
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
         },
+        'profile': getProfile(user),
         'photo': photo
       };
 
@@ -1339,6 +1408,23 @@ module.exports = function (server) {
       }
       cb(null, user);
     });
+  }
+
+  function getProfile(user) {
+    return {
+      'name': user.name,
+      'photo': {
+        'url': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO).url
+      },
+      'background': {
+        'url': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO).url
+      },
+      'backgroundSmall': {
+        'url': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO).url
+      },
+      'endpoint': server.locals.config.publicHost + '/' + user.username,
+      'publicHost': server.locals.config.publicHost
+    };
   }
 
   function getPosts(user, friend, highwater, isMe, cb) {
