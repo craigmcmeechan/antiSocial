@@ -6,48 +6,45 @@
 		this.endpoint = this.element.data('endpoint');
 		this.photoId = this.element.data('photoId');
 
-		this.debounce = null;
+		this.debounceIn = null;
+		this.debounceOut = null;
 		this.shown = false;
 
 		this.start = function () {
-			self.element.on('mouseleave', function (e) {
-				if (!self.debounce && self.shown) {
-					self.shown = false;
-					self.element.find('.more-reactions').animateCss('fadeOutRight', function () {
-						self.element.find('.more-reactions').hide();
-					});
+			this.element.on('mouseenter', function (e) {
+				if (self.debounceIn) {
+					clearTimeout(self.debounceIn);
 				}
-				if (self.debounce) {
-					clearTimeout(self.debounce);
+				if (self.debounceOut) {
+					clearTimeout(self.debounceOut);
+				}
+				if (!self.shown) {
+					self.debounceIn = setTimeout(function () {
+						self.debounceIn = undefined;
+						self.element.find('.more-reactions').show().animateCss('flipInX', function () {
+							self.shown = true;
+						});
+					}, 500);
 				}
 			});
 
-			this.element.on('mouseenter', function (e) {
-				if (self.debounce) {
-					clearTimeout(self.debounce);
+			this.element.on('mouseleave', function (e) {
+				if (self.debounceOut) {
+					clearTimeout(self.debounceOut);
 				}
-				self.debounce = setTimeout(function () {
-					self.debounce = undefined;
-					self.shown = true;
-					self.element.find('.more-reactions').show().animateCss('fadeInRight', function () {
-						self.element.one('mouseleave', function (e) {
-							if (self.debounce) {
-								clearTimeout(self.debounce);
-							}
-							if (self.shown) {
-								self.debounce = setTimeout(function () {
-									self.debounce = undefined;
-									self.shown = false;
-									self.element.find('.more-reactions').animateCss('fadeOutRight', function () {
-										self.element.find('.more-reactions').hide();
-									});
-								});
-							}
+				if (self.debounceIn) {
+					clearTimeout(self.debounceIn);
+				}
+				if (self.shown) {
+					self.debounceOut = setTimeout(function () {
+						self.debounceOut = undefined;
+						self.element.find('.more-reactions').animateCss('flipOutX', function () {
+							self.shown = false;
+							self.element.find('.more-reactions').hide();
 						});
 					});
-				}, 500);
+				}
 			});
-
 
 			this.element.on('click', '.reaction-button', function (e) {
 
@@ -60,7 +57,12 @@
 					reaction = $(this).data('value');
 					$(this).addClass('selected');
 				}
-				self.saveReaction(reaction);
+
+				self.element.find('.more-reactions').animateCss('flipOutX', function () {
+					self.shown = false;
+					self.element.find('.more-reactions').hide();
+					self.saveReaction(reaction);
+				});
 			});
 		};
 
@@ -79,10 +81,6 @@
 			$.post('/react', payload, function (data, status, xhr) {
 				if (status !== 'success') {
 					flashAjaxStatus('error', xhr.statusText);
-				}
-				else {
-					//flashAjaxStatus('info', 'reaction saved');
-					//self.element.closest('.ajax-load').trigger('ReloadElement');
 				}
 			}, 'json');
 		};
