@@ -15,31 +15,35 @@ module.exports = function resolveReactionsSummary(item, done) {
 
 		for (var i = 0; i < reactions.length; i++) {
 			var reaction = reactions[i];
-			var key = '<div class="reaction-button-summary"><span class="em em-' + reaction.details.reaction + '"></div>';
+			var key = '<div class="reaction-button-summary reaction-button"><span class="em em-' + reaction.details.reaction + '"></div>';
 
 			if (!hash[reaction.source]) {
 				hash[reaction.source] = true;
-				if (!icons[key]) {
-					icons[key] = 0;
-				}
-				icons[key]++;
 
-				var name = _.get(reaction, 'resolvedProfiles["' + reaction.source + '"].profile.name');
-				if (!name) {
-					name = reaction.source;
+				if (reaction.details.reaction) {
+					if (!icons[key]) {
+						icons[key] = 0;
+					}
+					icons[key]++;
+
+					var name = _.get(reaction, 'resolvedProfiles["' + reaction.source + '"].profile.name');
+					if (!name) {
+						name = reaction.source;
+					}
+					var mention = '<a href="' + reaction.source + '">' + name + '</a>';
+
+					mentions.push(mention);
 				}
-				var mention = '<a href="' + reaction.source + '">' + name + '</a>';
-				mentions.push(mention);
 			}
 		}
 
 		var summary = mentions.slice(0, 3).join(', ');
 
 		if (mentions.length > 2) {
-			var remainder = mentions.length - 2
-			summary += ' and ' + remainder + ' other'
+			var remainder = mentions.length - 2;
+			summary += ' and ' + remainder + ' other';
 			if (mentions.length > 2) {
-				summary += 's'
+				summary += 's';
 			}
 		}
 
@@ -48,11 +52,12 @@ module.exports = function resolveReactionsSummary(item, done) {
 			iconlist += icon;
 		}
 
-		item.reactionSummary = {
-			'summary': summary,
-			'icons': iconlist
+		if (summary) {
+			item.reactionSummary = {
+				'summary': summary,
+				'icons': iconlist
+			};
 		}
-
 	}
 
 	done();
