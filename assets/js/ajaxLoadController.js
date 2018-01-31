@@ -27,6 +27,7 @@
 						if (!chunk || chunk.length === 0) {
 							chunk = $(docBody).filter('#' + self.id);
 						}
+						$('#' + self.id).find('.DigitopiaInstance').trigger('DigitopiaStop');
 						$('#' + self.id).html(chunk.children());
 						didInjectContent($('#' + self.id));
 					}).fail(function (jqXHR, textStatus, errorThrown) {

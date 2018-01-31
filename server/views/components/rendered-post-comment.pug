@@ -37,10 +37,9 @@ if wantSummary
 			if comment.details.photo
 				.comment-photo.loading.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".comment-photo" data-endpoint= proxyEndPoint(comment.details.photo,user))
 			
-			span.timestamp(data-timestamp= moment(comment.createdOn).toISOString())
+			span.timestamp.secondary(data-timestamp= moment(comment.createdOn).toISOString())
 				!= ' - ' + moment(comment.createdOn).calendar()
 
-			
 			- var reactions = comment.resolvedReactions
 			- var reactionSummary = comment.reactionSummary
 			include rendered-post-comment-reactions

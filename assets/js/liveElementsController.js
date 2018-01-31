@@ -23,6 +23,7 @@
 						var item = $('<div>');
 						item.load(proxyEndPoint(endpoint), function () {
 							var reactions = item.find('.post-reactions').html();
+							element.find('.post-reactions').find('.DigitopiaInstance').trigger('DigitopiaStop');
 							element.find('.post-reactions').empty().append(reactions);
 							didInjectContent(element);
 						})
