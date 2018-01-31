@@ -230,6 +230,7 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var isMe = false;
+    var isProxy = req.headers['proxy'];
 
     async.waterfall([
       function (cb) {
@@ -287,7 +288,7 @@ module.exports = function (server) {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'isPermalink': true,
+        'isPermalink': req.query.embed ? false : true,
         'isMe': isMe,
         'myEndpoint': getPOVEndpoint(friend, currentUser)
       };

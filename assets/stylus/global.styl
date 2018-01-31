@@ -529,9 +529,21 @@ img.avatar
 			.badge
 				margin-right: 4px
 				font-size:.7em
+				color:#eee
 			.comments-label-text
 				padding-right: 4px
 				text-transform: uppercase
+			.indicator
+				padding-left:7px
+				&:after
+					font-family: 'Glyphicons Halflings'
+					content: "\e114"
+					color: #FF8166
+			&.collapsed
+				.indicator
+					&:after
+						content: "\e080";
+
 		.comment
 			.thumb-container
 				float:left
@@ -586,12 +598,12 @@ img.avatar
 		max-height: 500px
 		overflow: hidden;
 		.news-feed-item
-			height:36px
+			height:50px
 			border-bottom:thin dashed $borderColor
 			padding-right: 10px
 			margin-left:50px
 			img
-				height:25px
+				height:39px
 				border-radius:25px
 				margin-top:5px
 				margin-bottom:5px

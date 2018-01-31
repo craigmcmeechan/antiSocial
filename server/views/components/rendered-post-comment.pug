@@ -8,17 +8,18 @@ if wantSummary
 		- comments = data.comments
 	if !commentSummary
 		- commentSummary = data.commentSummary
-	.comments-label
+	.comments-label.secondary(data-toggle="collapse" href= '#comments-' + post.uuid)
 		table
 			tr
 				if comments && comments.length
 					td
 						.badge= comments.length
 				td.comments-label-text
-					| Comments
+					i.glyphicon.glyphicon-comment
 				td.comment-summary
 					if commentSummary
 						!= commentSummary
+				td.indicator
 .a-comment
 	.comment
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url

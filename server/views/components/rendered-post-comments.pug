@@ -6,7 +6,7 @@ if !post
 	- post = data.post
 
 .post-comments.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
-	.comments-label.secondary
+	.comments-label.secondary(class= comments.length ? 'collapsed' : '' data-toggle="collapse" href= '#comments-' + post.uuid)
 		table
 			tr
 				if comments && comments.length
@@ -17,8 +17,9 @@ if !post
 				td.comment-summary
 					if commentSummary
 						!= commentSummary
+				td.indicator
 						
-	.comments-list
+	.comments-list(class= comments.length ? 'collapse' : '' id= 'comments-' + post.uuid)
 		.comments
 			if comments
 				for comment,index in comments
