@@ -6,7 +6,7 @@ if !post
 	- post = data.post
 
 .post-comments.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
-	.comments-label
+	.comments-label.secondary
 		table
 			tr
 				if comments && comments.length
