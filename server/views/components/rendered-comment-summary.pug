@@ -1,6 +1,6 @@
 if !commentCount
 	- commentCount = data.commentCount
-.comments-label(class= commentCount ? 'collapsed' : '' data-toggle="collapse" href= '#comments-' + post.uuid)
+a.comments-label(class= commentCount ? 'collapsed' : '' data-toggle="collapse" href= '#comments-' + post.uuid)
 	table
 		tr
 			if commentCount
