@@ -28,6 +28,20 @@ body
 	.digitopia-xsmall &
 		margin-bottom:30px
 
+#splash
+	position: fixed
+	top:0
+	left:0
+	right:0
+	bottom:0
+	background-color:#333
+	z-index:99999
+	#splash-logo
+		margin: 24vh auto
+		color:#999
+		text-align: center
+		font-size: 3em
+
 #content
 	margin-top:50px
 	.content-padding-top
@@ -133,13 +147,11 @@ img.avatar
 
 #ajax-status
 	position:fixed
-	right:0px
-	left:0px
-	bottom:0px
-	z-index:9000
+	right:10px
+	bottom:10px
+	z-index:99999
 	.alert-container
 		margin:0 auto
-		width:80%
 		text-align:center
 
 .revealer

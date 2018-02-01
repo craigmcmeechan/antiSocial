@@ -148,7 +148,7 @@
 					},
 					success: function (html, status, xhr) {
 						if (xhr.getResponseHeader('x-digitopia-hijax-flash-level')) {
-							flashAjaxStatus(xhr.getResponseHeader('x-digitopia-hijax-flash-level'),xhr.getResponseHeader('x-digitopia-hijax-flash-message'))
+							flashAjaxStatus(error, xhr.getResponseHeader('x-digitopia-hijax-flash-level'), xhr.getResponseHeader('x-digitopia-hijax-flash-message'))
 						}
 						if (xhr.getResponseHeader('x-digitopia-hijax-location')) {
 							var redirect = xhr.getResponseHeader('x-digitopia-hijax-location');

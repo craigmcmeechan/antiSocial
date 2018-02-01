@@ -56,7 +56,7 @@
 			}).done(function (data) {
 				flashAjaxStatus('info', 'saved');
 			}).fail(function (jqXHR, textStatus, errorThrown) {
-				flashAjaxStatus('error', 'could not save ', textStatus);
+				flashAjaxStatus('danger', 'could not save ', textStatus);
 			});
 		};
 	}

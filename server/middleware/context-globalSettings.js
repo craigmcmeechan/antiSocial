@@ -19,8 +19,8 @@ module.exports = function () {
 					'name': 'Community Name',
 					'tagline': 'Community tagline',
 					'background': {
-						'url': '/images/fpo',
-						'urlSmall': '/images/fpo'
+						'url': '/images/fpo.jpg',
+						'urlSmall': '/images/fpo.jpg'
 					}
 				}
 			});

@@ -229,7 +229,7 @@
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {
 					if (status !== 'success') {
-						flashAjaxStatus('error', xhr.statusText);
+						flashAjaxStatus('danger', xhr.statusText);
 					}
 					else {
 						self.hideForm();
