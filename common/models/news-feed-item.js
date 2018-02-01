@@ -219,7 +219,9 @@ module.exports = function (NewsFeedItem) {
 
 		// group news feed items by 'about' and 'type'
 		for (var i = 0; i < items.length; i++) {
-			var key = items[i].about + ':' + items[i].type;
+			var about = items[i].about;
+			about = about.replace(/\/comment.*$/, '');
+			var key = about + ':' + items[i].type;
 			if (!map[key]) {
 				map[key] = 0;
 				grouped[key] = [];
