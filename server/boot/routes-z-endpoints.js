@@ -473,7 +473,8 @@ module.exports = function (server) {
         },
         'post': post,
         'comments': post.resolvedComments ? post.resolvedComments : [],
-        'commentSummary': post.commentSummary
+        'commentSummary': post.commentSummary,
+        'commentCount': post.resolvedComments.length
       };
 
       delete data.post.resolvedComments;
@@ -583,14 +584,14 @@ module.exports = function (server) {
             'friend': friend ? friend.remoteUsername : false,
             'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
           },
-          'post': post,
-          'comments': post.resolvedComments,
+          'post': {
+            'source': post.source,
+            'uuid': post.uuid
+          },
           'comment': theComment,
-          'commentSummary': post.commentSummary
+          'commentSummary': post.commentSummary,
+          'commentCount': post.resolvedComments.length
         };
-
-        delete data.post.resolvedComments;
-        delete data.post.commentSummary;
 
         if (view === '.json') {
           return res.send(encryptIfFriend(friend, data));

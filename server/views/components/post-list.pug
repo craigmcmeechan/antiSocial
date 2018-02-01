@@ -5,8 +5,13 @@
 			- var poster = post.resolvedProfiles[post.source].profile
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
 			- var isPublic = post.visibility.indexOf('public') !== -1
+			- var commentCount = post.commentCount
 			
 			.newsfeed-item
+				if post.commentSummary || post.reactionSummary
+					.news-summary
+						!= post.commentSummary
+				
 				if post.athoritativeEndpoint
 					.post.loading(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user))
 				else 
