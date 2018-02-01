@@ -55,7 +55,9 @@ module.exports = function (server) {
 		var options = {
 			'url': endpoint + '.json',
 			'json': true,
-			'headers': {}
+			'headers': {
+				'proxy': true
+			}
 		};
 
 		if (req.query.more) {

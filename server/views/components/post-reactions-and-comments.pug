@@ -7,6 +7,7 @@ if user
 
 		- var comments = post.resolvedComments
 		- var commentSummary = post.commentSummary
+		- var commentCount = post.commentCount
 		include rendered-post-comments
 
 		-var about= poster.endpoint + '/post/' + post.uuid

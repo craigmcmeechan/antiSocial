@@ -322,6 +322,8 @@ img.avatar
 	label
 		color: #666
 		font-weight: normal
+	.audience-select
+		margin-bottom:3px!important
 	.checkbox-group
 		border-top: thin solid $borderColor
 		text-align:center
@@ -425,7 +427,8 @@ img.avatar
 				margin-right:15px
 				color: #999
 				font-size:.8em
-
+			.post-timestamp
+				margin-top:7px
 
 		.form-group
 			margin-bottom:0
@@ -518,20 +521,34 @@ img.avatar
 		border-top:thin solid #ccc
 		padding-top:7px
 		.comments-label
+			display:block
+			cursor:pointer
 			padding-bottom:7px
 			border-bottom:thin solid #ccc
+			padding-bottom:7px
 			margin-bottom:7px
-			font-size:.8em
 			text-align:center
-			line-height:.8em
+			&:hover
+				text-decoration:none
 			table
 				margin 0 auto
 			.badge
 				margin-right: 4px
-				font-size:.7em
+				color:#eee
 			.comments-label-text
 				padding-right: 4px
 				text-transform: uppercase
+			.indicator
+				padding-left:7px
+				&:after
+					font-family: 'Glyphicons Halflings'
+					content: "\e114"
+					color: #FF8166
+			&.collapsed
+				.indicator
+					&:after
+						content: "\e080";
+
 		.comment
 			.thumb-container
 				float:left
@@ -586,12 +603,12 @@ img.avatar
 		max-height: 500px
 		overflow: hidden;
 		.news-feed-item
-			height:36px
+			height:50px
 			border-bottom:thin dashed $borderColor
 			padding-right: 10px
 			margin-left:50px
 			img
-				height:25px
+				height:39px
 				border-radius:25px
 				margin-top:5px
 				margin-bottom:5px

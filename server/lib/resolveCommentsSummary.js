@@ -21,7 +21,7 @@ module.exports = function resolveCommentsSummary(item, done) {
 			}
 		}
 
-		var summary = 'by ' + mentions.slice(0, 3).join(', ');
+		var summary = mentions.slice(0, 3).join(', ');
 
 		if (mentions.length > 2) {
 			var remainder = mentions.length - 2
@@ -29,6 +29,10 @@ module.exports = function resolveCommentsSummary(item, done) {
 			if (mentions.length > 2) {
 				summary += 's'
 			}
+		}
+
+		if (summary) {
+			summary += ' commented';
 		}
 		item.commentSummary = summary;
 	}

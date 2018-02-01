@@ -37,6 +37,7 @@ module.exports = function resolveComments(items, itemType, done) {
 			}
 
 			item.resolvedComments = comments;
+			item.commentCount = comments.length;
 
 			resolveReactions(item.resolvedComments, 'comment', function (err) {
 				doneMap();

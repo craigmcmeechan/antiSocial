@@ -4,21 +4,8 @@ if !comment
 	- comment = data.comment
 
 if wantSummary
-	if !comments
-		- comments = data.comments
-	if !commentSummary
-		- commentSummary = data.commentSummary
-	.comments-label
-		table
-			tr
-				if comments && comments.length
-					td
-						.badge= comments.length
-				td.comments-label-text
-					| Comments
-				td.comment-summary
-					if commentSummary
-						!= commentSummary
+	include rendered-comment-summary
+	
 .a-comment
 	.comment
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url

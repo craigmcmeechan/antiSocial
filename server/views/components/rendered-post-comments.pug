@@ -6,19 +6,9 @@ if !post
 	- post = data.post
 
 .post-comments.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
-	.comments-label.secondary
-		table
-			tr
-				if comments && comments.length
-					td
-						.badge= comments.length
-				td.comments-label-text
-					i.glyphicon.glyphicon-comment
-				td.comment-summary
-					if commentSummary
-						!= commentSummary
+	include rendered-comment-summary
 						
-	.comments-list
+	.comments-list(class= commentCount ? 'collapse' : '' id= 'comments-' + post.uuid)
 		.comments
 			if comments
 				for comment,index in comments
