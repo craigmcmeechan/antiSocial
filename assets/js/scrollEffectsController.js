@@ -79,7 +79,7 @@
 				}
 			}
 
-			if (top >= start && top <= end) {
+			if (force || (top >= start && top <= end)) {
 				if (top === start || top === end) {
 					self.inProgress = false;
 				}
