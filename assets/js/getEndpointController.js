@@ -25,7 +25,7 @@
 					flashAjaxStatus(flashLevel, flashMessage);
 					$('body').trigger('DigitopiaReloadPage');
 				}).fail(function () {
-					flashAjaxStatus('error', 'action failed');
+					flashAjaxStatus('danger', 'action failed');
 					self.element.html(self.prompt);
 				});
 		};

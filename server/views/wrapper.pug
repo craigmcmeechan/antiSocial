@@ -93,6 +93,10 @@ html(lang="en")
 		#news-feed(data-jsclass="liveNewsFeedItemController")
 			include components/news-feed
 
+		#splash(style="position: fixed;top:0;left:0;right:0;bottom:0;background-color:#333;z-index:99999;")
+			#splash-logo
+				| ¯\_(ツ)_/¯
+
 		block controller
 
 		if env === 'production'

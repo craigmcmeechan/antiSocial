@@ -25,6 +25,10 @@
 
 	$('body').digitopiaController(options);
 
+	window.setTimeout(function () {
+		$('#splash').fadeOut('fast');
+	}, 1000);
+
 	$('.nav a').on('click', function () {
 		if ($('body').hasClass('digitopia-xsmall')) {
 			$('.navbar-toggle').click();

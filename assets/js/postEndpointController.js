@@ -87,10 +87,10 @@
 			}).fail(function (jqXHR, textStatus, errorThrown) {
 				self.submitter.html(self.prompt);
 				if (_.get(jqXHR, 'jqXHR.responseJSON.error.message')) {
-					flashAjaxStatus('error', jqXHR.responseJSON.error.message);
+					flashAjaxStatus('danger', jqXHR.responseJSON.error.message);
 				}
 				else {
-					flashAjaxStatus('error', textStatus + ': ' + errorThrown);
+					flashAjaxStatus('danger', textStatus + ': ' + errorThrown);
 				}
 			});
 		};

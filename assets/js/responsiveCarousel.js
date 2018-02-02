@@ -238,7 +238,7 @@
 				$(targetElement).addClass('open').find('.photo-reactions').html(data);
 				didInjectContent($(targetElement));
 			}).fail(function (jqXHR, textStatus, errorThrown) {
-				flashAjaxStatus('error', 'could not load endpoint ' + endpoint, textStatus);
+				flashAjaxStatus('danger', 'could not load endpoint ' + endpoint, textStatus);
 			});
 		};
 	}

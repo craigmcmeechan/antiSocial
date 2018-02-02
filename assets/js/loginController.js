@@ -17,12 +17,12 @@
 					})
 					.done(function () {
 						$('#login-form').modal('hide');
-						flashAjaxStatus('info', 'logged in');
+						flashAjaxStatus('success', 'logged in');
 						loadPage('/feed');
 						didLogIn();
 					})
 					.fail(function () {
-						flashAjaxStatus('error', 'login failed');
+						flashAjaxStatus('warning', 'login failed');
 					});
 			});
 		};
