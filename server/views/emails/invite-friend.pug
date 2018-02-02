@@ -1,9 +1,19 @@
 p #{user} (#{email}) has invited you be friends on myAntiSocial.net
 
-div= note
+p= note
 
-a(href= url) Click Here
-to view #{user}'s profile
+h4 If you do not already have a myAntiSocial account:
+ul
+	li 
+		| View #{user}'s profile 
+		a(href= url) Here
+	li Complete the registration form to create an antiSocialNet account.
+	
+h4 If you do have a myAntiSocial account:
+ul
+	li Log on to your account.
+	li Select your "friends" page.
+	li Paste #{endpoint} into the "Add friend by Public Page URL" field.
 
 h3 General information about myAntiSocial.net
 ul

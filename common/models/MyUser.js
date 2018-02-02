@@ -193,6 +193,31 @@ module.exports = function (MyUser) {
 					}
 					cb(null, user, accessToken);
 				});
+			},
+			function (user, accessToken, cb) {
+				if (!req.signedCookies.invite) {
+					return cb(null, user, accessToken);
+				}
+
+				req.app.models.Invitation.findOne({
+					'where': {
+						'token': req.signedCookies.invite,
+						'status': 'accepted'
+					},
+					'include': ['user']
+				}, function (err, invite) {
+					if (err) {
+						return cb(err);
+					}
+
+					if (!invite) {
+						return cb(null, user, accessToken);
+					}
+
+					// TODO build friend request
+					cb(null, user, accessToken);
+
+				});
 			}
 		], function (err, user, accessToken) { // done
 			if (err) {

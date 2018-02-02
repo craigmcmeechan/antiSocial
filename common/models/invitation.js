@@ -62,7 +62,7 @@ module.exports = function (Invitation) {
 			function (cb) {
 				debug('send email %j', ctx.instance.user());
 
-				var url = server.locals.config.publicHost + '/api/Invites/' + ctx.instance.token;
+				var url = server.locals.config.publicHost + '/invite/' + ctx.instance.token;
 				var endpoint = server.locals.config.publicHost + '/' + ctx.instance.user().username;
 
 				var options = {
