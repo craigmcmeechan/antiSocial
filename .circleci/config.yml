@@ -37,7 +37,7 @@ jobs:
 
       # run tests!
       - run: mkdir -p working
-      - run: node_modules/.bin/mocha --exit tests/proxy-endpoints.js
+      - run: node_modules/.bin/mocha --exit tests/friends.js
 
       - deploy:
           name: Deploy to ecs if tests pass and branch is Master
