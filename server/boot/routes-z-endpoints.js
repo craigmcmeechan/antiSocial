@@ -117,7 +117,8 @@ module.exports = function (server) {
 
             'friend': friend,
             'isMe': isMe,
-            'myEndpoint': getPOVEndpoint(friend, currentUser)
+            'myEndpoint': getPOVEndpoint(friend, currentUser),
+            'inviteToken': req.signedCookies.invite
           };
 
           if (data.posts && data.posts.length) {
