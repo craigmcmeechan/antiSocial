@@ -19,9 +19,9 @@ describe('proxy endpoints', function () {
 	var email2 = 'mrhodes+test+proxy2@myantisocial.net';
 	var email3 = 'mrhodes+test+proxy3@myantisocial.net';
 
-	var endpoint1 = 'http://127.0.0.1:3000/user-1';
-	var endpoint2 = 'http://127.0.0.1:3000/user-2';
-	var endpoint3 = 'http://127.0.0.1:3000/user-3';
+	var endpoint1 = 'http://127.0.0.1:3000/';
+	var endpoint2 = 'http://127.0.0.1:3000/';
+	var endpoint3 = 'http://127.0.0.1:3000/';
 
 	var password = 'testing123';
 	var post1;
@@ -58,32 +58,16 @@ describe('proxy endpoints', function () {
 				.send({
 					'email': email1,
 					'password': password,
-					'username': 'user-1'
+					'name': 'user-1'
 				})
 				.end(function (err, res) {
 					expect(err).to.be(null);
 					expect(res.status).to.equal(200);
 					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 					expect(accessToken).to.be.a('string');
-					app.models.MyUser.findOne({
-						'where': {
-							'email': email1
-						}
-					}, function (err, user) {
-						theUser = user;
-					});
+					endpoint1 += res.body.result.username;
 					done();
 				});
-		});
-
-		it('should be able to update user1', function (done) {
-			client1.patch('http://127.0.0.1:3000/api/MyUsers/me').send({
-				username: 'user-1',
-				name: 'User One'
-			}).end(function (err, res) {
-				expect(res.status).to.be(200);
-				done();
-			});
 		});
 
 		it('should be able to create account 2', function (done) {
@@ -92,25 +76,16 @@ describe('proxy endpoints', function () {
 				.send({
 					'email': email2,
 					'password': password,
-					'username': 'user-2'
+					'name': 'user-2'
 				})
 				.end(function (err, res) {
 					expect(err).to.be(null);
 					expect(res.status).to.equal(200);
 					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 					expect(accessToken).to.be.a('string');
+					endpoint2 += res.body.result.username;
 					done();
 				});
-		});
-
-		it('should be able to update user2', function (done) {
-			client2.patch('http://127.0.0.1:3000/api/MyUsers/me').send({
-				username: 'user-2',
-				name: 'User Two'
-			}).end(function (err, res) {
-				expect(res.status).to.be(200);
-				done();
-			});
 		});
 
 		it('should be able to create account 3', function (done) {
@@ -119,25 +94,16 @@ describe('proxy endpoints', function () {
 				.send({
 					'email': email3,
 					'password': password,
-					'username': 'user-3'
+					'name': 'user-3'
 				})
 				.end(function (err, res) {
 					expect(err).to.be(null);
 					expect(res.status).to.equal(200);
 					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 					expect(accessToken).to.be.a('string');
+					endpoint3 += res.body.result.username;
 					done();
 				});
-		});
-
-		it('should be able to update user3', function (done) {
-			client3.patch('http://127.0.0.1:3000/api/MyUsers/me').send({
-				username: 'user-3',
-				name: 'User Three'
-			}).end(function (err, res) {
-				expect(res.status).to.be(200);
-				done();
-			});
 		});
 
 		it('user1 should be able to friend user2', function (done) {

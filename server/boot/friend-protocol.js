@@ -189,18 +189,19 @@ module.exports = function (server) {
 
 					if (accepted) {
 						update.status = 'accepted';
+						update.audiences = ['public', 'community', 'friends'];
 					}
 
-					friend.updateAttributes(update, function (err) {
+					friend.updateAttributes(update, function (err, friend) {
 						if (err) {
 							e = new VError(err, '/friend exchangeToken error updating friend instance %j', update);
 							return cb(e);
 						}
-						cb(null, friend);
+						cb(null, friend, accepted);
 					});
 				});
 			}
-		], function (err, friend) {
+		], function (err, friend, accepted) {
 			if (err) {
 				if (instance) {
 					instance.destroy();
@@ -208,16 +209,22 @@ module.exports = function (server) {
 				var e = new WError(err, 'friend request failed');
 				req.logger.error(e.toString());
 				res.header('x-digitopia-hijax-flash-level', 'error');
-				res.header('x-digitopia-hijax-flash-message', 'friend request failed')
+				res.header('x-digitopia-hijax-flash-message', 'friend request failed');
 				return res.send({
 					'status': e.cause().message
 				});
 			}
 			res.header('x-digitopia-hijax-flash-level', 'info');
-			res.header('x-digitopia-hijax-flash-message', 'friend request sent')
+			res.header('x-digitopia-hijax-flash-message', 'friend request sent');
 			res.send({
 				'status': 'ok'
 			});
+
+			if (accepted) {
+				process.nextTick(function () {
+					watchFeed(server, friend);
+				});
+			}
 		});
 	});
 
@@ -443,9 +450,10 @@ module.exports = function (server) {
 
 				if (invitation) {
 					update.status = 'accepted';
+					update.audiences = ['public', 'community', 'friends'];
 				}
 
-				friend.updateAttributes(update, function (err) {
+				friend.updateAttributes(update, function (err, friend) {
 					if (err) {
 						var e = new VError(err, '/friend-request saveCredentials error saving');
 						return cb(e);
@@ -493,6 +501,12 @@ module.exports = function (server) {
 			};
 
 			res.send(payload);
+
+			if (invitation) {
+				process.nextTick(function () {
+					watchFeed(server, friend);
+				});
+			}
 		});
 	});
 
@@ -701,14 +715,14 @@ module.exports = function (server) {
 				],
 				function (err, friend) {
 					if (err) {
-						var e = new WError(err, 'friend-webhook failed');
+						var e = new WError(err, '/friend-webhook/friend-request-accepted failed');
 						req.logger.error(e.toString());
 						return res.send({
 							'status': e.cause().message
 						});
 					}
 
-					//debug('webhook opening feed', friend);
+					debug('/friend-webhook/friend-request-accepted opening feed', friend);
 					watchFeed(server, friend);
 
 					var payload = {
@@ -767,7 +781,7 @@ module.exports = function (server) {
 						});
 					}
 
-					//debug('webhook opening feed', friend);
+					debug('webhook/address-change opening feed', friend);
 					watchFeed(server, friend);
 
 					var payload = {

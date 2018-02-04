@@ -22,6 +22,7 @@ module.exports = function (MyUser) {
 				'@register',
 				'@login',
 				'@logout',
+				'@confirm',
 				'updateAttributes',
 				'__create__invitations',
 				'__updateById__friends',
@@ -248,7 +249,8 @@ module.exports = function (MyUser) {
 				'flashLevel': 'info',
 				'flashMessage': 'Welcome!',
 				'hijaxLocation': '/settings',
-				'didLogIn': true
+				'didLogIn': true,
+				'username': user.username
 			});
 		});
 	};
