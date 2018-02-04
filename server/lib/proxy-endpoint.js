@@ -3,7 +3,7 @@ var checkProxyRE = /^\/([a-zA-Z0-9-]+)(\/[^/]+)?/;
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
 
-module.exports = function proxyEndPoint(endpoint, currentUser) {
+module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 	if (!endpoint) {
 		return;
 	}
@@ -20,6 +20,9 @@ module.exports = function proxyEndPoint(endpoint, currentUser) {
 			if (currentUser.username === friendUsername) {
 				var unproxied = url.parse(endpoint).pathname;
 				debug('proxyEndPoint me ' + unproxied);
+				if (embed) {
+					unproxied += '?embed=1';
+				}
 				return unproxied;
 			}
 			for (var i = 0; i < currentUser.friends().length; i++) {
@@ -27,6 +30,9 @@ module.exports = function proxyEndPoint(endpoint, currentUser) {
 				if (friend.remoteUsername === friendUsername) {
 					var unproxied = url.parse(endpoint).pathname;
 					debug('proxyEndPoint friend found ' + unproxied);
+					if (embed) {
+						unproxied += '?embed=1';
+					}
 					return unproxied;
 				}
 			}
@@ -39,6 +45,9 @@ module.exports = function proxyEndPoint(endpoint, currentUser) {
 
 	var proxied = getProxyForm(endpoint, matches);
 	debug('proxyEndPoint default to proxy form: ' + proxied);
+	if (embed) {
+		proxied += '&embed=1';
+	}
 	return proxied;
 };
 
