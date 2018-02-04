@@ -20,6 +20,7 @@ var path = require('path');
 var pug = require('pug');
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
+var request = require('request');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -28,6 +29,7 @@ module.exports = function (server) {
   // the poster's authoritative server (users resident on this server)
 
   var profileRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)(\.json)?(\?.*)?$/;
+  var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/friends.json$/;
   var postsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/posts(\.json)?(\?.*)?$/;
   var postRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?(\?embed=1)?$/;
   var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
@@ -131,6 +133,152 @@ module.exports = function (server) {
             }
             return res.send(encryptIfFriend(friend, html));
           });
+        });
+      }
+    });
+  });
+
+  router.get(friendsRE, getCurrentUser(), checkNeedProxyRewrite('friends'), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+
+    var currentUser = ctx.get('currentUser');
+    var friend = ctx.get('friendAccess');
+
+    var matches = req.url.match(friendsRE);
+    var username = matches[1];
+
+    var isMe = false;
+    var endpoints = [];
+    var map = {};
+
+    getUser(username, function (err, user) {
+      if (err) {
+        return next(err);
+      }
+
+      if (!user) {
+        return res.sendStatus(404);
+      }
+
+      if (currentUser) {
+        if (currentUser.id.toString() === user.id.toString()) {
+          isMe = true;
+        }
+      }
+
+      // only logged in user or friends can access frields list
+      if (!friend && !isMe) {
+        return res.sendStatus(401);
+      }
+
+      if (isMe) {
+        // get all friends of my friends
+        var query = {
+          'where': {
+            'and': [{
+              'userId': currentUser.id
+            }, {
+              'status': 'accepted'
+            }]
+          }
+        }
+        server.models.Friend.find(query, function (err, friends) {
+          async.map(friends, function (friend, cb) {
+            if (!map[friend.remoteEndPoint]) {
+              map[friend.remoteEndPoint] = 0;
+            }
+            ++map[friend.remoteEndPoint];
+
+            var options = {
+              'url': friend.remoteEndPoint + '/friends.json',
+              'headers': {
+                'friend-access-token': friend.remoteAccessToken
+              },
+              'json': true
+            };
+
+            request.get(options, function (err, response, body) {
+
+              if (err || response.statusCode !== 200) {
+                return cb(); // ignore error?
+              }
+
+              var data = body;
+
+              if (friend && body.sig) {
+                debug('got encrypted response');
+                var privateKey = friend.keys.private;
+                var publicKey = friend.remotePublicKey;
+                var toDecrypt = body.data;
+                var sig = body.sig;
+                var pass = body.pass;
+
+                var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+                if (!decrypted.valid) {
+                  return res.sendStatus('401');
+                }
+                data = JSON.parse(decrypted.data);
+              }
+
+              if (data.friends) {
+                for (var i = 0; i < data.friends.length; i++) {
+                  if (!map[data.friends[i]]) {
+                    map[data.friends[i]] = 0;
+                  }
+                  ++map[data.friends[i]];
+                }
+              }
+              cb();
+            });
+          }, function (err) {
+
+            var data = {
+              'pov': {
+                'user': user.username,
+                'isMe': isMe,
+                'friend': friend ? friend.remoteUsername : false,
+                'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+              },
+              'friends': map
+            };
+
+            return res.send(encryptIfFriend(friend, data));
+          });
+        });
+      }
+      else {
+        var query = {
+          'where': {
+            'and': [{
+              'userId': user.id
+            }, {
+              'status': 'accepted'
+            }]
+          }
+        };
+
+        console.log('%j', query);
+
+        server.models.Friend.find(query, function (err, friends) {
+          for (var i = 0; i < friends.length; i++) {
+            endpoints.push(friends[i].remoteEndPoint);
+          }
+
+          var data = {
+            'pov': {
+              'user': user.username,
+              'isMe': isMe,
+              'friend': friend ? friend.remoteUsername : false,
+              'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+            },
+            'friends': endpoints
+          };
+
+          return res.send(encryptIfFriend(friend, data));
         });
       }
     });

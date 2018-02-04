@@ -21,8 +21,6 @@ var debugVerbose = require('debug')('routes:verbose');
 module.exports = function (server) {
   var router = server.loopback.Router();
 
-
-
   router.post('/react', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var reaction = req.body.reaction;
     var endpoint = req.body.endpoint;
