@@ -27,7 +27,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
-		if (myNewsFeedItem.type === 'friend') {
+		if (myNewsFeedItem.type === 'friend' || 'frend invite accepted') {
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
 
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';

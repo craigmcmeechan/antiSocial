@@ -1,4 +1,3 @@
-var loopback = require('loopback');
 var server = require('../../server/server');
 var uploadable = require('../../server/lib/uploadable')();
 var async = require('async');
@@ -6,13 +5,13 @@ var admin = require('digitopia-admin');
 var uuid = require('uuid');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
-var async = require('async');
 var mailer = require('../../server/lib/mail');
 var qs = require('querystring');
 var RemoteRouting = require('loopback-remote-routing');
 var debug = require('debug')('user');
 var debugVerbose = require('debug')('user:verbose');
 var sh = require('shorthash');
+var request = require('request');
 
 module.exports = function (MyUser) {
 	if (!process.env.ADMIN) {
@@ -131,7 +130,7 @@ module.exports = function (MyUser) {
 				});
 			},
 			function (isFirstUser, cb) { // create the user
-				createUser(req.body.email, req.body.password, isFirstUser, function (err, user) {
+				createUser(req.body.email, req.body.password, req.body.name, isFirstUser, function (err, user) {
 					if (err) {
 						var e = new VError(err, 'create user error');
 						return cb(e);
@@ -202,7 +201,7 @@ module.exports = function (MyUser) {
 				req.app.models.Invitation.findOne({
 					'where': {
 						'token': req.signedCookies.invite,
-						'status': 'accepted'
+						'status': 'processing'
 					},
 					'include': ['user']
 				}, function (err, invite) {
@@ -214,9 +213,20 @@ module.exports = function (MyUser) {
 						return cb(null, user, accessToken);
 					}
 
-					// TODO build friend request
-					cb(null, user, accessToken);
+					// build friend request
+					// TODO automatically approve invited friend in friend protocol
+					var endpoint = server.locals.config.publicHost + '/' + invite.user().username;
 
+					var options = {
+						'url': server.locals.config.publicHost + '/friend?endpoint=' + encodeURIComponent(endpoint) + '&invite=' + req.signedCookies.invite,
+						'headers': {
+							'access_token': accessToken.id
+						}
+					};
+
+					request.get(options, function (err, response, body) {
+						cb(null, user, accessToken);
+					});
 				});
 			}
 		], function (err, user, accessToken) { // done
@@ -244,13 +254,18 @@ module.exports = function (MyUser) {
 	};
 
 	// create a user, if superuser set up admin roles
-	function createUser(email, password, superuser, next) {
+	function createUser(email, password, name, superuser, next) {
 		var theUser = null;
+
+		var unique = sh.unique(server.locals.config.publicHost + '/' + uuid());
+		var username = name.toLowerCase().replace(/[^a-z0-9\-]/, '') + '-' + unique;
 
 		var adminUser = {
 			'email': email,
 			'password': password,
-			'unique': sh.unique(server.locals.config.publicHost + '/' + uuid())
+			'name': name,
+			'username': username,
+			'unique': unique
 		};
 
 		debugVerbose('createUser', adminUser);

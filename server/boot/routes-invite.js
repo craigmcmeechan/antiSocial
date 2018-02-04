@@ -22,7 +22,7 @@ module.exports = function (server) {
 				return res.sendStatus(404);
 			}
 
-			invite.updateAttribute('status', 'accepted', function (err) {
+			invite.updateAttribute('status', 'processing', function (err) {
 				if (err) {
 					return next(err);
 				}

@@ -54,6 +54,7 @@ module.exports = function (server) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
 		var endpoint = url.parse(req.query.endpoint);
+		var invite = req.query.invite;
 		var instance = null;
 		async.waterfall([
 			function checkDupe(cb) { // are we already friends?
@@ -110,7 +111,8 @@ module.exports = function (server) {
 				var myEndPoint = server.locals.config.publicHost + '/' + currentUser.username;
 				var payload = {
 					'remoteEndPoint': myEndPoint,
-					'requestToken': friend.localRequestToken
+					'requestToken': friend.localRequestToken,
+					'invite': invite
 				};
 
 				debug('requestFriend ' + myEndPoint + '->' + friend.remoteEndPoint + '/friend-request', payload);
@@ -141,11 +143,11 @@ module.exports = function (server) {
 						return cb(e);
 					}
 
-					cb(err, friend, body.requestToken);
+					cb(err, friend, body.requestToken, body.accepted);
 
 				});
 			},
-			function exchangeToken(friend, requestToken, cb) {
+			function exchangeToken(friend, requestToken, accepted, cb) {
 
 				var myEndPoint = server.locals.config.publicHost + '/' + currentUser.username;
 				var payload = {
@@ -178,12 +180,22 @@ module.exports = function (server) {
 						return cb(e);
 					}
 
-					friend.updateAttributes({
+					var update = {
 						'remoteRequestToken': requestToken,
 						'remoteAccessToken': body.accessToken,
 						'remotePublicKey': body.publicKey,
 						'remoteName': body.name
-					}, function (err) {
+					};
+
+					if (accepted) {
+						update.status = 'accepted';
+					}
+
+					friend.updateAttributes(update, function (err) {
+						if (err) {
+							e = new VError(err, '/friend exchangeToken error updating friend instance %j', update);
+							return cb(e);
+						}
 						cb(null, friend);
 					});
 				});
@@ -200,8 +212,6 @@ module.exports = function (server) {
 				return res.send({
 					'status': e.cause().message
 				});
-
-
 			}
 			res.header('x-digitopia-hijax-flash-level', 'info');
 			res.header('x-digitopia-hijax-flash-message', 'friend request sent')
@@ -308,6 +318,7 @@ module.exports = function (server) {
 
 		var remoteEndPoint = url.parse(req.body.remoteEndPoint);
 		var requestToken = req.body.requestToken;
+		var invite = req.body.invite;
 
 		async.waterfall([
 			function resolveUser(cb) {
@@ -340,7 +351,7 @@ module.exports = function (server) {
 					workers: 2
 				}, function (err, pair) {
 					if (err) {
-						e = new VError(err, '/friend-request keyPair failed');
+						var e = new VError(err, '/friend-request keyPair failed');
 						return cb(e);
 					}
 
@@ -406,22 +417,43 @@ module.exports = function (server) {
 					cb(null, user, friend, body.accessToken, body.publicKey, body.name);
 				});
 			},
-			function saveCredentials(user, friend, token, key, name, cb) {
+			function processInvite(user, friend, token, key, name, cb) {
+				if (!invite) {
+					return cb(null, user, friend, token, key, name, null);
+				}
+
+				server.models.Invitation.findOne({
+					'where': {
+						'token': invite,
+						'status': 'processing'
+					},
+					'include': ['user']
+				}, function (err, invitation) {
+					cb(null, user, friend, token, key, name, invitation);
+				});
+			},
+			function saveCredentials(user, friend, token, key, name, invitation, cb) {
 				debug('/friend-request saveCredentials');
 
-				friend.updateAttributes({
+				var update = {
 					'remoteAccessToken': token,
 					'remotePublicKey': key,
 					'remoteName': name
-				}, function (err) {
+				};
+
+				if (invitation) {
+					update.status = 'accepted';
+				}
+
+				friend.updateAttributes(update, function (err) {
 					if (err) {
 						var e = new VError(err, '/friend-request saveCredentials error saving');
 						return cb(e);
 					}
-					cb(null, user, friend);
+					cb(null, user, friend, invitation);
 				});
 			},
-			function newsFeedPendingFriendRequest(user, friend, cb) {
+			function newsFeedPendingFriendRequest(user, friend, invitation, cb) {
 				debug('/friend-request newsFeedPendingFriendRequest');
 
 				resolveProfiles(friend, function (e) {
@@ -431,7 +463,7 @@ module.exports = function (server) {
 						'userId': user.id,
 						'friendId': friend.id,
 						'uuid': uuid(),
-						'type': 'pending friend request',
+						'type': invitation ? 'frend invite accepted' : 'pending friend request',
 						'source': friend.remoteEndPoint,
 						'about': friend.remoteEndPoint,
 						'originator': false
@@ -441,11 +473,11 @@ module.exports = function (server) {
 							var e = new VError(err, 'error creating newsfeed item');
 							return cb(e);
 						}
-						cb(null, user, friend);
+						cb(null, user, friend, invitation);
 					});
 				});
 			}
-		], function (err, user, friend) {
+		], function (err, user, friend, invitation) {
 			if (err) {
 				var e = new WError(err, '/friend-request failed');
 				req.logger.error(e.toString());
@@ -456,7 +488,8 @@ module.exports = function (server) {
 
 			var payload = {
 				'status': 'ok',
-				'requestToken': friend.localRequestToken
+				'requestToken': friend.localRequestToken,
+				'accepted': invitation ? true : false
 			};
 
 			res.send(payload);
