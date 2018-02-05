@@ -37,9 +37,10 @@ ADD node_modules /var/app/current/node_modules
 # Where possible I like npm updates to be a function of the development
 # environment keeping deployment out of module version hell.
 #
-# RUN cd /var/app/current; npm install
+# RUN cd /var/app/current; yarn install
 
-RUN cd /var/app/current; npm install phantomjs-prebuilt
+RUN npm install -g yarn
+RUN cd /var/app/current; yarn install phantomjs-prebuilt
 
 # copy app from local repository into container
 ADD assets /var/app/current/assets
