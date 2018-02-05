@@ -7,12 +7,15 @@
 		var self = this;
 		this.start = function () {
 			if (!$(window).scrollTop()) {
-				if (cache[document.location.href]) {
+				var key = document.location.href;
+				key = key.replace(/\/post.*/, '');
+
+				if (cache[key]) {
 					var vh = $(window).height();
 					$(window).scrollTop(((vh / 3) * 2));
 				}
 				else {
-					cache[document.location.href] = true;
+					cache[key] = true;
 					$(window).on('scroll.scrollToController', function () {
 						self.stop();
 					});

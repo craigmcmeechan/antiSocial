@@ -227,10 +227,12 @@ module.exports = function (server) {
 
               if (data.friends) {
                 for (var i = 0; i < data.friends.length; i++) {
-                  if (!map[data.friends[i]]) {
-                    map[data.friends[i]] = [];
+                  if (data.friends[i] != server.locals.config.publicHost + '/' + currentUser.username) {
+                    if (!map[data.friends[i]]) {
+                      map[data.friends[i]] = [];
+                    }
+                    map[data.friends[i]].push(friend.remoteEndPoint);
                   }
-                  map[data.friends[i]].push(friend.remoteEndPoint);
                 }
               }
 

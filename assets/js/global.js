@@ -35,6 +35,10 @@
 		}
 	});
 
+	$('.navbar-toggle').on('click', function (e) {
+		$('.avatar').toggle();
+	})
+
 	$.fn.extend({
 		animateCss: function (animationName, callback) {
 			var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
