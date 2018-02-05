@@ -38,8 +38,9 @@
 		this.units = this.element.data('effect-units');
 		this.transformUnits = this.element.data('effect-transform-units');
 		this.ease = this.element.data('effect-ease') ? this.element.data('effect-ease') : 'swing';
-		this.inProgress = false;
 		this.timed = this.element.data('timed');
+
+		this.lastCSS = null;
 
 		var rxNumericValue = /[\-+]?[\d]*\.?[\d]+/g;
 		var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
@@ -58,9 +59,6 @@
 		};
 
 		this.doEffect = function (force) {
-			if (force) {
-				self.inProgress = true;
-			}
 			var top = $(window).scrollTop();
 			var start = self.startPos;
 			var end = self.endPos;
@@ -71,22 +69,15 @@
 				end = self.endPos * vpHeight;
 			}
 
-			if (self.inProgress) {
-				if (top < start) {
-					top = start;
-				}
-				if (top > end) {
-					top = end;
-				}
+			if (top < start) {
+				top = start;
+			}
+			if (top > end) {
+				top = end;
 			}
 
 			if (force || (top >= start && top <= end)) {
-				if (top === start || top === end) {
-					self.inProgress = true;
-				}
-				else {
-					self.inProgress = true;
-				}
+
 				var duration = end - start;
 				var progress = top - start;
 				var percent = progress / duration;
@@ -130,7 +121,11 @@
 					}
 					newCSS[property] = result;
 				}
-				self.element.css(newCSS);
+
+				if (JSON.stringify(newCSS) !== self.lastCSS) {
+					self.element.css(newCSS);
+					self.lastCSS = JSON.stringify(newCSS);
+				}
 			}
 
 			queueAnimation(function () {
