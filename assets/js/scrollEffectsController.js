@@ -39,6 +39,7 @@
 		this.transformUnits = this.element.data('effect-transform-units');
 		this.ease = this.element.data('effect-ease') ? this.element.data('effect-ease') : 'swing';
 		this.inProgress = false;
+		this.timed = this.element.data('timed');
 
 		var rxNumericValue = /[\-+]?[\d]*\.?[\d]+/g;
 		var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
@@ -81,7 +82,7 @@
 
 			if (force || (top >= start && top <= end)) {
 				if (top === start || top === end) {
-					self.inProgress = false;
+					self.inProgress = true;
 				}
 				else {
 					self.inProgress = true;
