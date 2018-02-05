@@ -187,11 +187,12 @@ module.exports = function (server) {
           }
         }
         server.models.Friend.find(query, function (err, friends) {
+
+          for (var i = 0; i < friends.length; i++) {
+            map[friends[i].remoteEndPoint] = ['me'];
+          }
+
           async.map(friends, function (friend, cb) {
-            if (!map[friend.remoteEndPoint]) {
-              map[friend.remoteEndPoint] = 0;
-            }
-            ++map[friend.remoteEndPoint];
 
             var options = {
               'url': friend.remoteEndPoint + '/friends.json',
@@ -227,15 +228,16 @@ module.exports = function (server) {
               if (data.friends) {
                 for (var i = 0; i < data.friends.length; i++) {
                   if (!map[data.friends[i]]) {
-                    map[data.friends[i]] = 0;
+                    map[data.friends[i]] = [];
                   }
-                  ++map[data.friends[i]];
+                  map[data.friends[i]].push(friend.remoteEndPoint);
                 }
               }
+
               cb();
+
             });
           }, function (err) {
-
             var data = {
               'pov': {
                 'user': user.username,
