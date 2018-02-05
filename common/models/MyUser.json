@@ -144,12 +144,6 @@
     "principalType": "ROLE",
     "principalId": "$owner",
     "permission": "ALLOW",
-    "property": "__create__invitations"
-  }, {
-    "accessType": "WRITE",
-    "principalType": "ROLE",
-    "principalId": "$owner",
-    "permission": "ALLOW",
     "property": "__create__posts"
   }, {
     "accessType": "WRITE",

@@ -19,11 +19,11 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 
 		var whoAbout = myNewsFeedItem.about.replace(/\/post\/.*$/, '');
 
-		if (myNewsFeedItem.type === 'pending friend request') {
+		if (myNewsFeedItem.type === 'pending friend request' || 'frend invite accepted') {
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
-			myNewsFeedItem.humanReadable += 'Pending friend request from <a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + sourceProfile.profile.name + '</a>';
+			myNewsFeedItem.humanReadable += 'Friend request from <a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + sourceProfile.profile.name + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 

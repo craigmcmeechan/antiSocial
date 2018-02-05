@@ -23,7 +23,7 @@ block content
 							
 				h4 - or - Invite a friend via Email
 
-				form#invite-friend-form.form.form-validation(method="POST" action="/api/MyUsers/me/invitations" data-jsclass="formValidator" data-submitter="#lookup-button")
+				form#invite-friend-form.form.form-validation(method="POST" action="/invite" data-submitter="#send-invite" data-jsclass="formValidator,postEndpointController")
 					input(type="hidden" name="type" value="friend")
 					.form-group
 						.input-relative
@@ -38,11 +38,11 @@ block content
 							.input-ok-indicator
 								span.glyphicon.glyphicon-ok
 							.validation-help
-					button.btn.btn-primary.btn-sm(data-jsclass="postEndpointController" data-target="#invite-friend-form" data-endpoint= '/api/MyUsers/me/invitations') Send
+					button#send-invite.btn.btn-primary.btn-sm Send
 
-					#sidebar
-						h4 Your Public Endpoint
-						p= config.publicHost + '/' + user.username
+				#sidebar
+					h4 Your Public Endpoint
+					p= config.publicHost + '/' + user.username
 
 			.col-sm-6
 				if !friends.length
