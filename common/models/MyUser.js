@@ -24,7 +24,6 @@ module.exports = function (MyUser) {
 				'@logout',
 				'@confirm',
 				'updateAttributes',
-				'__create__invitations',
 				'__updateById__friends',
 				'__destroyById__photos',
 				'__updateById__photos',

@@ -189,7 +189,7 @@ module.exports = function (server) {
         server.models.Friend.find(query, function (err, friends) {
 
           for (var i = 0; i < friends.length; i++) {
-            map[friends[i].remoteEndPoint] = ['me'];
+            map[friends[i].remoteEndPoint] = [server.locals.config.publicHost + '/' + currentUser.username];
           }
 
           async.map(friends, function (friend, cb) {
@@ -245,6 +245,7 @@ module.exports = function (server) {
                 'friend': friend ? friend.remoteUsername : false,
                 'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
               },
+              'me': server.locals.config.publicHost + '/' + currentUser.username,
               'friends': map
             };
 
