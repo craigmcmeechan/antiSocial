@@ -41,6 +41,7 @@
 		this.timed = this.element.data('timed');
 
 		this.lastCSS = null;
+		this.lastScroll = null;
 
 		var rxNumericValue = /[\-+]?[\d]*\.?[\d]+/g;
 		var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
@@ -60,71 +61,76 @@
 
 		this.doEffect = function (force) {
 			var top = $(window).scrollTop();
-			var start = self.startPos;
-			var end = self.endPos;
-			var vpHeight = $(window).height();
 
-			if (self.units === 'viewport') {
-				start = self.startPos * vpHeight;
-				end = self.endPos * vpHeight;
-			}
+			if (top !== self.lastScroll) {
+				self.lastScroll = top;
 
-			if (top < start) {
-				top = start;
-			}
-			if (top > end) {
-				top = end;
-			}
+				var start = self.startPos;
+				var end = self.endPos;
+				var vpHeight = $(window).height();
 
-			if (force || (top >= start && top <= end)) {
-
-				var duration = end - start;
-				var progress = top - start;
-				var percent = progress / duration;
-
-				var eased = $.easing[self.ease](percent, percent * duration, 0, 1, duration);
-
-				var newCSS = {};
-
-				for (var property in self.startCSS) {
-					var startvals = [];
-					var endvals = [];
-					var format;
-					var format = self.startCSS[property].replace(rxNumericValue, function (n) {
-						startvals.push(+n);
-						return '{?}';
-					});
-					format = self.endCSS[property].replace(rxNumericValue, function (n) {
-						endvals.push(+n);
-						return '{?}';
-					});
-
-					var regexPlaceholder = /\{\?\}/;
-					var result = format;
-					for (var j = 0; j < startvals.length; j++) {
-
-						var startValue = startvals[j];
-						var endValue = endvals[j];
-
-						if (self.transformUnits === 'viewport') {
-							startValue = startValue * vpHeight;
-							endValue = endValue * vpHeight;
-						}
-
-						var delta = endValue - startValue;
-						var origin = parseFloat(startValue);
-						var value = origin + (delta * eased);
-						if (self.startCSS[property].match(/rgb\(/)) {
-							value = Math.ceil(value);
-						}
-						result = result.replace(regexPlaceholder, value);
-					}
-					newCSS[property] = result;
+				if (self.units === 'viewport') {
+					start = self.startPos * vpHeight;
+					end = self.endPos * vpHeight;
 				}
 
-				if (JSON.stringify(newCSS) !== self.lastCSS) {
-					self.element.css(newCSS);
-					self.lastCSS = JSON.stringify(newCSS);
+				if (top < start) {
+					top = start;
+				}
+				if (top > end) {
+					top = end;
+				}
+
+				if (force || (top >= start && top <= end)) {
+
+					var duration = end - start;
+					var progress = top - start;
+					var percent = progress / duration;
+
+					var eased = $.easing[self.ease](percent, percent * duration, 0, 1, duration);
+
+					var newCSS = {};
+
+					for (var property in self.startCSS) {
+						var startvals = [];
+						var endvals = [];
+						var format;
+						var format = self.startCSS[property].replace(rxNumericValue, function (n) {
+							startvals.push(+n);
+							return '{?}';
+						});
+						format = self.endCSS[property].replace(rxNumericValue, function (n) {
+							endvals.push(+n);
+							return '{?}';
+						});
+
+						var regexPlaceholder = /\{\?\}/;
+						var result = format;
+						for (var j = 0; j < startvals.length; j++) {
+
+							var startValue = startvals[j];
+							var endValue = endvals[j];
+
+							if (self.transformUnits === 'viewport') {
+								startValue = startValue * vpHeight;
+								endValue = endValue * vpHeight;
+							}
+
+							var delta = endValue - startValue;
+							var origin = parseFloat(startValue);
+							var value = origin + (delta * eased);
+							if (self.startCSS[property].match(/rgb\(/)) {
+								value = Math.ceil(value);
+							}
+							result = result.replace(regexPlaceholder, value);
+						}
+						newCSS[property] = result;
+					}
+
+					if (JSON.stringify(newCSS) !== self.lastCSS) {
+						self.element.css(newCSS);
+						self.lastCSS = JSON.stringify(newCSS);
+					}
 				}
 			}
 
