@@ -1,5 +1,4 @@
 var getCurrentUser = require('../middleware/context-currentUser');
-var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var checkNeedProxyRewrite = require('../middleware/rewriteUrls');
 
@@ -11,12 +10,7 @@ var resolveComments = require('../lib/resolveComments');
 var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var encryption = require('../lib/encryption');
-var uuid = require('uuid');
-var url = require('url');
-var uuid = require('uuid');
 var async = require('async');
-var _ = require('lodash');
-var path = require('path');
 var pug = require('pug');
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
@@ -28,21 +22,21 @@ module.exports = function (server) {
   // URL forms for getting posts and associated data from
   // the poster's authoritative server (users resident on this server)
 
-  var profileRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)(\.json)?(\?.*)?$/;
-  var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/friends.json$/;
-  var postsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/posts(\.json)?(\?.*)?$/;
-  var postRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)(\.json)?(\?embed=1)?$/;
-  var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comments(\.json)?$/;
-  var postCommentRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
-  var postCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postPhotosRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photos(\.json)?$/;
-  var postPhotoRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
-  var postPhotoReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var postPhotoCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comments(\.json)?$/;
-  var postPhotoCommentRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)(\.json)?$/;
-  var postPhotoCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/post\/([a-f0-9\-]+)\/photo\/([a-f0-9\-]+)\/comment\/([a-f0-9\-]+)\/reactions(\.json)?$/;
-  var photoRE = /^\/((?!proxy-)[a-zA-Z0-9\-]+)\/photo\/([a-f0-9\-]+)(\.json)?$/;
+  var profileRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)(\.json)?(\?.*)?$/;
+  var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)?$/;
+  var postsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/posts(\.json)?(\?.*)?$/;
+  var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?$/;
+  var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/reactions(\.json)?$/;
+  var postCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comments(\.json)?$/;
+  var postCommentRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)(\.json)?$/;
+  var postCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)\/reactions(\.json)?$/;
+  var postPhotosRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photos(\.json)?$/;
+  var postPhotoRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)(\.json)?$/;
+  var postPhotoReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/reactions(\.json)?$/;
+  var postPhotoCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/comments(\.json)?$/;
+  var postPhotoCommentRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)(\.json)?$/;
+  var postPhotoCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)\/reactions(\.json)?$/;
+  var photoRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photo\/([a-f0-9-]+)(\.json)?$/;
 
   function getPOVEndpoint(friend, currentUser) {
     if (friend) {
@@ -150,6 +144,7 @@ module.exports = function (server) {
 
     var matches = req.url.match(friendsRE);
     var username = matches[1];
+    var view = matches[2];
 
     var isMe = false;
     var endpoints = [];
@@ -185,7 +180,8 @@ module.exports = function (server) {
               'status': 'accepted'
             }]
           }
-        }
+        };
+
         server.models.Friend.find(query, function (err, friends) {
 
           for (var i = 0; i < friends.length; i++) {
@@ -251,7 +247,12 @@ module.exports = function (server) {
               'friends': map
             };
 
-            return res.send(encryptIfFriend(friend, data));
+            if (view === '.json') {
+              return res.send(encryptIfFriend(friend, data));
+            }
+            else {
+              res.send('no template');
+            }
           });
         });
       }
@@ -283,7 +284,12 @@ module.exports = function (server) {
             'friends': endpoints
           };
 
-          return res.send(encryptIfFriend(friend, data));
+          if (view === '.json') {
+            return res.send(encryptIfFriend(friend, data));
+          }
+          else {
+            res.send('no template');
+          }
         });
       }
     });
