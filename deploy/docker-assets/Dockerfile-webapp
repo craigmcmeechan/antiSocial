@@ -15,6 +15,10 @@ RUN apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 RUN apt-get install -y nodejs
 
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update; apt-get install yarn
+
 RUN mkdir -p /var/app/current/working
 ADD deploy/docker-assets/webapp /var/app/current/deploy/docker-assets/webapp
 
@@ -27,27 +31,16 @@ RUN cd /var/app/current; cp deploy/docker-assets/webapp/supervisord.conf /etc/su
 # directory to the container so it exactly matches the development
 # environment
 #
+ADD package.json /var/app/current/package.json
+ADD yarn.lock /var/app/current/
 ADD node_modules /var/app/current/node_modules
-
-# If there were os specific npm modules we could run npm install
-# but that comes with some thorny issues - you could get different
-# versions of packages running inside the container than are
-# running in your development environment. This is an issue to
-# consider when controlling you continuous deployment strategy.
-# Where possible I like npm updates to be a function of the development
-# environment keeping deployment out of module version hell.
-#
-# RUN cd /var/app/current; yarn install
-
-RUN npm install -g yarn
-RUN cd /var/app/current; yarn install phantomjs-prebuilt
+RUN cd /var/app/current; yarn add phantomjs-prebuilt
 
 # copy app from local repository into container
 ADD assets /var/app/current/assets
 ADD tests /var/app/current/tests
 ADD locales /var/app/current/locales
 ADD gruntfile.js /var/app/current/gruntfile.js
-ADD package.json /var/app/current/package.json
 ADD client /var/app/current/client
 ADD common /var/app/current/common
 ADD server /var/app/current/server
