@@ -21,30 +21,45 @@ if photos && photos.length
 					<span class="glyphicon glyphicon-chevron-left"></span>
 				a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
 					<span class="glyphicon glyphicon-chevron-right"></span>
-	.container-fluid.post-photos.want-constrained(data-max-height="10000")
+	.container-fluid.post-photos
 		.row
+			- var limit = photos.length
+			- var cols = 3
+			if photos.length > 4
+				- limit = 4 
+			else 
+				- cols = 12 / photos.length
+			
 			for photo,index in photos
 				if photo
-					- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
-					- var upload = getUploadForProperty('optimized',uploads,'thumb')
-					- var cssClass = 'col-sm-3 col-xs-6 maintain-aspect-ratio'
-					
-					if photos.length === 1
-						- cssClass = 'col-sm-12 full-width'
-						- upload = getUploadForProperty('optimized',uploads,'large')
-						if !upload
-							- upload = getUploadForProperty('optimized',uploads,'original')
+					if index < limit
+						- var uploads = typeof photo.uploads === 'function' ? photo.uploads() : photo.uploads
+						- var upload = getUploadForProperty('optimized',uploads,'thumb')
+						- var cssClass = 'col-xs-'+cols+' maintain-aspect-ratio'
+						
+						if photos.length === 1
+							- cssClass = 'col-xs-12 full-width'
+							- upload = getUploadForProperty('optimized',uploads,'large')
+							if !upload
+								- upload = getUploadForProperty('optimized',uploads,'original')
 
-					if !upload
-						p= JSON.stringify(photos)
-					else
-						.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
-							img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
-							.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
-								i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
-								if user
-									i.comments.glyphicon.glyphicon-comment
-								.caption-text.hidden-digitopia-xsmall
-									h3= photo.title
-									p= photo.description
+						if !upload
+							p= JSON.stringify(photos)
+						else
+							.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
+								img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
+								if index + 1 === limit && photos.length > limit
+									.more-photos
+										p
+											| + 
+											= photos.length - limit
+											|  more
+								.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
+									
+									i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
+									if user
+										i.comments.glyphicon.glyphicon-comment
+									.caption-text.hidden-digitopia-xsmall
+										h3= photo.title
+										p= photo.description
 		
