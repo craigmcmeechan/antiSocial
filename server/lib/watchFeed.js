@@ -117,7 +117,7 @@ function getListener(server, friend) {
 						'userId': currentUser.id
 					}]
 				}
-			}
+			};
 
 			server.models.NewsFeedItem.findOne(query, function (err, oldNews) {
 				if (err) {
@@ -129,9 +129,9 @@ function getListener(server, friend) {
 				}
 
 				if (oldNews) {
-					debugVerbose('old news %j', oldNews)
+					debugVerbose('old news %j', oldNews);
 					return;
-				};
+				}
 
 				async.series([
 					function createNewFeedItem(cb) {

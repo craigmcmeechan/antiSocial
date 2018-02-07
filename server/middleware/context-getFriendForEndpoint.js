@@ -10,7 +10,9 @@ module.exports = function () {
 		}
 
 		var endpoint = req.query.endpoint;
-		endpoint = endpoint.replace(/\/post.*$/,'');
+		endpoint = endpoint.replace(/\/post.*$/, '');
+		endpoint = endpoint.replace(/\/friend.*$/, '');
+		endpoint = endpoint.replace(/\/photo.*$/, '');
 
 		var query = {
 			'where': {

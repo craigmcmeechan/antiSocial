@@ -13,7 +13,7 @@ var debugVerbose = require('debug')('proxy:verbose');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	var proxyRE = /^\/proxy\-(post\-reactions|post\-comments|post\-comment\-reactions|post\-comment|post\-photos|post\-photo\-reactions|post\-photo\-comments|post\-photo\-comment\-reactions|post\-photo\-comment|post\-photo|profile|posts|post)/;
+	var proxyRE = /^\/proxy\-(post\-reactions|post\-comments|post\-comment\-reactions|post\-comment|post\-photos|post\-photo\-reactions|post\-photo\-comments|post\-photo\-comment\-reactions|post\-photo\-comment|post\-photo|profile|posts|post|photo|friends)/;
 
 	function getPOVEndpoint(currentUser) {
 		if (currentUser) {
@@ -37,7 +37,7 @@ module.exports = function (server) {
 			return res.sendStatus(400);
 		}
 
-		if (template === 'profile') {
+		if (template === 'profile' && !json) {
 			endpoint += '/posts';
 		}
 
@@ -55,7 +55,9 @@ module.exports = function (server) {
 		var options = {
 			'url': endpoint + '.json',
 			'json': true,
-			'headers': {}
+			'headers': {
+				'proxy': true
+			}
 		};
 
 		if (req.query.more) {
@@ -88,6 +90,7 @@ module.exports = function (server) {
 			var data = body;
 
 			if (friend && body.sig) {
+				debug('got encrypted response');
 				var privateKey = friend.keys.private;
 				var publicKey = friend.remotePublicKey;
 				var toDecrypt = body.data;
@@ -105,6 +108,10 @@ module.exports = function (server) {
 			res.header('x-highwater', data.highwater);
 
 			if (json) {
+				data.pov.proxy = {
+					'endpoint': options.url,
+					'encrypted-response': friend && body.sig ? true : false
+				};
 				res.send(data);
 			}
 			else {

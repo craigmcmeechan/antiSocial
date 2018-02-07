@@ -4,40 +4,29 @@ if !comment
 	- comment = data.comment
 
 if wantSummary
-	if !comments
-		- comments = data.comments
-	if !commentSummary
-		- commentSummary = data.commentSummary
-	.comments-label
-		table
-			tr
-				if comments && comments.length
-					td
-						.badge= comments.length
-				td.comments-label-text
-					| Comments
-				td.comment-summary
-					if commentSummary
-						!= commentSummary
+	include rendered-comment-summary
+	
 .a-comment
 	.comment
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 		- var name = comment.resolvedProfiles[comment.source].profile.name
 		.thumb-container
-			a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
+			a(href= proxyEndPoint(comment.source,user))
 				img.profile-thumb(src= thumb)
 		.comment-container
 			strong.pull-left
-				a(href= "/proxy-profile?endpoint=" + encodeURIComponent(comment.source))
+				a(href= proxyEndPoint(comment.source,user))
 					span.profile-link
 						= name
 
 			!= marked(comment.details.body)
 			
-			span.timestamp(data-timestamp= moment(comment.createdOn).toISOString())
+			if comment.details.photo
+				.comment-photo.loading.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".comment-photo" data-endpoint= proxyEndPoint(comment.details.photo,user))
+			
+			span.timestamp.secondary(data-timestamp= moment(comment.createdOn).toISOString())
 				!= ' - ' + moment(comment.createdOn).calendar()
 
-			
 			- var reactions = comment.resolvedReactions
 			- var reactionSummary = comment.reactionSummary
 			include rendered-post-comment-reactions

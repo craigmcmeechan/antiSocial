@@ -34,6 +34,13 @@ module.exports = function (server) {
       res.redirect('/setup');
     }
     else {
+      if (ctx.get('currentUser')) {
+        if (req.headers['x-digitopia-hijax']) {
+          return res.set('x-digitopia-hijax-location', '/feed').send('redirect to ' + '/feed');
+        }
+        return res.redirect('/feed');
+      }
+
       req.app.models.Post.find({
         'where': {
           'visibility': {

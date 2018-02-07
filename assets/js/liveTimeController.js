@@ -38,8 +38,8 @@
 
 		this.getDeltaTime = function (timestamp) {
 			var delta;
-			if (moment().diff(moment(timestamp), 'hours') > 24) {
-				delta = moment(timestamp).tz(self.tz).calendar();
+			if (moment().diff(moment(timestamp), 'hours') > 48) {
+				delta = moment(timestamp).tz(self.tz).calendar().split(' at')[0];
 			}
 			else {
 				delta = moment(timestamp).fromNow();

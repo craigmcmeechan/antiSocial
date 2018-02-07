@@ -1,0 +1,12 @@
+if !commentCount
+	- commentCount = data.commentCount
+a.comments-label(class= commentCount ? 'collapsed' : '' data-toggle="collapse" href= '#comments-' + post.uuid)
+	table
+		tr
+			if commentCount
+				td
+					.badge= commentCount
+			td.comments-label-text.secondary
+				= 'Comments'
+			if commentCount
+				td.indicator

@@ -11,7 +11,7 @@
 					element.addClass('changed');
 					if (type === 'comment' && element.data('watch-type') === type) {
 						var item = $('<div>');
-						item.load(endpoint, function () {
+						item.load(proxyEndPoint(endpoint), function () {
 							var comment = item.find('.a-comment');
 							var summary = item.find('.comments-label').html();
 							element.find('.comments').append(comment);
@@ -21,8 +21,9 @@
 					}
 					else if (type === 'react' && element.data('watch-type') === type) {
 						var item = $('<div>');
-						item.load(endpoint, function () {
+						item.load(proxyEndPoint(endpoint), function () {
 							var reactions = item.find('.post-reactions').html();
+							element.find('.post-reactions').find('.DigitopiaInstance').trigger('DigitopiaStop');
 							element.find('.post-reactions').empty().append(reactions);
 							didInjectContent(element);
 						})

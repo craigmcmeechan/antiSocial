@@ -39,26 +39,44 @@ html(lang="en")
 					<a class="navbar-brand" href="/">antiSocialNet</a>
 				#navbar.collapse.navbar-collapse(data-jsclass="navController")
 					ul.nav.navbar-nav
+						if globalSettings.communityChannel
+							li#nav-community.hidden-logged-out
+								a(href="/community")
+									<i class="fa fa-bullhorn fa-fw"></i>
+									span.hidden-not-digitopia-xsmall
+										| Community Feed
 						li#nav-feed.hidden-logged-out
-							<a href="/feed">Feed</a>
+							a(href="/feed")
+								<i class="fa fa-users fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Friends Feed
 						li#nav-page.hidden-logged-out
-							<a href="/profile">Wall</a>
+							a(href="/profile")
+								<i class="fa fa-user fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Your Posts
 						li#nav-settings.hidden-logged-out
-							<a href="/settings">Settings</a>
+							a(href="/friends")
+								<i class="fa fa-user-plus fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Friends
 						li#nav-settings.hidden-logged-out
-							<a href="/friends">Friends</a>
+							a(href="/settings")
+								<i class="fa fa-cog fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Settings
 					ul.nav.navbar-nav.navbar-right
 						if globalSettings.multiUser === 'invite'
 							li.hidden-logged-in
 								a(href="#" data-toggle="modal" data-target="#request-invite-form") Request Account
-						if globalSettings.multiUser === 'open'
+						if globalSettings.multiUser === 'open' || inviteToken
 							li.hidden-logged-in
 								a(href="#" data-toggle="modal" data-target="#register-form") Create Account
 						li.hidden-logged-in
 							a(href="#" data-toggle="modal" data-target="#login-form") Login
 						li.hidden-logged-out
 							a(href="" data-jsclass="logoutController") Logout
-						li.menu-icon-placeholder
+						li.menu-icon-placeholder.hidden-digitopia-xsmall
 							#menu-icon(data-hijax="true")
 								if user
 									img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)
@@ -74,6 +92,10 @@ html(lang="en")
 
 		#news-feed(data-jsclass="liveNewsFeedItemController")
 			include components/news-feed
+
+		#splash(style="position: fixed;top:0;left:0;right:0;bottom:0;background-color:#333;z-index:99999;")
+			#splash-logo
+				| ¯\_(ツ)_/¯
 
 		block controller
 
@@ -149,7 +171,7 @@ html(lang="en")
 									a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
 							button#reset-request-button.btn.btn-primary(type="submit") Password Reset
 
-		if globalSettings.multiUser === 'open'
+		if globalSettings.multiUser === 'open' || inviteToken
 			#register-form.modal.fade(tabindex="-1" role="dialog")
 				.modal-dialog(role="document")
 					
@@ -182,6 +204,13 @@ html(lang="en")
 									.input-ok-indicator
 										span.glyphicon.glyphicon-ok
 									.validation-help
+								
+								.form-group.input-relative
+									input.form-control(type="text" name="name" placeholder="Name" data-validate="required")
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
+												
 							.modal-footer
 								.pull-left
 									a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Already Have Account

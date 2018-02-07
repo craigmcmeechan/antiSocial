@@ -15,12 +15,12 @@
 					
 		.post-tools.hide-until-subject-focus
 			.form-group.input-relative.button-zone
-				button.post-submit-button.btn.btn-primary Post
-				a#post-upload-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
+				button.post-submit-button.btn.btn-sm.btn-primary Post
+				a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
 				if environment.GOOGLE_MAPS_API_KEY
-					a#post-geo-button.btn.btn-default(href="#") <i class="glyphicon glyphicon-map-marker"></i>
-				a#post-preview-button.btn.btn-default(href="#") Preview
-				a#post-cancel-button.btn.btn-default.pull-right(href="#") Cancel
+					a#post-geo-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-map-marker"></i>
+				a#post-preview-button.btn.btn-sm.btn-default(href="#") Preview
+				a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
 
 			.geo-zone
 				.form-group.input-relative
@@ -30,16 +30,16 @@
 					ul#geo-pulldown.dropdown-menu
 					#geo-attributions
 
-			.form-group.input-relative.text-center
+			.form-group.input-relative.text-center.audience-select
 				input#posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= '["friends"]')
 				.checkbox-group.lazy-instantiate(data-lazy-jsclass="checkboxGroupController" data-target="#posting-visibility")
-					label.checkbox-inline Visibility:
-					label.checkbox-inline
-						input(type="checkbox" data-value="private")
-						| private
+					label.checkbox-inline Audience:
 					label.checkbox-inline
 						input(type="checkbox" data-value="public")
 						| public
+					label.checkbox-inline
+						input(type="checkbox" data-value="community")
+						| community
 					label.checkbox-inline
 						input(type="checkbox" data-value="friends")
 						| friends

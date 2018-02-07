@@ -4,11 +4,11 @@ var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 var newsFeedItemResolve = require('../../server/lib/newsFeedResolve');
 var resolveProfiles = require('../../server/lib/resolveProfiles');
+var proxyEndPoint = require('../../server/lib/proxy-endpoint');
 var async = require('async');
 var url = require('url');
 var server = require('../../server/server');
 var RemoteRouting = require('loopback-remote-routing');
-
 
 module.exports = function (NewsFeedItem) {
 
@@ -91,7 +91,7 @@ module.exports = function (NewsFeedItem) {
 
 					async.map(items, resolveProfiles, function (err) {
 
-						items = resolveSummary(items, myEndpoint);
+						items = resolveSummary(items, myEndpoint, user);
 
 						for (var i = items.length - 1; i >= 0; i--) {
 							newsFeedItemResolve(user, items[i], function (err, data) {
@@ -159,7 +159,7 @@ module.exports = function (NewsFeedItem) {
 
 				if (writeable) {
 					resolveProfiles(data, function (err) {
-						var items = resolveSummary([data], myEndpoint);
+						var items = resolveSummary([data], myEndpoint, user);
 						data = items[0];
 						newsFeedItemResolve(user, data, function (err, data) {
 							var change = {
@@ -212,14 +212,16 @@ module.exports = function (NewsFeedItem) {
 		return name;
 	}
 
-	function resolveSummary(items, myEndpoint) {
+	function resolveSummary(items, myEndpoint, user) {
 
 		var map = {};
 		var grouped = {};
 
 		// group news feed items by 'about' and 'type'
 		for (var i = 0; i < items.length; i++) {
-			var key = items[i].about + ':' + items[i].type;
+			var about = items[i].about;
+			about = about.replace(/\/comment.*$/, '');
+			var key = about + ':' + items[i].type;
 			if (!map[key]) {
 				map[key] = 0;
 				grouped[key] = [];
@@ -245,7 +247,7 @@ module.exports = function (NewsFeedItem) {
 				if (groupItem.type === 'comment' || groupItem.type === 'react') {
 					if (!hash[groupItem.source]) {
 						hash[groupItem.source] = true;
-						var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
+						var mention = '<a href="' + proxyEndPoint(groupItem.source, user) + '">' + fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
 						mentions.push(mention);
 					}
 				}

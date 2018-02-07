@@ -12,6 +12,10 @@
 				var $input = $(input);
 				if ($input.attr('name')) {
 					var value = getRealVal($input);
+					var suffix = $input.data('suffix');
+					if (suffix) {
+						value += '-' + suffix;
+					}
 					self.queueWriteBack(
 						self.element.data('method') ? self.element.data('method') : 'PATCH',
 						self.element.data('endpoint'),
@@ -52,7 +56,7 @@
 			}).done(function (data) {
 				flashAjaxStatus('info', 'saved');
 			}).fail(function (jqXHR, textStatus, errorThrown) {
-				flashAjaxStatus('error', 'could not save ', textStatus);
+				flashAjaxStatus('danger', 'could not save ', textStatus);
 			});
 		};
 	}

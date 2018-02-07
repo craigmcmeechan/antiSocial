@@ -3,7 +3,9 @@ var boot = require('loopback-boot');
 var i18n = require('i18n');
 var bunyan = require('bunyan');
 var uuid = require('uuid');
-var NodeCache = require("node-cache");
+var NodeCache = require('node-cache');
+var url = require('url');
+var proxyEndPoint = require('./lib/proxy-endpoint');
 
 var app = module.exports = loopback();
 
@@ -55,7 +57,7 @@ function renderMarkdown(markdown) {
     var friendEndPoint = tag;
     friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
     friendEndPoint = friendEndPoint.replace(/\)$/, '');
-    return '(/proxy-profile?endpoint=' + encodeURIComponent(friendEndPoint) + ')';
+    return '(' + proxyEndPoint(friendEndPoint) + ')';
   });
 
   tagged = tagged.replace(/:([A-Za-z0-9_\-\+]+?):/g, function (emoji) {
@@ -65,6 +67,8 @@ function renderMarkdown(markdown) {
   return marked(tagged);
 }
 app.locals.marked = renderMarkdown;
+
+app.locals.proxyEndPoint = proxyEndPoint;
 
 // localization config
 i18n.configure({
@@ -177,7 +181,7 @@ app.use(csp({
     }],
     'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
     'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
-    'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com'],
+    'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com'],
     'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups'],
     'reportUri': '/csp-violation',
     'objectSrc': ['\'none\''],

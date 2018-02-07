@@ -1,6 +1,7 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var resolveProfiles = require('../lib/resolveProfiles');
+var proxyEndPoint = require('../lib/proxy-endpoint');
 
 var VError = require('verror').VError;
 var WError = require('verror').WError;
@@ -116,7 +117,7 @@ module.exports = function (server) {
         if (req.query.more) {
           session.currentSlice.start += 6;
           if (session.currentSlice.start > session.queue.length - 1) {
-            session.currentSlice.start = session.queue.length - 1;
+            return cb(null, session, []);
           }
         }
 
@@ -176,7 +177,7 @@ module.exports = function (server) {
             if (groupItem.type === 'comment' || groupItem.type === 'react') {
               if (!hash[groupItem.source]) {
                 hash[groupItem.source] = true;
-                var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(groupItem.source) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
+                var mention = '<a href="' + groupItem.source + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
                 mentions.push(mention);
               }
             }

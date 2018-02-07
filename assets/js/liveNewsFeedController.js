@@ -94,7 +94,7 @@
 			if (!event.backfill) {
 				if (event.data.type === 'post') {
 					var item = $('<div>');
-					var endpoint = '/proxy-post?endpoint=' + encodeURIComponent(event.data.about);
+					var endpoint = event.data.about;
 					item.load(endpoint, function () {
 						var post = item.find('.newsfeed-item');
 						$('#scope-post-list').prepend(post);
@@ -102,10 +102,10 @@
 					})
 				}
 				else if (event.data.type === 'comment') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-comment?endpoint=' + encodeURIComponent(event.data.about + '/comment/' + event.data.uuid)]);
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid]);
 				}
 				else if (event.data.type === 'react') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, '/proxy-post-reactions?endpoint=' + encodeURIComponent(event.data.about + '/reactions')]);
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/reactions']);
 				}
 				// TODO: need icon and text delimited
 				// notifyUser(event.data.type, message, icon, '/proxy-post?endpoint=' + encodeURIComponent(event.data.about));

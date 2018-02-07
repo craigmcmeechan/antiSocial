@@ -12,7 +12,7 @@
 						loadPage('/');
 					})
 					.fail(function () {
-						flashAjaxStatus('error', 'problem logging out');
+						flashAjaxStatus('danger', 'problem logging out');
 						didLogOut();
 						loadPage('/');
 					});

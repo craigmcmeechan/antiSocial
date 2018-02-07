@@ -28,6 +28,20 @@ body
 	.digitopia-xsmall &
 		margin-bottom:30px
 
+#splash
+	position: fixed
+	top:0
+	left:0
+	right:0
+	bottom:0
+	background-color:#333
+	z-index:99999
+	#splash-logo
+		margin: 24vh auto
+		color:#999
+		text-align: center
+		font-size: 3em
+
 #content
 	margin-top:50px
 	.content-padding-top
@@ -47,6 +61,8 @@ body
 					padding-right: 0
 					padding-left: 0
 
+#invite-friend-form
+	margin-bottom:30px
 
 #sidebar
 	background-color:#ccc
@@ -133,13 +149,11 @@ img.avatar
 
 #ajax-status
 	position:fixed
-	right:0px
-	left:0px
-	bottom:0px
-	z-index:9000
+	right:10px
+	bottom:10px
+	z-index:99999
 	.alert-container
 		margin:0 auto
-		width:80%
 		text-align:center
 
 .revealer
@@ -196,12 +210,22 @@ img.avatar
 .comments-list
 	.timestamp
 		font-size:11px
+	.comment-photo
+		img
+			.not-digitopia-xsmall &,.not-digitopia-small &
+				max-height:50vh
+			.digitopia-xsmall &, .digitopia-small &
+				max-width: 100%
+				max-height: auto
+
 .reaction-summary
-	.background-color: #eee
+	background-color: #eee
 	.reaction-summary-heading
+		font-size: .75em
 		padding-right: 4px
 		font-size:12px
-		padding-top:4px
+		padding-top:5px
+
 	.reaction-summary-icons
 		padding-right: 4px
 
@@ -259,7 +283,6 @@ img.avatar
 		text-align:center
 		display:none
 		.dz-preview
-			width:100%
 			.form-group
 				.digitopia-xsmall &
 					margin-top:15px
@@ -275,6 +298,8 @@ img.avatar
 			color:#eee
 		.dz-remove
 			text-align:left
+			.digitopia-xsmall &
+				text-align: center
 		.ui-state-highlight
 			height: 120px
 			width:140px
@@ -311,6 +336,8 @@ img.avatar
 	label
 		color: #666
 		font-weight: normal
+	.audience-select
+		margin-bottom:3px!important
 	.checkbox-group
 		border-top: thin solid $borderColor
 		text-align:center
@@ -348,19 +375,20 @@ img.avatar
 		width: 100%
 		height: 1.5em
 		line-height: 1.5em
-		color: #000
+		color: #FF8166
 		padding-top: 0px
-		box-shadow: 0px 0px 20px 0px #333
 		background-color: rgba(255,255,255,.9)
 
 #scope-post-list
-	min-height: calc(100vh - 50px)
+	.not-digitopia-xsmall &
+		min-height: calc(100vh - 50px)
 	.newsfeed-item
 		background-color:#eee
 		border-radius:4px
 		.news-summary
 			text-align:right
 			padding:7px
+			font-size:.75em
 
 	.post
 		background-color:white
@@ -392,6 +420,10 @@ img.avatar
 		.post-body
 			padding-left: 7px
 			padding-right: 7px
+		.post-photos
+			.digitopia-xsmall &
+				padding-left: 7px
+				padding-right: 7px
 		.post-identity
 			position:relative
 			border-bottom:thin solid $borderColor
@@ -409,7 +441,8 @@ img.avatar
 				margin-right:15px
 				color: #999
 				font-size:.8em
-
+			.post-timestamp
+				margin-top:7px
 
 		.form-group
 			margin-bottom:0
@@ -433,6 +466,9 @@ img.avatar
 				opacity:0
 				&:hover
 					opacity:1
+				.caption-text
+					position: absolute
+					bottom: 0px
 
 .reactions-and-comments
 	background-color:#eee
@@ -447,7 +483,6 @@ img.avatar
 		h1,h2,h3,h4
 			clear:left
 		margin-left:37px
-		font-size: .75em
 		p
 			margin: 0 0 7px
 		blockquote
@@ -463,10 +498,10 @@ img.avatar
 		overflow:hidden
 		position:relative
 		text-align:right
-		font-size:.75em
+		font-size:1em
+		padding-top:4px
+		padding-bottom:4px
 		.reaction-button-summary
-			padding-top:7px
-			padding-bottom: 7px
 			display:inline-block
 		.reaction-button-container
 			position:relative
@@ -486,7 +521,7 @@ img.avatar
 			&.selected
 				border-color:orange
 		.more-reactions
-			animation-duration: .25s
+			animation-duration: .35s
 			position:absolute
 			top: 4px
 			left: 0px
@@ -500,20 +535,34 @@ img.avatar
 		border-top:thin solid #ccc
 		padding-top:7px
 		.comments-label
+			display:block
+			cursor:pointer
 			padding-bottom:7px
 			border-bottom:thin solid #ccc
+			padding-bottom:7px
 			margin-bottom:7px
-			font-size:.8em
 			text-align:center
-			line-height:.8em
+			&:hover
+				text-decoration:none
 			table
 				margin 0 auto
 			.badge
 				margin-right: 4px
-				font-size:.7em
+				color:#eee
 			.comments-label-text
 				padding-right: 4px
 				text-transform: uppercase
+			.indicator
+				padding-left:7px
+				&:after
+					font-family: 'Glyphicons Halflings'
+					content: "\e114"
+					color: #FF8166
+			&.collapsed
+				.indicator
+					&:after
+						content: "\e080";
+
 		.comment
 			.thumb-container
 				float:left
@@ -536,6 +585,7 @@ img.avatar
 	border-radius:4px
 	.digitopia-xsmall &
 		display:none!important
+
 	.status
 		width:8px
 		height:8px
@@ -565,7 +615,7 @@ img.avatar
 	.news-feed-items
 		font-size:.75em
 		max-height: 500px
-		overflow:hidden;
+		overflow: hidden;
 		.news-feed-item
 			height:50px
 			border-bottom:thin dashed $borderColor

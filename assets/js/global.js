@@ -25,11 +25,19 @@
 
 	$('body').digitopiaController(options);
 
+	window.setTimeout(function () {
+		$('#splash').fadeOut('fast');
+	}, 1000);
+
 	$('.nav a').on('click', function () {
 		if ($('body').hasClass('digitopia-xsmall')) {
 			$('.navbar-toggle').click();
 		}
 	});
+
+	$('.navbar-toggle').on('click', function (e) {
+		$('.avatar').toggle();
+	})
 
 	$.fn.extend({
 		animateCss: function (animationName, callback) {
@@ -187,3 +195,10 @@ function getUploadForProperty(prop, uploads, type, fpo) {
 		return json;
 	};
 })(jQuery);
+
+function proxyEndPoint(endpoint) {
+	if (!endpoint) {
+		return;
+	}
+	return parseUri(endpoint).path;
+};

@@ -35,12 +35,37 @@ module.exports = function (server) {
         req.app.models.Friend.findOne(query, function (err, friend) {
           if (err) {
             var e = new VError(err, 'could not find friend');
-            return next(err);
+            return next(e);
           }
           cb(null, friend);
         });
       },
-      function makePushNewsFeedItem(friend, cb) { // notify network
+      function attachPhoto(friend, cb) {
+        if (!req.body.photos || !req.body.photos.length) {
+          return cb(null, friend, null);
+        }
+        server.models.Photo.findById(req.body.photos[0].id, function (err, photo) {
+          if (err) {
+            var e = new VError(err, 'could not read photo');
+            return cb(e);
+          }
+          if (!photo) {
+            var e = new VError('photo not found');
+            return cb(e);
+          }
+
+          photo.updateAttributes({
+            'status': 'complete'
+          }, function (err) {
+            if (err) {
+              var e = new VError(err, 'could not update photo status');
+              return cb(e);
+            }
+            return cb(err, friend, photo);
+          });
+        });
+      },
+      function makePushNewsFeedItem(friend, photo, cb) { // notify network
         var item = {
           'uuid': uuid(),
           'type': 'comment',
@@ -49,7 +74,7 @@ module.exports = function (server) {
           'visibility': ['public'],
           'details': {
             'body': req.body.body,
-            'photoId': photoId
+            'photo': photo ? server.locals.config.publicHost + '/' + currentUser.username + '/photo/' + photo.uuid : ''
           }
         };
 
@@ -69,7 +94,7 @@ module.exports = function (server) {
           'about': news.about,
           'details': {
             'body': news.details.body,
-            'photoId': news.details.photoId
+            'photo': news.details.photo
           },
           'userId': currentUser.id,
           'createdOn': news.createdOn,

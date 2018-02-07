@@ -6,12 +6,12 @@ module.exports = function (server) {
 		'type': ['json', 'application/csp-report']
 	}), function (req, res, next) {
 		if (req.body) {
-			server.locals.logger.error('CSP Violation: %j', req.body)
+			server.locals.logger.error('CSP Violation: %j', req.body);
 		}
 		else {
-			server.locals.logger.error('CSP Violation: No data received!')
+			server.locals.logger.error('CSP Violation: No data received!');
 		}
-		res.status(204).end()
+		res.sendStatus(204);
 	});
 
 	server.use(router);
