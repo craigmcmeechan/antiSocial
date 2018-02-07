@@ -128,6 +128,16 @@ module.exports = function (PushNewsFeedItem) {
 							for (var i = 0; i < items.length; i++) {
 								var data = items[i];
 
+								// if it's a comment only send the comment to the owner of the post
+								if (data.type === 'comment') {
+									var about = data.about;
+									var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
+									if (friend.remoteEndPoint !== whoAbout) {
+										//console.log(friend.remoteEndPoint + '!==' + whoAbout);
+										data.details = {};
+									}
+								}
+
 								var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(data));
 
 								var change = {
@@ -176,6 +186,16 @@ module.exports = function (PushNewsFeedItem) {
 										break;
 									}
 								}
+							}
+						}
+
+						// if it's a comment only send the comment to the owner of the post
+						if (data.type === 'comment') {
+							var about = data.about;
+							var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
+							if (friend.remoteEndPoint !== whoAbout) {
+								//console.log(friend.remoteEndPoint + '!==' + whoAbout);
+								data.details = {};
 							}
 						}
 

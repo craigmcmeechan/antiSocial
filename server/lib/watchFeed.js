@@ -133,94 +133,130 @@ function getListener(server, friend) {
 					return;
 				}
 
-				async.series([
-					function createNewFeedItem(cb) {
+				var about = myNewsFeedItem.about;
+				var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
+				var isMe = false;
+				if (whoAbout === server.locals.config.publicHost + '/' + currentUser.username) {
+					isMe = true;
+				}
 
-						delete myNewsFeedItem.id;
-						delete myNewsFeedItem.visibility;
-						myNewsFeedItem.userId = currentUser.id;
-						myNewsFeedItem.friendId = friend.id;
+				var filter = {
+					'where': {
+						'or': [{
+							'remoteEndPoint': whoAbout
+						}]
+					}
+				};
 
-						server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
-							if (err) {
-								logger.error({
-									'myNewsFeedItem': myNewsFeedItem
-								}, 'error saving NewsFeedItem item');
-								return cb(err);
+				if (myNewsFeedItem.target) {
+					filter.where.or.push({
+						'remoteEndPoint': myNewsFeedItem.target
+					});
+				}
+
+				server.models.Friend.find(filter, function (err, found) {
+					if (err) {
+						logger.error({
+							err: err
+						}, 'error finding friends');
+						return;
+					}
+
+					if (!found || !isMe) {
+						//console.log(server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
+						return;
+					}
+
+					async.series([
+						function createNewFeedItem(cb) {
+
+							delete myNewsFeedItem.id;
+							delete myNewsFeedItem.visibility;
+							myNewsFeedItem.userId = currentUser.id;
+							myNewsFeedItem.friendId = friend.id;
+
+							server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
+								if (err) {
+									logger.error({
+										'myNewsFeedItem': myNewsFeedItem
+									}, 'error saving NewsFeedItem item');
+									return cb(err);
+								}
+								cb();
+							});
+						},
+						function notifyNetwork(cb) {
+							// somebody posted to my wall
+							if (!message.data.target || message.data.type !== 'post' || message.data.target !== server.locals.config.publicHost + '/' + currentUser.username) {
+								return process.nextTick(function () {
+									cb();
+								});
 							}
-							cb();
-						});
-					},
-					function notifyNetwork(cb) {
-						// somebody posted to my wall
-						if (!message.data.target || message.data.type !== 'post' || message.data.target !== server.locals.config.publicHost + '/' + currentUser.username) {
-							return process.nextTick(function () {
+
+							async.waterfall([
+								function (cbPostOnMyWall) { // make a Post record
+									var post = {
+										'uuid': message.data.uuid,
+										'athoritativeEndpoint': message.data.about,
+										'source': message.data.source,
+										'userId': currentUser.id,
+										'visibility': message.data.visibility
+									};
+
+									server.models.Post.create(post, function (err, post) {
+										if (err) {
+											var e = new VError(err, 'could create Post');
+											return cbPostOnMyWall(e);
+										}
+										cbPostOnMyWall(null, post);
+									});
+								},
+								function (post, cbPostOnMyWall) { // make a PushNewsFeed record
+									server.models.PushNewsFeedItem.create({
+										'uuid': message.data.uuid,
+										'type': 'post',
+										'source': server.locals.config.publicHost + '/' + currentUser.username,
+										'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+										'visibility': post.visibility,
+										'details': {},
+										'userId': currentUser.id
+									}, function (err, news) {
+										if (err) {
+											var e = new VError(err, 'could push news feed');
+											return cb(e);
+										}
+										cbPostOnMyWall(null);
+									});
+								}
+
+							], function (err) {
+								cb(err);
+							});
+						},
+						function updateHighwater(cb) {
+
+							debug('saving highwater %j', message.data.createdOn);
+
+							friend.updateAttributes({
+								'highWater': message.data.createdOn
+							}, function (err, updated) {
+								if (err) {
+									logger.error({
+										err: err
+									}, 'error saving highwater');
+									return cb(err);
+								}
 								cb();
 							});
 						}
-
-						async.waterfall([
-							function (cbPostOnMyWall) { // make a Post record
-								var post = {
-									'uuid': message.data.uuid,
-									'athoritativeEndpoint': message.data.about,
-									'source': message.data.source,
-									'userId': currentUser.id,
-									'visibility': message.data.visibility
-								}
-								server.models.Post.create(post, function (err, post) {
-									if (err) {
-										var e = new VError(err, 'could create Post');
-										return cbPostOnMyWall(e);
-									}
-									cbPostOnMyWall(null, post);
-								});
-							},
-							function (post, cbPostOnMyWall) { // make a PushNewsFeed record
-								server.models.PushNewsFeedItem.create({
-									'uuid': message.data.uuid,
-									'type': 'post',
-									'source': server.locals.config.publicHost + '/' + currentUser.username,
-									'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
-									'visibility': post.visibility,
-									'details': {},
-									'userId': currentUser.id
-								}, function (err, news) {
-									if (err) {
-										var e = new VError(err, 'could push news feed');
-										return cb(e);
-									}
-									cbPostOnMyWall(null);
-								});
-							}
-
-						], function (err) {
-							cb(err);
-						})
-					},
-					function updateHighwater(cb) {
-
-						debug('saving highwater %j', message.data.createdOn);
-
-						friend.updateAttributes({
-							'highWater': message.data.createdOn
-						}, function (err, updated) {
-							if (err) {
-								logger.error({
-									err: err
-								}, 'error saving highwater');
-								return cb(err);
-							}
-							cb();
-						});
-					}
-				], function (e) {
-					if (e) {
-						logger.error({
-							err: e
-						}, 'error processing newsfeed');
-					}
-					return;
+					], function (e) {
+						if (e) {
+							logger.error({
+								err: e
+							}, 'error processing newsfeed');
+						}
+						return;
+					});
 				});
 			});
 		}
