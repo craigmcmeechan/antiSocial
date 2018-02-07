@@ -123,6 +123,24 @@ describe('proxy endpoints', function () {
 				done();
 			});
 		});
+
+		it('user3 should be able to friend user1', function (done) {
+			client3.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint1).end(function (err, res) {
+				// console.log('request friend %j', res.body);
+				expect(res.status).to.be(200);
+				expect(res.body.status).to.equal('ok');
+				done();
+			});
+		});
+
+		it('user1 should be able to accept friend request from user3', function (done) {
+			client1.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint3)).end(function (err, res) {
+				// console.log('accept friend %j', res.body);
+				expect(res.status).to.be(200);
+				expect(res.body.status).to.equal('ok');
+				done();
+			});
+		});
 	}
 
 	it('user2 should be able to post (public)', function (done) {

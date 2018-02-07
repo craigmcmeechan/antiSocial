@@ -410,6 +410,20 @@ img.avatar
 		.visibility
 			display: inline-block
 			text-transform:capitalize
+		.post-actions
+			width:200px
+			text-align: right
+			.dropdown-menu
+				font-size: .75em
+			button
+				border:none
+				&:focus
+					outline: none
+			.dropdown-menu
+				text-align:left
+				position: absolute
+				top: 0px
+				right: 20px
 		.permalink
 			display: inline-block
 		.post-geo
@@ -433,6 +447,10 @@ img.avatar
 			padding-left: 7px
 			padding-right: 7px
 			.post-avatar
+				.media
+					overflow:initial
+				.media-body
+					overflow:initial
 				img
 					max-width:75px
 					border-radius:4px
@@ -454,6 +472,16 @@ img.avatar
 			cursor:pointer
 			&.full-width
 				min-height:50vh
+			.more-photos
+				background-color:rgba(0,0,0,.5)
+				color:white
+				top:0px
+				right:0px
+				bottom:0px
+				left:0px
+				text-align:center
+				p
+					margin: 40% auto
 			.caption
 				transition: all 0.5s ease
 				padding:10px

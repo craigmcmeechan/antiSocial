@@ -47,7 +47,7 @@
 			};
 			self.element.css(bg);
 			//var styles = 'body{color:' + text + '}a{color:' + links + ';}a:hover{color:' + hover + ';}';
-			var styles = 'a{color:' + links + ';}a:hover{color:' + hover + ';}a:visited{color:' + text + '}';
+			var styles = '.vibrant a{color:' + links + ';} .vibrant a:hover{color:' + hover + ';} .vibrant a:visited{color:' + text + '}';
 			$('#override-styles').empty().append(styles);
 		};
 
