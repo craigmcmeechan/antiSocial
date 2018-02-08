@@ -49,6 +49,9 @@ marked.setOptions({
 });
 
 function renderMarkdown(markdown) {
+  if (!markdown) {
+    return '';
+  }
   var tagged = markdown.replace(/\#([A-Za-z0-9\-\_\.])+/g, function (tag) {
     return '[' + tag + '](' + tag + ')';
   });

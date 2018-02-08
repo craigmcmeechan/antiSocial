@@ -1130,6 +1130,8 @@ module.exports = function (server) {
             'friend': friend ? friend.remoteUsername : false,
             'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
           },
+          'post': post,
+          'photo': thePhoto,
           'reactions': thePhoto.resolvedReactions
         };
 
@@ -1219,33 +1221,39 @@ module.exports = function (server) {
         return next(e);
       }
 
+      // TODO kludge
+      thePhoto.about = post.source + '/post/' + post.uuid;
       resolveComments([thePhoto], 'photo', function (err) {
+        async.map(thePhoto.resolvedComments, resolveProfiles, function (err) {
 
-        var data = {
-          'pov': {
-            'user': user.username,
-            'isMe': isMe,
-            'friend': friend ? friend.remoteUsername : false,
-            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
-          },
-          'comments': thePhoto.resolvedComments
-        };
+          var data = {
+            'pov': {
+              'user': user.username,
+              'isMe': isMe,
+              'friend': friend ? friend.remoteUsername : false,
+              'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+            },
+            'post': post,
+            'photo': thePhoto,
+            'comments': thePhoto.resolvedComments
+          };
 
-        if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
-        }
-
-        var options = {
-          'data': data,
-          'user': currentUser,
-          'friend': friend
-        };
-
-        renderFile('/components/rendered-post-photo-comments.pug', options, req, function (err, html) {
-          if (err) {
-            return next(err);
+          if (view === '.json') {
+            return res.send(encryptIfFriend(friend, data));
           }
-          return res.send(encryptIfFriend(friend, html));
+
+          var options = {
+            'data': data,
+            'user': currentUser,
+            'friend': friend
+          };
+
+          renderFile('/components/rendered-post-photo-comments.pug', options, req, function (err, html) {
+            if (err) {
+              return next(err);
+            }
+            return res.send(encryptIfFriend(friend, html));
+          });
         });
       });
 

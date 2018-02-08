@@ -1,3 +1,11 @@
-strong Photo Reactions
-for reaction in data.reactions
-	p= reaction.source + ' ' + reaction.details.reaction
+if !post
+	- post = data.post
+if !photo
+	- photo = data.photo
+if !reactions
+	- reactions = data.reactions
+if !reactionSummary
+	- reactionSummary = data.reactionSummary
+
+.post-reactions(data-jsclass="reactionController" data-endpoint= post.source + '/post/' + post.uuid + '/photo/' + photo.uuid)
+	include reactions
