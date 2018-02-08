@@ -50,7 +50,7 @@
 
 			this.element.on('click', '.comments-tab-header', function (e) {
 				e.preventDefault();
-				var commentsTab = $(this).closest('.comments-tab')
+				var commentsTab = $(this).closest('.comments-tab');
 				var endpoint = commentsTab.data('endpoint');
 				var photo = commentsTab.data('photo-id');
 
@@ -58,7 +58,9 @@
 					commentsTab.removeClass('open').find('.photo-reactions').empty();
 				}
 				else {
-					self.loadPhotoReactions(endpoint + '&photo=' + photo, commentsTab);
+					commentsTab.removeClass('open').find('.photo-reactions').append($('<div class="photo-reactions-and-comments">'));
+					self.loadPhotoComments(endpoint + '/reactions', commentsTab);
+					self.loadPhotoComments(endpoint + '/comments', commentsTab);
 				}
 			});
 		};
@@ -179,10 +181,10 @@
 				slide.append(captionContainer);
 
 				if (self.settings.wantReactions) {
-					var commentsTab = $('<div class="comments-tab" data-endpoint="/photo?endpoint=' + self.settings.endpoint + '" data-photo-id=' + this.json[i].uuid + '>');
+					var commentsTab = $('<div class="comments-tab" data-endpoint="' + self.settings.endpoint + '/photo/' + this.json[i].uuid + '">');
 					var commentsTabHeader = $('<div class="comments-tab-header"><i class="glyphicon glyphicon-comment"></i></div>');
 					commentsTab.append(commentsTabHeader);
-					commentsTab.append('<div class="photo-reactions">');
+					commentsTab.append('<div class="reactions-and-comments photo-reactions">');
 					slide.append(commentsTab)
 				}
 
@@ -229,13 +231,12 @@
 			}
 		};
 
-		this.loadPhotoReactions = function (endpoint, targetElement) {
+		this.loadPhotoComments = function (endpoint, targetElement) {
 			$.ajax({
 				type: 'GET',
 				url: endpoint
 			}).done(function (data) {
-				flashAjaxStatus('info', 'reactions loaded');
-				$(targetElement).addClass('open').find('.photo-reactions').html(data);
+				$(targetElement).addClass('open').find('.photo-reactions-and-comments').append(data);
 				didInjectContent($(targetElement));
 			}).fail(function (jqXHR, textStatus, errorThrown) {
 				flashAjaxStatus('danger', 'could not load endpoint ' + endpoint, textStatus);

@@ -6,7 +6,9 @@
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
 			- var isPublic = post.visibility.indexOf('public') !== -1
 			- var commentCount = post.commentCount
-			- var isMine = post.source === config.publicHost + '/' + user.username;
+			- var isMine = false;
+			if user
+				- isMine = post.source === config.publicHost + '/' + user.username;
 			
 			.newsfeed-item
 				if post.commentSummary || post.reactionSummary

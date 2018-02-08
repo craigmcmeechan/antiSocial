@@ -1,3 +1,16 @@
-strong Photo Comments
-for comment in data.comments
-	p= comment.source + ' ' + comment.details.body
+if !post
+	- post = data.post
+if !photo
+	- photo = data.photo
+if !comments
+	- comments = data.comments
+.reactions-and-comments
+	-var about= post.source + '/post/' + post.uuid + '/photo/' + photo.uuid
+	.post-comments.live-element(data-watch= about data-watch-type="comment")
+		include rendered-comment-summary
+		.comments
+			for comment,index in comments
+				include rendered-comment
+		
+		-var endpoint= "/comment"
+		include comment-form
