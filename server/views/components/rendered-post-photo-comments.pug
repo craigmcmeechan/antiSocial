@@ -5,11 +5,12 @@ if !photo
 if !comments
 	- comments = data.comments
 .reactions-and-comments
-	.post-comments
-		if comments
+	-var about= post.source + '/post/' + post.uuid + '/photo/' + photo.uuid
+	.post-comments.live-element(data-watch= about data-watch-type="comment")
+		include rendered-comment-summary
+		.comments
 			for comment,index in comments
-				include rendered-post-comment
+				include rendered-comment
 		
-		-var about= post.source + '/post/' + post.uuid + '/photo/' + photo.uuid
 		-var endpoint= "/comment"
 		include comment-form

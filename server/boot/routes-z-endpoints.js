@@ -764,7 +764,7 @@ module.exports = function (server) {
           'wantSummary': true
         };
 
-        renderFile('/components/rendered-post-comment.pug', options, req, function (err, html) {
+        renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
@@ -1121,6 +1121,8 @@ module.exports = function (server) {
         return next(e);
       }
 
+      // TODO kludge
+      thePhoto.about = post.source + '/post/' + post.uuid;
       resolveReactions([thePhoto], 'photo', function (err) {
 
         var data = {
@@ -1132,6 +1134,7 @@ module.exports = function (server) {
           },
           'post': post,
           'photo': thePhoto,
+          'reactionSummary': thePhoto.reactionSummary,
           'reactions': thePhoto.resolvedReactions
         };
 
@@ -1344,31 +1347,41 @@ module.exports = function (server) {
           return next(e);
         }
 
-        var data = {
-          'pov': {
-            'user': user.username,
-            'isMe': isMe,
-            'friend': friend ? friend.remoteUsername : false,
-            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
-          },
-          'comment': theComment
-        };
+        async.map([theComment], resolveProfiles, function (err) {
 
-        if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
-        }
+          var data = {
+            'pov': {
+              'user': user.username,
+              'isMe': isMe,
+              'friend': friend ? friend.remoteUsername : false,
+              'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+            },
+            'post': {
+              'source': post.source,
+              'uuid': post.uuid
+            },
+            'comment': theComment,
+            'commentSummary': thePhoto.commentSummary,
+            'commentCount': thePhoto.resolvedComments.length
+          };
 
-        var options = {
-          'data': data,
-          'user': currentUser,
-          'friend': friend
-        };
-
-        renderFile('/components/rendered-post-photo-comment.pug', options, req, function (err, html) {
-          if (err) {
-            return next(err);
+          if (view === '.json') {
+            return res.send(encryptIfFriend(friend, data));
           }
-          return res.send(encryptIfFriend(friend, html));
+
+          var options = {
+            'data': data,
+            'user': currentUser,
+            'friend': friend,
+            'wantSummary': true
+          };
+
+          renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
+            if (err) {
+              return next(err);
+            }
+            return res.send(encryptIfFriend(friend, html));
+          });
         });
       });
     });

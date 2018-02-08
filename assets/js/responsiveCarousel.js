@@ -50,7 +50,7 @@
 
 			this.element.on('click', '.comments-tab-header', function (e) {
 				e.preventDefault();
-				var commentsTab = $(this).closest('.comments-tab')
+				var commentsTab = $(this).closest('.comments-tab');
 				var endpoint = commentsTab.data('endpoint');
 				var photo = commentsTab.data('photo-id');
 
@@ -58,6 +58,7 @@
 					commentsTab.removeClass('open').find('.photo-reactions').empty();
 				}
 				else {
+					commentsTab.removeClass('open').find('.photo-reactions').append($('<div class="photo-reactions-and-comments">'));
 					self.loadPhotoComments(endpoint + '/reactions', commentsTab);
 					self.loadPhotoComments(endpoint + '/comments', commentsTab);
 				}
@@ -235,7 +236,7 @@
 				type: 'GET',
 				url: endpoint
 			}).done(function (data) {
-				$(targetElement).addClass('open').find('.photo-reactions').append(data);
+				$(targetElement).addClass('open').find('.photo-reactions-and-comments').append(data);
 				didInjectContent($(targetElement));
 			}).fail(function (jqXHR, textStatus, errorThrown) {
 				flashAjaxStatus('danger', 'could not load endpoint ' + endpoint, textStatus);

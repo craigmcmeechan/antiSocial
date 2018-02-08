@@ -29,7 +29,7 @@ module.exports = function resolveComments(items, itemType, done) {
 			'order': 'createdOn ASC'
 		};
 
-		console.log('comments: "' + itemType + '" %j ', query);
+		//console.log('comments: "' + itemType + '" %j ', query);
 
 		server.models.NewsFeedItem.find(query, function (err, comments) {
 			if (err) {
