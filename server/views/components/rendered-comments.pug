@@ -5,12 +5,12 @@ if !commentSummary
 if !post
 	- post = data.post
 
-.post-comments.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="comment")
+.post-comments.live-element(data-watch= about data-watch-type="comment")
 	include rendered-comment-summary
-						
 	.comments-list(class= commentCount ? 'collapse' : '' id= 'comments-' + post.uuid)
 		.comments
 			if comments
 				for comment,index in comments
+					- about = comment.about + '/comment/' + comment.uuid
 					include rendered-comment
 		

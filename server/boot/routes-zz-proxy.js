@@ -13,7 +13,7 @@ var debugVerbose = require('debug')('proxy:verbose');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	var proxyRE = /^\/proxy\-(post\-reactions|post\-comments|post\-comment\-reactions|post\-comment|post\-photos|post\-photo\-reactions|post\-photo\-comments|post\-photo\-comment\-reactions|post\-photo\-comment|post\-photo|profile|posts|post|photo|friends)/;
+	var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|reactions|reaction|comments|comment|post|photo|friends)/;
 
 	function getPOVEndpoint(currentUser) {
 		if (currentUser) {
@@ -127,7 +127,7 @@ module.exports = function (server) {
 					'wall': true,
 					'isMe': isMe,
 					'myEndpoint': getPOVEndpoint(currentUser),
-					'wantSummary': template === 'post-comment',
+					'wantSummary': template === 'comment',
 					'isPermalink': isPermalink,
 					'cache': true
 				});
