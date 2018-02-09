@@ -4,6 +4,7 @@
 		var self = this;
 		this.src = null;
 		this.active = false;
+		this.pendingConnection = null;
 
 		this.start = function () {
 			self.element.on('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged', function () {
@@ -64,12 +65,18 @@
 		};
 
 		this.connect = function () {
-			self.element.find('ul').empty();
-			var endpoint = '/api/NewsFeedItems/me/live';
-			self.src = new EventSource(endpoint);
-			self.src.addEventListener('data', self.processNews);
-			self.src.addEventListener('error', self.errors);
-			self.setTop();
+			if (self.pendingConnection) {
+				clearTimeout(self.pendingConnection)
+			}
+			self.pendingConnection = setTimeout(function () {
+				self.pendingConnection = null;
+				self.element.find('ul').empty();
+				var endpoint = '/api/NewsFeedItems/me/live';
+				self.src = new EventSource(endpoint);
+				self.src.addEventListener('data', self.processNews);
+				self.src.addEventListener('error', self.errors);
+				self.setTop();
+			}, 5000);
 		};
 
 		this.disconnect = function () {
@@ -114,9 +121,7 @@
 
 		this.errors = function (e) {
 			self.disconnect();
-			setTimeout(function () {
-				self.connect();
-			}, 10000);
+			self.connect();
 		};
 	}
 

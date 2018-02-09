@@ -537,7 +537,8 @@ module.exports = function (server) {
         'post': post,
         'reactions': post.resolvedReactions ? post.resolvedReactions : [],
         'reactionSummary': post.reactionSummary,
-        'poster': post.resolvedProfiles[post.source].profile
+        'poster': post.resolvedProfiles[post.source].profile,
+        'about': post.source + '/post/' + post.uuid
       };
 
       delete data.post.resolvedReactions;
@@ -551,8 +552,7 @@ module.exports = function (server) {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'myEndpoint': getPOVEndpoint(friend, currentUser),
-        'about': post.source + '/post/' + post.uuid
+        'myEndpoint': getPOVEndpoint(friend, currentUser)
       };
 
       renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
@@ -635,7 +635,8 @@ module.exports = function (server) {
         'post': post,
         'comments': post.resolvedComments ? post.resolvedComments : [],
         'commentSummary': post.commentSummary,
-        'commentCount': post.resolvedComments.length
+        'commentCount': post.resolvedComments.length,
+        'about': post.source + '/post/' + post.uuid
       };
 
       delete data.post.resolvedComments;
@@ -648,8 +649,7 @@ module.exports = function (server) {
       var options = {
         'data': data,
         'user': currentUser,
-        'friend': friend,
-        'about': post.source + '/post/' + post.uuid
+        'friend': friend
       };
 
       renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
@@ -853,7 +853,8 @@ module.exports = function (server) {
           'post': post,
           'comment': theComment,
           'reactions': theComment.resolvedReactions ? theComment.resolvedReactions : [],
-          'reactionSummary': theComment.reactionSummary
+          'reactionSummary': theComment.reactionSummary,
+          'about': theComment.about + '/comment/' + theComment.uuid
         };
 
         delete data.post.resolvedComments;
@@ -867,8 +868,7 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'about': theComment.about + '/comment/' + theComment.uuid
+          'friend': friend
         };
 
         renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
@@ -1138,7 +1138,8 @@ module.exports = function (server) {
           'post': post,
           'photo': thePhoto,
           'reactionSummary': thePhoto.reactionSummary,
-          'reactions': thePhoto.resolvedReactions
+          'reactions': thePhoto.resolvedReactions,
+          'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid
         };
 
         if (view === '.json') {
@@ -1148,8 +1149,7 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid
+          'friend': friend
         };
 
         renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
@@ -1242,7 +1242,8 @@ module.exports = function (server) {
             },
             'post': post,
             'photo': thePhoto,
-            'comments': thePhoto.resolvedComments
+            'comments': thePhoto.resolvedComments,
+            'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid
           };
 
           if (view === '.json') {
@@ -1252,8 +1253,7 @@ module.exports = function (server) {
           var options = {
             'data': data,
             'user': currentUser,
-            'friend': friend,
-            'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid
+            'friend': friend
           };
 
           renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
@@ -1484,7 +1484,8 @@ module.exports = function (server) {
             'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
           },
           'reactionSummary': theComment.reactionSummary,
-          'reactions': theComment.resolvedReactions
+          'reactions': theComment.resolvedReactions,
+          'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid + '/comment/' + theComment.uuid
         };
 
         if (view === '.json') {
@@ -1494,8 +1495,7 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend,
-          'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid + '/comment/' + theComment.uuid
+          'friend': friend
         };
 
         renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
