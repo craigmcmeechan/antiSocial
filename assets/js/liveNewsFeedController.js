@@ -114,7 +114,9 @@
 
 		this.errors = function (e) {
 			self.disconnect();
-			self.connect();
+			setTimeout(function () {
+				self.connect();
+			}, 10000);
 		};
 	}
 

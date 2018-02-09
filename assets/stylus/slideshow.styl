@@ -37,9 +37,21 @@
 	.comments-tab
 		color:white
 		position:fixed
-		bottom:0px
+		bottom:-40px
 		width:100%
 		z-index:99
+		max-height: 100vh
+		overflow:auto
+		&.open
+			bottom:0px
+		.photo-reactions-and-comments
+			background-color:#eee
+		.comments-list
+			padding-left: 7px
+			padding-right: 7px
+			padding-bottom: 7px
+		.scope-posting-form
+			margin-bottom:0px
 		.comments-tab-header
 			margin:0 auto
 			font-size:20px
@@ -47,11 +59,14 @@
 			cursor:pointer
 			padding-bottom:10px
 		.photo-reactions
-			background-color:rgba(0,0,0,.8)
+			background-color:rgba(0,0,0,.5)
 			max-width:380px
 			margin:0 auto
+			border-top-left-radius: 4px
+			border-top-right-radius: 4px
 		.reactions-and-comments
 			padding:15px
+			color: #333
 	.carousel-indicators
 		top: 0px
 		right: 0px

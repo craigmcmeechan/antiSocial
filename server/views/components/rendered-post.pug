@@ -13,12 +13,17 @@ block seo
 		- title= title.replace(/<.*?>/g,"")
 		
 	- summary = body.replace(/<.*?>/g,"")
+	- summary = summary.replace(/[\n]/g,"")
+
 	if summary.length > 200
 		- summary= summary.substring(0,200)
 		- summary= summary.replace(/[^ ]+$/,'')  + '...'
 	
 	- var image = profile.background.url;
 	if _.has(posts[0],'sortedPhotos[0]')
+		if posts[0].sortedPhotos.length > 1
+			- summary += ' (' + posts[0].sortedPhotos.length + ' photos)'
+
 		- var imageSet
 		if typeof posts[0].sortedPhotos[0].uploads === 'function'
 			- imageSet= posts[0].sortedPhotos[0].uploads()[0].imageSet
@@ -41,7 +46,7 @@ block content
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
-				.col-sm-8.left-column
+				.col-sm-8.left-column.vibrant
 					include ../components/post-list
 				.col-sm-4
 					if user

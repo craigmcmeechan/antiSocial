@@ -1,0 +1,14 @@
+if !post
+	- post = data.post
+if !photo
+	- photo = data.photo
+if !reactions
+	- reactions = data.reactions
+if !reactionSummary
+	- reactionSummary = data.reactionSummary
+
+-var about= post.source + '/post/' + post.uuid + '/photo/' + photo.uuid
+
+.ajax-load.live-element(data-watch= about data-watch-type="react")
+	.post-reactions(data-jsclass="reactionController" data-endpoint= about)
+		include reactions

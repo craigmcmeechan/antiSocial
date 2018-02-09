@@ -6,6 +6,9 @@
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
 			- var isPublic = post.visibility.indexOf('public') !== -1
 			- var commentCount = post.commentCount
+			- var isMine = false;
+			if user
+				- isMine = post.source === config.publicHost + '/' + user.username;
 			
 			.newsfeed-item
 				if post.commentSummary || post.reactionSummary
@@ -30,6 +33,19 @@
 										a(href= posterUrl)
 											img.media-object(src= thumb)
 									.media-body
+										.post-actions.pull-right
+											.dropdown(data-jsclass="postActionsController" data-endpoint= postEndpoint data-is-mine= isMine)
+												button.btn-xs(data-toggle="dropdown")
+													i.fa.fa-ellipsis-h
+												ul.dropdown-menu
+													if isMine
+														li 
+															a.edit-post(href="#") Edit Post
+														li 
+															a.delete-post(href="#") Delete Post
+													li
+														a.hide-post(href="#") Hide Post
+												
 										h4.media-heading
 											a(href= posterUrl)= name
 											if post.about
@@ -62,5 +78,16 @@
 						- var photos = post.sortedPhotos
 						include rendered-post-photos
 						
-						if !noComments
-							include post-reactions-and-comments
+						if !noComments && user
+							.reactions-and-comments
+								- var about= poster.endpoint + '/post/' + post.uuid
+
+								- var counts = post.counts
+								- var reactions = post.resolvedReactions
+								- var reactionSummary = post.reactionSummary
+								include rendered-reactions
+
+								- var comments = post.resolvedComments
+								- var commentSummary = post.commentSummary
+								- var commentCount = post.commentCount
+								include rendered-comments

@@ -1,0 +1,10 @@
+if !post
+	- post = data.post
+if !reactions
+	- reactions = data.reactions
+if !reactionSummary
+	- reactionSummary = data.reactionSummary
+	
+.ajax-load.live-element(data-watch= about data-watch-type="react")
+	.post-reactions(data-jsclass="reactionController" data-endpoint= about)
+		include reactions
