@@ -4,7 +4,9 @@ if !commentSummary
 	- commentSummary = data.commentSummary
 if !post
 	- post = data.post
-	
+if !about
+	- about = data.about
+
 - var saveAbout = about
 .post-comments.live-element(data-watch= about data-watch-type="comment")
 	include rendered-comment-summary
