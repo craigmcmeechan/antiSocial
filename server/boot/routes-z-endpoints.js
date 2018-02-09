@@ -867,7 +867,8 @@ module.exports = function (server) {
         var options = {
           'data': data,
           'user': currentUser,
-          'friend': friend
+          'friend': friend,
+          'about': theComment.about + '/comment/' + theComment.uuid
         };
 
         renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
@@ -1251,7 +1252,8 @@ module.exports = function (server) {
           var options = {
             'data': data,
             'user': currentUser,
-            'friend': friend
+            'friend': friend,
+            'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid
           };
 
           renderFile('/components/rendered-comments.pug', options, req, function (err, html) {

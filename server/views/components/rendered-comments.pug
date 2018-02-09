@@ -4,7 +4,8 @@ if !commentSummary
 	- commentSummary = data.commentSummary
 if !post
 	- post = data.post
-
+	
+- var saveAbout = about
 .post-comments.live-element(data-watch= about data-watch-type="comment")
 	include rendered-comment-summary
 	.comments-list(class= commentCount ? 'collapse' : '' id= 'comments-' + post.uuid)
@@ -14,3 +15,6 @@ if !post
 					- about = comment.about + '/comment/' + comment.uuid
 					include rendered-comment
 		
+		- about = saveAbout
+		- endpoint= "/comment"
+		include comment-form
