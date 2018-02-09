@@ -29,7 +29,8 @@ if wantSummary
 
 			- var reactions = comment.resolvedReactions
 			- var reactionSummary = comment.reactionSummary
-			include rendered-post-comment-reactions
+			- var about = comment.about + '/comment/' + comment.uuid
+			include rendered-reactions
 							
 	.clearfix
 	.comment-separator

@@ -127,6 +127,7 @@ module.exports = function (PushNewsFeedItem) {
 
 							for (var i = 0; i < items.length; i++) {
 								var data = items[i];
+								data = JSON.parse(JSON.stringify(data));
 
 								// if it's a comment only send the comment to the owner of the post
 								if (data.type === 'comment') {
@@ -168,6 +169,8 @@ module.exports = function (PushNewsFeedItem) {
 
 						var where = ctx.where;
 						var data = ctx.instance || ctx.data;
+
+						data = JSON.parse(JSON.stringify(data));
 
 						if (data.userId.toString() !== user.id.toString()) {
 							return next();

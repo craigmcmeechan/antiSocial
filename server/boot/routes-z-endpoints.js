@@ -462,7 +462,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-reactions'), getFriendAccess(), function (req, res, next) {
+  router.get(postReactionsRE, getCurrentUser(), checkNeedProxyRewrite('reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -537,7 +537,8 @@ module.exports = function (server) {
         'post': post,
         'reactions': post.resolvedReactions ? post.resolvedReactions : [],
         'reactionSummary': post.reactionSummary,
-        'poster': post.resolvedProfiles[post.source].profile
+        'poster': post.resolvedProfiles[post.source].profile,
+        'about': post.source + '/post/' + post.uuid
       };
 
       delete data.post.resolvedReactions;
@@ -554,7 +555,7 @@ module.exports = function (server) {
         'myEndpoint': getPOVEndpoint(friend, currentUser)
       };
 
-      renderFile('/components/rendered-post-reactions.pug', options, req, function (err, html) {
+      renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
@@ -563,7 +564,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentsRE, getCurrentUser(), checkNeedProxyRewrite('post-comments'), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentsRE, getCurrentUser(), checkNeedProxyRewrite('comments'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -634,7 +635,8 @@ module.exports = function (server) {
         'post': post,
         'comments': post.resolvedComments ? post.resolvedComments : [],
         'commentSummary': post.commentSummary,
-        'commentCount': post.resolvedComments.length
+        'commentCount': post.resolvedComments.length,
+        'about': post.source + '/post/' + post.uuid
       };
 
       delete data.post.resolvedComments;
@@ -650,7 +652,7 @@ module.exports = function (server) {
         'friend': friend
       };
 
-      renderFile('/components/rendered-post-comments.pug', options, req, function (err, html) {
+      renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
@@ -659,7 +661,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentRE, getCurrentUser(), checkNeedProxyRewrite('post-comment'), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentRE, getCurrentUser(), checkNeedProxyRewrite('comment'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -764,7 +766,7 @@ module.exports = function (server) {
           'wantSummary': true
         };
 
-        renderFile('/components/rendered-post-comment.pug', options, req, function (err, html) {
+        renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
@@ -774,7 +776,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-comment-reactions'), getFriendAccess(), function (req, res, next) {
+  router.get(postCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -851,7 +853,8 @@ module.exports = function (server) {
           'post': post,
           'comment': theComment,
           'reactions': theComment.resolvedReactions ? theComment.resolvedReactions : [],
-          'reactionSummary': theComment.reactionSummary
+          'reactionSummary': theComment.reactionSummary,
+          'about': theComment.about + '/comment/' + theComment.uuid
         };
 
         delete data.post.resolvedComments;
@@ -868,7 +871,7 @@ module.exports = function (server) {
           'friend': friend
         };
 
-        renderFile('/components/rendered-post-comment-reactions.pug', options, req, function (err, html) {
+        renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
@@ -1055,7 +1058,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-reactions'), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoReactionsRE, getCurrentUser(), checkNeedProxyRewrite('reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -1121,6 +1124,8 @@ module.exports = function (server) {
         return next(e);
       }
 
+      // TODO kludge
+      thePhoto.about = post.source + '/post/' + post.uuid;
       resolveReactions([thePhoto], 'photo', function (err) {
 
         var data = {
@@ -1130,7 +1135,11 @@ module.exports = function (server) {
             'friend': friend ? friend.remoteUsername : false,
             'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
           },
-          'reactions': thePhoto.resolvedReactions
+          'post': post,
+          'photo': thePhoto,
+          'reactionSummary': thePhoto.reactionSummary,
+          'reactions': thePhoto.resolvedReactions,
+          'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid
         };
 
         if (view === '.json') {
@@ -1143,7 +1152,7 @@ module.exports = function (server) {
           'friend': friend
         };
 
-        renderFile('/components/rendered-post-photo-reactions.pug', options, req, function (err, html) {
+        renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
@@ -1153,7 +1162,7 @@ module.exports = function (server) {
     });
   });
 
-  router.get(postPhotoCommentsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comments'), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentsRE, getCurrentUser(), checkNeedProxyRewrite('comments'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -1219,40 +1228,47 @@ module.exports = function (server) {
         return next(e);
       }
 
+      // TODO kludge
+      thePhoto.about = post.source + '/post/' + post.uuid;
       resolveComments([thePhoto], 'photo', function (err) {
+        async.map(thePhoto.resolvedComments, resolveProfiles, function (err) {
 
-        var data = {
-          'pov': {
-            'user': user.username,
-            'isMe': isMe,
-            'friend': friend ? friend.remoteUsername : false,
-            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
-          },
-          'comments': thePhoto.resolvedComments
-        };
+          var data = {
+            'pov': {
+              'user': user.username,
+              'isMe': isMe,
+              'friend': friend ? friend.remoteUsername : false,
+              'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+            },
+            'post': post,
+            'photo': thePhoto,
+            'comments': thePhoto.resolvedComments,
+            'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid
+          };
 
-        if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
-        }
-
-        var options = {
-          'data': data,
-          'user': currentUser,
-          'friend': friend
-        };
-
-        renderFile('/components/rendered-post-photo-comments.pug', options, req, function (err, html) {
-          if (err) {
-            return next(err);
+          if (view === '.json') {
+            return res.send(encryptIfFriend(friend, data));
           }
-          return res.send(encryptIfFriend(friend, html));
+
+          var options = {
+            'data': data,
+            'user': currentUser,
+            'friend': friend
+          };
+
+          renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
+            if (err) {
+              return next(err);
+            }
+            return res.send(encryptIfFriend(friend, html));
+          });
         });
       });
 
     });
   });
 
-  router.get(postPhotoCommentRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comment'), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentRE, getCurrentUser(), checkNeedProxyRewrite('comment'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -1336,37 +1352,47 @@ module.exports = function (server) {
           return next(e);
         }
 
-        var data = {
-          'pov': {
-            'user': user.username,
-            'isMe': isMe,
-            'friend': friend ? friend.remoteUsername : false,
-            'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
-          },
-          'comment': theComment
-        };
+        async.map([theComment], resolveProfiles, function (err) {
 
-        if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
-        }
+          var data = {
+            'pov': {
+              'user': user.username,
+              'isMe': isMe,
+              'friend': friend ? friend.remoteUsername : false,
+              'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+            },
+            'post': {
+              'source': post.source,
+              'uuid': post.uuid
+            },
+            'comment': theComment,
+            'commentSummary': thePhoto.commentSummary,
+            'commentCount': thePhoto.resolvedComments.length
+          };
 
-        var options = {
-          'data': data,
-          'user': currentUser,
-          'friend': friend
-        };
-
-        renderFile('/components/rendered-post-photo-comment.pug', options, req, function (err, html) {
-          if (err) {
-            return next(err);
+          if (view === '.json') {
+            return res.send(encryptIfFriend(friend, data));
           }
-          return res.send(encryptIfFriend(friend, html));
+
+          var options = {
+            'data': data,
+            'user': currentUser,
+            'friend': friend,
+            'wantSummary': true
+          };
+
+          renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
+            if (err) {
+              return next(err);
+            }
+            return res.send(encryptIfFriend(friend, html));
+          });
         });
       });
     });
   });
 
-  router.get(postPhotoCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('post-photo-comment-reactions'), getFriendAccess(), function (req, res, next) {
+  router.get(postPhotoCommentReactionsRE, getCurrentUser(), checkNeedProxyRewrite('reactions'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
     if (redirectProxy) {
@@ -1457,7 +1483,9 @@ module.exports = function (server) {
             'friend': friend ? friend.remoteUsername : false,
             'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
           },
-          'reactions': theComment.resolvedReactions
+          'reactionSummary': theComment.reactionSummary,
+          'reactions': theComment.resolvedReactions,
+          'about': post.source + '/post/' + post.uuid + '/photo/' + thePhoto.uuid + '/comment/' + theComment.uuid
         };
 
         if (view === '.json') {
@@ -1470,7 +1498,7 @@ module.exports = function (server) {
           'friend': friend
         };
 
-        renderFile('/components/rendered-post-photo-comment-reactions.pug', options, req, function (err, html) {
+        renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
