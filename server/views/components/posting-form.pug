@@ -1,10 +1,12 @@
 #scope-posting-form
 	- var placeholder = wall ? 'Post something on ' + profile.name + "'s wall." : "What's on your mind?"
-	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= wall ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint="/post")
+	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= wall ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint= editing ? "/post/" + post.uuid : "/post" data-modal="#edit-post-form")
 		.tabbed
 			#form-tab
 				.form-group.input-relative
 					textarea.posting-body.form-control(type="text" name="body" placeholder= placeholder data-validate="required")
+						if editing
+							= post.body
 					.input-ok-indicator
 						span.glyphicon.glyphicon-ok
 					.validation-help
@@ -16,7 +18,8 @@
 		.post-tools.hide-until-subject-focus
 			.form-group.input-relative.button-zone
 				button.post-submit-button.btn.btn-sm.btn-primary Post
-				a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
+				if !editing
+					a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
 				if environment.GOOGLE_MAPS_API_KEY
 					a#post-geo-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-map-marker"></i>
 				a#post-preview-button.btn.btn-sm.btn-default(href="#") Preview
@@ -24,15 +27,16 @@
 
 			.geo-zone
 				.form-group.input-relative
-					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY)
-					input#geo-location(type="hidden")
+					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
+					input#geo-location(type="hidden" value= editing ? JSON.stringify(post.geoLocation) : '')
 				.dropdown
 					ul#geo-pulldown.dropdown-menu
 					#geo-attributions
 
 			.form-group.input-relative.text-center.audience-select
-				input#posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= '["friends"]')
-				.checkbox-group.lazy-instantiate(data-lazy-jsclass="checkboxGroupController" data-target="#posting-visibility")
+				.checkbox-group.lazy-instantiate(data-lazy-jsclass="checkboxGroupController" data-target=".posting-visibility")
+					input.posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= editing ?  JSON.stringify(post.visibility)  : '["friends"]')
+
 					label.checkbox-inline Audience:
 					label.checkbox-inline
 						input(type="checkbox" data-value="public")

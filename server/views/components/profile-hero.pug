@@ -23,8 +23,9 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 						form#form.form-validation(data-jsclass="postingFormController,formValidator,saveOnChange" data-method="PUT" data-endpoint="/api/MyUsers/me/friends/"+ friend.id)
 							.form-group
 								label Set Audience
-								input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(friend.audiences))
 								.checkbox-group(data-jsclass="checkboxGroupController" data-target="#friend-audiences")
+									input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(friend.audiences))
+
 									label.checkbox-inline
 										input(type="checkbox" data-value="friends")
 										| friends

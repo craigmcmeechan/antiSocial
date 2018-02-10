@@ -58,7 +58,9 @@
     },
     "athoritativeEndpoint": {
       "type": "string"
-
+    },
+    "versions": {
+      "type": ["object"]
     }
   },
   "validations": [],

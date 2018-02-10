@@ -7,8 +7,8 @@
 		var self = this;
 
 		this.lookupDebounce = null;
-		this.target = $(this.element.data('target'));
-		this.pulldown = $(this.element.data('pulldown'));
+		this.target = $(this.element).closest('.geo-zone').find(this.element.data('target'));
+		this.pulldown = $(this.element).closest('.geo-zone').find(this.element.data('pulldown'));
 		this.element.prop('disabled', true);
 		this.start = function () {
 			self.geoService = 'https://maps.googleapis.com/maps/api/geocode/json?key=' + self.element.data('api-key');

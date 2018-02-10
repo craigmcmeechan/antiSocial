@@ -6,7 +6,7 @@
 
 		self.submitter = $(self.element.data('submitter'));
 		self.endpoint = self.element.attr('action');
-		self.method = self.element.attr('method');
+		self.method = self.element.attr('method') ? self.element.attr('method') : 'POST';
 		self.prompt = $(self.submitter).html();
 		self.modal = self.element.data('modal') ? $(self.element.data('modal')) : null;
 		self.successPrompt = self.element.data('success-prompt');
@@ -57,7 +57,7 @@
 				}
 
 				if (_.get(data, 'result.status')) {
-					if (result.status !== 'ok') {
+					if (data.result.status !== 'ok') {
 						failed = true;
 					}
 				}
