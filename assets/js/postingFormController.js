@@ -15,6 +15,7 @@
 		self.dropzone = undefined;
 		this.lookupDebounce = null;
 		this.singleUpload = this.element.data('single-upload');
+		this.modal = this.element.data('modal');
 
 		this.renderer.link = function (href, title, text) {
 			if (text && text.match(/^http/i)) {
@@ -220,7 +221,7 @@
 					'body': self.element.find('.posting-body').val(),
 					'geoDescription': geo.description,
 					'geoLocation': geo.loc,
-					'visibility': self.element.find('#posting-visibility').val(),
+					'visibility': self.element.find('.posting-visibility').val(),
 					'categories': JSON.stringify(self.categories),
 					'about': self.about,
 					'photos': photos,
@@ -233,8 +234,11 @@
 					}
 					else {
 						self.hideForm();
-						//$('body').trigger('DigitopiaReloadPage');
-						//flashAjaxStatus('info', 'post saved');
+						if (self.modal) {
+							$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
+							$(self.modal).find('.modal-body').empty().append('loading...');
+							$(self.modal).modal('hide');
+						}
 					}
 				}, 'json');
 			});
@@ -242,6 +246,11 @@
 			this.element.on('click', '#post-cancel-button', function (e) {
 				e.preventDefault();
 				self.hideForm();
+				if (self.modal) {
+					$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
+					$(self.modal).find('.modal-body').empty().append('loading...');
+					$(self.modal).modal('hide');
+				}
 			});
 
 			this.element.on('click', '#post-upload-button', function (e) {
