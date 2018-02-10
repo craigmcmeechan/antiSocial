@@ -264,3 +264,15 @@ html(lang="en")
 										This is a very, very early prototype. Once things are more stable we will add users who want to help us test the system.
 						.modal-footer
 							button#request-invite-button.btn.btn-primary(type="submit") Send Request
+
+		#edit-post-form.modal.fade(tabindex="-1" role="dialog")
+			.modal-dialog(role="document")
+				.modal-content
+					.modal-header
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Edit post</h4>
+					.modal-body
+						| edit form here
+					.modal-footer
+						a(href="#" data-toggle="modal" data-dismiss="modal") Cancel
+						button#post-edit-save-button.btn.btn-primary(type="submit") Save

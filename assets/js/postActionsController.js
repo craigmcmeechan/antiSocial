@@ -6,20 +6,30 @@
 		var self = this;
 
 		this.isMine = this.element.data('is-mine');
-		this.endpoint = this.element.data('endpoint');
+		this.postId = this.element.data('post-id');
 
 		this.start = function () {
-			this.element.on('click', '.delete-post', function (e) {
+			if (self.isMine) {
+				this.element.on('click', '.delete-post', function (e) {
+					e.preventDefault();
+				});
 
-			});
-			this.element.on('click', '.edit-post', function (e) {
-
-			});
+				this.element.on('click', '.edit-post', function (e) {
+					e.preventDefault();
+					var modal = $('#edit-post-form');
+					modal.modal();
+					modal.find('.modal-body').load('/post/' + self.postId, function () {
+						didInjectContent(modal);
+					});
+				});
+			}
 		};
 
 		this.stop = function () {
-			this.element.off('click', '.delete-post');
-			this.element.off('click', '.edit-post');
+			if (self.isMine) {
+				this.element.off('click', '.delete-post');
+				this.element.off('click', '.edit-post');
+			}
 		};
 
 	}

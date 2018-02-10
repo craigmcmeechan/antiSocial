@@ -22,6 +22,132 @@ var debugVerbose = require('debug')('routes:verbose');
 module.exports = function (server) {
   var router = server.loopback.Router();
 
+  // edit a post
+  router.get('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+    var ctx = req.myContext;
+    var currentUser = ctx.get('currentUser');
+    var postId = req.params.id;
+    async.waterfall([
+      function getPost(cb) {
+        var query = {
+          'where': {
+            'and': [{
+              'uuid': postId
+            }, {
+              'userId': currentUser.id
+            }]
+          }
+        };
+
+        server.models.Post.findOne(query, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+
+          if (!post) {
+            err = new Error('Post not found');
+            err.statusCode = 404;
+            return cb(err);
+          }
+
+          cb(null, post);
+        });
+      }
+    ], function (err, post) {
+      res.render('components/post-edit-form', {
+        'post': post
+      });
+    });
+  });
+
+  router.post('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+    var ctx = req.myContext;
+    var currentUser = ctx.get('currentUser');
+    var postId = req.params.id;
+    async.waterfall([
+      function getPost(cb) {
+        var query = {
+          'where': {
+            'and': [{
+              'uuid': postId
+            }, {
+              'userId': currentUser.id
+            }]
+          }
+        };
+
+        server.models.Post.findOne(query, function (err, post) {
+          if (err) {
+            return cb(err);
+          }
+
+          if (!post) {
+            err = new Error('Post not found');
+            err.statusCode = 404;
+            return cb(err);
+          }
+
+          cb(null, post);
+        });
+      },
+      function makeNewsFeedItem(post, cb) { // notify self
+        var item = {
+          'uuid': uuid(),
+          'type': 'post edit',
+          'source': post.source,
+          'about': post.source + '/post/' + post.uuid,
+          'target': post.about,
+          'userId': currentUser.id,
+          'createdOn': new Date(),
+          'updatedOn': new Date(),
+          'details': {}
+        };
+
+        req.app.models.NewsFeedItem.create(item, function (err, item) {
+          if (err) {
+            var e = new VError(err, 'could not save NewsFeedItem');
+            return cb(e);
+          }
+
+          cb(err, post);
+        });
+      }
+    ], function (err, post) {
+      if (err) {
+        return res.send({
+          'result': {
+            'status': err
+          }
+        });
+      }
+
+      if (!post.versions) {
+        post.versions = [];
+      }
+      post.versions.push({
+        'body': post.body,
+        'timestamp': new Date()
+      });
+      post.body = req.body.body;
+      post.save(function (err) {
+        if (err) {
+          return res.send({
+            'result': {
+              'status': err
+            }
+          });
+        }
+        res.send({
+          'result': {
+            'status': 'ok',
+            'flashLevel': 'success',
+            'flashMessage': 'saved'
+          }
+        });
+      });
+    });
+  });
+
   // create a new post
   router.post('/post', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
