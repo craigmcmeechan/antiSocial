@@ -54,7 +54,8 @@ module.exports = function (server) {
         });
       }
     ], function (err, post) {
-      res.render('components/post-edit-form', {
+      res.render('components/posting-form', {
+        'editing': true,
         'post': post
       });
     });
@@ -126,9 +127,15 @@ module.exports = function (server) {
       }
       post.versions.push({
         'body': post.body,
-        'timestamp': new Date()
+        'visibility': post.visibility,
+        'timestamp': new Date(),
+        'geoDescription': post.geoDescription,
+        'geoLocation': post.geoLocation
       });
       post.body = req.body.body;
+      post.visibility = req.body.visibility;
+      post.geoDescription = req.body.geoDescription;
+      post.geoLocation = req.body.geoLocation;
       post.save(function (err) {
         if (err) {
           return res.send({

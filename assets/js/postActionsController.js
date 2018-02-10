@@ -17,6 +17,7 @@
 				this.element.on('click', '.edit-post', function (e) {
 					e.preventDefault();
 					var modal = $('#edit-post-form');
+					modal.find('.modal-body').empty().append('loading...');
 					modal.modal();
 					modal.find('.modal-body').load('/post/' + self.postId, function () {
 						didInjectContent(modal);
