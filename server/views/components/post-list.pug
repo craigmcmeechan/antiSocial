@@ -52,7 +52,12 @@
 												span.glyphicon.glyphicon-arrow-right.target-arrow
 												a(href= proxyEndPoint(post.about,user))= about.name
 										div.secondary
-											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())= moment(post.createdOn).calendar()
+											if post.versions
+												.post-edited
+													| (edited)
+											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())
+												= moment(post.createdOn).calendar()
+												
 											.visibility
 												if post.visibility.indexOf('public') !== -1
 													i.glyphicon.glyphicon-globe
