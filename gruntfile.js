@@ -55,12 +55,6 @@ module.exports = function (grunt) {
 		src: ['*'],
 		dest: 'client/dist/fonts/',
 		filter: 'isFile'
-	}, {
-		expand: true,
-		cwd: 'assets/vendor/emoji/',
-		src: ['*'],
-		dest: 'client/dist/emoji/',
-		filter: 'isFile'
 	}];
 
 	var allFiles = [];
