@@ -43,6 +43,9 @@ if wantSummary
 			span.timestamp.secondary(data-timestamp= moment(comment.createdOn).toISOString())
 				!= ' - ' + moment(comment.createdOn).calendar()
 
+			if comment.versions && comment.versions.length
+				span.secondary  (edited)
+
 			- var reactions = comment.resolvedReactions
 			- var reactionSummary = comment.reactionSummary
 			- var about = comment.about + '/comment/' + comment.uuid
