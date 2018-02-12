@@ -162,8 +162,8 @@ function getListener(server, friend) {
 						return;
 					}
 
-					if (!found || !isMe) {
-						//console.log(server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
+					if (!found.length && !isMe) {
+						debug(server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
 						return;
 					}
 

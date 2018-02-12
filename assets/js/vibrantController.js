@@ -11,43 +11,51 @@
 				return;
 			}
 
-
 			var vibrant = new Vibrant(self.element.data('image'));
 			var swatches = vibrant.getPalette(function (err, palette) {
 				if (!err) {
 					cache[self.element.data('image')] = palette;
+
+					/*
+					for (var swatch in palette) {
+						if (palette.hasOwnProperty(swatch) && palette[swatch]) {
+							console.log(swatch, palette[swatch].getHex ? palette[swatch].getHex() : 'wha?');
+							console.log(swatch + 'title', palette[swatch].getTitleTextColor());
+							console.log(swatch + 'body', palette[swatch].getBodyTextColor());
+						}
+					}
+					*/
+
 					self.setColors(palette);
 				}
 			});
+		};
 
-			/*
-			for (var swatch in swatches) {
-				if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
-					console.log(swatch, swatches[swatch].getHex());
-					console.log(swatch + 'title', swatches[swatch].getTitleTextColor());
-					console.log(swatch + 'body', swatches[swatch].getBodyTextColor());
-				}
-			}
-			*/
-
+		this.stop = function () {
+			$('#override-styles').empty();
 		};
 
 		this.setColors = function (swatches) {
 			var top = swatches.Muted ? swatches.Muted.getHex() : '#eee';
 			var bottom = swatches.DarkMuted ? swatches.DarkMuted.getHex() : '#ccc';
-			var links = swatches.Vibrant ? swatches.Vibrant.getHex() : 'navy';
-			var hover = swatches.DarkVibrant ? swatches.DarkVibrant.getHex() : 'blue';
+			var links = swatches.DarkVibrant ? swatches.DarkVibrant.getHex() : '#333';
+			var hover = swatches.Vibrant ? swatches.Vibrant.getHex() : '#333';
 			var text = swatches.DarkMuted ? swatches.DarkMuted.getHex() : '#333';
-
-			//var top = swatches.Muted ? swatches.Muted.getRgb() : '#eee';
-			//var toptrans = 'rgba(' + top[0] + ',' + top[1] + ',' + top[2] + ',.9)';
+			var secondary = swatches.LightMuted ? swatches.LightMuted.getHex() : '#ccc';
 
 			var bg = {
 				'background': 'linear-gradient(to bottom right,' + top + ',' + bottom + ')'
 			};
+
 			self.element.css(bg);
-			//var styles = 'body{color:' + text + '}a{color:' + links + ';}a:hover{color:' + hover + ';}';
-			var styles = '.vibrant a{color:' + links + ';} .vibrant a:hover{color:' + hover + ';} .vibrant a:visited{color:' + text + '}';
+
+			var styles = '.vibrant {color:' + text + '!important;}\n';
+			styles += '.vibrant h1, h2, h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6{color:' + text + '!important;}\n';
+			styles += '.vibrant a{color:' + links + '!important;}\n';
+			styles += '.vibrant a:hover{color:' + hover + '!important;}\n';
+			styles += '.vibrant a:visited{color:' + links + ';}\n';
+			styles += '.vibrant .secondary{color:' + secondary + '!important;}\n';
+
 			$('#override-styles').empty().append(styles);
 		};
 
