@@ -32,7 +32,7 @@
 									.media-left
 										a(href= posterUrl)
 											img.media-object(src= thumb)
-									.media-body.vibrant
+									.media-body
 										.post-actions.pull-right
 											.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
 												button.btn-xs(data-toggle="dropdown")
@@ -78,7 +78,7 @@
 
 						- var body = post.body ? post.body : '';
 						- var maxHeight = !isPermalink ? 500 : 50000
-						.post-body.markdown.want-constrained.vibrant(data-max-height= maxHeight)!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
+						.post-body.markdown.want-constrained(data-max-height= maxHeight)!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
 						- var photos = post.sortedPhotos
 						include rendered-post-photos

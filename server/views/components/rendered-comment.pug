@@ -6,7 +6,7 @@ if !comment
 if wantSummary
 	include rendered-comment-summary
 	
-.a-comment
+.a-comment(id= 'comment-' + comment.uuid)
 	.comment
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 		- var name = comment.resolvedProfiles[comment.source].profile.name
@@ -14,6 +14,22 @@ if wantSummary
 			a(href= proxyEndPoint(comment.source,user))
 				img.profile-thumb(src= thumb)
 		.comment-container
+			
+			.post-actions.pull-right
+				- var isMine = (comment.source === config.publicHost + '/' + user.username) ? 'true' : ''
+
+				.dropdown(data-jsclass="commentActionsController" data-comment-id= comment.uuid data-is-mine= isMine)
+					button.btn-xs(data-toggle="dropdown")
+						i.fa.fa-ellipsis-h
+					ul.dropdown-menu
+						if isMine
+							li 
+								a.edit-comment(href="#") Edit Comment
+							li 
+								a.delete-comment(href="#") Delete Comment
+						li
+							a.hide-comment(href="#") Hide Comment
+			
 			strong.pull-left
 				a(href= proxyEndPoint(comment.source,user))
 					span.profile-link

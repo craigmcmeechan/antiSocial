@@ -37,6 +37,9 @@
     },
     "details": {
       "type": "object"
+    },
+    "versions": {
+      "type": ["object"]
     }
   },
   "validations": [],
