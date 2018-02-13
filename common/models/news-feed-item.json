@@ -47,6 +47,9 @@
     "updatedOn": {
       "type": "date",
       "defaultFn": "now"
+    },
+    "versions": {
+      "type": ["object"]
     }
   },
   "validations": [],

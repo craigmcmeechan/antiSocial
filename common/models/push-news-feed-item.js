@@ -136,6 +136,7 @@ module.exports = function (PushNewsFeedItem) {
 									if (friend.remoteEndPoint !== whoAbout) {
 										//console.log(friend.remoteEndPoint + '!==' + whoAbout);
 										data.details = {};
+										data.versions = [];
 									}
 								}
 

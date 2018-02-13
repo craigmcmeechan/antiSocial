@@ -128,8 +128,15 @@ function getListener(server, friend) {
 					return;
 				}
 
-				if (oldNews) {
+				if (oldNews && message.type === 'create') {
 					debugVerbose('old news %j', oldNews);
+					return;
+				}
+
+				if (message.type === 'update') {
+					oldNews.details = myNewsFeedItem.details;
+					oldNews.versions = myNewsFeedItem.versions;
+					oldNews.save();
 					return;
 				}
 

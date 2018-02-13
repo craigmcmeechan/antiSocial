@@ -112,7 +112,7 @@
 					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about]);
 				}
 				else if (event.data.type === 'comment') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid]);
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid, event.type]);
 				}
 				else if (event.data.type === 'react') {
 					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/reactions']);
