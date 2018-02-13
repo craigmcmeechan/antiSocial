@@ -41,27 +41,27 @@ html(lang="en")
 					ul.nav.navbar-nav
 						if globalSettings.communityChannel
 							li#nav-community.hidden-logged-out
-								a(href="/community")
+								a(href="/community" data-toggle="tooltip" title="Community posts." data-placement="bottom")
 									<i class="fa fa-bullhorn fa-fw"></i>
 									span.hidden-not-digitopia-xsmall
 										| Community Feed
 						li#nav-feed.hidden-logged-out
-							a(href="/feed")
+							a(href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom")
 								<i class="fa fa-users fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Friends Feed
 						li#nav-page.hidden-logged-out
-							a(href="/profile")
+							a(href="/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom")
 								<i class="fa fa-user fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Your Posts
 						li#nav-settings.hidden-logged-out
-							a(href="/friends")
+							a(href="/friends" data-toggle="tooltip" title="Your friends." data-placement="bottom")
 								<i class="fa fa-user-plus fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Friends
 						li#nav-settings.hidden-logged-out
-							a(href="/settings")
+							a(href="/settings" data-toggle="tooltip" title="Your Settings." data-placement="bottom")
 								<i class="fa fa-cog fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Settings

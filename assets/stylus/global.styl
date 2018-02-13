@@ -10,6 +10,11 @@ quick()
 body
 	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
 
+a
+	&:focus
+		outline:none
+		text-decoration:none
+
 .container-fluid
 	max-width:1024px
 
@@ -18,7 +23,9 @@ body
 	min-height:100vh
 	color:#333
 
-
+.deleted
+	filter: blur(10px)
+	
 .left-column
 	.not-digitopia-xsmall &
 		padding-right:0px

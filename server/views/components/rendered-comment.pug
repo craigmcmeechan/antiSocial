@@ -7,7 +7,7 @@ if wantSummary
 	include rendered-comment-summary
 	
 .a-comment(id= 'comment-' + comment.uuid)
-	.comment
+	.comment(class= comment.deleted ? 'deleted': '')
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 		- var name = comment.resolvedProfiles[comment.source].profile.name
 		.thumb-container
