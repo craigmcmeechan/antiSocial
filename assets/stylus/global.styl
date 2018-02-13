@@ -24,8 +24,9 @@ a
 	color:#333
 
 .deleted
-	filter: blur(10px)
-	
+	filter: blur(7px)
+	pointer-events: none
+
 .left-column
 	.not-digitopia-xsmall &
 		padding-right:0px
@@ -33,6 +34,13 @@ a
 .fold-column
 	.digitopia-xsmall &
 		margin-bottom:30px
+
+.digitopia-xsmall
+	.modal
+		position:static
+		margin-top: 75px
+	.modal-backdrop
+		display:none
 
 #splash
 	position: fixed
