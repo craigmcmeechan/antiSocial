@@ -50,7 +50,7 @@
 			self.element.css(bg);
 
 			var styles = '.vibrant {color:' + text + '!important;}\n';
-			styles += '.vibrant h1, h2, h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6{color:' + text + '!important;}\n';
+			styles += '.vibrant h1,.vibrant h2, .vibrant h3,.vibrant h4,.vibrant h5,.vibrant h6,.vibrant .h1,.vibrant .h2,.vibrant .h3,.vibrant .h4,.vibrant .h5,.vibrant .h6 { color:' + text + '!important;}\n';
 			styles += '.vibrant a{color:' + links + '!important;}\n';
 			styles += '.vibrant a:hover{color:' + hover + '!important;}\n';
 			styles += '.vibrant a:visited{color:' + links + ';}\n';
