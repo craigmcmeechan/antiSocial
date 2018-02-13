@@ -10,6 +10,11 @@ quick()
 body
 	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
 
+a
+	&:focus
+		outline:none
+		text-decoration:none
+
 .container-fluid
 	max-width:1024px
 
@@ -18,6 +23,9 @@ body
 	min-height:100vh
 	color:#333
 
+.deleted
+	filter: blur(7px)
+	pointer-events: none
 
 .left-column
 	.not-digitopia-xsmall &
@@ -26,6 +34,13 @@ body
 .fold-column
 	.digitopia-xsmall &
 		margin-bottom:30px
+
+.digitopia-xsmall
+	.modal
+		position:static
+		margin-top: 75px
+	.modal-backdrop
+		display:none
 
 #splash
 	position: fixed
@@ -216,10 +231,8 @@ img.avatar
 .reaction-summary
 	background-color: #eee
 	.reaction-summary-heading
-		font-size: .75em
 		padding-right: 4px
 		font-size:12px
-		padding-top:5px
 
 	.reaction-summary-icons
 		padding-right: 4px
@@ -412,6 +425,7 @@ img.avatar
 				font-size: .75em
 			button
 				border:none
+				background-color:rgba(0,0,0,0)
 				&:focus
 					outline: none
 			.dropdown-menu
@@ -535,7 +549,6 @@ img.avatar
 			filter: grayscale(0%);
 
 		.reaction-button
-			padding:2px
 			border:thin solid rgba(0,0,0,0)
 			border-radius:2px
 			cursor:pointer

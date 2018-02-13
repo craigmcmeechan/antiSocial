@@ -128,8 +128,16 @@ function getListener(server, friend) {
 					return;
 				}
 
-				if (oldNews) {
+				if (oldNews && message.type === 'create') {
 					debugVerbose('old news %j', oldNews);
+					return;
+				}
+
+				if (message.type === 'update') {
+					oldNews.details = myNewsFeedItem.details;
+					oldNews.versions = myNewsFeedItem.versions;
+					oldNews.deleted = myNewsFeedItem.deleted;
+					oldNews.save();
 					return;
 				}
 
@@ -162,8 +170,8 @@ function getListener(server, friend) {
 						return;
 					}
 
-					if (!found || !isMe) {
-						//console.log(server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
+					if (!found.length && !isMe) {
+						debug(server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
 						return;
 					}
 

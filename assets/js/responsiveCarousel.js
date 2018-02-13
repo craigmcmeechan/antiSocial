@@ -146,7 +146,7 @@
 				var viewport = $('<div>');
 
 				// create an lazy loading image
-				var photo = this.json[i].uploads[0].imageSet.large;
+				var photo = this.json[i].uploads[0].imageSet.large ? this.json[i].uploads[0].imageSet.large : this.json[i].uploads[0].imageSet.original;
 				var img = $('<img data-lazy-src="' + photo.url + '"  data-width="' + photo.width + '" data-height="' + photo.height + '">');
 
 				// put the image in the viewport

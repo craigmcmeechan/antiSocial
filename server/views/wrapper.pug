@@ -41,27 +41,27 @@ html(lang="en")
 					ul.nav.navbar-nav
 						if globalSettings.communityChannel
 							li#nav-community.hidden-logged-out
-								a(href="/community")
+								a(href="/community" data-toggle="tooltip" title="Community posts." data-placement="bottom")
 									<i class="fa fa-bullhorn fa-fw"></i>
 									span.hidden-not-digitopia-xsmall
 										| Community Feed
 						li#nav-feed.hidden-logged-out
-							a(href="/feed")
+							a(href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom")
 								<i class="fa fa-users fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Friends Feed
 						li#nav-page.hidden-logged-out
-							a(href="/profile")
+							a(href="/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom")
 								<i class="fa fa-user fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Your Posts
 						li#nav-settings.hidden-logged-out
-							a(href="/friends")
+							a(href="/friends" data-toggle="tooltip" title="Your friends." data-placement="bottom")
 								<i class="fa fa-user-plus fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Friends
 						li#nav-settings.hidden-logged-out
-							a(href="/settings")
+							a(href="/settings" data-toggle="tooltip" title="Your Settings." data-placement="bottom")
 								<i class="fa fa-cog fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Settings
@@ -80,42 +80,6 @@ html(lang="en")
 							#menu-icon(data-hijax="true")
 								if user
 									img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)
-
-		#content(data-hijax="true")
-			block content
-				
-		#tmks.container-fluid.text-center
-			span.
-				Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
-
-		#ajax-status
-
-		#news-feed(data-jsclass="liveNewsFeedItemController")
-			include components/news-feed
-
-		#splash(style="position: fixed;top:0;left:0;right:0;bottom:0;background-color:#333;z-index:99999;")
-			#splash-logo
-				| ¯\_(ツ)_/¯
-
-		block controller
-
-		if env === 'production'
-			script(src="/dist/js/jquery.min.js")
-		else
-			script(src="/dist/js/jquery.js")
-
-		if environment.RAVEN
-			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
-			script(nonce= nonce).
-				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
-
-		if env === 'production'
-			script(src="/dist/js/DigitopiaSocial.min.js")
-		else
-			script(src="/dist/js/DigitopiaSocial.js")
-				
-		if environment.GOOGLE_MAPS_API_KEY
-			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
 
 		#login-form.modal.fade(tabindex="-1" role="dialog")
 			.modal-dialog(role="document")
@@ -273,3 +237,47 @@ html(lang="en")
 						<h4 class="modal-title">Edit post</h4>
 					.modal-body
 						| edit form here
+
+		#edit-comment-form.modal.fade(tabindex="-1" role="dialog")
+			.modal-dialog(role="document")
+				.modal-content
+					.modal-header
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Edit comment</h4>
+					.modal-body
+						| edit form here
+		#content(data-hijax="true")
+			block content
+				
+		#tmks.container-fluid.text-center
+			span.
+				Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
+
+		#ajax-status
+
+		#news-feed(data-jsclass="liveNewsFeedItemController")
+			include components/news-feed
+
+		#splash(style="position: fixed;top:0;left:0;right:0;bottom:0;background-color:#333;z-index:99999;")
+			#splash-logo
+				| ¯\_(ツ)_/¯
+
+		block controller
+
+		if env === 'production'
+			script(src="/dist/js/jquery.min.js")
+		else
+			script(src="/dist/js/jquery.js")
+
+		if environment.RAVEN
+			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
+			script(nonce= nonce).
+				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
+
+		if env === 'production'
+			script(src="/dist/js/DigitopiaSocial.min.js")
+		else
+			script(src="/dist/js/DigitopiaSocial.js")
+				
+		if environment.GOOGLE_MAPS_API_KEY
+			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
