@@ -136,6 +136,7 @@ function getListener(server, friend) {
 				if (message.type === 'update') {
 					oldNews.details = myNewsFeedItem.details;
 					oldNews.versions = myNewsFeedItem.versions;
+					oldNews.deleted = myNewsFeedItem.deleted;
 					oldNews.save();
 					return;
 				}

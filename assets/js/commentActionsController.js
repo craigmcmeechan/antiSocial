@@ -20,7 +20,6 @@
 					}).done(function (data) {
 						if (_.get(data, 'result.status') === 'ok') {
 							flashAjaxStatus('info', 'deleted');
-							self.element.closest('.newsfeed-item').remove();
 						}
 						else {
 							flashAjaxStatus('danger', _.get(data, 'result.status') ? _.get(data, 'result.status') : 'an error occured');

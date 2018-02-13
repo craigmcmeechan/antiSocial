@@ -40,6 +40,9 @@
     },
     "versions": {
       "type": ["object"]
+    },
+    "deleted": {
+      "type": "boolean"
     }
   },
   "validations": [],
