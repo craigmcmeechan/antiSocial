@@ -81,42 +81,6 @@ html(lang="en")
 								if user
 									img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)
 
-		#content(data-hijax="true")
-			block content
-				
-		#tmks.container-fluid.text-center
-			span.
-				Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
-
-		#ajax-status
-
-		#news-feed(data-jsclass="liveNewsFeedItemController")
-			include components/news-feed
-
-		#splash(style="position: fixed;top:0;left:0;right:0;bottom:0;background-color:#333;z-index:99999;")
-			#splash-logo
-				| ¯\_(ツ)_/¯
-
-		block controller
-
-		if env === 'production'
-			script(src="/dist/js/jquery.min.js")
-		else
-			script(src="/dist/js/jquery.js")
-
-		if environment.RAVEN
-			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
-			script(nonce= nonce).
-				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
-
-		if env === 'production'
-			script(src="/dist/js/DigitopiaSocial.min.js")
-		else
-			script(src="/dist/js/DigitopiaSocial.js")
-				
-		if environment.GOOGLE_MAPS_API_KEY
-			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
-
 		#login-form.modal.fade(tabindex="-1" role="dialog")
 			.modal-dialog(role="document")
 				form.form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button" data-modal="#login-form")
@@ -282,3 +246,38 @@ html(lang="en")
 						<h4 class="modal-title">Edit comment</h4>
 					.modal-body
 						| edit form here
+		#content(data-hijax="true")
+			block content
+				
+		#tmks.container-fluid.text-center
+			span.
+				Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
+
+		#ajax-status
+
+		#news-feed(data-jsclass="liveNewsFeedItemController")
+			include components/news-feed
+
+		#splash(style="position: fixed;top:0;left:0;right:0;bottom:0;background-color:#333;z-index:99999;")
+			#splash-logo
+				| ¯\_(ツ)_/¯
+
+		block controller
+
+		if env === 'production'
+			script(src="/dist/js/jquery.min.js")
+		else
+			script(src="/dist/js/jquery.js")
+
+		if environment.RAVEN
+			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
+			script(nonce= nonce).
+				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
+
+		if env === 'production'
+			script(src="/dist/js/DigitopiaSocial.min.js")
+		else
+			script(src="/dist/js/DigitopiaSocial.js")
+				
+		if environment.GOOGLE_MAPS_API_KEY
+			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
