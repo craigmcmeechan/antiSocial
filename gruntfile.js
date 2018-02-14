@@ -19,12 +19,14 @@ module.exports = function (grunt) {
 		'node_modules/marked/lib/marked.js',
 		'node_modules/autosize/dist/autosize.js',
 		'node_modules/node-vibrant/dist/vibrant.js',
+		'node_modules/vis/dist/vis.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];
 
 	var cssFiles = [
 		'node_modules/digitopia/dist/css/digitopia.css',
+		'node_modules/vis/dist/vis.css',
 		'assets/vendor/*.css',
 		'working/css/*.css',
 		'assets/css/*.css',
