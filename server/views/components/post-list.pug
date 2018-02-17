@@ -16,7 +16,7 @@
 						!= post.commentSummary
 				
 				if post.athoritativeEndpoint
-					.post.loading(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user))
+					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post edit")
 				else 
 					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post edit")
 						.post-identity
