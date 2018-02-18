@@ -67,3 +67,9 @@ block content
 													| Request Pending [cancel]
 											else
 												|  [delete]
+
+
+		if friends.length
+			.row
+				.col-xs-12
+					#my-friends-graph.graph(style="margin:0 auto;width:90%;height:90vh;background-color:white;" data-jsclass="graphController" data-endpoint= '/' + user.username + '/friends.json')

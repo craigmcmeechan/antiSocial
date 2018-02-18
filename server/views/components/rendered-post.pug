@@ -5,7 +5,7 @@ block seo
 	- var profile = data.profile
 	
 	- var body = posts[0].body ? marked(posts[0].body) : ''
-	- var title = 'Post by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
+	- var title = 'Story by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
 	
 	if body.match(/^\<h\d[^\>]*\>([^\<]*)/)
 		- title= body.match(/^\<h\d[^\>]*\>([^\<]*)/)[0]

@@ -110,6 +110,17 @@ module.exports = function (MyUser) {
 				maxHeight: 300,
 				maxWidth: 300,
 				aspect: '1:1'
+			}],
+			'community-background': [{
+				suffix: 'large',
+				quality: 90,
+				maxHeight: 2048,
+				maxWidth: 2048,
+			}, {
+				suffix: 'thumb',
+				quality: 90,
+				maxHeight: 300,
+				maxWidth: 300,
 			}]
 		};
 

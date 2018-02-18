@@ -8,7 +8,8 @@ module.exports = function (server) {
 		var ctx = req.myContext;
 
 		res.render('pages/testbench', {
-			'globalSettings': ctx.get('globalSettings')
+			'globalSettings': ctx.get('globalSettings'),
+			'currentUser': ctx.get('currentUser')
 		});
 	});
 
