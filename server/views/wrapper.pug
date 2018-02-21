@@ -272,9 +272,9 @@ html(lang="en")
 		block controller
 
 		if env === 'production'
-			script(src="/dist/js/jquery.min.js" async defer)
+			script(src="/dist/js/jquery.min.js")
 		else
-			script(src="/dist/js/jquery.js" async defer)
+			script(src="/dist/js/jquery.js")
 
 		if environment.RAVEN
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
