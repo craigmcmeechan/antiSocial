@@ -15,8 +15,10 @@ html(lang="en")
 
 		if env === 'production'
 			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.min.css")
+			link(rel='stylesheet' href="/dist/css/vis.min.css")
 		else
 			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.css")
+			link(rel='stylesheet' href="/dist/css/vis.css")
 
 		block css
 			
@@ -266,9 +268,9 @@ html(lang="en")
 		block controller
 
 		if env === 'production'
-			script(src="/dist/js/jquery.min.js")
+			script(src="/dist/js/jquery.min.js" async defer)
 		else
-			script(src="/dist/js/jquery.js")
+			script(src="/dist/js/jquery.js" async defer)
 
 		if environment.RAVEN
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
@@ -276,9 +278,11 @@ html(lang="en")
 				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
 
 		if env === 'production'
-			script(src="/dist/js/DigitopiaSocial.min.js")
+			script(src="/dist/js/DigitopiaSocial.min.js" async defer)
+			script(src="/dist/js/vis.min.js" async defer)
 		else
-			script(src="/dist/js/DigitopiaSocial.js")
+			script(src="/dist/js/DigitopiaSocial.js" async defer)
+			script(src="/dist/js/vis.js" async defer)
 				
 		if environment.GOOGLE_MAPS_API_KEY
 			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)

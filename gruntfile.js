@@ -19,7 +19,6 @@ module.exports = function (grunt) {
 		'node_modules/marked/lib/marked.js',
 		'node_modules/autosize/dist/autosize.js',
 		'node_modules/node-vibrant/dist/vibrant.js',
-		'node_modules/vis/dist/vis.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];
@@ -34,6 +33,18 @@ module.exports = function (grunt) {
 	];
 
 	var copyCommand = [{
+		expand: true,
+		cwd: 'node_modules/vis/dist/',
+		src: ['vis.js', 'vis.min.js'],
+		dest: 'client/dist/js/',
+		filter: 'isFile'
+	}, {
+		expand: true,
+		cwd: 'node_modules/vis/dist/',
+		src: ['vis.css', 'vis.min.css'],
+		dest: 'client/dist/css/',
+		filter: 'isFile'
+	}, {
 		expand: true,
 		cwd: 'node_modules/jquery/dist/',
 		src: ['jquery.js', 'jquery.min.js'],
