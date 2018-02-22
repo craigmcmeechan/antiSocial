@@ -1,7 +1,7 @@
 (function ($) {
 	function checkboxGroupController(elem, options) {
 		this.element = $(elem);
-		this.target = $(this.element.data('target'));
+		this.target = this.element.find(this.element.data('target'));
 		this.list = [];
 		this.inputs = this.element.find('input');
 
@@ -35,7 +35,7 @@
 			self.element.off('click', 'input');
 		};
 
-		this.updateTarget = function() {
+		this.updateTarget = function () {
 			self.target.val(JSON.stringify(self.list));
 			self.target.trigger('change');
 		};

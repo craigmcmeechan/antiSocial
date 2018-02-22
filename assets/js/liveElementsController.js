@@ -4,18 +4,32 @@
 		var self = this;
 
 		this.start = function () {
-			this.element.on('NotifyLiveElement', function (e, type, about, endpoint) {
+			this.element.on('NotifyLiveElement', function (e, type, about, endpoint, eventType) {
 				e.stopPropagation();
 				self.element.find('.live-element[data-watch="' + about + '"]').each(function () {
 					var element = $(this);
 					element.addClass('changed');
-					if (type === 'comment' && element.data('watch-type') === type) {
+					if (type === 'post edit' && element.data('watch-type') === type) {
+						var item = $('<div>');
+						item.load(proxyEndPoint(endpoint), function () {
+							element.empty().append(item.find('.post').html());
+							didInjectContent(element);
+						});
+					}
+					else if (type === 'comment' && element.data('watch-type') === type) {
 						var item = $('<div>');
 						item.load(proxyEndPoint(endpoint), function () {
 							var comment = item.find('.a-comment');
 							var summary = item.find('.comments-label').html();
-							element.find('.comments').append(comment);
-							element.find('.comments-label').empty().append(summary);
+							if (eventType === 'update') {
+								var matches = endpoint.match(/([a-z0-9-]+)$/);
+
+								element.find('#comment-' + matches[1]).empty().append(comment);
+							}
+							else {
+								element.find('.comments').append(comment);
+								element.find('.comments-label').empty().append(summary);
+							}
 							didInjectContent(element);
 						})
 					}

@@ -106,10 +106,13 @@
 						var post = item.find('.newsfeed-item');
 						$('#scope-post-list').prepend(post);
 						didInjectContent($('#scope-post-list').find('.newsfeed-item')[0]);
-					})
+					});
+				}
+				else if (event.data.type === 'post edit') {
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about]);
 				}
 				else if (event.data.type === 'comment') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid]);
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid, event.type]);
 				}
 				else if (event.data.type === 'react') {
 					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/reactions']);

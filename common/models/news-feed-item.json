@@ -47,6 +47,12 @@
     "updatedOn": {
       "type": "date",
       "defaultFn": "now"
+    },
+    "versions": {
+      "type": ["object"]
+    },
+    "deleted": {
+      "type": "boolean"
     }
   },
   "validations": [],

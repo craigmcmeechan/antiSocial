@@ -112,4 +112,15 @@ block content
 						img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
 						.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
 							.dz-message.
-								Drop your photo here<br><small>(or click to upload)</small>
+								Drop your image here<br><small>(or click to upload)</small>
+
+			if isAdmin
+				.row
+					.col-sm-8
+						h3 Community Background
+						- var endpoint = "/api/MyUsers/me/upload/community-background"
+						.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+							img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
+							.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+								.dz-message.
+									Drop your image here<br><small>(or click to upload)</small>

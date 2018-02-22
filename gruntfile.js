@@ -25,6 +25,7 @@ module.exports = function (grunt) {
 
 	var cssFiles = [
 		'node_modules/digitopia/dist/css/digitopia.css',
+		'node_modules/vis/dist/vis.css',
 		'assets/vendor/*.css',
 		'working/css/*.css',
 		'assets/css/*.css',
@@ -32,6 +33,18 @@ module.exports = function (grunt) {
 	];
 
 	var copyCommand = [{
+		expand: true,
+		cwd: 'node_modules/vis/dist/',
+		src: ['vis.js', 'vis.min.js'],
+		dest: 'client/dist/js/',
+		filter: 'isFile'
+	}, {
+		expand: true,
+		cwd: 'node_modules/vis/dist/',
+		src: ['vis.css', 'vis.min.css'],
+		dest: 'client/dist/css/',
+		filter: 'isFile'
+	}, {
 		expand: true,
 		cwd: 'node_modules/jquery/dist/',
 		src: ['jquery.js', 'jquery.min.js'],
@@ -54,12 +67,6 @@ module.exports = function (grunt) {
 		cwd: 'assets/vendor/fa/fonts',
 		src: ['*'],
 		dest: 'client/dist/fonts/',
-		filter: 'isFile'
-	}, {
-		expand: true,
-		cwd: 'assets/vendor/emoji/',
-		src: ['*'],
-		dest: 'client/dist/emoji/',
 		filter: 'isFile'
 	}];
 

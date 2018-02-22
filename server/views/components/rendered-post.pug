@@ -5,7 +5,7 @@ block seo
 	- var profile = data.profile
 	
 	- var body = posts[0].body ? marked(posts[0].body) : ''
-	- var title = 'Post by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
+	- var title = 'Story by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
 	
 	if body.match(/^\<h\d[^\>]*\>([^\<]*)/)
 		- title= body.match(/^\<h\d[^\>]*\>([^\<]*)/)[0]
@@ -46,7 +46,7 @@ block content
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
-				.col-sm-8.left-column.vibrant
+				.col-sm-8.left-column
 					include ../components/post-list
 				.col-sm-4
 					if user

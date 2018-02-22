@@ -15,6 +15,7 @@ var pug = require('pug');
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
 var request = require('request');
+var graphlib = require('graphlib');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -170,8 +171,11 @@ module.exports = function (server) {
         return res.sendStatus(401);
       }
 
-      if (isMe) {
-        // get all friends of my friends
+      if (isMe) { // get all friends of my friends
+        var g = new graphlib.Graph({
+          directed: false
+        });
+
         var query = {
           'where': {
             'and': [{
@@ -184,8 +188,14 @@ module.exports = function (server) {
 
         server.models.Friend.find(query, function (err, friends) {
 
+          g.setNode(server.locals.config.publicHost + '/' + currentUser.username, {
+            'name': currentUser.username
+          });
+
           for (var i = 0; i < friends.length; i++) {
-            map[friends[i].remoteEndPoint] = [server.locals.config.publicHost + '/' + currentUser.username];
+            g.setNode(friends[i].remoteEndPoint, {
+              'name': friends[i].remoteUsername
+            });
           }
 
           async.map(friends, function (friend, cb) {
@@ -223,12 +233,13 @@ module.exports = function (server) {
 
               if (data.friends) {
                 for (var i = 0; i < data.friends.length; i++) {
-                  if (data.friends[i] != server.locals.config.publicHost + '/' + currentUser.username) {
-                    if (!map[data.friends[i]]) {
-                      map[data.friends[i]] = [];
-                    }
-                    map[data.friends[i]].push(friend.remoteEndPoint);
+                  if (!g.hasNode(data.friends[i].remoteEndPoint)) {
+                    g.setNode(data.friends[i].remoteEndPoint, {
+                      'name': data.friends[i].remoteUsername
+                    });
                   }
+                  g.setEdge(friend.remoteEndPoint, data.friends[i].remoteEndPoint)
+
                 }
               }
 
@@ -244,19 +255,32 @@ module.exports = function (server) {
                 'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
               },
               'me': server.locals.config.publicHost + '/' + currentUser.username,
-              'friends': map
+              'friends': graphlib.json.write(g)
             };
 
             if (view === '.json') {
               return res.send(encryptIfFriend(friend, data));
             }
             else {
-              res.send('no template');
+              var options = {
+                'data': data,
+                'user': currentUser,
+                'friend': friend,
+                'isMe': isMe,
+                'myEndpoint': getPOVEndpoint(friend, currentUser)
+              };
+
+              renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+                if (err) {
+                  return next(err);
+                }
+                return res.send(encryptIfFriend(friend, html));
+              });
             }
           });
         });
       }
-      else {
+      else { // get friends list
         var query = {
           'where': {
             'and': [{
@@ -267,11 +291,12 @@ module.exports = function (server) {
           }
         };
 
-        console.log('%j', query);
-
         server.models.Friend.find(query, function (err, friends) {
           for (var i = 0; i < friends.length; i++) {
-            endpoints.push(friends[i].remoteEndPoint);
+            endpoints.push({
+              'remoteEndPoint': friends[i].remoteEndPoint,
+              'remoteUsername': friends[i].remoteUsername
+            });
           }
 
           var data = {
@@ -288,7 +313,20 @@ module.exports = function (server) {
             return res.send(encryptIfFriend(friend, data));
           }
           else {
-            res.send('no template');
+            var options = {
+              'data': data,
+              'user': currentUser,
+              'friend': friend,
+              'isMe': isMe,
+              'myEndpoint': getPOVEndpoint(friend, currentUser)
+            };
+
+            renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+              if (err) {
+                return next(err);
+              }
+              return res.send(encryptIfFriend(friend, html));
+            });
           }
         });
       }

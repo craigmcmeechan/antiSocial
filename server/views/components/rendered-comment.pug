@@ -6,14 +6,30 @@ if !comment
 if wantSummary
 	include rendered-comment-summary
 	
-.a-comment
-	.comment
+.a-comment(id= 'comment-' + comment.uuid)
+	.comment(class= comment.deleted ? 'deleted': '')
 		- var thumb = comment.resolvedProfiles[comment.source].profile.photo.url
 		- var name = comment.resolvedProfiles[comment.source].profile.name
 		.thumb-container
 			a(href= proxyEndPoint(comment.source,user))
 				img.profile-thumb(src= thumb)
 		.comment-container
+			
+			.post-actions.pull-right
+				- var isMine = (comment.source === config.publicHost + '/' + user.username) ? 'true' : ''
+
+				.dropdown(data-jsclass="commentActionsController" data-comment-id= comment.uuid data-is-mine= isMine)
+					button.btn-xs(data-toggle="dropdown")
+						i.fa.fa-ellipsis-h
+					ul.dropdown-menu
+						if isMine
+							li 
+								a.edit-comment(href="#") Edit Comment
+							li 
+								a.delete-comment(href="#") Delete Comment
+						li
+							a.hide-comment(href="#") Hide Comment
+			
 			strong.pull-left
 				a(href= proxyEndPoint(comment.source,user))
 					span.profile-link
@@ -26,6 +42,9 @@ if wantSummary
 			
 			span.timestamp.secondary(data-timestamp= moment(comment.createdOn).toISOString())
 				!= ' - ' + moment(comment.createdOn).calendar()
+
+			if comment.versions && comment.versions.length
+				span.secondary  (edited)
 
 			- var reactions = comment.resolvedReactions
 			- var reactionSummary = comment.reactionSummary

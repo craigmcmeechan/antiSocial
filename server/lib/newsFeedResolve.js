@@ -19,7 +19,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 
 		var whoAbout = myNewsFeedItem.about.replace(/\/post\/.*$/, '');
 
-		if (myNewsFeedItem.type === 'pending friend request' || 'frend invite accepted') {
+		if (myNewsFeedItem.type === 'pending friend request' || myNewsFeedItem.type === 'frend invite accepted') {
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
@@ -48,6 +48,23 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
 			myNewsFeedItem.humanReadable += ' posted <a href="' + proxyEndPoint(myNewsFeedItem.about, currentUser) + '">this</a>';
+			if (myNewsFeedItem.target) {
+				myNewsFeedItem.humanReadable += ' on <a href="' + proxyEndPoint(myNewsFeedItem.target, currentUser) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name, true) + '</a> wall';
+			}
+			myNewsFeedItem.humanReadable += '</div>';
+		}
+
+		if (myNewsFeedItem.type === 'post edit') {
+			if (myNewsFeedItem.target === myEndPoint) {
+				debug(sourceProfile.profile.name + '" edited ' + myNewsFeedItem.about + ' to your wall');
+			}
+			else {
+				debug(sourceProfile.profile.name + '" edited ' + myNewsFeedItem.about);
+			}
+			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
+			myNewsFeedItem.humanReadable += '<div>';
+			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' edited <a href="' + proxyEndPoint(myNewsFeedItem.about, currentUser) + '">this</a>';
 			if (myNewsFeedItem.target) {
 				myNewsFeedItem.humanReadable += ' on <a href="' + proxyEndPoint(myNewsFeedItem.target, currentUser) + '"> ' + fixNameYou(myEndPoint, myNewsFeedItem.target, targetProfile.profile.name, true) + '</a> wall';
 			}

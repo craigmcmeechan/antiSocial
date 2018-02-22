@@ -6,9 +6,9 @@
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
 			- var isPublic = post.visibility.indexOf('public') !== -1
 			- var commentCount = post.commentCount
-			- var isMine = false;
+			- var isMine = '';
 			if user
-				- isMine = post.source === config.publicHost + '/' + user.username;
+				- isMine = post.source === config.publicHost + '/' + user.username ? 'true' : '';
 			
 			.newsfeed-item
 				if post.commentSummary || post.reactionSummary
@@ -16,9 +16,9 @@
 						!= post.commentSummary
 				
 				if post.athoritativeEndpoint
-					.post.loading(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user))
+					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post edit")
 				else 
-					.post.live-element(data-watch= post.source + '/post/' + post.uuid)
+					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post edit")
 						.post-identity
 							.post-avatar
 								.media
@@ -34,7 +34,7 @@
 											img.media-object(src= thumb)
 									.media-body
 										.post-actions.pull-right
-											.dropdown(data-jsclass="postActionsController" data-endpoint= postEndpoint data-is-mine= isMine)
+											.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
 												button.btn-xs(data-toggle="dropdown")
 													i.fa.fa-ellipsis-h
 												ul.dropdown-menu
@@ -52,7 +52,12 @@
 												span.glyphicon.glyphicon-arrow-right.target-arrow
 												a(href= proxyEndPoint(post.about,user))= about.name
 										div.secondary
-											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())= moment(post.createdOn).calendar()
+											if post.versions
+												.post-edited
+													| (edited)
+											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())
+												= moment(post.createdOn).calendar()
+												
 											.visibility
 												if post.visibility.indexOf('public') !== -1
 													i.glyphicon.glyphicon-globe

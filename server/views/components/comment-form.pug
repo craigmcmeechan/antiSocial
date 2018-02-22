@@ -2,11 +2,13 @@
 
 #scope-posting-form
 	.clearfix
-	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= about data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body" data-single-upload= "1")
+	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= about data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body" data-single-upload= "1" data-modal="#edit-comment-form")
 		.tabbed
 			#form-tab
 				.form-group.input-relative
 					textarea.posting-body.form-control(type="text" name="body" placeholder="Reply to this post." data-validate="required")
+						if comment
+							= comment.details.body
 					.input-ok-indicator.hide-until-subject-focus
 						span.glyphicon.glyphicon-ok
 					.validation-help.hide-until-subject-focus
