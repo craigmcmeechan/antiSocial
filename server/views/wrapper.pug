@@ -4,10 +4,14 @@ html(lang="en")
 		meta(charset="utf-8")
 		meta(http-equiv="X-UA-Compatible" content="IE=edge")
 		meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
+			
 		meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no")
 		meta(name="apple-mobile-web-app-capable" content="yes")
 		meta(name="apple-mobile-web-app-status-bar-style" content="black")
+		meta(name="apple-mobile-web-app-title" content="myAntiSocial.net")
 		meta(name="format-detection" content="telephone=no")
+		link(rel="apple-touch-icon" href="/images/logo.png")
+		// link(rel="apple-touch-startup-image" href="/launch.png")
 
 		link(href='//fonts.googleapis.com/css?family=Titillium+Web:100,300,400,600' rel='stylesheet' type='text/css')
 
@@ -17,6 +21,8 @@ html(lang="en")
 			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.min.css")
 		else
 			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.css")
+
+		link(rel='stylesheet' href="/dist/css/vis.min.css")
 
 		block css
 			
@@ -276,9 +282,11 @@ html(lang="en")
 				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
 
 		if env === 'production'
-			script(src="/dist/js/DigitopiaSocial.min.js")
+			script(src="/dist/js/DigitopiaSocial.min.js" async defer)
 		else
-			script(src="/dist/js/DigitopiaSocial.js")
+			script(src="/dist/js/DigitopiaSocial.js" async defer)
+				
+		script(src="/dist/js/vis.min.js" async defer)
 				
 		if environment.GOOGLE_MAPS_API_KEY
 			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
