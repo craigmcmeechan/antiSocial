@@ -270,7 +270,7 @@ module.exports = function (MyUser) {
 		var theUser = null;
 
 		var unique = sh.unique(server.locals.config.publicHost + '/' + uuid());
-		var username = name.toLowerCase().replace(/[^a-z0-9\-]/, '') + '-' + unique;
+		var username = name.toLowerCase().replace(/[^a-z0-9\-]/g, '') + '-' + unique;
 
 		var adminUser = {
 			'email': email,
