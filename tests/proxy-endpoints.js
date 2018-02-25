@@ -58,7 +58,7 @@ describe('proxy endpoints', function () {
 				.send({
 					'email': email1,
 					'password': password,
-					'name': 'user-1'
+					'name': 'user one with many spaces'
 				})
 				.end(function (err, res) {
 					expect(err).to.be(null);
