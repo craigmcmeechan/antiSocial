@@ -1,23 +1,36 @@
-p #{user} (#{email}) has invited you be friends on myAntiSocial.net
+p Please join me (#{user} #{email}) on myAntiSocial.net
 
 p= note
 
-h4 If you do not already have a myAntiSocial account:
+h4 You can create an account on my server if you do not already have a myAntiSocial account:
 ul
 	li 
 		| View #{user}'s profile 
 		a(href= url) Here
-	li Complete the registration form to create an antiSocialNet account.
+	li Click the "Create Account" button at the top of the page and complete the registration form to create an antiSocialNet account and automatically add me as a friend.
 	
 h4 If you do have a myAntiSocial account:
 ul
-	li Log on to your account.
+	li Log on to your account on your server.
 	li Select your "friends" page.
 	li Paste #{endpoint} into the "Add friend by Public Page URL" field.
 
-h3 General information about myAntiSocial.net
+p This experimental prototype is an implementation of a "distributed" social network (a social network consisting of many user controlled servers). We have worked out most of the protocols that allow the application to behave like a centralized service.
+
+p What is the same as other services:
 ul
+	li Establish friend relationships
+	li Create posts with explicit audience permission w/ optional photos and geotagging
+	li Real time updates of new posts, comments and likes in your friend network
+
+p What is different:
+ul
+	li News feeds contain only content created by your friends (and friends of friends if one of your friends interacted with that content.)
+	li No advertising, no data collection, no demographic information shared with anyone
 	li Total user control and ownership of content
-	li Total user control over who sees what
-	li No advertising, no data collection, no demographic information shared with corporations
-	li Strong cryptography and signed messages for communication between servers that can only be decrypted by the target user
+	li End-to-end strong cryptography and signed messages for communication between servers that can only be decrypted by the target user
+	li More expressive posts: typography, imagery, multiple links
+
+p This is a work in progress and this particular implementation is mostly aimed at proving protocol theories but it kinda works. At this stage I need some people to use it a bit (make some posts, make some friends and like and comment on stuff)
+
+p Expect things to be broken and half implemented. The mobile experience is mostly workable (works best if you save the page to your home screen and use it via that "bookmark" because it does away with the safari/chrome UI which jut gets in the way.)
