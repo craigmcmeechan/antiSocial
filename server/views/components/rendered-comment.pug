@@ -17,12 +17,12 @@ if wantSummary
 			
 			.post-actions.pull-right
 				- var isMine = (comment.source === config.publicHost + '/' + user.username) ? 'true' : ''
-
-				.dropdown(data-jsclass="commentActionsController" data-comment-id= comment.uuid data-is-mine= isMine)
+				- var postIsMine = (comment.about.replace(/\/post.*/,'') === config.publicHost + '/' + user.username) ? 'true' : ''
+				.dropdown(data-jsclass="commentActionsController" data-comment-id= comment.uuid data-is-mine= (isMine || postIsMine))
 					button.btn-xs(data-toggle="dropdown")
 						i.fa.fa-ellipsis-h
 					ul.dropdown-menu
-						if isMine
+						if (isMine || postIsMine)
 							li 
 								a.edit-comment(href="#") Edit Comment
 							li 

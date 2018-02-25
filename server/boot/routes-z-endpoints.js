@@ -100,7 +100,7 @@ module.exports = function (server) {
             });
           },
           function (user, posts, cb) {
-            resolveReactionsCommentsAndProfiles(posts, function (err) {
+            resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
               cb(err, user, posts);
             });
           }
@@ -373,7 +373,7 @@ module.exports = function (server) {
         });
       },
       function (user, posts, cb) {
-        resolveReactionsCommentsAndProfiles(posts, function (err) {
+        resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
           cb(err, user, posts);
         });
       }
@@ -458,7 +458,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveReactionsCommentsAndProfiles([post], function (err) {
+        resolveReactionsCommentsAndProfiles([post], isMe, function (err) {
           cb(err, user, post);
         });
       }
@@ -643,7 +643,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       },
@@ -741,7 +741,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       },
@@ -856,7 +856,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       }
@@ -1268,7 +1268,7 @@ module.exports = function (server) {
 
       // TODO kludge
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
         async.map(thePhoto.resolvedComments, resolveProfiles, function (err) {
 
           var data = {
@@ -1374,7 +1374,7 @@ module.exports = function (server) {
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
@@ -1498,7 +1498,7 @@ module.exports = function (server) {
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
