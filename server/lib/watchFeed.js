@@ -156,6 +156,9 @@ function getListener(server, connection) {
 						oldNews.save();
 						return;
 					}
+
+					debug('watchFeed ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
+					return;
 				}
 				else {
 					if (message.type === 'update') {

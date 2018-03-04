@@ -46,7 +46,7 @@ if photos && photos.length
 						if !upload
 							p= JSON.stringify(photos)
 						else
-							.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-blowup="true" data-width-percent="1")
+							.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-width-percent="1")
 								img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
 								if index + 1 === limit && photos.length > limit
 									.more-photos
