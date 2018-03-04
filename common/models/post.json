@@ -61,6 +61,12 @@
     },
     "versions": {
       "type": ["object"]
+    },
+    "tags": {
+      "type": ["string"]
+    },
+    "resolvedTags": {
+      "type": "object"
     }
   },
   "validations": [],
