@@ -415,7 +415,7 @@ module.exports = function (server) {
         var e = new WError(err, 'could not save post');
         server.locals.logger.error(e.toString());
         return res.send({
-          'status': 'could not save post'
+          'status': e.cause().message
         });
       }
       res.send({

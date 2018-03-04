@@ -60,11 +60,21 @@ module.exports = function (server) {
 			}
 		};
 
+		var query = [];
+
 		if (req.query.more) {
-			options.url += '?more=1';
+			query.push('more=1');
 			if (req.query.highwater) {
-				options.url += '&highwater=' + req.query.highwater;
+				query.push('highwater=' + req.query.highwater);
 			}
+		}
+
+		if (req.query.tags) {
+			query.push('tags=' + req.query.tags);
+		}
+
+		if (query.length) {
+			options.url += '?' + query.join('&');
 		}
 
 		if (friend) {

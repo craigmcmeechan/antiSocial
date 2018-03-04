@@ -16,7 +16,7 @@ module.exports = function (PushNewsFeedItem) {
 		var accessToken = ctx.req.headers['friend-access-token'];
 		var highwater = ctx.req.headers['friend-high-water'] ? ctx.req.headers['friend-high-water'] : 0;
 
-		debug('connect request from %s token %s highwater %s', username, accessToken, highwater);
+		debug('pushNewsFeed connect request from %s token %s highwater %s', username, accessToken, highwater);
 
 		var logger = ctx.req.logger;
 
@@ -59,7 +59,7 @@ module.exports = function (PushNewsFeedItem) {
 					streamDescription += ' -> ' + friend.remoteEndPoint + ' audiences:' + friend.audiences;
 				}
 
-				debug(streamDescription);
+				debug('pushNewsFeed ' + streamDescription);
 
 				// ok we have the user and the subscriber friend record if applicable
 
@@ -72,7 +72,7 @@ module.exports = function (PushNewsFeedItem) {
 				var changeHandler = createChangeHandler('save');
 
 				changes.destroy = function () {
-					debug('destroy');
+					debug('pushNewsFeed ' + streamDescription + ' destroy');
 					if (changes) {
 						changes.removeAllListeners('error');
 						changes.removeAllListeners('end');
@@ -87,13 +87,13 @@ module.exports = function (PushNewsFeedItem) {
 				});
 
 				changes.on('end', function (e) {
-					debug(streamDescription + ' end', e);
+					debug('pushNewsFeed ' + streamDescription + ' end', e);
 				});
 
 				ctx.res.setTimeout(24 * 3600 * 1000);
 				ctx.res.set('X-Accel-Buffering', 'no');
 				ctx.res.on('close', function (e) {
-					debug('res closed');
+					debug('pushNewsFeed ' + streamDescription + ' res closed');
 					changes.destroy();
 				});
 
@@ -121,7 +121,7 @@ module.exports = function (PushNewsFeedItem) {
 							logger.error('backfilling PushNewsFeedItem %j error', query, e);
 						}
 						else {
-							debug('backfilling PushNewsFeedItem %j count %d', query, items ? items.length : 0);
+							debug('pushNewsFeed ' + streamDescription + ' backfilling PushNewsFeedItem %j count %d', query, items ? items.length : 0);
 
 							items.reverse();
 
@@ -143,7 +143,8 @@ module.exports = function (PushNewsFeedItem) {
 								var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(data));
 
 								var change = {
-									'target': 'create',
+									'type': 'backfill',
+									'target': data.id,
 									'where': {},
 									'data': encrypted.data,
 									'sig': encrypted.sig,
@@ -244,7 +245,7 @@ module.exports = function (PushNewsFeedItem) {
 						}
 
 						if (writeable) {
-							//debug('notifying ' + streamDescription, change);
+							debug('pushNewsFeed ' + streamDescription, change);
 							changes.write(change);
 						}
 

@@ -576,7 +576,7 @@ module.exports = function (server) {
 					debug('callWebhook ' + friend.remoteEndPoint + '/friend-webhook/friend-request-accepted got %j', body);
 
 					if (err) {
-						return cb(new VError(err, 'r/accept-friend callWebhook failed'));
+						return cb(new VError(err, '/accept-friend callWebhook failed'));
 					}
 					if (response.statusCode !== 200) {
 						return cb(new VError('/accept-friend callWebhook http error ' + response.statusCode));
