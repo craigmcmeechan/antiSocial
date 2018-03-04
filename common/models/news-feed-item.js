@@ -97,7 +97,7 @@ module.exports = function (NewsFeedItem) {
 							newsFeedItemResolve(user, items[i], function (err, data) {
 
 								var change = {
-									'target': 'create',
+									'type': 'create',
 									'where': {},
 									'data': data,
 									'backfill': true

@@ -41,7 +41,7 @@ var encryption = require('./encryption');
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 
-var listeners = {};
+var connections = {};
 
 module.exports = function watchFeed(server, friend) {
 
@@ -56,33 +56,47 @@ module.exports = function watchFeed(server, friend) {
 
 		var key = currentUser.username + ' <- ' + feed;
 
-		if (listeners[key]) {
-			debug('already listening', friend);
+		if (connections[key]) {
+			debug('watchFeed ' + currentUser.username + ' already listening', friend);
 		}
 		else {
-			debug('EventSource listening ' + key);
-			listeners[key] = new es(feed, {
+			debug('watchFeed ' + currentUser.username + ' listening ' + key);
+			var eventSource = new es(feed, {
 				headers: {
 					'friend-access-token': friend.remoteAccessToken,
 					'friend-high-water': friend.highWater
 				}
 			});
-			listeners[key].addEventListener('data', getListener(server, friend));
-			listeners[key].addEventListener('error', listenError);
-			listeners[key].addEventListener('close', listenError);
+
+			var connection = {
+				'endpoint': feed,
+				'eventSource': eventSource,
+				'currentUser': currentUser,
+				'friend': friend
+			};
+
+			connections[key] = connection;
+
+			eventSource.addEventListener('data', getListener(server, connection));
+			eventSource.addEventListener('error', getErrorHandler(server, connection));
+			eventSource.addEventListener('close', getErrorHandler(server, connection));
+
 		}
 	});
 };
 
-function listenError(e) {
-	debug(e);
+function getErrorHandler(server, connection) {
+	return function (e) {
+		debug('watchFeed error %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+	};
 }
 
-function getListener(server, friend) {
+function getListener(server, connection) {
+	var friend = connection.friend;
 	var currentUser = friend.user();
 
 	return function (e) {
-		debugVerbose('listener received:', e);
+		debugVerbose('listener ' + currentUser.username + ' received:', e);
 
 		var logger = server.locals.logger;
 
@@ -128,17 +142,25 @@ function getListener(server, friend) {
 					return;
 				}
 
-				if (oldNews && message.type === 'create') {
-					debugVerbose('old news %j', oldNews);
-					return;
-				}
+				if (oldNews) {
+					if (message.type === 'create') {
+						debug('watchFeed ' + currentUser.username + ' skipping old news %j %j', oldNews);
+						return;
+					}
 
-				if (message.type === 'update') {
-					oldNews.details = myNewsFeedItem.details;
-					oldNews.versions = myNewsFeedItem.versions;
-					oldNews.deleted = myNewsFeedItem.deleted;
-					oldNews.save();
-					return;
+					if (message.type === 'update' || message.type === 'backfill') {
+						debug('watchFeed ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
+						oldNews.details = myNewsFeedItem.details;
+						oldNews.versions = myNewsFeedItem.versions;
+						oldNews.deleted = myNewsFeedItem.deleted;
+						oldNews.save();
+						return;
+					}
+				}
+				else {
+					if (message.type === 'update') {
+						debug('watchFeed ' + currentUser.username + ' received update but NewsFeedItem not found %j', message);
+					}
 				}
 
 				var about = myNewsFeedItem.about;
@@ -171,7 +193,7 @@ function getListener(server, friend) {
 					}
 
 					if (!found.length && !isMe) {
-						debug(server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
+						debug('watchFeed ' + currentUser.username + ' ' + server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
 						return;
 					}
 
@@ -182,6 +204,8 @@ function getListener(server, friend) {
 							delete myNewsFeedItem.visibility;
 							myNewsFeedItem.userId = currentUser.id;
 							myNewsFeedItem.friendId = friend.id;
+
+							debug('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
 
 							server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 								if (err) {
@@ -243,7 +267,7 @@ function getListener(server, friend) {
 						},
 						function updateHighwater(cb) {
 
-							debug('saving highwater %j', message.data.createdOn);
+							debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
 
 							friend.updateAttributes({
 								'highWater': message.data.createdOn
