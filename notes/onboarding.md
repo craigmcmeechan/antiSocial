@@ -1,7 +1,5 @@
 Please join me on myAntiSocial.net
 
-You can create an account on my server by following the link in the "If you do not already have a myAntiSocial account" below.
-
 This experimental prototype is an implementation of a "distributed" social network (a social network consisting of many user controlled servers). We have worked out most of the protocols that allow the application to behave like a centralized service.
 
 What is the same as other services:

@@ -256,8 +256,8 @@ module.exports = function (server) {
     var currentUser = ctx.get('currentUser');
     var commentId = req.params.id;
     async.waterfall([
-      function getPost(cb) {
-        var query = {
+      function deletePushNews(cb) {
+        server.models.PushNewsFeedItem.find({
           'where': {
             'and': [{
               'uuid': commentId
@@ -265,46 +265,21 @@ module.exports = function (server) {
               'userId': currentUser.id
             }]
           }
-        };
-
-        server.models.PushNewsFeedItem.findOne(query, function (err, comment) {
-          if (err) {
-            return cb(err);
-          }
-
-          if (!comment) {
-            err = new Error('comment not found');
-            err.statusCode = 404;
-            return cb(err);
-          }
-
-          cb(null, comment);
-        });
-      },
-      function deletePushNews(comment, cb) {
-        server.models.PushNewsFeedItem.find({
-          'where': {
-            'and': [{
-              'uuid': comment.uuid
-            }, {
-              'userId': currentUser.id
-            }]
-          }
         }, function (err, items) {
           async.map(items, function (item, mapcb) {
             item.deleted = true;
             item.save();
             mapcb();
           }, function (err) {
-            cb(err, comment);
+            cb(err);
           });
         });
       },
-      function deleteNewsFeedItems(comment, cb) {
+      function deleteNewsFeedItems(cb) {
         server.models.NewsFeedItem.find({
           'where': {
             'and': [{
-              'uuid': comment.uuid
+              'uuid': commentId
             }, {
               'userId': currentUser.id
             }]
@@ -315,7 +290,7 @@ module.exports = function (server) {
             item.save();
             mapcb();
           }, function (err) {
-            cb(err, comment);
+            cb(err);
           });
         });
       }

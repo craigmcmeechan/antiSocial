@@ -225,7 +225,7 @@ module.exports = function (MyUser) {
 					}
 
 					// build friend request
-					// TODO automatically approve invited friend in friend protocol
+					// TODO automatically approve invited friend in friend protocol DONE?
 					var endpoint = server.locals.config.publicHost + '/' + invite.user().username;
 
 					var options = {

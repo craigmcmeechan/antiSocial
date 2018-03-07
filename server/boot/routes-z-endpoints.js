@@ -60,6 +60,7 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var highwater = req.query.highwater;
+    var tags = req.query.tags;
 
     var isMe = false;
 
@@ -90,7 +91,7 @@ module.exports = function (server) {
       else {
         async.waterfall([
           function (cb) {
-            getPosts(user, friend, highwater, isMe, function (err, posts) {
+            getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
               cb(err, user, posts);
             });
           },
@@ -100,7 +101,7 @@ module.exports = function (server) {
             });
           },
           function (user, posts, cb) {
-            resolveReactionsCommentsAndProfiles(posts, function (err) {
+            resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
               cb(err, user, posts);
             });
           }
@@ -344,6 +345,7 @@ module.exports = function (server) {
     var username = matches[1];
     var view = matches[2];
     var highwater = req.query.highwater;
+    var tags = req.query.tags;
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var isMe = false;
@@ -363,7 +365,7 @@ module.exports = function (server) {
             isMe = true;
           }
         }
-        getPosts(user, friend, highwater, isMe, function (err, posts) {
+        getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
           cb(err, user, posts);
         });
       },
@@ -373,7 +375,7 @@ module.exports = function (server) {
         });
       },
       function (user, posts, cb) {
-        resolveReactionsCommentsAndProfiles(posts, function (err) {
+        resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
           cb(err, user, posts);
         });
       }
@@ -458,7 +460,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveReactionsCommentsAndProfiles([post], function (err) {
+        resolveReactionsCommentsAndProfiles([post], isMe, function (err) {
           cb(err, user, post);
         });
       }
@@ -643,7 +645,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       },
@@ -741,7 +743,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       },
@@ -856,7 +858,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       }
@@ -1268,7 +1270,7 @@ module.exports = function (server) {
 
       // TODO kludge
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
         async.map(thePhoto.resolvedComments, resolveProfiles, function (err) {
 
           var data = {
@@ -1374,7 +1376,7 @@ module.exports = function (server) {
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
@@ -1498,7 +1500,7 @@ module.exports = function (server) {
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
@@ -1655,7 +1657,7 @@ module.exports = function (server) {
     };
   }
 
-  function getPosts(user, friend, highwater, isMe, cb) {
+  function getPosts(user, friend, highwater, isMe, tags, cb) {
 
     var query = {
       'where': {
@@ -1679,6 +1681,20 @@ module.exports = function (server) {
       query.where.and.push({
         'createdOn': {
           'lt': highwater
+        }
+      });
+    }
+
+    if (tags) {
+      try {
+        tags = JSON.parse(tags);
+      }
+      catch (e) {
+        tags = [];
+      }
+      query.where.and.push({
+        'tags': {
+          'inq': tags
         }
       });
     }

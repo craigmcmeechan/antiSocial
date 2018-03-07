@@ -1,3 +1,4 @@
+// TODO: populate tags and resolvedTags when user types @xxxxx xxxx xxx or #xxxxx-xxx
 (function ($) {
 	function postingFormController(elem) {
 		this.element = $(elem);
@@ -182,7 +183,6 @@
 				});
 			}
 
-
 			self.element.find('.upload-zone').sortable({
 				'placeholder': 'ui-state-highlight'
 			});
@@ -217,6 +217,18 @@
 				}
 				geo = JSON.parse(geo);
 
+				var tags = self.element.find('.tags').val();
+				if (!tags) {
+					tags = '[]';
+				}
+				tags = JSON.parse(tags);
+
+				var resolvedTags = self.element.find('.resolved-tags').val();
+				if (!resolvedTags) {
+					resolvedTags = '{}';
+				}
+				resolvedTags = JSON.parse(resolvedTags);
+
 				var payload = {
 					'body': self.element.find('.posting-body').val(),
 					'geoDescription': geo.description,
@@ -225,7 +237,9 @@
 					'categories': JSON.stringify(self.categories),
 					'about': self.about,
 					'photos': photos,
-					'photoId': photoId
+					'photoId': photoId,
+					'tags': tags,
+					'resolvedTags': resolvedTags
 				};
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {
@@ -287,19 +301,6 @@
 				}
 			});
 
-			this.hideForm = function () {
-				self.element.removeClass('focused');
-				self.element.find('.posting-body').val('');
-				self.element.find('.touched').removeClass('touched input-error input-ok');
-				if (self.previewMode) {
-					$('#post-preview-button').click();
-				}
-				self.element.find('.posting-body').css('height', 'auto');
-
-				//if (self.endpoint !== '/comment') {
-				//	$('body').trigger('DigitopiaReloadPage');
-				//}
-			};
 		};
 
 		this.stop = function () {
@@ -310,6 +311,16 @@
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
 			self.element.off('keyup', '.posting-body');
+		};
+
+		this.hideForm = function () {
+			self.element.removeClass('focused');
+			self.element.find('.posting-body').val('');
+			self.element.find('.touched').removeClass('touched input-error input-ok');
+			if (self.previewMode) {
+				$('#post-preview-button').click();
+			}
+			self.element.find('.posting-body').css('height', 'auto');
 		};
 
 		this.renderPreview = function () {

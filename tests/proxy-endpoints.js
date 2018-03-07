@@ -76,7 +76,7 @@ describe('proxy endpoints', function () {
 				.send({
 					'email': email2,
 					'password': password,
-					'name': 'user-2'
+					'name': 'user two'
 				})
 				.end(function (err, res) {
 					expect(err).to.be(null);
@@ -94,7 +94,7 @@ describe('proxy endpoints', function () {
 				.send({
 					'email': email3,
 					'password': password,
-					'name': 'user-3'
+					'name': 'user three'
 				})
 				.end(function (err, res) {
 					expect(err).to.be(null);
@@ -190,6 +190,28 @@ describe('proxy endpoints', function () {
 			// console.log('post w/photo %j', res.body);
 			expect(res.body.status).to.be('ok');
 			post2 = res.body.uuid;
+			done();
+		});
+	});
+
+	it('user2 should be able to post (friends only) w/tags', function (done) {
+		var payload = {
+			'body': 'Hello world',
+			'visibility': ['friends'],
+			'tags': ['@user one with many spaces', '@user three', '#some-hashtag'],
+			'resolvedTags': {
+				'@user one with many spaces': {
+					'endpoint': endpoint1
+				}
+			}
+		};
+
+		client2.post('http://127.0.0.1:3000/post').send(payload).end(function (err, res) {
+			// console.log(res.body);
+			expect(res.status).to.be(200);
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			// console.log('post w/photo %j', res.body);
+			expect(res.body.status).to.be('ok');
 			done();
 		});
 	});
@@ -291,7 +313,7 @@ describe('proxy endpoints', function () {
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
 			// console.log('posts %j', res.body);
-			expect(res.body.posts.length).to.be(2);
+			expect(res.body.posts.length).to.be(3);
 			done();
 		});
 	});
@@ -305,6 +327,17 @@ describe('proxy endpoints', function () {
 		});
 	});
 
+	it('user1 should be able to get user2 tagged posts (json)', function (done) {
+		client1.get(endpoint2 + '/posts.json?tags=["@user one with many spaces"]').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body).to.be.an('object');
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			// console.log('posts %j', res.body);
+			expect(res.body.posts.length).to.be(1);
+			done();
+		});
+	});
+
 	it('anon user should be able to get user2 public posts (json)', function (done) {
 		clientAnon.get(endpoint2 + '/posts.json').end(function (err, res) {
 			expect(res.status).to.be(200);
@@ -312,6 +345,17 @@ describe('proxy endpoints', function () {
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
 			// console.log('public posts %j', res.body);
 			expect(res.body.posts.length).to.be(1);
+			done();
+		});
+	});
+
+	it('user 2 should be able to get all user 2 posts (json)', function (done) {
+		client2.get(endpoint2 + '/posts.json').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body).to.be.an('object');
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			// console.log('public posts %j', res.body);
+			expect(res.body.posts.length).to.be(3);
 			done();
 		});
 	});

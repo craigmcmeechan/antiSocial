@@ -6,7 +6,7 @@ var debugVerbose = require('debug')('resolve:verbose');
 
 var resolveReactions = require('./resolveReactions');
 
-module.exports = function resolveComments(items, itemType, done) {
+module.exports = function resolveComments(items, itemType, isMe, done) {
 	async.map(items, function (item, doneMap) {
 		debug('resolveComments ' + itemType + ' ' + item.uuid);
 
@@ -28,6 +28,14 @@ module.exports = function resolveComments(items, itemType, done) {
 			},
 			'order': 'createdOn ASC'
 		};
+
+		if (!isMe) {
+			query.where.and.push({
+				'deleted': {
+					'neq': true
+				}
+			});
+		}
 
 		//console.log('comments: "' + itemType + '" %j ', query);
 

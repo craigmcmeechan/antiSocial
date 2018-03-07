@@ -19,8 +19,8 @@ module.exports = function (Photo) {
 			}, {
 				suffix: 'thumb',
 				quality: 90,
-				maxHeight: 300,
-				maxWidth: 300,
+				maxHeight: 600,
+				maxWidth: 600,
 			}]
 		};
 
