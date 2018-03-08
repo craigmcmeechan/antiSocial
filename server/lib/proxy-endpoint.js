@@ -27,7 +27,7 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 			}
 			for (var i = 0; i < currentUser.friends().length; i++) {
 				var friend = currentUser.friends()[i];
-				if (friend.remoteUsername === friendUsername) {
+				if (friend.remoteEndPoint === endpoint) {
 					var unproxied = url.parse(endpoint).pathname;
 
 					// use uniqued username for local request url form
