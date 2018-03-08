@@ -46,15 +46,52 @@ module.exports = function (server) {
         return next(err);
       }
       if (item) {
-        if (!item.versions) {
-          item.versions = [];
-        }
-        item.versions.push({
-          'reaction': item.details.body,
-          'timestamp': new Date(),
-        });
-        item.details.reaction = reaction;
-        item.save(function (err) {
+        async.waterfall([
+          function updatePushNewsFeedItem(cb) {
+            if (!item.versions) {
+              item.versions = [];
+            }
+            item.versions.push({
+              'reaction': item.details.reaction,
+              'timestamp': new Date(),
+            });
+            item.details.reaction = reaction;
+            item.save(function (err) {
+              if (err) {
+                return cb(err);
+              }
+              cb(null, item);
+            });
+          },
+          function updateNewsFeedItem(pushNewsFeedItem, cb) {
+            var query = {
+              'where': {
+                'and': [{
+                  'uuid': pushNewsFeedItem.uuid
+                }, {
+                  'userId': currentUser.id
+                }]
+              }
+            };
+            server.models.NewsFeedItem.findOne(query, function (err, newsFeedItem) {
+              if (err) {
+                return cb(err);
+              }
+              if (!newsFeedItem) {
+                return cb();
+              }
+
+              newsFeedItem.details.reaction = reaction;
+              newsFeedItem.save(function (err) {
+                if (err) {
+                  return cb(err);
+                }
+                cb(null);
+              });
+
+            });
+          }
+        ], function (err) {
           if (err) {
             return next(err);
           }
