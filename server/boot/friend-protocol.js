@@ -56,14 +56,20 @@ module.exports = function (server) {
 		var endpoint = url.parse(req.query.endpoint);
 		var invite = req.query.invite;
 		var instance = null;
+		var unique = 0;
 		async.waterfall([
 			function checkDupe(cb) { // are we already friends?
+				var username = endpoint.pathname.substring(1);
 				req.app.models.MyUser.include([currentUser], 'friends', function (err, instances) {
 					for (var i = 0; i < instances[0].friends().length; i++) {
 						var friend = instances[0].friends()[i];
 						if (friend.remoteEndPoint === req.query.endpoint) {
 							var e = new VError('duplicate friend request');
 							return cb(e);
+						}
+
+						if (friend.remoteUsername === username) {
+							++unique;
 						}
 					}
 					cb(null);
@@ -96,7 +102,8 @@ module.exports = function (server) {
 					'localRequestToken': uuid(),
 					'localAccessToken': uuid(),
 					'keys': pair,
-					'audiences': ['public']
+					'audiences': ['public'],
+					'uniqueRemoteUsername': unique ? endpoint.pathname.substring(1) + '-' + unique : endpoint.pathname.substring(1)
 				}, function (err, friend) {
 					if (err) {
 						var e = new VError(err, '/friend createFriend failed');
@@ -371,6 +378,17 @@ module.exports = function (server) {
 			},
 			function createPendingFriend(user, pair, cb) {
 				debug('/friend-request createPendingFriend');
+
+				// do we already have a friend with the same username?
+				var unique = 0;
+				var username = remoteEndPoint.pathname.substring(1);
+				for (var i = 0; i < user.friends().length; i++) {
+					var friend = user.friends()[i];
+					if (friend.remoteUsername === username) {
+						++unique;
+					}
+				}
+
 				user.friends.create({
 					'status': 'pending',
 					'remoteRequestToken': requestToken,
@@ -381,6 +399,7 @@ module.exports = function (server) {
 					'localAccessToken': uuid(),
 					'keys': pair,
 					'audiences': ['public'],
+					'uniqueRemoteUsername': unique ? remoteEndPoint.pathname.substring(1) + '-' + unique : remoteEndPoint.pathname.substring(1)
 				}, function (err, friend) {
 					if (err) {
 						var e = new VError(err, '/friend-request createPendingFriend failed');
