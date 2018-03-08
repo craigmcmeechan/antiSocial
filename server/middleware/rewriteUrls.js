@@ -48,7 +48,7 @@ module.exports = function (view) {
 					'and': [{
 						'userId': currentUser.id
 					}, {
-						'remoteUsername': username
+						'uniqueRemoteUsername': username
 					}]
 				}
 			};
@@ -62,6 +62,10 @@ module.exports = function (view) {
 					return next();
 				}
 				var rewrite = url.parse(req.url).pathname;
+
+				// use username for remote request
+				rewrite = rewrite.replace(/^\/[a-zA-Z0-9-]+/, '/' + friend.remoteUsername);
+
 				if (rewrite.match(/\.json$/)) {
 					rewrite = rewrite.replace(/\.json$/, '');
 					req.query.format = 'json';
