@@ -16,7 +16,7 @@ var RemoteRouting = require('loopback-remote-routing');
 module.exports = function (OgTag) {
 	if (!process.env.ADMIN) {
 		RemoteRouting(OgTag, {
-			'only': []
+			'only': ['@scrape', '@lookup', '@image']
 		});
 	}
 
@@ -378,6 +378,40 @@ module.exports = function (OgTag) {
 			});
 	};
 
+	OgTag.image = function (url, ctx, done) {
+		async.waterfall([
+				function lookup(cb) {
+
+					OgTag.findOne({
+						'where': {
+							'url': url
+						},
+						'include': ['uploads']
+					}, function (err, instance) {
+						if (err) {
+							return cb(new VError(err, 'error reading %s.%s', MyModelName, url));
+						}
+						var image = '/images/fpo.jpg';
+
+						if (instance && instance.uploads()) {
+							image = instance.uploads()[0].imageSet.large.url;
+						}
+
+						cb(err, image);
+					});
+				}
+			],
+			// done processing
+			function (err, instance) {
+				if (err) {
+					var e = new WError(err, 'OgTag lookup failed');
+					console.log(e.toString());
+					return done(e);
+				}
+				done(err, instance);
+			});
+	};
+
 	OgTag.remoteMethod(
 		'scrape', {
 			http: {
@@ -401,6 +435,33 @@ module.exports = function (OgTag) {
 			returns: {
 				arg: 'result',
 				type: 'object'
+			}
+		}
+	);
+
+	OgTag.remoteMethod(
+		'image', {
+			http: {
+				path: '/image',
+				verb: 'get'
+			},
+			accepts: [{
+				arg: 'url',
+				type: 'string',
+				required: true,
+				http: {
+					source: 'query'
+				}
+			}, {
+				arg: 'ctx',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				type: 'raw',
+				root: true
 			}
 		}
 	);
