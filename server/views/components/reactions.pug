@@ -39,3 +39,14 @@
 		.em.em-thumbs-down
 	.reaction-button-container.reaction-button(data-value="vomit")
 		.em.em-vomit
+.reaction-details
+	if reactions
+		table
+			for reaction in reactions
+				tr
+					td(style="width:30px;")
+						img(src= reaction.resolvedProfiles[reaction.source].profile.photo.url)
+					td(style="width:30px;")
+						.em(class='em-' + reaction.details.reaction)
+					td
+						= reaction.resolvedProfiles[reaction.source].profile.name
