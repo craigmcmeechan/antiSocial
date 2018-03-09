@@ -460,7 +460,7 @@ module.exports = function (OgTag) {
 				}
 			}],
 			returns: {
-				type: 'raw',
+				type: 'string',
 				root: true
 			}
 		}
