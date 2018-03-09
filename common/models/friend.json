@@ -40,6 +40,9 @@
     "remoteUsername": {
       "type": "string"
     },
+    "uniqueRemoteUsername": {
+      "type": "string"
+    },
     "remoteHost": {
       "type": "string"
     },

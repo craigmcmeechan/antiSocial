@@ -225,7 +225,7 @@ module.exports = function (MyUser) {
 					}
 
 					// build friend request
-					// TODO automatically approve invited friend in friend protocol
+					// TODO automatically approve invited friend in friend protocol DONE?
 					var endpoint = server.locals.config.publicHost + '/' + invite.user().username;
 
 					var options = {
@@ -269,15 +269,15 @@ module.exports = function (MyUser) {
 	function createUser(email, password, name, superuser, next) {
 		var theUser = null;
 
-		var unique = sh.unique(server.locals.config.publicHost + '/' + uuid());
-		var username = name.toLowerCase().replace(/[^a-z0-9\-]/, '') + '-' + unique;
+		//var unique = sh.unique(server.locals.config.publicHost + '/' + uuid());
+		var username = name.toLowerCase().replace(/[^a-z0-9\-]/g, ''); // + '-' + unique;
 
 		var adminUser = {
 			'email': email,
 			'password': password,
 			'name': name,
-			'username': username,
-			'unique': unique
+			'username': username
+				//,'unique': unique
 		};
 
 		debugVerbose('createUser', adminUser);

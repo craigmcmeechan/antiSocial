@@ -60,6 +60,7 @@ module.exports = function (server) {
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var highwater = req.query.highwater;
+    var tags = req.query.tags;
 
     var isMe = false;
 
@@ -90,7 +91,7 @@ module.exports = function (server) {
       else {
         async.waterfall([
           function (cb) {
-            getPosts(user, friend, highwater, isMe, function (err, posts) {
+            getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
               cb(err, user, posts);
             });
           },
@@ -100,7 +101,7 @@ module.exports = function (server) {
             });
           },
           function (user, posts, cb) {
-            resolveReactionsCommentsAndProfiles(posts, function (err) {
+            resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
               cb(err, user, posts);
             });
           }
@@ -231,15 +232,18 @@ module.exports = function (server) {
                 data = JSON.parse(decrypted.data);
               }
 
-              if (data.friends) {
-                for (var i = 0; i < data.friends.length; i++) {
-                  if (!g.hasNode(data.friends[i].remoteEndPoint)) {
-                    g.setNode(data.friends[i].remoteEndPoint, {
-                      'name': data.friends[i].remoteUsername
+              if (data.friends && data.friends.nodes) {
+                for (var i = 0; i < data.friends.nodes.length; i++) {
+                  var node = data.friends.nodes[i];
+                  if (!g.hasNode(node.v)) {
+                    g.setNode(node.v, {
+                      'name': node.value.name
                     });
                   }
-                  g.setEdge(friend.remoteEndPoint, data.friends[i].remoteEndPoint)
-
+                }
+                for (var i = 0; i < data.friends.edges.length; i++) {
+                  var edge = data.friends.edges[i];
+                  g.setEdge(edge.v, edge.w);
                 }
               }
 
@@ -247,40 +251,51 @@ module.exports = function (server) {
 
             });
           }, function (err) {
-            var data = {
-              'pov': {
-                'user': user.username,
-                'isMe': isMe,
-                'friend': friend ? friend.remoteUsername : false,
-                'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
-              },
-              'me': server.locals.config.publicHost + '/' + currentUser.username,
-              'friends': graphlib.json.write(g)
-            };
+            var results = graphlib.json.write(g);
+            async.map(results.nodes, function (node, cb) {
+              node.about = node.v;
+              resolveProfiles(node, cb);
+            }, function (err) {
 
-            if (view === '.json') {
-              return res.send(encryptIfFriend(friend, data));
-            }
-            else {
-              var options = {
-                'data': data,
-                'user': currentUser,
-                'friend': friend,
-                'isMe': isMe,
-                'myEndpoint': getPOVEndpoint(friend, currentUser)
+              var data = {
+                'pov': {
+                  'user': user.username,
+                  'isMe': isMe,
+                  'friend': friend ? friend.remoteUsername : false,
+                  'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+                },
+                'me': server.locals.config.publicHost + '/' + currentUser.username,
+                'friends': results
               };
 
-              renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
-                if (err) {
-                  return next(err);
-                }
-                return res.send(encryptIfFriend(friend, html));
-              });
-            }
+              if (view === '.json') {
+                return res.send(encryptIfFriend(friend, data));
+              }
+              else {
+                var options = {
+                  'data': data,
+                  'user': currentUser,
+                  'friend': friend,
+                  'isMe': isMe,
+                  'myEndpoint': getPOVEndpoint(friend, currentUser)
+                };
+
+                renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+                  if (err) {
+                    return next(err);
+                  }
+                  return res.send(encryptIfFriend(friend, html));
+                });
+              }
+            });
           });
         });
       }
-      else { // get friends list
+      else { // get friends
+        var g = new graphlib.Graph({
+          directed: false
+        });
+
         var query = {
           'where': {
             'and': [{
@@ -292,11 +307,18 @@ module.exports = function (server) {
         };
 
         server.models.Friend.find(query, function (err, friends) {
+
+          g.setNode(server.locals.config.publicHost + '/' + user.username, {
+            'name': user.username
+          });
+
           for (var i = 0; i < friends.length; i++) {
-            endpoints.push({
-              'remoteEndPoint': friends[i].remoteEndPoint,
-              'remoteUsername': friends[i].remoteUsername
+            g.setNode(friends[i].remoteEndPoint, {
+              'name': friends[i].remoteUsername
             });
+
+            g.setEdge(server.locals.config.publicHost + '/' + user.username, friends[i].remoteEndPoint)
+
           }
 
           var data = {
@@ -306,7 +328,7 @@ module.exports = function (server) {
               'friend': friend ? friend.remoteUsername : false,
               'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
             },
-            'friends': endpoints
+            'friends': graphlib.json.write(g)
           };
 
           if (view === '.json') {
@@ -344,6 +366,7 @@ module.exports = function (server) {
     var username = matches[1];
     var view = matches[2];
     var highwater = req.query.highwater;
+    var tags = req.query.tags;
     var friend = ctx.get('friendAccess');
     var currentUser = ctx.get('currentUser');
     var isMe = false;
@@ -363,7 +386,7 @@ module.exports = function (server) {
             isMe = true;
           }
         }
-        getPosts(user, friend, highwater, isMe, function (err, posts) {
+        getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
           cb(err, user, posts);
         });
       },
@@ -373,7 +396,7 @@ module.exports = function (server) {
         });
       },
       function (user, posts, cb) {
-        resolveReactionsCommentsAndProfiles(posts, function (err) {
+        resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
           cb(err, user, posts);
         });
       }
@@ -458,7 +481,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveReactionsCommentsAndProfiles([post], function (err) {
+        resolveReactionsCommentsAndProfiles([post], isMe, function (err) {
           cb(err, user, post);
         });
       }
@@ -643,7 +666,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       },
@@ -741,7 +764,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       },
@@ -856,7 +879,7 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        resolveComments([post], 'post', function (err) {
+        resolveComments([post], 'post', isMe, function (err) {
           cb(err, user, post);
         });
       }
@@ -1268,7 +1291,7 @@ module.exports = function (server) {
 
       // TODO kludge
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
         async.map(thePhoto.resolvedComments, resolveProfiles, function (err) {
 
           var data = {
@@ -1374,7 +1397,7 @@ module.exports = function (server) {
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
@@ -1498,7 +1521,7 @@ module.exports = function (server) {
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
-      resolveComments([thePhoto], 'photo', function (err) {
+      resolveComments([thePhoto], 'photo', isMe, function (err) {
 
         var theComment;
         for (var i = 0; i < thePhoto.resolvedComments.length; i++) {
@@ -1655,7 +1678,7 @@ module.exports = function (server) {
     };
   }
 
-  function getPosts(user, friend, highwater, isMe, cb) {
+  function getPosts(user, friend, highwater, isMe, tags, cb) {
 
     var query = {
       'where': {
@@ -1679,6 +1702,20 @@ module.exports = function (server) {
       query.where.and.push({
         'createdOn': {
           'lt': highwater
+        }
+      });
+    }
+
+    if (tags) {
+      try {
+        tags = JSON.parse(tags);
+      }
+      catch (e) {
+        tags = [];
+      }
+      query.where.and.push({
+        'tags': {
+          'inq': tags
         }
       });
     }

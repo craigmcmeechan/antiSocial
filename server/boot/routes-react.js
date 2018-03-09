@@ -29,56 +29,132 @@ module.exports = function (server) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
 
-    async.waterfall([
-      function (cb) { // save comment and notify network
-        currentUser.pushNewsFeedItems.create({
-          'uuid': uuid(),
-          'type': 'react',
-          'source': server.locals.config.publicHost + '/' + currentUser.username,
-          'about': endpoint,
-          'visibility': ['friends'],
-          'details': {
-            'reaction': reaction,
-            'photoId': photoId
-          }
-        }, function (err, news) {
-          if (err) {
-            var e = new VError(err, 'could not create reaction');
-            return cb(e);
-          }
-          cb(null, news);
-        });
-      },
-      function (news, cb) { // notify self
-        var item = {
-          'uuid': news.uuid,
-          'type': 'react',
-          'source': news.source,
-          'about': news.about,
-          'userId': currentUser.id,
-          'createdOn': news.createdOn,
-          'updatedOn': news.updatedOn,
-          'details': {
-            'reaction': reaction,
-            'photoId': photoId
-          }
-        };
-
-        req.app.models.NewsFeedItem.create(item, function (err, item) {
-          if (err) {
-            var e = new VError(err, 'could not save NewsFeedItem');
-            return cb(e);
-          }
-          cb();
-        });
+    var query = {
+      'where': {
+        'and': [{
+          'type': 'react'
+        }, {
+          'about': endpoint
+        }, {
+          'source': server.locals.config.publicHost + '/' + currentUser.username
+        }]
       }
-    ], function (err) {
+    };
+
+    currentUser.pushNewsFeedItems.findOne(query, function (err, item) {
       if (err) {
         return next(err);
       }
-      res.send({
-        'status': 'ok'
-      });
+      if (item) {
+        async.waterfall([
+          function updatePushNewsFeedItem(cb) {
+            if (!item.versions) {
+              item.versions = [];
+            }
+            item.versions.push({
+              'reaction': item.details.reaction,
+              'timestamp': new Date(),
+            });
+            item.details.reaction = reaction;
+            item.save(function (err) {
+              if (err) {
+                return cb(err);
+              }
+              cb(null, item);
+            });
+          },
+          function updateNewsFeedItem(pushNewsFeedItem, cb) {
+            var query = {
+              'where': {
+                'and': [{
+                  'uuid': pushNewsFeedItem.uuid
+                }, {
+                  'userId': currentUser.id
+                }]
+              }
+            };
+            server.models.NewsFeedItem.findOne(query, function (err, newsFeedItem) {
+              if (err) {
+                return cb(err);
+              }
+              if (!newsFeedItem) {
+                return cb();
+              }
+
+              newsFeedItem.details.reaction = reaction;
+              newsFeedItem.save(function (err) {
+                if (err) {
+                  return cb(err);
+                }
+                cb(null);
+              });
+
+            });
+          }
+        ], function (err) {
+          if (err) {
+            return next(err);
+          }
+          res.send({
+            'status': 'ok'
+          });
+        });
+      }
+      else {
+
+        async.waterfall([
+
+          function (cb) { // save reaction and notify network
+            currentUser.pushNewsFeedItems.create({
+              'uuid': uuid(),
+              'type': 'react',
+              'source': server.locals.config.publicHost + '/' + currentUser.username,
+              'about': endpoint,
+              'visibility': ['friends'],
+              'details': {
+                'reaction': reaction,
+                'photoId': photoId
+              }
+            }, function (err, news) {
+              if (err) {
+                var e = new VError(err, 'could not create reaction');
+                return cb(e);
+              }
+              cb(null, news);
+            });
+          },
+          function (news, cb) { // notify self
+            var item = {
+              'uuid': news.uuid,
+              'type': 'react',
+              'source': news.source,
+              'about': news.about,
+              'userId': currentUser.id,
+              'createdOn': news.createdOn,
+              'updatedOn': news.updatedOn,
+              'details': {
+                'reaction': reaction,
+                'photoId': photoId
+              }
+            };
+
+            req.app.models.NewsFeedItem.create(item, function (err, item) {
+              if (err) {
+                var e = new VError(err, 'could not save NewsFeedItem');
+                return cb(e);
+              }
+              cb();
+            });
+          }
+        ], function (err) {
+          if (err) {
+            return next(err);
+          }
+          res.send({
+            'status': 'ok'
+          });
+        });
+      }
     });
   });
 

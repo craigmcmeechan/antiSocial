@@ -5,6 +5,8 @@ branch-defaults:
     environment: devel-antisocial
   small-issues:
     environment: devel-antisocial
+  unique-username-in-relationship:
+    environment: devel-antisocial
 global:
   application_name: digitopia-social
   branch: null
