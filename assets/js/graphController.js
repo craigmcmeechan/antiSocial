@@ -12,7 +12,9 @@
 					var node = data.friends.nodes[i];
 					n.push({
 						'id': node.v,
-						'label': node.value.name
+						'label': node.value.name,
+						'shape': 'circularImage',
+						'image': node.resolvedProfiles[node.v].profile.photo ? node.resolvedProfiles[node.v].profile.photo.url : '/images/slug.png'
 					});
 				}
 
