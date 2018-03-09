@@ -66,6 +66,12 @@
     "principalId": "$everyone",
     "permission": "ALLOW",
     "property": "scrape"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW",
+    "property": "image"
   }],
   "methods": {}
 }

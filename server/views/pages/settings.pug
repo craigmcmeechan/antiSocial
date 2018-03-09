@@ -70,14 +70,16 @@ block content
 										span.glyphicon.glyphicon-ok
 									.validation-help
 
-				//
-					- var fb,tw
-					if user.identities()
-						for identity in user.identities()
-							if identity.provider === 'facebook'
-								- fb= identity
-							if identity.provider === 'twitter'
-								- tw= identity
+				
+				- var fb,tw
+				if user.identities()
+					for identity in user.identities()
+						if identity.provider === 'facebook'
+							- fb= identity
+						if identity.provider === 'twitter'
+							- tw= identity
+							
+				if environment.FACEBOOK_CLIENT_ID
 					.row
 						.col-xs-12
 							if fb
@@ -85,6 +87,8 @@ block content
 							else
 								p
 									a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
+				
+				if environment.TWITTER_CONSUMER_KEY
 					.row
 						.col-xs-12
 							if tw
