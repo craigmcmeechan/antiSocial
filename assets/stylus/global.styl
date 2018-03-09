@@ -559,6 +559,7 @@ img.avatar
 		border-top:thin solid #ccc
 
 	.post-reactions
+		cursor:pointer
 		overflow:hidden
 		position:relative
 		text-align:right
@@ -637,7 +638,20 @@ img.avatar
 				border-radius:4px
 			.profile-link
 				margin-right:7px
-
+	.reaction-details
+		z-index:-1
+		animation-duration: .15s
+		display:none
+		table
+			width:100%
+			text-align:left
+			td
+				padding-right: 7px
+		img
+			height:20px
+			border-radius:50%
+			margin-top:5px
+			margin-bottom:5px
 #news-feed
 	display:none
 	position:absolute
