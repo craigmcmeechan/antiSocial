@@ -195,10 +195,3 @@ function getUploadForProperty(prop, uploads, type, fpo) {
 		return json;
 	};
 })(jQuery);
-
-function proxyEndPoint(endpoint) {
-	if (!endpoint) {
-		return;
-	}
-	return parseUri(endpoint).path;
-};
