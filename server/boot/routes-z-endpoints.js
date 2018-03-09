@@ -232,15 +232,18 @@ module.exports = function (server) {
                 data = JSON.parse(decrypted.data);
               }
 
-              if (data.friends) {
-                for (var i = 0; i < data.friends.length; i++) {
-                  if (!g.hasNode(data.friends[i].remoteEndPoint)) {
-                    g.setNode(data.friends[i].remoteEndPoint, {
-                      'name': data.friends[i].remoteUsername
+              if (data.friends && data.friends.nodes) {
+                for (var i = 0; i < data.friends.nodes.length; i++) {
+                  var node = data.friends.nodes[i];
+                  if (!g.hasNode(node.v)) {
+                    g.setNode(node.v, {
+                      'name': node.value.name
                     });
                   }
-                  g.setEdge(friend.remoteEndPoint, data.friends[i].remoteEndPoint)
-
+                }
+                for (var i = 0; i < data.friends.edges.length; i++) {
+                  var edge = data.friends.edges[i];
+                  g.setEdge(edge.v, edge.w);
                 }
               }
 
@@ -248,40 +251,51 @@ module.exports = function (server) {
 
             });
           }, function (err) {
-            var data = {
-              'pov': {
-                'user': user.username,
-                'isMe': isMe,
-                'friend': friend ? friend.remoteUsername : false,
-                'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
-              },
-              'me': server.locals.config.publicHost + '/' + currentUser.username,
-              'friends': graphlib.json.write(g)
-            };
+            var results = graphlib.json.write(g);
+            async.map(results.nodes, function (node, cb) {
+              node.about = node.v;
+              resolveProfiles(node, cb);
+            }, function (err) {
 
-            if (view === '.json') {
-              return res.send(encryptIfFriend(friend, data));
-            }
-            else {
-              var options = {
-                'data': data,
-                'user': currentUser,
-                'friend': friend,
-                'isMe': isMe,
-                'myEndpoint': getPOVEndpoint(friend, currentUser)
+              var data = {
+                'pov': {
+                  'user': user.username,
+                  'isMe': isMe,
+                  'friend': friend ? friend.remoteUsername : false,
+                  'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+                },
+                'me': server.locals.config.publicHost + '/' + currentUser.username,
+                'friends': results
               };
 
-              renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
-                if (err) {
-                  return next(err);
-                }
-                return res.send(encryptIfFriend(friend, html));
-              });
-            }
+              if (view === '.json') {
+                return res.send(encryptIfFriend(friend, data));
+              }
+              else {
+                var options = {
+                  'data': data,
+                  'user': currentUser,
+                  'friend': friend,
+                  'isMe': isMe,
+                  'myEndpoint': getPOVEndpoint(friend, currentUser)
+                };
+
+                renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+                  if (err) {
+                    return next(err);
+                  }
+                  return res.send(encryptIfFriend(friend, html));
+                });
+              }
+            });
           });
         });
       }
-      else { // get friends list
+      else { // get friends
+        var g = new graphlib.Graph({
+          directed: false
+        });
+
         var query = {
           'where': {
             'and': [{
@@ -293,11 +307,18 @@ module.exports = function (server) {
         };
 
         server.models.Friend.find(query, function (err, friends) {
+
+          g.setNode(server.locals.config.publicHost + '/' + user.username, {
+            'name': user.username
+          });
+
           for (var i = 0; i < friends.length; i++) {
-            endpoints.push({
-              'remoteEndPoint': friends[i].remoteEndPoint,
-              'remoteUsername': friends[i].remoteUsername
+            g.setNode(friends[i].remoteEndPoint, {
+              'name': friends[i].remoteUsername
             });
+
+            g.setEdge(server.locals.config.publicHost + '/' + user.username, friends[i].remoteEndPoint)
+
           }
 
           var data = {
@@ -307,7 +328,7 @@ module.exports = function (server) {
               'friend': friend ? friend.remoteUsername : false,
               'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
             },
-            'friends': endpoints
+            'friends': graphlib.json.write(g)
           };
 
           if (view === '.json') {
