@@ -36,7 +36,7 @@ block seo
 	else
 		- var matches = body.match(/<div class="ogPreview" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"><\/div>/)
 		if matches
-			- image = '/api/OgTags/image?url=' + encodeURIComponent(matches[1])
+			- image = config.publicHost + '/linked-og-image?url=' + encodeURIComponent(matches[1])
 			
 	title= title
 	meta(property="og:type" content="article")
