@@ -11,14 +11,14 @@
 					element.addClass('changed');
 					if (type === 'post edit' && element.data('watch-type') === type) {
 						var item = $('<div>');
-						item.load(proxyEndPoint(endpoint), function () {
+						item.load('/proxy-post?endpoint=' + encodeURIComponent(endpoint), function () {
 							element.empty().append(item.find('.post').html());
 							didInjectContent(element);
 						});
 					}
 					else if (type === 'comment' && element.data('watch-type') === type) {
 						var item = $('<div>');
-						item.load(proxyEndPoint(endpoint), function () {
+						item.load('/proxy-comment?endpoint=' + encodeURIComponent(endpoint), function () {
 							var comment = item.find('.a-comment');
 							var summary = item.find('.comments-label').html();
 							if (eventType === 'update') {
@@ -35,7 +35,7 @@
 					}
 					else if (type === 'react' && element.data('watch-type') === type) {
 						var item = $('<div>');
-						item.load(proxyEndPoint(endpoint), function () {
+						item.load('/proxy-reactions?endpoint=' + encodeURIComponent(endpoint), function () {
 							var reactions = item.find('.post-reactions').html();
 							element.find('.post-reactions').find('.DigitopiaInstance').trigger('DigitopiaStop');
 							element.find('.post-reactions').empty().append(reactions);

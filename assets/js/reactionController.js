@@ -23,6 +23,7 @@
 						self.debounceIn = undefined;
 						self.element.find('.more-reactions').show().animateCss('flipInX', function () {
 							self.shown = true;
+							self.element.find('.reaction-details').show().animateCss('fadeInDown');
 						});
 					}, 500);
 				}
@@ -41,6 +42,9 @@
 						self.element.find('.more-reactions').animateCss('flipOutX', function () {
 							self.shown = false;
 							self.element.find('.more-reactions').hide();
+							self.element.find('.reaction-details').show().animateCss('fadeOutUp', function () {
+								self.element.find('.reaction-details').hide();
+							});
 						});
 					});
 				}
