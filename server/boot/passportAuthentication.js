@@ -40,7 +40,7 @@ module.exports = function enableAuthentication(server) {
 
 		// initiate facebook authentication
 		router.get('/auth/facebook', getCurrentUser, passport.authenticate('facebook', {
-			scope: ['public_profile', 'email', 'user_friends'],
+			scope: ['public_profile', 'email', 'user_friends', 'publish_actions'],
 			session: false
 		}));
 
