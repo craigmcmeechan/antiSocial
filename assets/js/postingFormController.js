@@ -54,7 +54,7 @@
 						var value = theElement.val();
 						for (var i = 0; i < replacements.length; i++) {
 							if (replacements[i].found.length) {
-								var formatted = '[' + replacements[i].found[0].name + '](tag:' + replacements[i].found[0].endPoint + ')';
+								var formatted = '[' + replacements[i].found[0].name + '](tag-' + replacements[i].found[0].endPoint + ')';
 								value = value.replace(replacements[i].match, formatted);
 							}
 						}

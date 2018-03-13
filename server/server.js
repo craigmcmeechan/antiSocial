@@ -56,15 +56,11 @@ function renderMarkdown(markdown) {
     return '[' + tag + '](' + tag + ')';
   });
 
-  tagged = tagged.replace(/\(tag\:([^\)]+)\)/g, function (tag) {
+  tagged = tagged.replace(/\(tag-([^\)]+)\)/g, function (tag) {
     var friendEndPoint = tag;
-    friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
+    friendEndPoint = friendEndPoint.replace(/^\(tag-/, '');
     friendEndPoint = friendEndPoint.replace(/\)$/, '');
     return '(' + proxyEndPoint(friendEndPoint) + ')';
-  });
-
-  tagged = tagged.replace(/:([A-Za-z0-9_\-\+]+?):/g, function (emoji) {
-    return '<span class="em em-' + emoji.replace(/:/g, '') + '"></span>';
   });
 
   return marked(tagged);
@@ -186,7 +182,7 @@ app.use(csp({
     'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
     'frameSrc': ['\'self\'', 'www.youtube.com'],
     'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com'],
-    'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups'],
+    'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
     'reportUri': '/csp-violation',
     'objectSrc': ['\'none\''],
     'upgradeInsecureRequests': false

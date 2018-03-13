@@ -357,11 +357,11 @@ module.exports = function (server) {
         });
       },
       function notifyTagged(news, post, cb) { // notify tagged
-        var re = /\(tag\:([^\)]+)\)/g;
+        var re = /\(tag-([^\)]+)\)/g;
         var tags = post.body.match(re);
         async.map(tags, function (tag, doneTag) {
           var friendEndPoint = tag;
-          friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
+          friendEndPoint = friendEndPoint.replace(/^\(tag-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           server.models.Friend.findOne({
             'where': {
