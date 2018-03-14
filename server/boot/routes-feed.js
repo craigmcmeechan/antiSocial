@@ -49,7 +49,10 @@ module.exports = function (server) {
           'where': {
             'and': [{
               'userId': currentUser.id
-
+            }, {
+              'deleted': {
+                'neq': true
+              }
             }]
           },
           'order': 'createdOn DESC',
@@ -115,13 +118,13 @@ module.exports = function (server) {
       },
       function computeSummary(session, cb) {
         if (req.query.more) {
-          session.currentSlice.start += 6;
+          session.currentSlice.start += 30;
           if (session.currentSlice.start > session.queue.length - 1) {
             return cb(null, session, []);
           }
         }
 
-        session.currentSlice.end = session.currentSlice.start + 5;
+        session.currentSlice.end = session.currentSlice.start + 29;
         if (session.currentSlice.end > session.queue.length - 1) {
           session.currentSlice.end = session.queue.length - 1;
         }

@@ -93,11 +93,13 @@
 		this.processNews = function (msg) {
 			self.element.find('.status').removeClass('offline');
 			var event = JSON.parse(msg.data);
-			var li = $('<div class="news-feed-item">');
 			var formatted = event.data.humanReadable;
-			li.append(formatted);
-			self.element.find('.news-feed-items').prepend(li);
-			didInjectContent(self.element);
+			if (formatted) {
+				var li = $('<div class="news-feed-item">');
+				li.append(formatted);
+				self.element.find('.news-feed-items').prepend(li);
+				didInjectContent(self.element);
+			}
 			if (!event.backfill) {
 				if (event.data.type === 'post') {
 					var item = $('<div>');

@@ -440,7 +440,7 @@ module.exports = function (server) {
             'accessToken': fbIdentity.credentials.token
           });
 
-          var body = post.body;
+          var body = '';
           var links = [];
 
           if (post.visibility.indexOf('public') !== -1) {
@@ -449,16 +449,19 @@ module.exports = function (server) {
           }
           else {
             // try to adapt the post to facebook limitations
+            body = post.body;
+
+            // extract first link
             links = post.body.match(/^(http[^\s\b]*)/gm);
             if (links) {
-              // hand the first link to facebook and let it build preview
               body = body.replace(/^(http[^\s\b]*)/gm, '');
             }
-            // strip all markup
+
+            // strip all other markup
             body = server.locals.marked(body);
             body = body.replace(/<[^>]+>/g, '');
 
-            // there are photos... attach the first one I Guess
+            // if there are photos... attach the first one
             if (post.sortedPhotos && post.sortedPhotos.length) {
               var imageSet = post.sortedPhotos[0].uploads()[0].imageSet;
               var image;
