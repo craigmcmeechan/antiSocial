@@ -53,14 +53,19 @@ module.exports = function (NewsFeedItem) {
 			NewsFeedItem.removeObserver('after save', changeHandler);
 			writeable = false;
 			changes = null;
+
+			user.updateAttribute('online', false);
+			watchFeed.disconnectAll(user);
 		};
 
 		changes.on('error', function (e) {
 			logger.error(streamDescription + ' error on ' + streamDescription, e);
+			changes.destroy();
 		});
 
 		changes.on('end', function (e) {
 			debug(streamDescription + ' end', e);
+			changes.destroy();
 		});
 
 		ctx.res.setTimeout(24 * 3600 * 1000);
@@ -68,8 +73,6 @@ module.exports = function (NewsFeedItem) {
 		ctx.res.on('close', function (e) {
 			debug(streamDescription + ' closed');
 			changes.destroy();
-			user.updateAttribute('online', false);
-			watchFeed.disconnectAll(user);
 		});
 
 		user.updateAttribute('online', true);
