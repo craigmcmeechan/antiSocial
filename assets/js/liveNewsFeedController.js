@@ -93,6 +93,9 @@
 		this.processNews = function (msg) {
 			self.element.find('.status').removeClass('offline');
 			var event = JSON.parse(msg.data);
+			if (event.type === 'heartbeat') {
+				return;
+			}
 			var formatted = event.data.humanReadable;
 			if (formatted) {
 				var li = $('<div class="news-feed-item">');
