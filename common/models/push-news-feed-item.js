@@ -3,6 +3,7 @@ var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 var encryption = require('../../server/lib/encryption');
 var RemoteRouting = require('loopback-remote-routing');
+var watchFeed = require('../../server/lib/watchFeed');
 
 module.exports = function (PushNewsFeedItem) {
 	if (!process.env.ADMIN) {
@@ -99,7 +100,12 @@ module.exports = function (PushNewsFeedItem) {
 					debug('pushNewsFeed ' + streamDescription + ' res closed');
 					friend.updateAttribute('online', false);
 					changes.destroy();
+					watchFeed.disConnect(friend);
 				});
+
+				if (user.online) {
+					watchFeed.connect(friend);
+				}
 
 				process.nextTick(function () {
 					cb(null, changes);
@@ -160,14 +166,12 @@ module.exports = function (PushNewsFeedItem) {
 								changes.write(change);
 							}
 
-							if (!user.online) {
-								changes.write({
-									'type': 'close'
-								});
-							}
+							// let watcher know if user is online
+							changes.write({
+								'type': user.online ? 'online' : 'offline'
+							});
 						}
 					});
-
 				});
 
 				PushNewsFeedItem.observe('after save', changeHandler);

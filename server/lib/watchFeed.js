@@ -46,7 +46,7 @@ var debugVerbose = require('debug')('feeds:verbose');
 var connections = {};
 module.exports.connections = connections;
 
-module.exports.disconnectAll = function (user) {
+module.exports.disconnectAll = function disconnectAll(user) {
 	for (var key in connections) {
 		var connection = connections[key];
 		if (connection.currentUser.id === user.id) {
@@ -56,7 +56,19 @@ module.exports.disconnectAll = function (user) {
 	}
 };
 
-module.exports.connectAll = function (user) {
+var disConnect = function disConnect(friend) {
+	for (var key in connections) {
+		var connection = connections[key];
+		if (connection.friend.id === friend.id) {
+			connection.eventSource.close();
+			connection.status = 'closed';
+		}
+	}
+};
+
+module.exports.disConnect = disConnect;
+
+module.exports.connectAll = function connectAll(user) {
 	// poll friends feeds
 	var query = {
 		'where': {
@@ -158,10 +170,15 @@ function getListener(server, connection) {
 		if (e.type === 'data') {
 			var message = JSON.parse(e.data);
 
-			if (message.type === 'close') {
-				debug('listener ' + currentUser.username + ' received close feed message ' + connection.key);
+			if (message.type === 'offline') {
+				debug('listener ' + currentUser.username + ' received offline message ' + connection.key);
 				connection.eventSource.close();
 				connection.status = 'closed';
+				return;
+			}
+
+			if (message.type === 'online') {
+				debug('listener ' + currentUser.username + ' received online message ' + connection.key);
 				return;
 			}
 
