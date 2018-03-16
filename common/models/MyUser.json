@@ -64,6 +64,9 @@
     },
     "unique": {
       "type": "string"
+    },
+    "online": {
+      "type": "boolean"
     }
   },
   "validations": [],

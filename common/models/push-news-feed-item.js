@@ -90,10 +90,14 @@ module.exports = function (PushNewsFeedItem) {
 					debug('pushNewsFeed ' + streamDescription + ' end', e);
 				});
 
+				friend.updateAttribute('online', true);
+
 				ctx.res.setTimeout(24 * 3600 * 1000);
 				ctx.res.set('X-Accel-Buffering', 'no');
+
 				ctx.res.on('close', function (e) {
 					debug('pushNewsFeed ' + streamDescription + ' res closed');
+					friend.updateAttribute('online', false);
 					changes.destroy();
 				});
 
@@ -154,6 +158,12 @@ module.exports = function (PushNewsFeedItem) {
 								debugVerbose('backfilling PushNewsFeedItem %j', data);
 
 								changes.write(change);
+							}
+
+							if (!user.online) {
+								changes.write({
+									'type': 'close'
+								});
 							}
 						}
 					});
