@@ -52,6 +52,8 @@ module.exports.disconnectAll = function disconnectAll(user) {
 		if (connection.currentUser.id === user.id) {
 			connection.eventSource.close();
 			connection.status = 'closed';
+			debug('watchFeed eventsource closed %s %s', connection.currentUser.username, connection.endpoint);
+			delete connections[key];
 		}
 	}
 };
@@ -62,6 +64,8 @@ var disConnect = function disConnect(friend) {
 		if (connection.friend.id === friend.id) {
 			connection.eventSource.close();
 			connection.status = 'closed';
+			debug('watchFeed eventsource closed %s %s', connection.currentUser.username, connection.endpoint);
+			delete connections[key];
 		}
 	}
 };
@@ -148,6 +152,7 @@ function getCloseHandler(server, connection) {
 	return function (e) {
 		connection.status = 'closed';
 		debug('watchFeed eventsource close %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		delete connections[connection.key];
 	};
 }
 
@@ -155,6 +160,7 @@ function getErrorHandler(server, connection) {
 	return function (e) {
 		connection.status = 'error';
 		debug('watchFeed error %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		delete connections[connection.key];
 	};
 }
 
@@ -174,6 +180,7 @@ function getListener(server, connection) {
 				debug('listener ' + currentUser.username + ' received offline message ' + connection.key);
 				connection.eventSource.close();
 				connection.status = 'closed';
+				delete connections[connection.key];
 				return;
 			}
 
@@ -183,7 +190,7 @@ function getListener(server, connection) {
 			}
 
 			if (message.type === 'heartbeat') {
-				debug('listener ' + currentUser.username + ' received heartbeat');
+				debug('listener ' + currentUser.username + ' received heartbeat ' + connection.key);
 				return;
 			}
 

@@ -3,6 +3,8 @@ branch-defaults:
     environment: devel-antisocial
   master:
     environment: devel-antisocial
+  production:
+    environment: devel-antisocial
   small-issues:
     environment: devel-antisocial
   unique-username-in-relationship:
