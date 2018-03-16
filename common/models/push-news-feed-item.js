@@ -81,14 +81,18 @@ module.exports = function (PushNewsFeedItem) {
 					PushNewsFeedItem.removeObserver('after save', changeHandler);
 					writeable = false;
 					changes = null;
+					friend.updateAttribute('online', false);
+					watchFeed.disConnect(friend);
 				};
 
 				changes.on('error', function (e) {
 					logger.error(streamDescription + ' error on ' + streamDescription, e);
+					changes.destroy();
 				});
 
 				changes.on('end', function (e) {
 					debug('pushNewsFeed ' + streamDescription + ' end', e);
+					changes.destroy();
 				});
 
 				friend.updateAttribute('online', true);
@@ -98,9 +102,7 @@ module.exports = function (PushNewsFeedItem) {
 
 				ctx.res.on('close', function (e) {
 					debug('pushNewsFeed ' + streamDescription + ' res closed');
-					friend.updateAttribute('online', false);
 					changes.destroy();
-					watchFeed.disConnect(friend);
 				});
 
 				if (user.online) {
