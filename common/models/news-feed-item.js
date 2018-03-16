@@ -82,7 +82,7 @@ module.exports = function (NewsFeedItem) {
 			changes.write({
 				'type': 'heartbeat'
 			});
-		}, 10000);
+		}, 5000);
 
 		user.updateAttribute('online', true);
 
