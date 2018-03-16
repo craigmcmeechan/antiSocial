@@ -1,4 +1,5 @@
 var getCurrentUser = require('../middleware/context-currentUser');
+var watchFeed = require('../lib/watchFeed');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
@@ -9,7 +10,8 @@ module.exports = function (server) {
 
 		res.render('pages/testbench', {
 			'globalSettings': ctx.get('globalSettings'),
-			'currentUser': ctx.get('currentUser')
+			'currentUser': ctx.get('currentUser'),
+			'connections': watchFeed.connections
 		});
 	});
 
