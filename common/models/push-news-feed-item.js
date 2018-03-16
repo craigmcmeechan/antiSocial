@@ -72,7 +72,14 @@ module.exports = function (PushNewsFeedItem) {
 
 				var changeHandler = createChangeHandler('save');
 
+				var heartbeat = null;
+
 				changes.destroy = function () {
+					if (heartbeat) {
+						clearInterval(heartbeat);
+						heartbeat = null;
+					}
+
 					debug('pushNewsFeed ' + streamDescription + ' destroy');
 					if (changes) {
 						changes.removeAllListeners('error');
@@ -104,6 +111,12 @@ module.exports = function (PushNewsFeedItem) {
 					debug('pushNewsFeed ' + streamDescription + ' res closed');
 					changes.destroy();
 				});
+
+				var heartbeat = setInterval(function () {
+					changes.write({
+						'type': 'heartbeat'
+					});
+				}, 5000);
 
 				if (user.online) {
 					watchFeed.connect(friend);

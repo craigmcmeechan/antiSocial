@@ -182,6 +182,11 @@ function getListener(server, connection) {
 				return;
 			}
 
+			if (message.type === 'heartbeat') {
+				debug('listener ' + currentUser.username + ' received heartbeat');
+				return;
+			}
+
 			var privateKey = friend.keys.private;
 			var publicKey = friend.remotePublicKey;
 
