@@ -167,9 +167,11 @@ module.exports = function (PushNewsFeedItem) {
 							}
 
 							// let watcher know if user is online
-							changes.write({
-								'type': user.online ? 'online' : 'offline'
-							});
+							if (!process.env.KEEP_FEEDS_OPEN) {
+								changes.write({
+									'type': user.online ? 'online' : 'offline'
+								});
+							}
 						}
 					});
 				});
