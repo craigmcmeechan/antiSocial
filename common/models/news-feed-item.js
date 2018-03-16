@@ -44,7 +44,10 @@ module.exports = function (NewsFeedItem) {
 
 		var changeHandler = createChangeHandler('save');
 
+		var heatbeat;
+
 		changes.destroy = function () {
+			clearInterval(heartbeat);
 			debug(streamDescription + ' stopped watching newsfeed');
 			if (changes) {
 				changes.removeAllListeners('error');
@@ -75,11 +78,19 @@ module.exports = function (NewsFeedItem) {
 			changes.destroy();
 		});
 
+		var heartbeat = setInterval(function () {
+			changes.write({
+				'type': 'heartbeat'
+			});
+		}, 10000);
+
 		user.updateAttribute('online', true);
 
 		debug(streamDescription + ' is watching newsfeed');
 
 		watchFeed.connectAll(user);
+
+
 
 		process.nextTick(function () {
 			cb(null, changes);
