@@ -34,11 +34,19 @@ module.exports = function (NewsFeedItem) {
 			return cb(error);
 		}
 
-		var streamDescription = 'EventSource client ' + user.username;
+		var streamDescription = user.username;
+
+
 
 		var changes = new PassThrough({
 			objectMode: true
 		});
+
+		if (!ctx.req.app.openClients) {
+			ctx.req.app.openClients = {};
+		}
+
+		ctx.req.app.openClients[user.username] = changes;
 
 		var writeable = true;
 
@@ -47,50 +55,64 @@ module.exports = function (NewsFeedItem) {
 		var heartbeat;
 
 		changes.destroy = function () {
+			writeable = false;
+
 			if (heartbeat) {
 				clearInterval(heartbeat);
 				heartbeat = null;
 			}
 
-			debug(streamDescription + ' stopped watching newsfeed');
-			if (changes) {
-				changes.removeAllListeners('error');
-				changes.removeAllListeners('end');
-			}
+			delete ctx.req.app.openClients[user.username];
+
+			debug('NewsFeedItem ' + streamDescription + ' stopped watching newsfeeditems');
 			NewsFeedItem.removeObserver('after save', changeHandler);
-			writeable = false;
-			changes = null;
+
+			if (changes) {
+				ctx.res.removeAllListeners('error');
+				ctx.res.removeAllListeners('end');
+				ctx.res.removeAllListeners('close');
+				ctx.req.destroy();
+				changes = null;
+			}
 
 			user.updateAttribute('online', false);
 			watchFeed.disconnectAll(user);
 		};
 
-		changes.on('error', function (e) {
+		ctx.res.on('error', function (e) {
 			logger.error(streamDescription + ' error on ' + streamDescription, e);
 			changes.destroy();
 		});
 
-		changes.on('end', function (e) {
-			debug(streamDescription + ' end', e);
+		ctx.res.on('end', function (e) {
+			debug('NewsFeedItem ' + streamDescription + ' end', e);
+			changes.destroy();
+		});
+
+		ctx.res.on('close', function (e) {
+			debug('NewsFeedItem ' + streamDescription + ' closed');
 			changes.destroy();
 		});
 
 		ctx.res.setTimeout(24 * 3600 * 1000);
 		ctx.res.set('X-Accel-Buffering', 'no');
-		ctx.res.on('close', function (e) {
-			debug(streamDescription + ' closed');
-			changes.destroy();
-		});
 
-		var heartbeat = setInterval(function () {
-			changes.write({
-				'type': 'heartbeat'
-			});
+		heartbeat = setInterval(function () {
+			try {
+				if (writeable) {
+					changes.write({
+						'type': 'heartbeat'
+					});
+				}
+			}
+			catch (e) {
+				debug('NewsFeedItem ' + streamDescription + ' error writing');
+			}
 		}, 5000);
 
 		user.updateAttribute('online', true);
 
-		debug(streamDescription + ' is watching newsfeed');
+		debug('NewsFeedItem ' + streamDescription + ' is watching newsfeed');
 
 		watchFeed.connectAll(user);
 
@@ -130,8 +152,15 @@ module.exports = function (NewsFeedItem) {
 
 								debugVerbose('backfilling NewsFeedItem %j', data);
 
-								changes.write(change);
-							})
+								try {
+									if (writeable) {
+										changes.write(change);
+									}
+								}
+								catch (e) {
+									debug('NewsFeedItem ' + streamDescription + ' error writing');
+								}
+							});
 						}
 					});
 				}
@@ -193,7 +222,14 @@ module.exports = function (NewsFeedItem) {
 								'where': where,
 								'data': data
 							};
-							changes.write(change);
+							try {
+								if (writeable) {
+									changes.write(change);
+								}
+							}
+							catch (e) {
+								debug('NewsFeedItem ' + streamDescription + ' error writing');
+							}
 						});
 					});
 				}
