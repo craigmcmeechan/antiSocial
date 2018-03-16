@@ -44,10 +44,14 @@ module.exports = function (NewsFeedItem) {
 
 		var changeHandler = createChangeHandler('save');
 
-		var heatbeat;
+		var heartbeat;
 
 		changes.destroy = function () {
-			clearInterval(heartbeat);
+			if (heartbeat) {
+				clearInterval(heartbeat);
+				heartbeat = null;
+			}
+
 			debug(streamDescription + ' stopped watching newsfeed');
 			if (changes) {
 				changes.removeAllListeners('error');
