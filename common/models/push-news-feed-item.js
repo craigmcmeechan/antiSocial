@@ -3,6 +3,7 @@ var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 var encryption = require('../../server/lib/encryption');
 var RemoteRouting = require('loopback-remote-routing');
+var watchFeed = require('../../server/lib/watchFeed');
 
 module.exports = function (PushNewsFeedItem) {
 	if (!process.env.ADMIN) {
@@ -90,12 +91,21 @@ module.exports = function (PushNewsFeedItem) {
 					debug('pushNewsFeed ' + streamDescription + ' end', e);
 				});
 
+				friend.updateAttribute('online', true);
+
 				ctx.res.setTimeout(24 * 3600 * 1000);
 				ctx.res.set('X-Accel-Buffering', 'no');
+
 				ctx.res.on('close', function (e) {
 					debug('pushNewsFeed ' + streamDescription + ' res closed');
+					friend.updateAttribute('online', false);
 					changes.destroy();
+					watchFeed.disConnect(friend);
 				});
+
+				if (user.online) {
+					watchFeed.connect(friend);
+				}
 
 				process.nextTick(function () {
 					cb(null, changes);
@@ -155,9 +165,15 @@ module.exports = function (PushNewsFeedItem) {
 
 								changes.write(change);
 							}
+
+							// let watcher know if user is online
+							if (!process.env.KEEP_FEEDS_OPEN) {
+								changes.write({
+									'type': user.online ? 'online' : 'offline'
+								});
+							}
 						}
 					});
-
 				});
 
 				PushNewsFeedItem.observe('after save', changeHandler);

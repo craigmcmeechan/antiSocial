@@ -9,6 +9,7 @@ var async = require('async');
 var url = require('url');
 var server = require('../../server/server');
 var RemoteRouting = require('loopback-remote-routing');
+var watchFeed = require('../../server/lib/watchFeed');
 
 module.exports = function (NewsFeedItem) {
 
@@ -65,11 +66,17 @@ module.exports = function (NewsFeedItem) {
 		ctx.res.setTimeout(24 * 3600 * 1000);
 		ctx.res.set('X-Accel-Buffering', 'no');
 		ctx.res.on('close', function (e) {
-			debug(streamDescription + ' response closed');
+			debug(streamDescription + ' closed');
 			changes.destroy();
+			user.updateAttribute('online', false);
+			watchFeed.disconnectAll(user);
 		});
 
+		user.updateAttribute('online', true);
+
 		debug(streamDescription + ' is watching newsfeed');
+
+		watchFeed.connectAll(user);
 
 		process.nextTick(function () {
 			cb(null, changes);

@@ -1,4 +1,3 @@
-extends ../wrapper
 
 block seo
 	title.
@@ -11,4 +10,6 @@ block content
 			h1 Testbench
 		.row
 			.col-xs-12
-				#my-friends-graph.graph(style="width:100%;height:100vh;" data-jsclass="graphController" data-endpoint= '/' + currentUser.username + '/friends.json')
+				for connection in connections
+					li= connection.key + ' ' + connection.status
+					
