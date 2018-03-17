@@ -1,4 +1,3 @@
-extends ../wrapper
 
 block seo
 	title.
@@ -11,5 +10,6 @@ block content
 			h1 Testbench
 		.row
 			.col-xs-12
-				script(src="/socket.io/socket.io.js")
-				.test(data-jsclass="websocketController")
+				for connection in connections
+					li= connection.key + ' ' + connection.status
+					

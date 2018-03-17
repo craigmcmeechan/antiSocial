@@ -1,0 +1,22 @@
+# Obtain a free SSL from eff.org
+
+git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+/opt/letsencrypt/letsencrypt-auto --debug
+echo "rsa-key-size = 4096" >> /etc/letsencrypt/config.ini
+echo "email = mrhodes@myantisocial.net" >> /etc/letsencrypt/config.ini
+
+#### with server running, publicly accessible under the domain you are registering
+mkdir client/.well-known/acme-challenge
+/opt/letsencrypt/letsencrypt-auto certonly --debug --webroot -w /var/app/current/letsencrypt/static -d mr.myantisocial.net --config /etc/letsencrypt/config.ini --agree-tos
+
+#### use dns authentication instead of webroot if server not running on domain
+
+/opt/letsencrypt/letsencrypt-auto certonly --manual --preferred-challenges dns --debug -d mr.myantisocial.net -d ae.myantisocial.net -d devel.myantisocial.net --config /etc/letsencrypt/config.ini --agree-tos
+
+#### view certificates
+
+/opt/eff.org/certbot/venv/bin/certbot certificates
+
+#### Run in cron to renew certs
+
+/opt/letsencrypt/letsencrypt-auto --no-bootstrap renew
