@@ -19,6 +19,91 @@ module.exports = function (NewsFeedItem) {
 		});
 	}
 
+	NewsFeedItem.buildWebSocketChangeHandler = function (socket, options, events) {
+		var user = socket.currentUser;
+		var streamDescription = 'user.username->client';
+		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
+
+		for (var i = 0; i < events.length; i++) {
+			var event = events[i];
+			if (event === 'after save' || event === 'before delete') {
+				var handler = createWebSocketChangeHandler(event);
+			}
+		}
+
+		function createWebSocketChangeHandler(observing) {
+
+			var handler = function (ctx, next) {
+
+				var where = ctx.where;
+				var data = ctx.instance || ctx.data;
+
+				// check instance belongs to user
+				if (data.userId.toString() !== user.id.toString()) {
+					return next();
+				}
+
+				// the data includes the id or the where includes the id
+				var target;
+
+				if (data && (data.id || data.id === 0)) {
+					target = data.id;
+				}
+				else if (where && (where.id || where.id === 0)) {
+					target = where.id;
+				}
+
+				var hasTarget = target === 0 || !!target;
+
+				var mytype;
+
+				switch (observing) {
+				case 'after save':
+					if (ctx.isNewInstance === undefined) {
+						mytype = hasTarget ? 'update' : 'create';
+					}
+					else {
+						mytype = ctx.isNewInstance ? 'create' : 'update';
+					}
+					break;
+				case 'before delete':
+					mytype = 'remove';
+					break;
+				}
+
+				resolveProfiles(data, function (err) {
+					var items = resolveSummary([data], myEndpoint, user);
+					data = items[0];
+					newsFeedItemResolve(user, data, function (err, data) {
+						var change = {
+							'type': mytype,
+							'model': 'NewsFeedItem',
+							'observing': observing,
+							'data': data
+						};
+						try {
+							socket.emit('data', change);
+						}
+						catch (e) {
+							debug('NewsFeedItem ' + streamDescription + ' error writing');
+						}
+					});
+				});
+
+				next();
+			};
+
+			NewsFeedItem.observe(observing, handler);
+
+			socket.on('disconnect', function () {
+				console.log(socket.currentUser.username + ' stopped subscribing to NewsFeedItem ' + observing);
+				NewsFeedItem.removeObserver(observing, handler);
+			});
+
+			return handler;
+		}
+	};
+
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
 	NewsFeedItem.live = function (userId, ctx, cb) {
 		var reqContext = ctx.req.getCurrentContext();

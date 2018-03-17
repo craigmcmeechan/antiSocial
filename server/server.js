@@ -178,7 +178,7 @@ var csp = require('helmet-csp')
 app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io'],
+    'connect-src': ['\'self\'', 'sentry.io', 'ws://' + app.locals.config.host + ':' + app.locals.config.port],
     'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', function (req, res) {
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
@@ -230,8 +230,70 @@ app.start = function () {
 // Sub-apps like REST API are mounted via boot scripts.
 boot(app, __dirname, function (err) {
   if (err) throw err;
-
   // start the server if `$ node server.js`
-  if (require.main === module)
-    app.start();
+  if (require.main === module) {
+    app.io = require('socket.io')(app.start());
+    require('socketio-auth')(app.io, {
+      authenticate: function (socket, data, callback) {
+        var cookie = require('cookie');
+        var cookieParser = require('cookie-parser');
+        var AccessToken = app.models.AccessToken;
+        if (!socket.handshake.headers.cookie) {
+          return callback(null, false);
+        }
+        var cookies = cookie.parse(socket.handshake.headers.cookie);
+        var signedCookies = cookieParser.signedCookies(cookies, 'DecodrRing');
+        if (!signedCookies.access_token) {
+          return callback(null, false);
+        }
+
+        AccessToken.find({
+          where: {
+            id: signedCookies.access_token
+          }
+        }, function (err, tokenDetail) {
+          if (err) throw err;
+          if (tokenDetail.length) {
+            data.userId = tokenDetail[0].userId;
+            console.log('access token found');
+            callback(null, true);
+          }
+          else {
+            console.log('access token not found');
+            callback(null, false);
+          }
+        });
+      },
+      postAuthenticate: function (socket, data) {
+        if (data.userId) {
+          app.models.MyUser.findById(data.userId, function (err, currentUser) {
+            if (err) {
+              console.log('user not found for token, which is odd.');
+              return;
+            }
+
+            socket.currentUser = currentUser;
+
+            if (data.subscriptions) {
+              for (var model in data.subscriptions) {
+                var events = data.subscriptions[model];
+                app.models[model].buildWebSocketChangeHandler(socket, data, events);
+              }
+            }
+
+            socket.on('data', function (data) {
+              console.log('got: %j from %s', data, socket.currentUser.username);
+            });
+          });
+        }
+      }
+    });
+
+    app.io.on('connection', function (socket) {
+      console.log('a user connected');
+      socket.on('disconnect', function () {
+        console.log('user %s disconnected ', socket.currentUser ? socket.currentUser.username : 'unknown');
+      });
+    });
+  }
 });
