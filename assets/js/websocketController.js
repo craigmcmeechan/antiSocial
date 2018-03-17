@@ -4,9 +4,10 @@
 		this.element = $(elem);
 
 		var self = this;
+		this.endpoint = this.element.data('endpoint');
 
 		this.start = function () {
-			var socket = io.connect('ws://127.0.0.1:3000');
+			var socket = io.connect(self.endpoint);
 			socket.on('connect', function () {
 				socket.emit('authentication', {
 					'subscriptions': {
