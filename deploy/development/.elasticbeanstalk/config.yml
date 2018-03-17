@@ -9,6 +9,8 @@ branch-defaults:
     environment: devel-antisocial
   unique-username-in-relationship:
     environment: devel-antisocial
+  websockets-experiment:
+    environment: devel-antisocial
 global:
   application_name: digitopia-social
   branch: null

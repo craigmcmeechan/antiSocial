@@ -7,7 +7,7 @@ module.exports = function (server) {
 	router.get('/status', getCurrentUser(), function (req, res, next) {
 		var ctx = req.myContext;
 
-		res.render('pages/testbench', {
+		res.render('pages/status', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser'),
 			'connections': watchFeed.connections

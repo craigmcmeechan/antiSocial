@@ -173,8 +173,8 @@ app.use(function (req, res, next) {
   next();
 });
 
-var csp = require('helmet-csp')
-
+var csp = require('helmet-csp');
+/*
 app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
@@ -197,7 +197,7 @@ app.use(csp({
   'disableAndroid': false,
   'browserSniff': false
 }));
-
+*/
 
 // attach settings to req
 var globalSettings = require('./middleware/context-globalSettings')();
