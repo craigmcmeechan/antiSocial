@@ -73,12 +73,16 @@ module.exports.mount = function websocketsMount(app) {
 					function bindEvents(socket, eventType, handler) {
 						app.models[model].observe(eventType, handler, eventType);
 
-						socket.on('disconnect', function () {
-							debug('websocketsChangeHandler ' + socket.currentUser.username + ' stopped subscribing to NewsFeedItem ' + eventType);
-							app.models[model].removeObserver(eventType, handler);
-							delete app.openWebsocketClients[socket.currentUser.username];
-							socket.currentUser.updateAttribute('online', false);
-							watchFeed.disconnectAll(app, socket.currentUser);
+						socket.on('disconnect', function (reason) {
+							debug('websocketsChangeHandler ' + socket.currentUser.username + ' disconnect event reason ' + reason);
+
+							if (reason === 'transport close') {
+								debug('websocketsChangeHandler ' + socket.currentUser.username + ' stopped subscribing to NewsFeedItem "' + eventType + '" because ' + reason);
+								app.models[model].removeObserver(eventType, handler);
+								delete app.openWebsocketClients[socket.currentUser.username];
+								socket.currentUser.updateAttribute('online', false);
+								watchFeed.disconnectAll(app, socket.currentUser);
+							}
 						});
 					}
 				});
@@ -88,8 +92,8 @@ module.exports.mount = function websocketsMount(app) {
 
 	app.io.on('connection', function (socket) {
 		debug('websocketsMount a user connected');
-		socket.on('disconnect', function () {
-			debug('websocketsMount user %s disconnected ', socket.currentUser ? socket.currentUser.username : 'unknown');
+		socket.on('disconnect', function (reason) {
+			debug('websocketsMount user %s disconnected %s', socket.currentUser ? socket.currentUser.username : 'unknown', reason);
 		});
 	});
 };
