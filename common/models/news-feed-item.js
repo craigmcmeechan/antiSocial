@@ -9,6 +9,7 @@ var async = require('async');
 var url = require('url');
 var server = require('../../server/server');
 var RemoteRouting = require('loopback-remote-routing');
+var watchFeed = require('../../server/lib/watchFeed');
 
 module.exports = function (NewsFeedItem) {
 
@@ -17,6 +18,115 @@ module.exports = function (NewsFeedItem) {
 			'only': ['@live']
 		});
 	}
+
+	NewsFeedItem.changeHandlerBackfill = function (socket, options) {
+		var user = socket.currentUser;
+		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
+
+		var query = {
+			'where': {
+				'userId': user.id
+			},
+			'order': 'createdOn DESC',
+			'limit': 60
+		};
+
+		NewsFeedItem.find(query, function (e, items) {
+			if (e) {
+				debug('backfilling NewsFeedItem %j error', query, e);
+			}
+			else {
+				debug('backfilling NewsFeedItem %j count', query, items ? items.length : 0);
+
+				async.map(items, resolveProfiles, function (err) {
+
+					items = resolveSummary(items, myEndpoint, user);
+
+					for (var i = items.length - 1; i >= 0; i--) {
+						newsFeedItemResolve(user, items[i], function (err, data) {
+
+							var change = {
+								'type': 'create',
+								'where': {},
+								'data': data,
+								'backfill': true
+							};
+
+							debugVerbose('backfilling NewsFeedItem %j', data);
+
+							socket.emit('data', change);
+						});
+					}
+				});
+			}
+		});
+	};
+
+	NewsFeedItem.buildWebSocketChangeHandler = function (socket, eventType, options) {
+		var user = socket.currentUser;
+		var streamDescription = 'user.username->client';
+		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
+
+		return function (ctx, next) {
+
+			var where = ctx.where;
+			var data = ctx.instance || ctx.data;
+
+			// check instance belongs to user
+			if (data.userId.toString() !== user.id.toString()) {
+				return next();
+			}
+
+			// the data includes the id or the where includes the id
+			var target;
+
+			if (data && (data.id || data.id === 0)) {
+				target = data.id;
+			}
+			else if (where && (where.id || where.id === 0)) {
+				target = where.id;
+			}
+
+			var hasTarget = target === 0 || !!target;
+
+			var mytype;
+
+			switch (eventType) {
+			case 'after save':
+				if (ctx.isNewInstance === undefined) {
+					mytype = hasTarget ? 'update' : 'create';
+				}
+				else {
+					mytype = ctx.isNewInstance ? 'create' : 'update';
+				}
+				break;
+			case 'before delete':
+				mytype = 'remove';
+				break;
+			}
+
+			resolveProfiles(data, function (err) {
+				var items = resolveSummary([data], myEndpoint, user);
+				data = items[0];
+				newsFeedItemResolve(user, data, function (err, data) {
+					var change = {
+						'type': mytype,
+						'model': 'NewsFeedItem',
+						'eventType': eventType,
+						'data': data
+					};
+					try {
+						socket.emit('data', change);
+					}
+					catch (e) {
+						debug('NewsFeedItem ' + streamDescription + ' error writing');
+					}
+				});
+			});
+
+			next();
+		};
+	};
 
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
 	NewsFeedItem.live = function (userId, ctx, cb) {
@@ -33,43 +143,87 @@ module.exports = function (NewsFeedItem) {
 			return cb(error);
 		}
 
-		var streamDescription = 'EventSource client ' + user.username;
+		var streamDescription = user.username;
 
 		var changes = new PassThrough({
 			objectMode: true
 		});
 
+		if (!ctx.req.app.openClients) {
+			ctx.req.app.openClients = {};
+		}
+
+		ctx.req.app.openClients[user.username] = changes;
+
 		var writeable = true;
 
 		var changeHandler = createChangeHandler('save');
 
+		var heartbeat;
+
 		changes.destroy = function () {
-			debug(streamDescription + ' stopped watching newsfeed');
-			if (changes) {
-				changes.removeAllListeners('error');
-				changes.removeAllListeners('end');
-			}
-			NewsFeedItem.removeObserver('after save', changeHandler);
 			writeable = false;
-			changes = null;
+
+			if (heartbeat) {
+				clearInterval(heartbeat);
+				heartbeat = null;
+			}
+
+			delete ctx.req.app.openClients[user.username];
+
+			debug('NewsFeedItem ' + streamDescription + ' stopped watching newsfeeditems');
+			NewsFeedItem.removeObserver('after save', changeHandler);
+
+			if (changes) {
+				ctx.res.removeAllListeners('error');
+				ctx.res.removeAllListeners('end');
+				ctx.res.removeAllListeners('close');
+				ctx.req.destroy();
+				changes = null;
+			}
+
+			user.updateAttribute('online', false);
+			watchFeed.disconnectAll(ctx.req.app, user);
 		};
 
-		changes.on('error', function (e) {
+		ctx.res.on('error', function (e) {
 			logger.error(streamDescription + ' error on ' + streamDescription, e);
+			changes.destroy();
 		});
 
-		changes.on('end', function (e) {
-			debug(streamDescription + ' end', e);
+		ctx.res.on('end', function (e) {
+			debug('NewsFeedItem ' + streamDescription + ' end', e);
+			changes.destroy();
+		});
+
+		ctx.res.on('close', function (e) {
+			debug('NewsFeedItem ' + streamDescription + ' closed');
+			changes.destroy();
 		});
 
 		ctx.res.setTimeout(24 * 3600 * 1000);
 		ctx.res.set('X-Accel-Buffering', 'no');
-		ctx.res.on('close', function (e) {
-			debug(streamDescription + ' response closed');
-			changes.destroy();
-		});
 
-		debug(streamDescription + ' is watching newsfeed');
+		heartbeat = setInterval(function () {
+			try {
+				if (writeable) {
+					changes.write({
+						'type': 'heartbeat'
+					});
+				}
+			}
+			catch (e) {
+				debug('NewsFeedItem ' + streamDescription + ' error writing');
+			}
+		}, 5000);
+
+		user.updateAttribute('online', true);
+
+		debug('NewsFeedItem ' + streamDescription + ' is watching newsfeed');
+
+		watchFeed.connectAll(ctx.req.app, user);
+
+
 
 		process.nextTick(function () {
 			cb(null, changes);
@@ -105,8 +259,15 @@ module.exports = function (NewsFeedItem) {
 
 								debugVerbose('backfilling NewsFeedItem %j', data);
 
-								changes.write(change);
-							})
+								try {
+									if (writeable) {
+										changes.write(change);
+									}
+								}
+								catch (e) {
+									debug('NewsFeedItem ' + streamDescription + ' error writing');
+								}
+							});
 						}
 					});
 				}
@@ -168,7 +329,14 @@ module.exports = function (NewsFeedItem) {
 								'where': where,
 								'data': data
 							};
-							changes.write(change);
+							try {
+								if (writeable) {
+									changes.write(change);
+								}
+							}
+							catch (e) {
+								debug('NewsFeedItem ' + streamDescription + ' error writing');
+							}
 						});
 					});
 				}

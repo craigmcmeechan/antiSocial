@@ -3,6 +3,7 @@ var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 var encryption = require('../../server/lib/encryption');
 var RemoteRouting = require('loopback-remote-routing');
+var watchFeed = require('../../server/lib/watchFeed');
 
 module.exports = function (PushNewsFeedItem) {
 	if (!process.env.ADMIN) {
@@ -16,7 +17,7 @@ module.exports = function (PushNewsFeedItem) {
 		var accessToken = ctx.req.headers['friend-access-token'];
 		var highwater = ctx.req.headers['friend-high-water'] ? ctx.req.headers['friend-high-water'] : 0;
 
-		debug('pushNewsFeed connect request from %s token %s highwater %s', username, accessToken, highwater);
+		debug('PushNewsFeedItem connect request from %s token %s highwater %s', username, accessToken, highwater);
 
 		var logger = ctx.req.logger;
 
@@ -31,7 +32,7 @@ module.exports = function (PushNewsFeedItem) {
 				return cb(404);
 			}
 
-			var streamDescription = 'EventSource pushing ' + user.username;
+			var streamDescription = user.username;
 
 			var accessToken = ctx.req.headers['friend-access-token'];
 
@@ -55,11 +56,9 @@ module.exports = function (PushNewsFeedItem) {
 				var privateKey = friend.keys.private;
 				var publicKey = friend.remotePublicKey;
 
-				if (friend) {
-					streamDescription += ' -> ' + friend.remoteEndPoint + ' audiences:' + friend.audiences;
-				}
+				streamDescription += '->' + friend.remoteEndPoint;
 
-				debug('pushNewsFeed ' + streamDescription);
+				debug('PushNewsFeedItem ' + streamDescription);
 
 				// ok we have the user and the subscriber friend record if applicable
 
@@ -67,35 +66,80 @@ module.exports = function (PushNewsFeedItem) {
 					objectMode: true
 				});
 
+				if (!ctx.req.app.openServers) {
+					ctx.req.app.openServers = {};
+				}
+
+				ctx.req.app.openServers[streamDescription] = changes;
+
 				var writeable = true;
 
 				var changeHandler = createChangeHandler('save');
 
-				changes.destroy = function () {
-					debug('pushNewsFeed ' + streamDescription + ' destroy');
-					if (changes) {
-						changes.removeAllListeners('error');
-						changes.removeAllListeners('end');
-					}
-					PushNewsFeedItem.removeObserver('after save', changeHandler);
+				var heartbeat = null;
+
+				changes.doDestroy = function () {
 					writeable = false;
-					changes = null;
+
+					if (heartbeat) {
+						clearInterval(heartbeat);
+						heartbeat = null;
+					}
+
+					delete ctx.req.app.openServers[streamDescription];
+
+					debug('PushNewsFeedItem ' + streamDescription + ' destroy');
+
+					PushNewsFeedItem.removeObserver('after save', changeHandler);
+
+					if (changes) {
+						ctx.res.removeAllListeners('error');
+						ctx.res.removeAllListeners('end');
+						ctx.res.removeAllListeners('close');
+						ctx.req.destroy();
+						changes = null;
+					}
+
+					friend.updateAttribute('online', false);
+					watchFeed.disConnect(ctx.req.app, friend);
 				};
 
-				changes.on('error', function (e) {
-					logger.error(streamDescription + ' error on ' + streamDescription, e);
+				ctx.res.on('error', function (e) {
+					debug('PushNewsFeedItem ' + streamDescription + ' error on ' + streamDescription, e);
+					changes.doDestroy();
 				});
 
-				changes.on('end', function (e) {
-					debug('pushNewsFeed ' + streamDescription + ' end', e);
+				ctx.res.on('end', function (e) {
+					debug('PushNewsFeedItem ' + streamDescription + ' end', e);
+					changes.doDestroy();
 				});
 
+				ctx.res.on('close', function (e) {
+					debug('PushNewsFeedItem ' + streamDescription + ' closed');
+					changes.doDestroy();
+				});
+
+				friend.updateAttribute('online', true);
 				ctx.res.setTimeout(24 * 3600 * 1000);
 				ctx.res.set('X-Accel-Buffering', 'no');
-				ctx.res.on('close', function (e) {
-					debug('pushNewsFeed ' + streamDescription + ' res closed');
-					changes.destroy();
-				});
+
+				heartbeat = setInterval(function () {
+					try {
+						if (writeable) {
+							changes.write({
+								'type': 'heartbeat'
+							});
+						}
+					}
+					catch (e) {
+						debug('PushNewsFeedItem ' + streamDescription + ' error writing');
+
+					}
+				}, 5000);
+
+				if (user.online) {
+					watchFeed.connect(ctx.req.app, friend);
+				}
 
 				process.nextTick(function () {
 					cb(null, changes);
@@ -121,7 +165,7 @@ module.exports = function (PushNewsFeedItem) {
 							logger.error('backfilling PushNewsFeedItem %j error', query, e);
 						}
 						else {
-							debug('pushNewsFeed ' + streamDescription + ' backfilling PushNewsFeedItem %j count %d', query, items ? items.length : 0);
+							debug('PushNewsFeedItem ' + streamDescription + ' backfilling PushNewsFeedItem %j count %d', query, items ? items.length : 0);
 
 							items.reverse();
 
@@ -152,12 +196,31 @@ module.exports = function (PushNewsFeedItem) {
 								};
 
 								debugVerbose('backfilling PushNewsFeedItem %j', data);
+								try {
+									if (writeable) {
+										changes.write(change);
+									}
+								}
+								catch (e) {
+									debug('PushNewsFeedItem ' + streamDescription + ' error writing');
+								}
+							}
 
-								changes.write(change);
+							// let watcher know if user is online
+							if (!process.env.KEEP_FEEDS_OPEN) {
+								try {
+									if (writeable) {
+										changes.write({
+											'type': user.online ? 'online' : 'offline'
+										});
+									}
+								}
+								catch (e) {
+									debug('PushNewsFeedItem ' + streamDescription + ' error writing');
+								}
 							}
 						}
 					});
-
 				});
 
 				PushNewsFeedItem.observe('after save', changeHandler);
@@ -165,6 +228,7 @@ module.exports = function (PushNewsFeedItem) {
 				function createChangeHandler(type) {
 					return function (ctx, next) {
 						// since it might have set to null via destroy
+
 						if (!changes) {
 							return next();
 						}
@@ -244,9 +308,14 @@ module.exports = function (PushNewsFeedItem) {
 							break;
 						}
 
-						if (writeable) {
-							debug('pushNewsFeed ' + streamDescription, change);
-							changes.write(change);
+						debug('PushNewsFeedItem ' + streamDescription, change);
+						try {
+							if (writeable) {
+								changes.write(change);
+							}
+						}
+						catch (e) {
+							debug('PushNewsFeedItem ' + streamDescription + ' error writing');
 						}
 
 						next();

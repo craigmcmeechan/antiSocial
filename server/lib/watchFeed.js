@@ -33,7 +33,6 @@ and caches them in NewsFeedItems.
 var es = require('eventsource');
 var url = require('url');
 var async = require('async');
-var uuid = require('uuid');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var encryption = require('./encryption');
@@ -42,8 +41,61 @@ var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 
 var connections = {};
+module.exports.connections = connections;
 
-module.exports = function watchFeed(server, friend) {
+module.exports.disconnectAll = function disconnectAll(server, user) {
+	for (var key in connections) {
+		var connection = connections[key];
+		if (connection.currentUser.id === user.id) {
+			connection.eventSource.close();
+			connection.status = 'closed';
+			debug('watchFeed eventsource closed %s %s', connection.currentUser.username, connection.endpoint);
+			delete connections[key];
+		}
+	}
+};
+
+var disConnect = function disConnect(server, friend) {
+	for (var key in connections) {
+		var connection = connections[key];
+		if (connection.friend.id === friend.id) {
+			connection.eventSource.close();
+			connection.status = 'closed';
+			debug('watchFeed eventsource closed %s %s', connection.currentUser.username, connection.endpoint);
+			delete connections[key];
+		}
+	}
+};
+
+module.exports.disConnect = disConnect;
+
+module.exports.connectAll = function connectAll(server, user) {
+	// poll friends feeds
+	var query = {
+		'where': {
+			'and': [{
+				'userId': user.id
+			}, {
+				'status': 'accepted'
+			}]
+		}
+	};
+
+	server.models.Friend.find(query, function (err, friends) {
+		if (err) {
+			console.log('Friend.find failed', err);
+			return;
+		}
+
+		for (var i = 0; i < friends.length; i++) {
+			var friend = friends[i];
+			watchFeed(server, friend);
+		}
+	});
+};
+
+
+var watchFeed = function watchFeed(server, friend) {
 
 	var remoteEndPoint = url.parse(friend.remoteEndPoint);
 	var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host + '/api/PushNewsFeedItems' + remoteEndPoint.pathname + '/stream-updates';
@@ -56,8 +108,8 @@ module.exports = function watchFeed(server, friend) {
 
 		var key = currentUser.username + ' <- ' + feed;
 
-		if (connections[key]) {
-			debug('watchFeed ' + currentUser.username + ' already listening', friend);
+		if (connections[key] && connections[key].status === 'open') {
+			debug('watchFeed ' + currentUser.username + ' already listening ' + key);
 		}
 		else {
 			debug('watchFeed ' + currentUser.username + ' listening ' + key);
@@ -69,25 +121,43 @@ module.exports = function watchFeed(server, friend) {
 			});
 
 			var connection = {
+				'key': key,
 				'endpoint': feed,
 				'eventSource': eventSource,
 				'currentUser': currentUser,
-				'friend': friend
+				'friend': friend,
+				'status': 'closed'
 			};
-
 			connections[key] = connection;
 
+			eventSource.addEventListener('open', getOpenHandler(server, connection));
 			eventSource.addEventListener('data', getListener(server, connection));
 			eventSource.addEventListener('error', getErrorHandler(server, connection));
-			eventSource.addEventListener('close', getErrorHandler(server, connection));
-
+			eventSource.addEventListener('close', getCloseHandler(server, connection));
 		}
 	});
 };
 
+function getOpenHandler(server, connection) {
+	return function (e) {
+		connection.status = 'open';
+		debug('watchFeed eventsource open %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+	};
+}
+
+function getCloseHandler(server, connection) {
+	return function (e) {
+		connection.status = 'closed';
+		debug('watchFeed eventsource close %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		delete connections[connection.key];
+	};
+}
+
 function getErrorHandler(server, connection) {
 	return function (e) {
+		connection.status = 'error';
 		debug('watchFeed error %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		delete connections[connection.key];
 	};
 }
 
@@ -102,6 +172,24 @@ function getListener(server, connection) {
 
 		if (e.type === 'data') {
 			var message = JSON.parse(e.data);
+
+			if (message.type === 'offline') {
+				debug('listener ' + currentUser.username + ' received offline message ' + connection.key);
+				connection.eventSource.close();
+				connection.status = 'closed';
+				delete connections[connection.key];
+				return;
+			}
+
+			if (message.type === 'online') {
+				debug('listener ' + currentUser.username + ' received online message ' + connection.key);
+				return;
+			}
+
+			if (message.type === 'heartbeat') {
+				debug('listener ' + currentUser.username + ' received heartbeat ' + connection.key);
+				return;
+			}
 
 			var privateKey = friend.keys.private;
 			var publicKey = friend.remotePublicKey;
@@ -297,3 +385,5 @@ function getListener(server, connection) {
 		}
 	};
 }
+
+module.exports.connect = watchFeed;
