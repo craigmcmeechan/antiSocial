@@ -1,9 +1,10 @@
-var p = require('../package.json');
-var version = p.version.split('.').shift();
+var packageInfo = require('../package.json');
+var version = packageInfo.version.split('.').shift();
 var h = process.env.PUBLIC_HOST || '127.0.0.1';
 var p = process.env.PUBLIC_PORT || 3000;
 var protocol = process.env.PUBLIC_PROTOCOL || 'http';
 var pub = protocol + '://' + h;
+var websockets = protocol === 'https' ? 'wss' : 'ws';
 if (parseInt(p) !== 80) {
   pub += ':' + p;
 }
@@ -12,5 +13,6 @@ module.exports = {
   host: h,
   port: p,
   protocol: protocol,
+  websockets: websockets,
   publicHost: pub
 };

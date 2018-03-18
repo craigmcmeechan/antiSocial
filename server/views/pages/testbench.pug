@@ -10,6 +10,8 @@ block content
 		.page-header
 			h1 Testbench
 		.row
-			.col-xs-12
-				script(src="/socket.io/socket.io.js")
-				.test(data-jsclass="websocketController" data-endpoint = 'wss://' + config.host + ':' + config.port)
+			.col-xs-8
+				.test(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets + '://' + config.host + ':' + config.port)
+					.news-feed-items
+			.col-xs-4
+				#newsfeed-here-test

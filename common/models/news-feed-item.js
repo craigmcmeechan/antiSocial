@@ -19,89 +19,113 @@ module.exports = function (NewsFeedItem) {
 		});
 	}
 
-	NewsFeedItem.buildWebSocketChangeHandler = function (socket, options, events) {
+	NewsFeedItem.changeHandlerBackfill = function (socket, options) {
+		var user = socket.currentUser;
+		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
+
+		var query = {
+			'where': {
+				'userId': user.id
+			},
+			'order': 'createdOn DESC',
+			'limit': 60
+		};
+
+		NewsFeedItem.find(query, function (e, items) {
+			if (e) {
+				debug('backfilling NewsFeedItem %j error', query, e);
+			}
+			else {
+				debug('backfilling NewsFeedItem %j count', query, items ? items.length : 0);
+
+				async.map(items, resolveProfiles, function (err) {
+
+					items = resolveSummary(items, myEndpoint, user);
+
+					for (var i = items.length - 1; i >= 0; i--) {
+						newsFeedItemResolve(user, items[i], function (err, data) {
+
+							var change = {
+								'type': 'create',
+								'where': {},
+								'data': data,
+								'backfill': true
+							};
+
+							debugVerbose('backfilling NewsFeedItem %j', data);
+
+							socket.emit('data', change);
+						});
+					}
+				});
+			}
+		});
+	};
+
+	NewsFeedItem.buildWebSocketChangeHandler = function (socket, eventType, options) {
 		var user = socket.currentUser;
 		var streamDescription = 'user.username->client';
 		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
-		for (var i = 0; i < events.length; i++) {
-			var event = events[i];
-			if (event === 'after save' || event === 'before delete') {
-				var handler = createWebSocketChangeHandler(event);
+		return function (ctx, next) {
+
+			var where = ctx.where;
+			var data = ctx.instance || ctx.data;
+
+			// check instance belongs to user
+			if (data.userId.toString() !== user.id.toString()) {
+				return next();
 			}
-		}
 
-		function createWebSocketChangeHandler(observing) {
+			// the data includes the id or the where includes the id
+			var target;
 
-			var handler = function (ctx, next) {
+			if (data && (data.id || data.id === 0)) {
+				target = data.id;
+			}
+			else if (where && (where.id || where.id === 0)) {
+				target = where.id;
+			}
 
-				var where = ctx.where;
-				var data = ctx.instance || ctx.data;
+			var hasTarget = target === 0 || !!target;
 
-				// check instance belongs to user
-				if (data.userId.toString() !== user.id.toString()) {
-					return next();
+			var mytype;
+
+			switch (eventType) {
+			case 'after save':
+				if (ctx.isNewInstance === undefined) {
+					mytype = hasTarget ? 'update' : 'create';
 				}
-
-				// the data includes the id or the where includes the id
-				var target;
-
-				if (data && (data.id || data.id === 0)) {
-					target = data.id;
+				else {
+					mytype = ctx.isNewInstance ? 'create' : 'update';
 				}
-				else if (where && (where.id || where.id === 0)) {
-					target = where.id;
-				}
+				break;
+			case 'before delete':
+				mytype = 'remove';
+				break;
+			}
 
-				var hasTarget = target === 0 || !!target;
-
-				var mytype;
-
-				switch (observing) {
-				case 'after save':
-					if (ctx.isNewInstance === undefined) {
-						mytype = hasTarget ? 'update' : 'create';
+			resolveProfiles(data, function (err) {
+				var items = resolveSummary([data], myEndpoint, user);
+				data = items[0];
+				newsFeedItemResolve(user, data, function (err, data) {
+					var change = {
+						'type': mytype,
+						'model': 'NewsFeedItem',
+						'eventType': eventType,
+						'data': data
+					};
+					try {
+						socket.emit('data', change);
 					}
-					else {
-						mytype = ctx.isNewInstance ? 'create' : 'update';
+					catch (e) {
+						debug('NewsFeedItem ' + streamDescription + ' error writing');
 					}
-					break;
-				case 'before delete':
-					mytype = 'remove';
-					break;
-				}
-
-				resolveProfiles(data, function (err) {
-					var items = resolveSummary([data], myEndpoint, user);
-					data = items[0];
-					newsFeedItemResolve(user, data, function (err, data) {
-						var change = {
-							'type': mytype,
-							'model': 'NewsFeedItem',
-							'observing': observing,
-							'data': data
-						};
-						try {
-							socket.emit('data', change);
-						}
-						catch (e) {
-							debug('NewsFeedItem ' + streamDescription + ' error writing');
-						}
-					});
 				});
-
-				next();
-			};
-
-			NewsFeedItem.observe(observing, handler);
-
-			socket.on('disconnect', function () {
-				console.log(socket.currentUser.username + ' stopped subscribing to NewsFeedItem ' + observing);
-				NewsFeedItem.removeObserver(observing, handler);
 			});
 
-			return handler;
-		}
+			next();
+		};
 	};
 
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
@@ -120,8 +144,6 @@ module.exports = function (NewsFeedItem) {
 		}
 
 		var streamDescription = user.username;
-
-
 
 		var changes = new PassThrough({
 			objectMode: true
