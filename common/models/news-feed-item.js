@@ -19,6 +19,115 @@ module.exports = function (NewsFeedItem) {
 		});
 	}
 
+	NewsFeedItem.changeHandlerBackfill = function (socket, options) {
+		var user = socket.currentUser;
+		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
+
+		var query = {
+			'where': {
+				'userId': user.id
+			},
+			'order': 'createdOn DESC',
+			'limit': 60
+		};
+
+		NewsFeedItem.find(query, function (e, items) {
+			if (e) {
+				debug('backfilling NewsFeedItem %j error', query, e);
+			}
+			else {
+				debug('backfilling NewsFeedItem %j count', query, items ? items.length : 0);
+
+				async.map(items, resolveProfiles, function (err) {
+
+					items = resolveSummary(items, myEndpoint, user);
+
+					for (var i = items.length - 1; i >= 0; i--) {
+						newsFeedItemResolve(user, items[i], function (err, data) {
+
+							var change = {
+								'type': 'create',
+								'where': {},
+								'data': data,
+								'backfill': true
+							};
+
+							debugVerbose('backfilling NewsFeedItem %j', data);
+
+							socket.emit('data', change);
+						});
+					}
+				});
+			}
+		});
+	};
+
+	NewsFeedItem.buildWebSocketChangeHandler = function (socket, eventType, options) {
+		var user = socket.currentUser;
+		var streamDescription = 'user.username->client';
+		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
+
+		return function (ctx, next) {
+
+			var where = ctx.where;
+			var data = ctx.instance || ctx.data;
+
+			// check instance belongs to user
+			if (data.userId.toString() !== user.id.toString()) {
+				return next();
+			}
+
+			// the data includes the id or the where includes the id
+			var target;
+
+			if (data && (data.id || data.id === 0)) {
+				target = data.id;
+			}
+			else if (where && (where.id || where.id === 0)) {
+				target = where.id;
+			}
+
+			var hasTarget = target === 0 || !!target;
+
+			var mytype;
+
+			switch (eventType) {
+			case 'after save':
+				if (ctx.isNewInstance === undefined) {
+					mytype = hasTarget ? 'update' : 'create';
+				}
+				else {
+					mytype = ctx.isNewInstance ? 'create' : 'update';
+				}
+				break;
+			case 'before delete':
+				mytype = 'remove';
+				break;
+			}
+
+			resolveProfiles(data, function (err) {
+				var items = resolveSummary([data], myEndpoint, user);
+				data = items[0];
+				newsFeedItemResolve(user, data, function (err, data) {
+					var change = {
+						'type': mytype,
+						'model': 'NewsFeedItem',
+						'eventType': eventType,
+						'data': data
+					};
+					try {
+						socket.emit('data', change);
+					}
+					catch (e) {
+						debug('NewsFeedItem ' + streamDescription + ' error writing');
+					}
+				});
+			});
+
+			next();
+		};
+	};
+
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
 	NewsFeedItem.live = function (userId, ctx, cb) {
 		var reqContext = ctx.req.getCurrentContext();
@@ -35,8 +144,6 @@ module.exports = function (NewsFeedItem) {
 		}
 
 		var streamDescription = user.username;
-
-
 
 		var changes = new PassThrough({
 			objectMode: true
@@ -76,7 +183,7 @@ module.exports = function (NewsFeedItem) {
 			}
 
 			user.updateAttribute('online', false);
-			watchFeed.disconnectAll(user);
+			watchFeed.disconnectAll(ctx.req.app, user);
 		};
 
 		ctx.res.on('error', function (e) {
@@ -114,7 +221,7 @@ module.exports = function (NewsFeedItem) {
 
 		debug('NewsFeedItem ' + streamDescription + ' is watching newsfeed');
 
-		watchFeed.connectAll(user);
+		watchFeed.connectAll(ctx.req.app, user);
 
 
 
