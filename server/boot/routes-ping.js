@@ -21,7 +21,7 @@ module.exports = function (server) {
 
 			timers[currentUser.username] = setTimeout(function () {
 				console.log('zombie ' + currentUser.username);
-				watchFeed.disconnectAll(currentUser);
+				watchFeed.disconnectAll(server, currentUser);
 				delete timers[currentUser.username];
 				if (req.app.openClients[currentUser.username]) {
 					req.app.openClients[currentUser.username].end();

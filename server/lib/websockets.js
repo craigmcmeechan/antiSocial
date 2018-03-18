@@ -1,6 +1,10 @@
 var debug = require('debug')('websockets');
+var watchFeed = require('./watchFeed');
 
 module.exports.mount = function websocketsMount(app) {
+	if (!app.openWebsocketClients) {
+		app.openWebsocketClients = {};
+	}
 	require('socketio-auth')(app.io, {
 		'authenticate': function (socket, data, callback) {
 			var cookie = require('cookie');
@@ -33,6 +37,7 @@ module.exports.mount = function websocketsMount(app) {
 		},
 		'postAuthenticate': function (socket, data) {
 			if (data.userId) {
+
 				app.models.MyUser.findById(data.userId, {
 					'include': ['friends']
 				}, function (err, currentUser) {
@@ -42,6 +47,7 @@ module.exports.mount = function websocketsMount(app) {
 					}
 
 					socket.currentUser = currentUser;
+					app.openWebsocketClients[currentUser.username] = socket;
 
 					if (data.subscriptions) {
 						for (var model in data.subscriptions) {
@@ -57,6 +63,9 @@ module.exports.mount = function websocketsMount(app) {
 						}
 					}
 
+					currentUser.updateAttribute('online', true);
+					watchFeed.connectAll(app, currentUser);
+
 					socket.on('data', function (data) {
 						debug('websocketsMount got: %j from %s', data, socket.currentUser.username);
 					});
@@ -67,6 +76,9 @@ module.exports.mount = function websocketsMount(app) {
 						socket.on('disconnect', function () {
 							debug('websocketsChangeHandler ' + socket.currentUser.username + ' stopped subscribing to NewsFeedItem ' + eventType);
 							app.models[model].removeObserver(eventType, handler);
+							delete app.openWebsocketClients[socket.currentUser.username];
+							socket.currentUser.updateAttribute('online', false);
+							watchFeed.disconnectAll(app, socket.currentUser);
 						});
 					}
 				});

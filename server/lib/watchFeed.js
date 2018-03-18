@@ -33,12 +33,9 @@ and caches them in NewsFeedItems.
 var es = require('eventsource');
 var url = require('url');
 var async = require('async');
-var uuid = require('uuid');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var encryption = require('./encryption');
-var server = require('../../server/server');
-
 
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
@@ -46,7 +43,7 @@ var debugVerbose = require('debug')('feeds:verbose');
 var connections = {};
 module.exports.connections = connections;
 
-module.exports.disconnectAll = function disconnectAll(user) {
+module.exports.disconnectAll = function disconnectAll(server, user) {
 	for (var key in connections) {
 		var connection = connections[key];
 		if (connection.currentUser.id === user.id) {
@@ -58,7 +55,7 @@ module.exports.disconnectAll = function disconnectAll(user) {
 	}
 };
 
-var disConnect = function disConnect(friend) {
+var disConnect = function disConnect(server, friend) {
 	for (var key in connections) {
 		var connection = connections[key];
 		if (connection.friend.id === friend.id) {
@@ -72,7 +69,7 @@ var disConnect = function disConnect(friend) {
 
 module.exports.disConnect = disConnect;
 
-module.exports.connectAll = function connectAll(user) {
+module.exports.connectAll = function connectAll(server, user) {
 	// poll friends feeds
 	var query = {
 		'where': {
@@ -92,13 +89,13 @@ module.exports.connectAll = function connectAll(user) {
 
 		for (var i = 0; i < friends.length; i++) {
 			var friend = friends[i];
-			watchFeed(friend);
+			watchFeed(server, friend);
 		}
 	});
 };
 
 
-var watchFeed = function watchFeed(friend) {
+var watchFeed = function watchFeed(server, friend) {
 
 	var remoteEndPoint = url.parse(friend.remoteEndPoint);
 	var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host + '/api/PushNewsFeedItems' + remoteEndPoint.pathname + '/stream-updates';

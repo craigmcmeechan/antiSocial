@@ -10,6 +10,14 @@ block content
 			h1 Testbench
 		.row
 			.col-xs-12
-				for connection in connections
-					li= connection.key + ' ' + connection.status
+				if sockets
+					strong Open Websockets
+					ul
+						for socket in sockets
+							li= socket.currentUser.username
+				if connections
+					strong Open EventSource
+					ul
+						for connection in connections
+							li= connection.key + ' ' + connection.status
 					

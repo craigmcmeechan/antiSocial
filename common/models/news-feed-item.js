@@ -183,7 +183,7 @@ module.exports = function (NewsFeedItem) {
 			}
 
 			user.updateAttribute('online', false);
-			watchFeed.disconnectAll(user);
+			watchFeed.disconnectAll(ctx.req.app, user);
 		};
 
 		ctx.res.on('error', function (e) {
@@ -221,7 +221,7 @@ module.exports = function (NewsFeedItem) {
 
 		debug('NewsFeedItem ' + streamDescription + ' is watching newsfeed');
 
-		watchFeed.connectAll(user);
+		watchFeed.connectAll(ctx.req.app, user);
 
 
 

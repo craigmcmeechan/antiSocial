@@ -18,7 +18,7 @@ module.exports = function (server) {
 
 		for (var i = 0; i < friends.length; i++) {
 			var friend = friends[i];
-			watchFeed.connect(friend);
+			watchFeed.connect(server, friend);
 		}
 	});
 };

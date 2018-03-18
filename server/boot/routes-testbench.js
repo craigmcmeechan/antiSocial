@@ -10,7 +10,8 @@ module.exports = function (server) {
 		res.render('pages/status', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser'),
-			'connections': watchFeed.connections
+			'connections': watchFeed.connections,
+			'sockets': server.openWebsocketClients
 		});
 	});
 
