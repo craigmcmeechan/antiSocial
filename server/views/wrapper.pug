@@ -261,7 +261,7 @@ html(lang="en")
 
 		#ajax-status
 
-		#news-feed(data-jsclass="liveNewsFeedItemController")
+		#news-feed(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets + '://' + config.host + ':' + config.port)
 			include components/news-feed
 
 		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")
@@ -280,6 +280,8 @@ html(lang="en")
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
 			script(nonce= nonce).
 				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
+
+		script(src="/socket.io/socket.io.js")
 
 		if env === 'production'
 			script(src="/dist/js/DigitopiaSocial.min.js" async defer)

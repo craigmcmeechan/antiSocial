@@ -229,7 +229,7 @@ module.exports = function (server) {
 
 			if (accepted) {
 				process.nextTick(function () {
-					watchFeed.connect(friend);
+					watchFeed.connect(req.app, friend);
 				});
 			}
 		});
@@ -523,7 +523,7 @@ module.exports = function (server) {
 
 			if (invitation) {
 				process.nextTick(function () {
-					watchFeed.connect(friend);
+					watchFeed.connect(req.app, friend);
 				});
 			}
 		});
@@ -649,7 +649,7 @@ module.exports = function (server) {
 			}
 
 			debug('/accept-friend opening feed', friend);
-			watchFeed.connect(friend);
+			watchFeed.connect(req.app, friend);
 
 			var payload = {
 				'status': 'ok'
@@ -742,7 +742,7 @@ module.exports = function (server) {
 					}
 
 					debug('/friend-webhook/friend-request-accepted opening feed', friend);
-					watchFeed.connect(friend);
+					watchFeed.connect(req.app, friend);
 
 					var payload = {
 						'status': 'ok'
@@ -801,7 +801,7 @@ module.exports = function (server) {
 					}
 
 					debug('webhook/address-change opening feed', friend);
-					watchFeed.connect(friend);
+					watchFeed.connect(req.app, friend);
 
 					var payload = {
 						'status': 'ok'

@@ -101,7 +101,7 @@ module.exports = function (PushNewsFeedItem) {
 					}
 
 					friend.updateAttribute('online', false);
-					watchFeed.disConnect(friend);
+					watchFeed.disConnect(ctx.req.app, friend);
 				};
 
 				ctx.res.on('error', function (e) {
@@ -138,7 +138,7 @@ module.exports = function (PushNewsFeedItem) {
 				}, 5000);
 
 				if (user.online) {
-					watchFeed.connect(friend);
+					watchFeed.connect(ctx.req.app, friend);
 				}
 
 				process.nextTick(function () {

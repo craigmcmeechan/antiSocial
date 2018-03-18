@@ -4,8 +4,8 @@ var i18n = require('i18n');
 var bunyan = require('bunyan');
 var uuid = require('uuid');
 var NodeCache = require('node-cache');
-var url = require('url');
 var proxyEndPoint = require('./lib/proxy-endpoint');
+var websockets = require('./lib/websockets');
 
 var app = module.exports = loopback();
 
@@ -174,12 +174,12 @@ app.use(function (req, res, next) {
 });
 
 var csp = require('helmet-csp');
-/*
+
 app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io', 'wss://' + app.locals.config.host + ':' + app.locals.config.port],
-    'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', function (req, res) {
+    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets + '://' + app.locals.config.host + ':' + app.locals.config.port],
+    'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', '\'unsafe-eval\'', function (req, res) {
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
     'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
@@ -197,7 +197,7 @@ app.use(csp({
   'disableAndroid': false,
   'browserSniff': false
 }));
-*/
+
 
 // attach settings to req
 var globalSettings = require('./middleware/context-globalSettings')();
@@ -214,7 +214,6 @@ if (app.get('env') === 'development') {
 }
 
 app.start = function () {
-  // start the web server
   return app.listen(function () {
     app.emit('started');
     var baseUrl = app.get('url').replace(/\/$/, '');
@@ -226,74 +225,11 @@ app.start = function () {
   });
 };
 
-// Bootstrap the application, configure models, datasources and middleware.
-// Sub-apps like REST API are mounted via boot scripts.
 boot(app, __dirname, function (err) {
   if (err) throw err;
   // start the server if `$ node server.js`
   if (require.main === module) {
     app.io = require('socket.io')(app.start());
-    require('socketio-auth')(app.io, {
-      authenticate: function (socket, data, callback) {
-        var cookie = require('cookie');
-        var cookieParser = require('cookie-parser');
-        var AccessToken = app.models.AccessToken;
-        if (!socket.handshake.headers.cookie) {
-          return callback(null, false);
-        }
-        var cookies = cookie.parse(socket.handshake.headers.cookie);
-        var signedCookies = cookieParser.signedCookies(cookies, 'DecodrRing');
-        if (!signedCookies.access_token) {
-          return callback(null, false);
-        }
-
-        AccessToken.find({
-          where: {
-            id: signedCookies.access_token
-          }
-        }, function (err, tokenDetail) {
-          if (err) throw err;
-          if (tokenDetail.length) {
-            data.userId = tokenDetail[0].userId;
-            console.log('access token found');
-            callback(null, true);
-          }
-          else {
-            console.log('access token not found');
-            callback(null, false);
-          }
-        });
-      },
-      postAuthenticate: function (socket, data) {
-        if (data.userId) {
-          app.models.MyUser.findById(data.userId, function (err, currentUser) {
-            if (err) {
-              console.log('user not found for token, which is odd.');
-              return;
-            }
-
-            socket.currentUser = currentUser;
-
-            if (data.subscriptions) {
-              for (var model in data.subscriptions) {
-                var events = data.subscriptions[model];
-                app.models[model].buildWebSocketChangeHandler(socket, data, events);
-              }
-            }
-
-            socket.on('data', function (data) {
-              console.log('got: %j from %s', data, socket.currentUser.username);
-            });
-          });
-        }
-      }
-    });
-
-    app.io.on('connection', function (socket) {
-      console.log('a user connected');
-      socket.on('disconnect', function () {
-        console.log('user %s disconnected ', socket.currentUser ? socket.currentUser.username : 'unknown');
-      });
-    });
+    websockets.mount(app);
   }
 });
