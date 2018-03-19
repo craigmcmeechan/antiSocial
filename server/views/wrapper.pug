@@ -261,7 +261,7 @@ html(lang="en")
 
 		#ajax-status
 
-		#news-feed(data-jsclass="liveNewsFeedItemController" data-endpoint = config.websockets + '://' + config.host + ':' + config.publicPort)
+		#news-feed(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets + '://' + config.host + ':' + config.publicPort)
 			include components/news-feed
 
 		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")
