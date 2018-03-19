@@ -11,7 +11,8 @@ if (parseInt(p) !== 80) {
 module.exports = {
   restApiRoot: '/api' + (version > 0 ? '/v' + version : ''),
   host: h,
-  port: p,
+  publicPort: p,
+  port: process.env.PORT ? process.env.PORT : 3000,
   protocol: protocol,
   websockets: websockets,
   publicHost: pub

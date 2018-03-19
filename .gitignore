@@ -37,3 +37,4 @@ client/uploads/
 client/import/
 
 deploy/letsencrypt
+deploy/fargate
