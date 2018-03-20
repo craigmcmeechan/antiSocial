@@ -12,16 +12,17 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					textarea.posting-body.form-control(type="text" name="body" placeholder= placeholder data-validate="required")
+					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown")
 						if editing
 							= post.body
+					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
+						
 					.input-ok-indicator
 						span.glyphicon.glyphicon-ok
 					.validation-help
 				.form-group.hide-until-subject-focus
 					input.tags.form-control(type="text" placeholder="tags")
 					input.resolvedTags(type="hidden")
-			#preview-tab.hide-until-subject-focus.markdown
 
 		.hide-until-subject-focus
 			.upload-zone
@@ -33,7 +34,6 @@
 					a#post-upload-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom") <i class="glyphicon glyphicon-upload"></i>
 				if environment.GOOGLE_MAPS_API_KEY
 					a#post-geo-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom") <i class="glyphicon glyphicon-map-marker"></i>
-				a#post-preview-button.btn.btn-sm.btn-default(href="#") Preview
 				a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
 
 			.geo-zone

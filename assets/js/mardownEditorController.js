@@ -13,14 +13,24 @@
 		this.start = function () {
 			self.editor = new MediumEditor(self.element, {
 				toolbar: {
-					buttons: ['bold', 'italic', 'h1', 'h2', 'h3', 'h4', 'quote', 'unorderedlist', 'orderedlist', 'anchor', 'image']
+					'allowMultiParagraphSelection': false,
+					'buttons': ['bold', 'italic', 'h1', 'h2', 'h3', 'h4', 'quote', 'unorderedlist', 'orderedlist', 'anchor', 'image']
+				},
+				'disableDoubleReturn': true,
+				'disableExtraSpaces': true,
+				'buttonLabels': 'fontawesome',
+				'placeholder': {
+					'text': 'What\'s on your mind?'
 				}
 			});
 
-			self.turndownService = new TurndownService()
+			self.turndownService = new TurndownService();
+
+			self.updateMarkdown();
 
 			self.editor.subscribe('editableInput', function (event, editable) {
 				self.updateMarkdown();
+				self.element.closest('form').find(self.target).trigger('change');
 			});
 
 			self.element.on('keyup', function (e) {
@@ -29,16 +39,18 @@
 				}
 				self.lookupDebounce = setTimeout(function () {
 					self.lookupDebounce = undefined;
-					var markup = self.element.html();
+					var markup = self.element.html().replace('&nbsp', ' ');
 
-					urls = markup.match(/[>\s](http[^<\s]+)/g);
+					// build previews for any url on a line by itself
+					var urls = markup.match(/<p>(http[^<]+)<\/p></g);
 					if (urls) {
 						var value = self.element.html();
 						var selection = self.editor.exportSelection();
 						var deltaLength = 0;
 						for (var i = 0; i < urls.length; i++) {
-							var url = urls[i].substr(1);
-							value = value.replace(url, '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>');
+							var url = urls[i].replace(/^<p>/, '').replace(/<\/p><$/, '');
+							var previewTag = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
+							value = value.replace(url, previewTag);
 							deltaLength -= url.length;
 						}
 						self.element.html(value);
@@ -97,6 +109,7 @@
 								selection.end = selection.start;
 								self.editor.importSelection(selection);
 								self.updateMarkdown();
+								self.element.closest('form').find(self.target).trigger('change');
 							}
 						});
 				}, 2000);
@@ -113,7 +126,7 @@
 		this.updateMarkdown = function () {
 			var html = self.element.html();
 			html = html.replace(/<div class="ogPreview.*?" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"[^>]*>.*?<\/div>/, "$1");
-			$(self.target).text(self.turndownService.turndown(html));
+			self.element.closest('form').find(self.target).val(self.turndownService.turndown(html));
 		};
 
 	}

@@ -231,6 +231,7 @@ img.avatar
 		padding-left:5px
 		height:18px
 		color: red
+		pointer-events:none
 
 	.input-error
 		&.touched
@@ -273,7 +274,7 @@ img.avatar
 				margin-bottom:0px
 				overflow:hidden
 			#form-tab
-				textarea
+				.posting-body
 					min-height:33vh
 					border-radius:0
 					border-top-left-radius: 4px
@@ -364,9 +365,10 @@ img.avatar
 		display:none
 	.focused .hide-until-subject-focus
 		display:block
-	textarea
+	.posting-body
 		font-family: "Lucida Console", Monaco, monospace
 		min-height:2.5em
+		padding: 7px
 	.focused textarea
 		min-height:calc(33vh - 8px)
 	label
