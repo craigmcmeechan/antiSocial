@@ -174,7 +174,7 @@ var csp = require('helmet-csp');
 app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets + '://' + app.locals.config.host],
+    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets + '://' + app.locals.config.host + app.locals.config.publicPort],
     'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', '\'unsafe-eval\'', function (req, res) {
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
