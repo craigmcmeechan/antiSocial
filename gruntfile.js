@@ -17,7 +17,6 @@ module.exports = function (grunt) {
 		'node_modules/jquery-serializejson/jquery.serializejson.js',
 		'node_modules/async/dist/async.js',
 		'node_modules/marked/lib/marked.js',
-		'node_modules/autosize/dist/autosize.js',
 		'node_modules/node-vibrant/dist/vibrant.js',
 		'node_modules/medium-editor/dist/js/medium-editor.js',
 		'node_modules/turndown/dist/turndown.js',
