@@ -1,10 +1,11 @@
 (function ($) {
-	function liveNewsFeedItemController(elem, options) {
+	function liveNewsFeedItemWebsocketController(elem, options) {
 		this.element = $(elem);
 		var self = this;
-		this.src = null;
+		this.socket = null;
 		this.active = false;
 		this.pendingConnection = null;
+		this.endpoint = this.element.data('endpoint');
 
 		this.start = function () {
 			self.element.on('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged', function () {
@@ -71,28 +72,34 @@
 			self.pendingConnection = setTimeout(function () {
 				self.pendingConnection = null;
 				self.element.find('ul').empty();
-				var endpoint = '/api/NewsFeedItems/me/live';
-				self.src = new EventSource(endpoint);
-				self.src.addEventListener('data', self.processNews);
-				self.src.addEventListener('error', self.errors);
+				self.socket = io.connect(self.endpoint);
+				self.socket.on('connect', function () {
+					self.socket.emit('authentication', {
+						'subscriptions': {
+							'NewsFeedItem': ['after save']
+						}
+					});
+					self.socket.on('authenticated', function () {
+						console.log('authenticated');
+						self.socket.on('data', self.processNews);
+						self.socket.on('disconnect', self.errors);
+					});
+				});
 				self.setTop();
 			}, 5000);
 		};
 
 		this.disconnect = function () {
 			self.element.find('.news-feed-items').empty();
-			if (self.src) {
-				self.src.close();
-				self.src.removeEventListener('data', self.processNews);
-				self.src.removeEventListener('error', self.errors);
-				self.src = null;
+			if (self.socket) {
+				self.socket.close();
+				self.socket = null;
 			}
 			self.element.hide();
 		};
 
-		this.processNews = function (msg) {
+		this.processNews = function (event) {
 			self.element.find('.status').removeClass('offline');
-			var event = JSON.parse(msg.data);
 			if (event.type === 'heartbeat') {
 				return;
 			}
@@ -133,5 +140,5 @@
 		};
 	}
 
-	$.fn.liveNewsFeedItemController = GetJQueryPlugin('liveNewsFeedItemController', liveNewsFeedItemController);
+	$.fn.liveNewsFeedItemWebsocketController = GetJQueryPlugin('liveNewsFeedItemWebsocketController', liveNewsFeedItemWebsocketController);
 })(jQuery);

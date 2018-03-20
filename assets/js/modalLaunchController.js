@@ -5,8 +5,8 @@
 
 		this.start = function () {
 			var modal = location.hash;
-			if (modal) {
-				$(modal).modal()
+			if (modal && modal !== '#_=_') {
+				$(modal).modal();
 			}
 		};
 

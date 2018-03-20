@@ -49,7 +49,10 @@ module.exports = function (server) {
           'where': {
             'and': [{
               'userId': currentUser.id
-
+            }, {
+              'deleted': {
+                'neq': true
+              }
             }]
           },
           'order': 'createdOn DESC',
@@ -89,14 +92,16 @@ module.exports = function (server) {
 
             // group news feed items by 'about'
             for (var i = 0; i < items.length; i++) {
-              var key = items[i].about;
-              key = key.replace(/\/(comment|photo)\/.*/, '');
-              if (!map[key]) {
-                map[key] = 0;
-                grouped[key] = [];
+              if (items[i].type === 'post' || items[i].type === 'coment' || items[i].type === 'react') {
+                var key = items[i].about;
+                key = key.replace(/\/(comment|photo)\/.*/, '');
+                if (!map[key]) {
+                  map[key] = 0;
+                  grouped[key] = [];
+                }
+                ++map[key];
+                grouped[key].push(items[i]);
               }
-              ++map[key];
-              grouped[key].push(items[i]);
             }
 
             // add new item groups to scroll queue
@@ -115,13 +120,13 @@ module.exports = function (server) {
       },
       function computeSummary(session, cb) {
         if (req.query.more) {
-          session.currentSlice.start += 6;
+          session.currentSlice.start += 30;
           if (session.currentSlice.start > session.queue.length - 1) {
             return cb(null, session, []);
           }
         }
 
-        session.currentSlice.end = session.currentSlice.start + 5;
+        session.currentSlice.end = session.currentSlice.start + 29;
         if (session.currentSlice.end > session.queue.length - 1) {
           session.currentSlice.end = session.queue.length - 1;
         }

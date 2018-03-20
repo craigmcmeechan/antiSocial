@@ -20,6 +20,7 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/so
 RUN apt-get update; apt-get install yarn
 
 RUN mkdir -p /var/app/current/working
+RUN mkdir -p /var/app/current/client/uploads
 ADD deploy/docker-assets/webapp /var/app/current/deploy/docker-assets/webapp
 
 # set up supervisord

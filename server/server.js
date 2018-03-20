@@ -4,8 +4,8 @@ var i18n = require('i18n');
 var bunyan = require('bunyan');
 var uuid = require('uuid');
 var NodeCache = require('node-cache');
-var url = require('url');
 var proxyEndPoint = require('./lib/proxy-endpoint');
+var websockets = require('./lib/websockets');
 
 var app = module.exports = loopback();
 
@@ -169,13 +169,13 @@ app.use(function (req, res, next) {
   next();
 });
 
-var csp = require('helmet-csp')
+var csp = require('helmet-csp');
 
 app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io'],
-    'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', function (req, res) {
+    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets + '://' + app.locals.config.host + app.locals.config.publicPort],
+    'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', '\'unsafe-eval\'', function (req, res) {
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
     'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
@@ -210,7 +210,6 @@ if (app.get('env') === 'development') {
 }
 
 app.start = function () {
-  // start the web server
   return app.listen(function () {
     app.emit('started');
     var baseUrl = app.get('url').replace(/\/$/, '');
@@ -222,12 +221,11 @@ app.start = function () {
   });
 };
 
-// Bootstrap the application, configure models, datasources and middleware.
-// Sub-apps like REST API are mounted via boot scripts.
 boot(app, __dirname, function (err) {
   if (err) throw err;
-
   // start the server if `$ node server.js`
-  if (require.main === module)
-    app.start();
+  if (require.main === module) {
+    app.io = require('socket.io')(app.start());
+    websockets.mount(app);
+  }
 });

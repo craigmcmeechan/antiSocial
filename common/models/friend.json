@@ -69,6 +69,9 @@
     },
     "keys": {
       "type": "object"
+    },
+    "online": {
+      "type": "boolean"
     }
   },
   "validations": [],

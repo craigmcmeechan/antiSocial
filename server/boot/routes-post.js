@@ -3,6 +3,7 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var isInitialized = require('../middleware/context-initialized');
 var publicUsers = require('../middleware/context-publicUsers');
 var resolveProfiles = require('../lib/resolveProfiles');
+var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var encryption = require('../lib/encryption');
 var url = require('url');
@@ -15,6 +16,8 @@ var _ = require('lodash');
 var multer = require('multer');
 var path = require('path');
 var pug = require('pug');
+var FB = require('fb');
+
 
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
@@ -268,6 +271,20 @@ module.exports = function (server) {
       delete req.body.about;
     }
 
+    var fbIdentity;
+    var twIdentity;
+    if (currentUser.identities()) {
+      for (var i = 0; i < currentUser.identities().length; i++) {
+        var identity = currentUser.identities()[i];
+        if (identity.provider === 'facebook') {
+          fbIdentity = identity;
+        }
+        if (identity.provider === 'twitter') {
+          twIdentity = identity;
+        }
+      }
+    }
+
     async.waterfall([
       function (cb) { // create the post
         currentUser.posts.create(req.body, function (err, post) {
@@ -409,6 +426,71 @@ module.exports = function (server) {
 
           cb(err, post);
         });
+      },
+      function crossPostFacebook(post, cb) {
+        if (!fbIdentity || post.visibility.indexOf('facebook') === -1) {
+          return cb(null, post);
+        }
+
+        resolvePostPhotos([post], function (err) {
+
+          var fb = new FB.Facebook({
+            'appId': process.env.FACEBOOK_CLIENT_ID,
+            'appSecret': process.env.FACEBOOK_CLIENT_SECRET,
+            'accessToken': fbIdentity.credentials.token
+          });
+
+          var body = '';
+          var links = [];
+
+          if (post.visibility.indexOf('public') !== -1) {
+            // pass the permilink of the post to facebook and let it build the preview
+            links = [server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid];
+          }
+          else {
+            // try to adapt the post to facebook limitations
+            body = post.body;
+
+            // extract first link
+            links = post.body.match(/^(http[^\s\b]*)/gm);
+            if (links) {
+              body = body.replace(/^(http[^\s\b]*)/gm, '');
+            }
+
+            // strip all other markup
+            body = server.locals.marked(body);
+            body = body.replace(/<[^>]+>/g, '');
+
+            // if there are photos... attach the first one
+            if (post.sortedPhotos && post.sortedPhotos.length) {
+              var imageSet = post.sortedPhotos[0].uploads()[0].imageSet;
+              var image;
+              if (imageSet.large) {
+                image = imageSet.large.url;
+              }
+              else {
+                image = imageSet.original.url;
+              }
+              links = [image];
+            }
+          }
+
+          fb.api(
+            '/me/feed',
+            'POST', {
+              'message': body,
+              'link': links.length ? links[0] : null
+            },
+            function (response) {
+              if (response && response.error) {
+                var e = new VError(response.error, 'post saved but could cross post to facebook');
+                return cb(e);
+              }
+              cb(null, post);
+            }
+          );
+        });
+
       }
     ], function (err, post) {
       if (err) {

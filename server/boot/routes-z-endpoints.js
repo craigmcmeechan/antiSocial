@@ -1687,7 +1687,7 @@ module.exports = function (server) {
         }]
       },
       'order': 'createdOn DESC',
-      'limit': 10
+      'limit': 30
     };
 
     if (!isMe) {

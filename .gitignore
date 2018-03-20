@@ -35,3 +35,6 @@ devel-notes/
 client/dist/
 client/uploads/
 client/import/
+
+deploy/letsencrypt
+deploy/fargate

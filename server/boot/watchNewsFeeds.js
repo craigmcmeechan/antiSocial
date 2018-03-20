@@ -1,6 +1,7 @@
 var watchFeed = require('../lib/watchFeed.js')
 
 module.exports = function (server) {
+	return;
 
 	var query = {
 		'where': {
@@ -17,7 +18,7 @@ module.exports = function (server) {
 
 		for (var i = 0; i < friends.length; i++) {
 			var friend = friends[i];
-			watchFeed(server, friend);
+			watchFeed.connect(server, friend);
 		}
 	});
 };
