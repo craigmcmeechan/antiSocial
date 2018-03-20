@@ -6,17 +6,16 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					textarea.posting-body.form-control(type="text" name="body" placeholder="Reply to this post." data-validate="required")
+					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown")
 						if comment
 							= comment.details.body
+					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
 					.input-ok-indicator.hide-until-subject-focus
 						span.glyphicon.glyphicon-ok
 					.validation-help.hide-until-subject-focus
-			#preview-tab.markdown
 		.hide-until-subject-focus
 			.upload-zone
 		.form-group.input-relative.hide-until-subject-focus.comment-button-zone
 			button.post-submit-button.btn.btn-sm.btn-primary Post
-			a#post-preview-button.btn.btn-sm.btn-default(href="#") Preview
 			a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
 			a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
