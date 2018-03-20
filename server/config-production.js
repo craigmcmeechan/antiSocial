@@ -5,13 +5,14 @@ var p = process.env.PUBLIC_PORT || 3000;
 var protocol = process.env.PUBLIC_PROTOCOL || 'http';
 var pub = protocol + '://' + h;
 var websockets = protocol === 'https' ? 'wss' : 'ws';
-if (parseInt(p) !== 80) {
+if (parseInt(p) !== 80 && parseInt(p) !== 443) {
   pub += ':' + p;
 }
 module.exports = {
   restApiRoot: '/api' + (version > 0 ? '/v' + version : ''),
   host: h,
-  port: p,
+  publicPort: p,
+  port: process.env.PORT ? process.env.PORT : 3000,
   protocol: protocol,
   websockets: websockets,
   publicHost: pub
