@@ -53,7 +53,20 @@ deploy_eb () {
 	fi
 }
 
+deploy_ecs () {
+	if [ "$CIRCLE_BRANCH" == "production" ]; then
+		echo "deploying mr"
+		aws ecs update-service --profile awstest --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-ae --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-ae --force-new-deployment
+		echo "deploying ae"
+		aws ecs update-service --profile awstest --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-mr --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-mr --force-new-deployment
+	fi
+	if [ "$CIRCLE_BRANCH" == "development" ]; then
+		echo "deploying development"
+		aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-fargate --service arn:aws:ecs:us-east-1:980978009426:service/sample-app-service --force-new-deployment
+	fi
+}
+
 run_grunt
 configure_aws_cli
 build_images
-deploy_eb
+deploy_ecs

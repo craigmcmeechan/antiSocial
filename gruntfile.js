@@ -12,13 +12,14 @@ module.exports = function (grunt) {
 		'node_modules/bootstrap/dist/js/bootstrap.js',
 		'node_modules/digitopia/dist/js/digitopia.js',
 		'node_modules/moment/moment.js',
-		"node_modules/moment-timezone/builds/moment-timezone-with-data.js",
+		'node_modules/moment-timezone/builds/moment-timezone-with-data.js',
 		'node_modules/lodash/lodash.js',
 		'node_modules/jquery-serializejson/jquery.serializejson.js',
 		'node_modules/async/dist/async.js',
 		'node_modules/marked/lib/marked.js',
-		'node_modules/autosize/dist/autosize.js',
 		'node_modules/node-vibrant/dist/vibrant.js',
+		'node_modules/medium-editor/dist/js/medium-editor.js',
+		'node_modules/turndown/dist/turndown.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];
@@ -26,6 +27,8 @@ module.exports = function (grunt) {
 	var cssFiles = [
 		'node_modules/digitopia/dist/css/digitopia.css',
 		'node_modules/vis/dist/vis.css',
+		'node_modules/medium-editor/dist/css/medium-editor.css',
+		'node_modules/medium-editor/dist/css/themes/default.css',
 		'assets/vendor/*.css',
 		'working/css/*.css',
 		'assets/css/*.css',
