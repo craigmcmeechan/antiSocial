@@ -56,9 +56,9 @@ deploy_eb () {
 deploy_ecs () {
 	if [ "$CIRCLE_BRANCH" == "production" ]; then
 		echo "deploying mr"
-		aws ecs update-service --profile awstest --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-ae --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-ae --force-new-deployment
+		aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-ae --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-ae --force-new-deployment
 		echo "deploying ae"
-		aws ecs update-service --profile awstest --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-mr --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-mr --force-new-deployment
+		aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-mr --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-mr --force-new-deployment
 	fi
 	if [ "$CIRCLE_BRANCH" == "development" ]; then
 		echo "deploying development"
