@@ -53,7 +53,15 @@ deploy_eb () {
 	fi
 }
 
+deploy_ecs () {
+	if [ "$CIRCLE_BRANCH" == "production" ]; then
+	fi
+	if [ "$CIRCLE_BRANCH" == "development" ]; then
+		aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-fargate --service arn:aws:ecs:us-east-1:980978009426:service/sample-app-service --force-new-deployment
+	fi
+}
+
 run_grunt
 configure_aws_cli
 build_images
-deploy_eb
+deploy_ecs
