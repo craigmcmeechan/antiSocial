@@ -96,9 +96,9 @@ module.exports.connectAll = function connectAll(server, user) {
 
 
 var watchFeed = function watchFeed(server, friend) {
-
+	return;
 	var remoteEndPoint = url.parse(friend.remoteEndPoint);
-	var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host + '/api/PushNewsFeedItems' + remoteEndPoint.pathname + '/stream-updates';
+	var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host;
 
 	server.models.Friend.include([friend], 'user', function (err, instances) {
 
@@ -106,7 +106,7 @@ var watchFeed = function watchFeed(server, friend) {
 
 		var currentUser = friend.user();
 
-		var key = currentUser.username + ' <- ' + feed;
+		var key = currentUser.username + '<-' + feed;
 
 		if (connections[key] && connections[key].status === 'open') {
 			debug('watchFeed ' + currentUser.username + ' already listening ' + key);

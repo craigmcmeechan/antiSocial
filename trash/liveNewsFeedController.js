@@ -1,4 +1,5 @@
 (function ($) {
+	/*
 	function liveNewsFeedItemController(elem, options) {
 		this.element = $(elem);
 		var self = this;
@@ -134,4 +135,5 @@
 	}
 
 	$.fn.liveNewsFeedItemController = GetJQueryPlugin('liveNewsFeedItemController', liveNewsFeedItemController);
+	*/
 })(jQuery);

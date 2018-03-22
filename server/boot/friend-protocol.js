@@ -1,6 +1,6 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
-var watchFeed = require('../lib/watchFeed');
+var watchFeed = require('../lib/watchFeedWebsockets');
 var resolveProfiles = require('../lib/resolveProfiles');
 var forge = require('node-forge');
 

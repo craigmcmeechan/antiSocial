@@ -65,12 +65,6 @@
     "principalType": "ROLE",
     "principalId": "admin",
     "permission": "ALLOW"
-  }, {
-    "accessType": "EXECUTE",
-    "principalType": "ROLE",
-    "principalId": "$everyone",
-    "permission": "ALLOW",
-    "property": "streamUpdates"
   }],
   "methods": {}
 }
