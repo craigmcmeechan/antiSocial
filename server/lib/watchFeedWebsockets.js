@@ -4,7 +4,7 @@ var VError = require('verror').VError;
 var encryption = require('./encryption');
 
 var debug = require('debug')('feeds');
-var debugVerbose = require('debug')('feeds:verbose');
+var debugWebsockets = require('debug')('websockets');
 
 var connections = {};
 module.exports.connections = connections;
@@ -15,7 +15,7 @@ module.exports.disconnectAll = function disconnectAll(server, user) {
 		if (connection.currentUser.id === user.id) {
 			connection.socket.close();
 			connection.status = 'closed';
-			debug('watchFeed closed %s %s', connection.currentUser.username, connection.endpoint);
+			debugWebsockets('watchFeed closed %s', connection.key);
 			delete connections[key];
 		}
 	}
@@ -27,7 +27,7 @@ var disConnect = function disConnect(server, friend) {
 		if (connection.friend.id === friend.id) {
 			connection.socket.close();
 			connection.status = 'closed';
-			debug('watchFeed closed %s %s', connection.currentUser.username, connection.endpoint);
+			debugWebsockets('watchFeed disConnect %s closed', connection.key);
 			delete connections[key];
 		}
 	}
@@ -65,14 +65,12 @@ var watchFeed = function watchFeed(server, friend) {
 
 	server.models.Friend.include([friend], 'user', function (err, instances) {
 
-		debugVerbose('watchFeedWebsockets', friend);
-
 		var currentUser = friend.user();
 
 		var key = currentUser.username + '<-' + friend.remoteEndPoint;
 
 		if (connections[key] && connections[key].status === 'open') {
-			debug('watchFeed ' + currentUser.username + ' already listening ' + key);
+			debugWebsockets('watchFeed %s already listening ', key);
 		}
 		else {
 
@@ -103,7 +101,7 @@ var watchFeed = function watchFeed(server, friend) {
 				}
 			});
 			socket.on('authenticated', function () {
-				debug('watchFeed ' + currentUser.username + ' listening ' + key);
+				debugWebsockets('watchFeed %s listening', key);
 				socket.on('data', getListener(server, connection));
 			});
 			socket.on('connect', getOpenHandler(server, connection));
@@ -115,14 +113,14 @@ var watchFeed = function watchFeed(server, friend) {
 function getOpenHandler(server, connection) {
 	return function (e) {
 		connection.status = 'open';
-		debug('watchFeed open %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		debugWebsockets('watchFeed getOpenHandler %s %j ', connection.key, e);
 	};
 }
 
 function getCloseHandler(server, connection) {
 	return function (e) {
 		connection.status = 'closed';
-		debug('watchFeed close %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		debugWebsockets('watchFeed getCloseHandler %s %j', connection.key, e);
 		delete connections[connection.key];
 	};
 }
@@ -130,7 +128,7 @@ function getCloseHandler(server, connection) {
 function getErrorHandler(server, connection) {
 	return function (e) {
 		connection.status = 'error';
-		debug('watchFeed error %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		debugWebsockets('watchFeed getErrorHandler %s %j', connection.key, e);
 		delete connections[connection.key];
 	};
 }
@@ -140,14 +138,13 @@ function getListener(server, connection) {
 	var currentUser = friend.user();
 
 	return function (data) {
-		debugVerbose('listener ' + currentUser.username + ' received:', data);
 
 		var logger = server.locals.logger;
 
 		var message = data;
 
 		if (message.type === 'offline') {
-			debug('listener ' + currentUser.username + ' received offline message ' + connection.key);
+			debugWebsockets('watchFeed listener %s received offline message', connection.key);
 			connection.socket.close();
 			connection.status = 'closed';
 			delete connections[connection.key];
@@ -155,12 +152,12 @@ function getListener(server, connection) {
 		}
 
 		if (message.type === 'online') {
-			debug('listener ' + currentUser.username + ' received online message ' + connection.key);
+			debugWebsockets('watchFeed listener %s received online message', connection.key);
 			return;
 		}
 
 		if (message.type === 'heartbeat') {
-			debug('listener ' + currentUser.username + ' received heartbeat ' + connection.key);
+			debugWebsockets('watchFeed listener %s received heartbeat', connection.key);
 			return;
 		}
 
@@ -205,12 +202,12 @@ function getListener(server, connection) {
 
 			if (oldNews) {
 				if (message.type === 'create') {
-					debug('watchFeed ' + currentUser.username + ' skipping old news %j %j', oldNews);
+					debug('watchFeed listener ' + currentUser.username + ' skipping old news %j %j', oldNews);
 					return;
 				}
 
 				if (message.type === 'update' || message.type === 'backfill') {
-					debug('watchFeed ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
+					debug('watchFeed listener ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
 					oldNews.details = myNewsFeedItem.details;
 					oldNews.versions = myNewsFeedItem.versions;
 					oldNews.deleted = myNewsFeedItem.deleted;
@@ -218,12 +215,12 @@ function getListener(server, connection) {
 					return;
 				}
 
-				debug('watchFeed ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
+				debug('watchFeed listener ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
 				return;
 			}
 			else {
 				if (message.type === 'update') {
-					debug('watchFeed ' + currentUser.username + ' received update but NewsFeedItem not found %j', message);
+					debug('watchFeed listener ' + currentUser.username + ' received update but NewsFeedItem not found %j', message);
 				}
 			}
 
