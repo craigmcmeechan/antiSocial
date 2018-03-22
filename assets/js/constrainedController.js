@@ -15,7 +15,9 @@
 				});
 			});
 			this.element.on('DigitopiaDidLoadNewPage DigitopiaDidResize', function (e) {
-				self.fixConstrained();
+				if (e.target === this) {
+					self.fixConstrained();
+				}
 			});
 			self.fixConstrained();
 		};
