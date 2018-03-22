@@ -1,7 +1,6 @@
-var watchFeed = require('../lib/watchFeed.js')
+var watchFeed = require('../lib/watchFeedWebsockets.js')
 
 module.exports = function (server) {
-	return;
 
 	var query = {
 		'where': {

@@ -96,7 +96,7 @@ module.exports.connectAll = function connectAll(server, user) {
 
 
 var watchFeed = function watchFeed(server, friend) {
-
+	return;
 	var remoteEndPoint = url.parse(friend.remoteEndPoint);
 	var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host + '/api/PushNewsFeedItems' + remoteEndPoint.pathname + '/stream-updates';
 
