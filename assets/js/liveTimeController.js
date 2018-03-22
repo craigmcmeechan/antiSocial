@@ -12,8 +12,10 @@
 				self.updateTimes();
 			}, 10000);
 
-			this.element.on('DigitopiaDidScroll', function (event) {
-				self.updateTimes();
+			this.element.on('DigitopiaDidScroll', function (e) {
+				if (e.target === this) {
+					self.updateTimes();
+				}
 			});
 
 			self.updateTimes();
