@@ -123,12 +123,16 @@ module.exports.mount = function websocketsMount(app) {
 						if (socket.friend) {
 							delete app.openWebsocketServers[socket.connectionKey];
 							socket.friend.updateAttribute('online', false);
-							watchFeed.disConnect(app, socket.friend);
+							if (!process.env.KEEP_FEEDS_OPEN) {
+								watchFeed.disConnect(app, socket.friend);
+							}
 						}
 						else {
 							delete app.openWebsocketClients[socket.connectionKey];
 							socket.currentUser.updateAttribute('online', false);
-							watchFeed.disconnectAll(app, socket.currentUser);
+							if (!process.env.KEEP_FEEDS_OPEN) {
+								watchFeed.disconnectAll(app, socket.currentUser);
+							}
 						}
 					}
 				});

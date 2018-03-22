@@ -123,6 +123,7 @@
 
 						var thisDropzone = this;
 
+						/* TODO too expensive (loads on every comment form)
 						$.getJSON('/api/MyUsers/me/photos?filter=%7B%22where%22%3A%7B%22status%22%3A%22pending%22%7D%2C%22include%22%3A%5B%22uploads%22%5D%7D', function (data) {
 
 							$.each(data, function (index, item) {
@@ -144,6 +145,7 @@
 
 							});
 						});
+						*/
 					}
 				});
 			}
