@@ -45,7 +45,7 @@
 					#geo-attributions
 
 			.form-group.input-relative.text-center.audience-select
-				.checkbox-group.lazy-instantiate(data-lazy-jsclass="checkboxGroupController" data-target=".posting-visibility")
+				.checkbox-group(data-jsclass="checkboxGroupController" data-target=".posting-visibility")
 					input.posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= editing ?  JSON.stringify(post.visibility)  : '["friends"]')
 
 					label.checkbox-inline Audience:
