@@ -63,8 +63,10 @@ module.exports.mount = function websocketsMount(app) {
 		'postAuthenticate': function (socket, data) {
 			if (data.friend) {
 				socket.friend = data.friend;
+				socket.currentUser = socket.friend.user();
+				socket.connectionKey = socket.friend.remoteEndPoint + '<-' + socket.friend.user().username;
 				socket.highwater = socket.handshake.query['friend-high-water'] || 0;
-				app.openWebsocketServers[data.friend.remoteEndpoint + '<-' + data.friend.user().username] = socket;
+				app.openWebsocketServers[socket.connectionKey] = socket;
 				if (data.subscriptions) {
 					for (var model in data.subscriptions) {
 						var events = data.subscriptions[model];
@@ -87,9 +89,9 @@ module.exports.mount = function websocketsMount(app) {
 						debug('websocketsMount user not found for token, which is odd.');
 						return;
 					}
-
+					socket.connectionKey = currentUser.username;
 					socket.currentUser = currentUser;
-					app.openWebsocketClients[currentUser.username] = socket;
+					app.openWebsocketClients[socket.connectionKey] = socket;
 
 					if (data.subscriptions) {
 						for (var model in data.subscriptions) {
@@ -107,10 +109,6 @@ module.exports.mount = function websocketsMount(app) {
 
 					currentUser.updateAttribute('online', true);
 					watchFeed.connectAll(app, currentUser);
-
-					socket.on('data', function (data) {
-						debug('websocketsMount got: %j from %s', data, socket.currentUser.username);
-					});
 				});
 			}
 
@@ -118,14 +116,20 @@ module.exports.mount = function websocketsMount(app) {
 				app.models[model].observe(eventType, handler);
 
 				socket.on('disconnect', function (reason) {
-					var description = data.friend ? socket.friend.remoteEndpoint + '<-' + socket.friend.user().username : socket.currentUser.username;
-					debug('websocketsChangeHandler ' + description + ' disconnect event reason ' + reason);
-					if (reason === 'transport close') {
-						debug('websocketsChangeHandler ' + description + ' stopped subscribing to NewsFeedItem "' + eventType + '" because ' + reason);
+					debug('websocketsChangeHandler ' + socket.connectionKey + ' disconnect event reason ' + reason);
+					if (reason === 'transport close' || reason === 'client namespace disconnect') {
+						debug('websocketsChangeHandler ' + socket.connectionKey + ' stopped subscribing to NewsFeedItem "' + eventType + '" because ' + reason);
 						app.models[model].removeObserver(eventType, handler);
-						delete app.openWebsocketClients[socket.currentUser.username];
-						socket.currentUser.updateAttribute('online', false);
-						watchFeed.disconnectAll(app, socket.currentUser);
+						if (socket.friend) {
+							delete app.openWebsocketServers[socket.connectionKey];
+							socket.friend.updateAttribute('online', false);
+							watchFeed.disconnectAll(app, socket.currentUser);
+						}
+						else {
+							delete app.openWebsocketClients[socket.connectionKey];
+							socket.currentUser.updateAttribute('online', false);
+							watchFeed.disconnectAll(app, socket.currentUser);
+						}
 					}
 				});
 			}

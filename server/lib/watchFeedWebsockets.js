@@ -63,16 +63,13 @@ module.exports.connectAll = function connectAll(server, user) {
 
 var watchFeed = function watchFeed(server, friend) {
 
-	var remoteEndPoint = url.parse(friend.remoteEndPoint);
-	var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host + '/api/PushNewsFeedItems' + remoteEndPoint.pathname + '/stream-updates';
-
 	server.models.Friend.include([friend], 'user', function (err, instances) {
 
 		debugVerbose('watchFeedWebsockets', friend);
 
 		var currentUser = friend.user();
 
-		var key = currentUser.username + ' <- ' + feed;
+		var key = currentUser.username + '<-' + friend.remoteEndPoint;
 
 		if (connections[key] && connections[key].status === 'open') {
 			debug('watchFeed ' + currentUser.username + ' already listening ' + key);
@@ -80,7 +77,7 @@ var watchFeed = function watchFeed(server, friend) {
 		else {
 
 			var remoteEndPoint = url.parse(friend.remoteEndPoint);
-			var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host + '/api/PushNewsFeedItems' + remoteEndPoint.pathname + '/stream-updates';
+			var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host;
 
 			var endpoint = remoteEndPoint.protocol === 'https' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
@@ -99,7 +96,7 @@ var watchFeed = function watchFeed(server, friend) {
 				'friend': friend,
 				'status': 'closed'
 			};
-			connections[key] = socket;
+			connections[key] = connection;
 			socket.emit('authentication', {
 				'subscriptions': {
 					'PushNewsFeedItem': ['after save']
