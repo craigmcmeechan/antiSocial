@@ -1,5 +1,5 @@
 var debug = require('debug')('websockets');
-var watchFeed = require('./watchFeed');
+var watchFeed = require('./watchFeedWebsockets');
 
 module.exports.mount = function websocketsMount(app) {
 	if (!app.openWebsocketClients) {
@@ -26,6 +26,7 @@ module.exports.mount = function websocketsMount(app) {
 						return callback(null, false);
 					}
 					data.friend = friend;
+					data.currentUser = friend.user();
 					callback(null, true);
 				});
 			}
@@ -114,13 +115,13 @@ module.exports.mount = function websocketsMount(app) {
 			}
 
 			function bindEvents(socket, model, eventType, handler) {
-				app.models[model].observe(eventType, handler, eventType);
+				app.models[model].observe(eventType, handler);
 
 				socket.on('disconnect', function (reason) {
-					debug('websocketsChangeHandler ' + socket.currentUser.username + ' disconnect event reason ' + reason);
-
+					var description = data.friend ? socket.friend.remoteEndpoint + '<-' + socket.friend.user().username : socket.currentUser.username;
+					debug('websocketsChangeHandler ' + description + ' disconnect event reason ' + reason);
 					if (reason === 'transport close') {
-						debug('websocketsChangeHandler ' + socket.currentUser.username + ' stopped subscribing to NewsFeedItem "' + eventType + '" because ' + reason);
+						debug('websocketsChangeHandler ' + description + ' stopped subscribing to NewsFeedItem "' + eventType + '" because ' + reason);
 						app.models[model].removeObserver(eventType, handler);
 						delete app.openWebsocketClients[socket.currentUser.username];
 						socket.currentUser.updateAttribute('online', false);

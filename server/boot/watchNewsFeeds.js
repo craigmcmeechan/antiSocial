@@ -1,4 +1,4 @@
-var watchFeed = require('../lib/watchFeedWebsockets.js')
+var watchFeed = require('../lib/watchFeedWebsockets')
 
 module.exports = function (server) {
 

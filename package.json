@@ -20,7 +20,6 @@
     "digitopia": "git+https://github.com/mediapolis/digitopia.git#jquery-3-working",
     "digitopia-admin": "*",
     "dtrace-provider": "^0.8.6",
-    "eventsource": "^1.0.5",
     "express-session": "^1.15.4",
     "fb": "^2.0.0",
     "graphlib": "^2.1.5",

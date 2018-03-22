@@ -1,4 +1,4 @@
-var PassThrough = require('stream').PassThrough;
+//var PassThrough = require('stream').PassThrough;
 
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
@@ -9,13 +9,12 @@ var async = require('async');
 var url = require('url');
 var server = require('../../server/server');
 var RemoteRouting = require('loopback-remote-routing');
-var watchFeed = require('../../server/lib/watchFeed');
 
 module.exports = function (NewsFeedItem) {
 
 	if (!process.env.ADMIN) {
 		RemoteRouting(NewsFeedItem, {
-			'only': ['@live']
+			'only': []
 		});
 	}
 
@@ -129,6 +128,7 @@ module.exports = function (NewsFeedItem) {
 	};
 
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
+	/*
 	NewsFeedItem.live = function (userId, ctx, cb) {
 		var reqContext = ctx.req.getCurrentContext();
 		var user = reqContext.get('currentUser');
@@ -372,6 +372,7 @@ module.exports = function (NewsFeedItem) {
 			}
 		}
 	);
+	*/
 
 	function fixNameYou(endpoint, myEndpoint, name) {
 		if (endpoint === myEndpoint) {

@@ -11,12 +11,12 @@ block content
 		.row
 			.col-xs-12
 				if sockets
-					strong Open Websockets
+					strong Open Clients
 					ul
 						for socket in sockets
 							li= socket.currentUser.username
 				if connections
-					strong Open EventSource
+					strong Open Friends
 					ul
 						for connection in connections
 							li= connection.key + ' ' + connection.status

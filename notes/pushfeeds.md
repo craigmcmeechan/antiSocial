@@ -1,6 +1,6 @@
-### Eventsource Feeds
+###  Feeds
 
-Events are propagated through the friend network using [EventSource](https://www.w3schools.com/html/html5_serversentevents.asp). The framework this prototype is built on, [Loopback](https://loopback.io/doc/en/lb3/Realtime-server-sent-events.html), has built in support for subscribing to 'ChangeStreams' on the REST API the framework mounts for data models (tables) all watchers can see any changes to the tables in real-time.
+Events are propagated through the friend network using websockets. The framework this prototype is built on, [Loopback](https://loopback.io/doc/en/lb3/Realtime-server-sent-events.html), has built in support for subscribing to 'ChangeStreams' on the REST API the framework mounts for data models (tables) all watchers can see any changes to the tables in real-time.
 
 The news feeds are authenticated using the accessTokens that were exchanged in the friending protocol and all content is encrypted and signed using [hybrid public key cryptography](https://en.wikipedia.org/wiki/Hybrid_cryptosystem).
 
@@ -65,7 +65,7 @@ Michael's server  immediately sees the PushNewsFeedItem and creates a NewsFeedIt
 ### Prototype Implementation
 [Start Listeners on boot](https://github.com/antiSocialNet/antiSocial/blob/master/server/boot/watchNewsFeeds.js)
 
-[PushNewsFeedItem Agent](https://github.com/antiSocialNet/antiSocial/blob/master/server/lib/watchFeed.js)
+[PushNewsFeedItem Agent](https://github.com/antiSocialNet/antiSocial/blob/master/server/lib/watchFeedWebsockets.js)
 
 [PushNewsFeedItem definition](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/push-news-feed-item.json)
 

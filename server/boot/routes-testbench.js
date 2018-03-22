@@ -1,5 +1,5 @@
 var getCurrentUser = require('../middleware/context-currentUser');
-var watchFeed = require('../lib/watchFeed');
+var watchFeed = require('../lib/watchFeedWebsockets');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();

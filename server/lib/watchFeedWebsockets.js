@@ -13,9 +13,9 @@ module.exports.disconnectAll = function disconnectAll(server, user) {
 	for (var key in connections) {
 		var connection = connections[key];
 		if (connection.currentUser.id === user.id) {
-			connection.eventSource.close();
+			connection.socket.close();
 			connection.status = 'closed';
-			debug('watchFeed eventsource closed %s %s', connection.currentUser.username, connection.endpoint);
+			debug('watchFeed closed %s %s', connection.currentUser.username, connection.endpoint);
 			delete connections[key];
 		}
 	}
@@ -25,9 +25,9 @@ var disConnect = function disConnect(server, friend) {
 	for (var key in connections) {
 		var connection = connections[key];
 		if (connection.friend.id === friend.id) {
-			connection.eventSource.close();
+			connection.socket.close();
 			connection.status = 'closed';
-			debug('watchFeed eventsource closed %s %s', connection.currentUser.username, connection.endpoint);
+			debug('watchFeed closed %s %s', connection.currentUser.username, connection.endpoint);
 			delete connections[key];
 		}
 	}
@@ -68,7 +68,7 @@ var watchFeed = function watchFeed(server, friend) {
 
 	server.models.Friend.include([friend], 'user', function (err, instances) {
 
-		debugVerbose('watchFeed', friend);
+		debugVerbose('watchFeedWebsockets', friend);
 
 		var currentUser = friend.user();
 
@@ -78,7 +78,6 @@ var watchFeed = function watchFeed(server, friend) {
 			debug('watchFeed ' + currentUser.username + ' already listening ' + key);
 		}
 		else {
-			debug('watchFeed ' + currentUser.username + ' listening ' + key);
 
 			var remoteEndPoint = url.parse(friend.remoteEndPoint);
 			var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host + '/api/PushNewsFeedItems' + remoteEndPoint.pathname + '/stream-updates';
@@ -86,7 +85,11 @@ var watchFeed = function watchFeed(server, friend) {
 			var endpoint = remoteEndPoint.protocol === 'https' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
 
-			var socket = require('socket.io-client')(endpoint + '?friend-access-token=' + friend.remoteAccessToken + '&friend-high-water=' + friend.highWater);
+			endpoint += '?friend-access-token=' + friend.remoteAccessToken;
+			if (friend.highWater) {
+				endpoint += '&friend-high-water=' + friend.highWater;
+			}
+			var socket = require('socket.io-client')(endpoint);
 
 			var connection = {
 				'key': key,
@@ -103,7 +106,7 @@ var watchFeed = function watchFeed(server, friend) {
 				}
 			});
 			socket.on('authenticated', function () {
-				console.log('authenticated');
+				debug('watchFeed ' + currentUser.username + ' listening ' + key);
 				socket.on('data', getListener(server, connection));
 			});
 			socket.on('connect', getOpenHandler(server, connection));
@@ -115,14 +118,14 @@ var watchFeed = function watchFeed(server, friend) {
 function getOpenHandler(server, connection) {
 	return function (e) {
 		connection.status = 'open';
-		debug('watchFeed eventsource open %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		debug('watchFeed open %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
 	};
 }
 
 function getCloseHandler(server, connection) {
 	return function (e) {
 		connection.status = 'closed';
-		debug('watchFeed eventsource close %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
+		debug('watchFeed close %j user %s watching %s', e, connection.currentUser.username, connection.endpoint);
 		delete connections[connection.key];
 	};
 }
@@ -148,7 +151,7 @@ function getListener(server, connection) {
 
 		if (message.type === 'offline') {
 			debug('listener ' + currentUser.username + ' received offline message ' + connection.key);
-			connection.eventSource.close();
+			connection.socket.close();
 			connection.status = 'closed';
 			delete connections[connection.key];
 			return;

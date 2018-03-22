@@ -1,15 +1,15 @@
-var PassThrough = require('stream').PassThrough;
+//var PassThrough = require('stream').PassThrough;
 var debug = require('debug')('feeds');
 var debugVerbose = require('debug')('feeds:verbose');
 var encryption = require('../../server/lib/encryption');
 var RemoteRouting = require('loopback-remote-routing');
-var watchFeed = require('../../server/lib/watchFeed');
+var watchFeed = require('../../server/lib/watchFeedWebsockets');
 var server = require('../../server/server');
 
 module.exports = function (PushNewsFeedItem) {
 	if (!process.env.ADMIN) {
 		RemoteRouting(PushNewsFeedItem, {
-			'only': ['@streamUpdates']
+			'only': []
 		});
 	}
 
@@ -17,7 +17,7 @@ module.exports = function (PushNewsFeedItem) {
 		var friend = socket.friend;
 		var user = friend.user();
 
-		var highwater = socket.highwater;
+		var highwater = socket.highwater ? socket.highwater : 0;
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;
 		var privateKey = friend.keys.private;
 		var publicKey = friend.remotePublicKey;
@@ -146,6 +146,7 @@ module.exports = function (PushNewsFeedItem) {
 	};
 
 	// modified from https://gist.github.com/njcaruso/ffa81dfbe491fcb8f176
+	/*
 	PushNewsFeedItem.streamUpdates = function (username, ctx, cb) {
 		var accessToken = ctx.req.headers['friend-access-token'];
 		var highwater = ctx.req.headers['friend-high-water'] ? ctx.req.headers['friend-high-water'] : 0;
@@ -484,4 +485,5 @@ module.exports = function (PushNewsFeedItem) {
 			}
 		}
 	);
+	*/
 };
