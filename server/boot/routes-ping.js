@@ -1,7 +1,7 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
-var watchFeed = require('../lib/watchFeed');
+var watchFeed = require('../lib/watchFeedWebsockets');
 
 var timers = {};
 

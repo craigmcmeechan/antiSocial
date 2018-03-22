@@ -1,5 +1,5 @@
 var getCurrentUser = require('../middleware/context-currentUser');
-var watchFeed = require('../lib/watchFeed');
+var watchFeed = require('../lib/watchFeedWebsockets');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
@@ -10,8 +10,10 @@ module.exports = function (server) {
 		res.render('pages/status', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser'),
-			'connections': watchFeed.connections,
-			'sockets': server.openWebsocketClients
+			'servers': server.openWebsocketServers,
+			'clients': server.openWebsocketClients,
+			'connections': watchFeed.connections
+
 		});
 	});
 
