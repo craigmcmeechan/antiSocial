@@ -165,98 +165,96 @@ module.exports = function (server) {
     var currentUser = ctx.get('currentUser');
     var postId = req.params.id;
     async.waterfall([
-      function getPost(cb) {
-        var query = {
-          'where': {
+        function getPost(cb) {
+          var query = {
+            'where': {
+              'and': [{
+                'uuid': postId
+              }, {
+                'userId': currentUser.id
+              }]
+            }
+          };
+
+          server.models.Post.findOne(query, function (err, post) {
+            if (err) {
+              return cb(err);
+            }
+
+            if (!post) {
+              err = new Error('Post not found');
+              err.statusCode = 404;
+              return cb(err);
+            }
+
+            cb(null, post);
+          });
+        },
+        function deletePhotos(post, cb) {
+          server.models.PostPhoto.destroyAll({
+            'postId': post.id
+          }, function (err, data) {
+            console.log('deletePhotos', err, data);
+            cb(err, post);
+          });
+        },
+        function markPushNewsDeleted(post, cb) {
+          var q = {
+            'where': {
+              'and': [{
+                'about': {
+                  'like': new RegExp('^' + post.source + '/post/' + post.uuid)
+                }
+              }, {
+                'userId': currentUser.id
+              }]
+            }
+          };
+
+          server.models.PushNewsFeedItem.find(q, function (err, items) {
+            for (var i = 0; i < items.length; i++) {
+              items[i].updateAttribute('deleted', true);
+            }
+            cb(err, post);
+          });
+        },
+        function deleteNewsFeedItems(post, cb) {
+          server.models.NewsFeedItem.destroyAll({
             'and': [{
-              'uuid': postId
-            }, {
               'userId': currentUser.id
+            }, {
+              'about': {
+                'like': new RegExp('^' + post.source + '/post/' + post.uuid)
+              }
             }]
-          }
-        };
-
-        server.models.Post.findOne(query, function (err, post) {
-          if (err) {
-            return cb(err);
-          }
-
-          if (!post) {
-            err = new Error('Post not found');
-            err.statusCode = 404;
-            return cb(err);
-          }
-
-          cb(null, post);
-        });
-      },
-      function deletePhotos(post, cb) {
-        server.models.PostPhoto.destroyAll({
-          'postId': post.id
-        }, function (err, data) {
-          console.log('deletePhotos', err, data);
-          cb(err, post);
-        });
-      },
-      function deletePushNews(post, cb) {
-        server.models.PushNewsFeedItem.destroyAll({
-          'about': {
-            'like': new RegExp('^' + post.source + '/post/' + post.uuid + '.*')
-          }
-        }, function (err, data) {
-          console.log('deletePushNews', err, data);
-          cb(err, post);
-        });
-      },
-      function deleteNewsFeedItems(post, cb) {
-        server.models.NewsFeedItem.destroyAll({
-          'about': {
-            'like': new RegExp('^' + post.source + '/post/' + post.uuid + '.*')
-          }
-        }, function (err, data) {
-          console.log('deleteNewsFeedItems', err, data);
-          cb(err, post);
-        });
-      },
-      function notifyNetwork(post, cb) { // tell the world
-        currentUser.pushNewsFeedItems.create({
-          'uuid': uuid(),
-          'type': 'post delete',
-          'source': post.source,
-          'about': post.source + '/post/' + post.uuid,
-          'target': post.about,
-          'visibility': post.visibility,
-          'details': {}
-        }, function (err, news) {
-          if (err) {
-            var e = new VError(err, 'could push news feed');
-            return cb(e);
-          }
-          cb(null, post);
-        });
-      },
-      function deletePost(post, cb) {
-        post.destroy(function (err) {
-          cb(err);
-        });
-      }
-    ], function (err) {
-      if (err) {
-        return res.send({
-          'result': {
-            'status': err
-          }
-        });
-      }
-
-      res.send({
-        'result': {
-          'status': 'ok',
-          'flashLevel': 'success',
-          'flashMessage': 'deleted'
+          }, function (err, data) {
+            console.log('deleteNewsFeedItems', err, data);
+            cb(err, post);
+          });
+        },
+        function deletePost(post, cb) {
+          post.destroy(function (err) {
+            cb(err);
+          });
         }
+      ],
+      function (err) {
+        if (err) {
+          return res.send({
+            'result': {
+              'status': err
+            }
+          });
+        }
+
+        res.send({
+          'result': {
+            'status': 'ok',
+            'flashLevel': 'success',
+            'flashMessage': 'deleted'
+          }
+        });
       });
-    });
   });
 
   // create a new post
