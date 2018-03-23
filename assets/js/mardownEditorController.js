@@ -6,12 +6,13 @@
 		this.target = this.element.data('target');
 		this.lookupDebounce = null;
 		this.turndownService = null;
+		this.inModal = this.element.data('in-modal');
 		this.cache = {};
 
 		var self = this;
 
 		this.start = function () {
-			self.editor = new MediumEditor(self.element, {
+			var options = {
 				toolbar: {
 					'allowMultiParagraphSelection': false,
 					'buttons': ['bold', 'italic', 'h1', 'h2', 'h3', 'h4', 'quote', 'unorderedlist', 'orderedlist', 'anchor', 'image']
@@ -22,7 +23,14 @@
 				'placeholder': {
 					'text': 'What\'s on your mind?'
 				}
-			});
+			};
+
+			if (self.inModal) {
+				options.elementsContainer = self.element.closest('.modal')[0];
+			}
+
+			self.editor = new MediumEditor(self.element, options);
+
 
 			self.turndownService = new TurndownService();
 

@@ -12,9 +12,9 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown")
+					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '')
 						if editing
-							= post.body
+							!= marked(post.body)
 					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
 						
 					.input-ok-indicator
