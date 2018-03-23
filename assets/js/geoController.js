@@ -34,7 +34,11 @@
 						self.lookup();
 					});
 					self.element.prop('disabled', false);
-					self.places();
+
+					// if editing and we have a location don't show nearby places
+					if (!self.target.val()) {
+						self.places();
+					}
 				}, function (err) {
 					$('.loading').hide();
 					flashAjaxStatus('info', 'location unavailable');

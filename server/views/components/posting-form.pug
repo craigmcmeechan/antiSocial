@@ -12,9 +12,9 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown")
+					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '')
 						if editing
-							= post.body
+							!= marked(post.body)
 					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
 						
 					.input-ok-indicator
@@ -38,8 +38,12 @@
 
 			.geo-zone
 				.form-group.input-relative
+					- var loc
+					if editing && post.geoDescription
+						- loc = JSON.stringify({ "description": post.geoDescription , "loc": post.geoLocation})
+						
 					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
-					input#geo-location(type="hidden" value= editing ? JSON.stringify(post.geoLocation) : '')
+					input#geo-location(type="hidden" value= editing ? loc : '')
 				.dropdown
 					ul#geo-pulldown.dropdown-menu
 					#geo-attributions

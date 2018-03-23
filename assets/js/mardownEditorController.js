@@ -6,12 +6,13 @@
 		this.target = this.element.data('target');
 		this.lookupDebounce = null;
 		this.turndownService = null;
+		this.inModal = this.element.data('in-modal');
 		this.cache = {};
 
 		var self = this;
 
 		this.start = function () {
-			self.editor = new MediumEditor(self.element, {
+			var options = {
 				toolbar: {
 					'allowMultiParagraphSelection': false,
 					'buttons': ['bold', 'italic', 'h1', 'h2', 'h3', 'h4', 'quote', 'unorderedlist', 'orderedlist', 'anchor', 'image']
@@ -22,7 +23,14 @@
 				'placeholder': {
 					'text': 'What\'s on your mind?'
 				}
-			});
+			};
+
+			if (self.inModal) {
+				options.elementsContainer = self.element.closest('.modal')[0];
+			}
+
+			self.editor = new MediumEditor(self.element, options);
+
 
 			self.turndownService = new TurndownService();
 
@@ -49,9 +57,11 @@
 						var deltaLength = 0;
 						for (var i = 0; i < urls.length; i++) {
 							var url = urls[i].replace(/^<p>/, '').replace(/<\/p><$/, '');
-							var previewTag = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
-							value = value.replace(url, previewTag);
-							deltaLength -= url.length;
+							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
+								var previewTag = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
+								value = value.replace(url, previewTag);
+								deltaLength -= url.length;
+							}
 						}
 						self.element.html(value);
 						selection.start += deltaLength;

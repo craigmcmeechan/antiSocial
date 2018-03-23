@@ -29,6 +29,7 @@ app.locals.headshotFPO = '/images/slug.png';
 app.locals.FPO = '/images/fpo.jpg';
 app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
+app.locals.appDir = __dirname;
 
 // markdown renderer
 var marked = require('marked');

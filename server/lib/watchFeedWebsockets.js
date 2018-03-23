@@ -205,18 +205,52 @@ function getListener(server, connection) {
 					debug('watchFeed listener ' + currentUser.username + ' skipping old news %j %j', oldNews);
 					return;
 				}
-
-				if (message.type === 'update' || message.type === 'backfill') {
+				else if (message.type === 'update' || message.type === 'backfill') {
 					debug('watchFeed listener ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
 					oldNews.details = myNewsFeedItem.details;
 					oldNews.versions = myNewsFeedItem.versions;
 					oldNews.deleted = myNewsFeedItem.deleted;
 					oldNews.save();
+
+					// cleanup all my interations with this item
+					if (myNewsFeedItem.deleted) {
+						server.models.NewsFeedItem.destroyAll({
+							'and': [{
+								'userId': currentUser.id
+							}, {
+								'about': {
+									'like': new RegExp('^' + myNewsFeedItem.about)
+								}
+							}]
+						}, function (err, data) {
+							console.log('deleteNewsFeedItems', err, data);
+						});
+
+						var q = {
+							'where': {
+								'and': [{
+									'about': {
+										'like': new RegExp('^' + myNewsFeedItem.about)
+									}
+								}, {
+									'userId': currentUser.id
+								}]
+							}
+						};
+
+						server.models.PushNewsFeedItem.find(q, function (err, items) {
+							for (var i = 0; i < items.length; i++) {
+								items[i].updateAttribute('deleted', true);
+							}
+						});
+					}
+
 					return;
 				}
-
-				debug('watchFeed listener ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
-				return;
+				else {
+					debug('watchFeed listener ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
+					return;
+				}
 			}
 			else {
 				if (message.type === 'update') {
