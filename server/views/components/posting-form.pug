@@ -38,8 +38,12 @@
 
 			.geo-zone
 				.form-group.input-relative
+					- var loc
+					if editing && post.geoDescription
+						- loc = JSON.stringify({ "description": post.geoDescription , "loc": post.geoLocation})
+						
 					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
-					input#geo-location(type="hidden" value= editing ? JSON.stringify(post.geoLocation) : '')
+					input#geo-location(type="hidden" value= editing ? loc : '')
 				.dropdown
 					ul#geo-pulldown.dropdown-menu
 					#geo-attributions

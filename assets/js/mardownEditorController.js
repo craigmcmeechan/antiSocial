@@ -57,9 +57,11 @@
 						var deltaLength = 0;
 						for (var i = 0; i < urls.length; i++) {
 							var url = urls[i].replace(/^<p>/, '').replace(/<\/p><$/, '');
-							var previewTag = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
-							value = value.replace(url, previewTag);
-							deltaLength -= url.length;
+							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
+								var previewTag = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
+								value = value.replace(url, previewTag);
+								deltaLength -= url.length;
+							}
 						}
 						self.element.html(value);
 						selection.start += deltaLength;

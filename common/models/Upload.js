@@ -1,6 +1,7 @@
 var async = require('async');
 var fs = require('fs');
 var RemoteRouting = require('loopback-remote-routing');
+var path = require('path');
 
 module.exports = function (Upload) {
 	if (!process.env.ADMIN) {
@@ -28,7 +29,12 @@ module.exports = function (Upload) {
 						});
 					}
 					else {
-						fs.unlink(image.path, function (err) {
+						var file = image.path;
+						if (image.url) {
+							file = image.url.replace(Upload.app.locals.config.publicHost, '');
+							file = path.resolve(__dirname, '../../client/' + file);
+						}
+						fs.unlink(file, function (err) {
 							doneDeleting(err);
 						});
 					}
