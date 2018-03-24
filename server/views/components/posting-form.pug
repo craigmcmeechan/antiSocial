@@ -14,7 +14,7 @@
 				.form-group.input-relative
 					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '')
 						if editing
-							!= marked(post.body)
+							!= marked(post.body,true)
 					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
 						
 					.input-ok-indicator

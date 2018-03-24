@@ -9,23 +9,12 @@
 		this.endpoint = this.element.data('endpoint');
 		this.about = this.element.data('about');
 		this.photoId = this.element.data('photoId');
-		this.renderer = new marked.Renderer();
-		//this.previewMode = false;
 		this.currentTop = 0;
 		self.categories = [];
 		self.dropzone = undefined;
 		this.lookupDebounce = null;
 		this.singleUpload = this.element.data('single-upload');
 		this.modal = this.element.data('modal');
-
-		this.renderer.link = function (href, title, text) {
-			if (text && text.match(/^http/i)) {
-				return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div>';
-			}
-			else {
-				return '<a href="' + href + '" target="_blank">' + text + '</a>';
-			}
-		};
 
 		this.start = function () {
 			if (self.element.find('.upload-zone')) {

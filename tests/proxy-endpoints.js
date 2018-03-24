@@ -196,7 +196,7 @@ describe('proxy endpoints', function () {
 
 	it('user2 should be able to post (friends only) w/tags', function (done) {
 		var payload = {
-			'body': 'Hello world [user one with many spaces](tag-user-' + endpoint1 + ')',
+			'body': 'Hello world [hashtag](tag-hash-hashtag) [user one with many spaces](tag-user-' + endpoint1 + ')',
 			'visibility': ['friends'],
 		};
 

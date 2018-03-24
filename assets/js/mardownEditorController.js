@@ -49,7 +49,7 @@
 					self.lookupDebounce = undefined;
 					var markup = self.element.html().replace('&nbsp', ' ');
 
-					// build previews for any url on a line by itself
+					// url on a line by itself - preview
 					var urls = markup.match(/<p>(http[^<]+)<\/p></g);
 					if (urls) {
 						var value = self.element.html();
@@ -58,7 +58,7 @@
 						for (var i = 0; i < urls.length; i++) {
 							var url = urls[i].replace(/^<p>/, '').replace(/<\/p><$/, '');
 							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
-								var previewTag = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
+								var previewTag = '<div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
 								value = value.replace(url, previewTag);
 								deltaLength -= url.length;
 							}
@@ -70,7 +70,29 @@
 						didInjectContent(self.element);
 					}
 
-					var matches = markup.match(/(@(([\w]+)[\s]?){0,3})/g);
+					// hashtags
+					var matches = markup.match(/(#[a-zA-Z][a-zA-Z0-9]+)/g);
+					if (matches) {
+						var value = self.element.html();
+						var selection = self.editor.exportSelection();
+						var deltaLength = 0;
+
+						for (var i = 0; i < matches.length; i++) {
+							var tag = matches[i].replace('#', '');
+							var formatted = '<a class="in-editor tag-hash" href="tag-hash-' + tag + '"><span class="em-hashtag"></span>' + tag + '</a>';
+							value = value.replace(matches[i], formatted);
+							deltaLength -= 1;
+						}
+
+						self.element.html(value);
+						selection.start += deltaLength;
+						selection.end = selection.start;
+						self.editor.importSelection(selection);
+						didInjectContent(self.element);
+					}
+
+					// usertags
+					matches = markup.match(/(@(([\w]+)[\s]?){0,3})/g);
 					async.map(matches, function (match, cb) {
 							var q = match.replace(/[@]/, '');
 							var punctuation = q.match(/([\W]+$)/);
@@ -105,7 +127,7 @@
 							for (var i = 0; i < replacements.length; i++) {
 								if (replacements[i].found.length) {
 									if (replacements[i].found.length == 1) {
-										var formatted = '<a class="tag-user" href="' + replacements[i].found[0].endPoint + '"><span class="em-usertag"></span>' + replacements[i].found[0].name + '</a>' + replacements[i].punctuation;
+										var formatted = '<a class="in-editor tag-user" href="' + replacements[i].found[0].endPoint + '"><span class="em-usertag"></span>' + replacements[i].found[0].name + '</a>' + replacements[i].punctuation;
 										value = value.replace(replacements[i].match, formatted);
 										deltaLength += (replacements[i].found[0].name.length - replacements[i].match.length);
 										didit = true;
