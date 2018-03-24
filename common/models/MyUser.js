@@ -473,7 +473,7 @@ module.exports = function (MyUser) {
 			for (var i = 0; i < friends.length; i++) {
 				matches.push({
 					'id': friends[i].id.toString(),
-					'endPoint': friends[i].remoteEndPoint.replace(/^/, 'user-'),
+					'endPoint': friends[i].remoteEndPoint.replace(/^/, 'tag-user-'),
 					'name': friends[i].remoteName
 				})
 			}

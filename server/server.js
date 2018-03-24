@@ -51,22 +51,54 @@ marked.setOptions({
   'smartypants': true
 });
 
-function renderMarkdown(markdown) {
+function renderMarkdown(markdown, editing) {
   if (!markdown) {
     return '';
   }
-  var tagged = markdown.replace(/\#([A-Za-z0-9\-\_\.])+/g, function (tag) {
-    return '[' + tag + '](' + tag + ')';
-  });
 
-  tagged = tagged.replace(/\(tag-user-([^\)]+)\)/g, function (tag) {
-    var friendEndPoint = tag;
-    friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
-    friendEndPoint = friendEndPoint.replace(/\)$/, '');
-    return '(' + proxyEndPoint(friendEndPoint) + ')';
-  });
+  var tagged;
 
-  return marked(tagged);
+  if (editing) {
+    tagged = markdown;
+  }
+  else {
+    tagged = markdown.replace(/\[[^\]]+\]\(tag-hash-([^)]+)\)/g, function (tag) {
+      tag = tag.replace(/tag-hash-/, '#');
+      tag = tag.replace(/\[/, '[#');
+      return tag;
+    });
+
+    tagged = tagged.replace(/\[[^\]]+\]\(tag-user-([^)]+)\)/g, function (tag) {
+      var friendEndPoint = tag;
+      friendEndPoint = friendEndPoint.replace(/.*\(tag-user-/, '');
+      friendEndPoint = friendEndPoint.replace(/\)$/, '');
+      tag = tag.replace(/\(.*\)/, '(' + proxyEndPoint(friendEndPoint) + ')');
+      tag = tag.replace(/^\[/, '[@');
+      return tag;
+    });
+  }
+
+  var html = marked(tagged);
+
+  if (editing) {
+    html = html.replace(/<a href="tag-user-[^>]+>/g, function (usertag) {
+      var forEditor = usertag.replace('<a href="', '<a class="in-editor tag-user" href="');
+      forEditor = forEditor.replace(/>/, '><span class="em-usertag"></span>');
+      return forEditor;
+    });
+
+    html = html.replace(/<a href="tag-hash-[^>]+>/g, function (hashtag) {
+      var forEditor = hashtag.replace('<a href="', '<a class="in-editor tag-hash" href="');
+      forEditor = forEditor.replace(/>/, '><span class="em-hashtag"></span>');
+      return forEditor;
+    });
+
+    html = html.replace(/<div class="ogPreview"/g, function (preview) {
+      return preview.replace('<div class="ogPreview"', '<div class="ogPreview in-editor tag-hash"');
+    });
+  }
+
+  return html;
 }
 app.locals.marked = renderMarkdown;
 

@@ -94,6 +94,29 @@ module.exports = function (server) {
           cb(null, post);
         });
       },
+      function updatePost(post, cb) {
+
+        if (!post.versions) {
+          post.versions = [];
+        }
+        post.versions.push({
+          'body': post.body,
+          'visibility': post.visibility,
+          'timestamp': new Date(),
+          'geoDescription': post.geoDescription,
+          'geoLocation': post.geoLocation
+        });
+        post.body = req.body.body;
+        post.visibility = req.body.visibility;
+        post.geoDescription = req.body.geoDescription;
+        post.geoLocation = req.body.geoLocation;
+        post.save(function (err) {
+          if (err) {
+            cb(err);
+          }
+          cb(null, post);
+        });
+      },
       function makeNewsFeedItem(post, cb) { // notify self
         var item = {
           'uuid': uuid(),
@@ -115,6 +138,54 @@ module.exports = function (server) {
 
           cb(err, post);
         });
+      },
+      function notifyTagged(post, cb) { // notify tagged
+        post.tags = [];
+        var re = /\(tag-hash-([^)]+)\)/g;
+        var tags = post.body.match(re);
+        if (tags) {
+          for (var i = 0; i < tags.length; i++) {
+            var tag = tags[i];
+            tag = tag.replace(/^\(tag-hash-/, '');
+            tag = tag.replace(/\)$/, '');
+            post.tags.push('#' + tag);
+          }
+        }
+
+        re = /\(tag-user-([^)]+)\)/g;
+        tags = post.body.match(re);
+        async.map(tags, function (tag, doneTag) {
+          var friendEndPoint = tag;
+          friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
+          friendEndPoint = friendEndPoint.replace(/\)$/, '');
+          post.tags.push('@' + friendEndPoint);
+          server.models.Friend.findOne({
+            'where': {
+              'remoteEndPoint': friendEndPoint
+            }
+          }, function (err, friend) {
+            currentUser.pushNewsFeedItems.create({
+              'uuid': uuid(),
+              'type': 'tag',
+              'source': server.locals.config.publicHost + '/' + currentUser.username,
+              'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+              'target': friend.remoteEndPoint,
+              'visibility': post.visibility,
+              'details': {}
+            }, function (err, news) {
+              if (err) {
+                var e = new VError(err, 'could push news feed');
+                return doneTag(e);
+              }
+              doneTag(null);
+            });
+          });
+        }, function (err) {
+          if (post.tags.length) {
+            post.save();
+          }
+          cb(null, post);
+        });
       }
     ], function (err, post) {
       if (err) {
@@ -125,35 +196,12 @@ module.exports = function (server) {
         });
       }
 
-      if (!post.versions) {
-        post.versions = [];
-      }
-      post.versions.push({
-        'body': post.body,
-        'visibility': post.visibility,
-        'timestamp': new Date(),
-        'geoDescription': post.geoDescription,
-        'geoLocation': post.geoLocation
-      });
-      post.body = req.body.body;
-      post.visibility = req.body.visibility;
-      post.geoDescription = req.body.geoDescription;
-      post.geoLocation = req.body.geoLocation;
-      post.save(function (err) {
-        if (err) {
-          return res.send({
-            'result': {
-              'status': err
-            }
-          });
+      res.send({
+        'result': {
+          'status': 'ok',
+          'flashLevel': 'success',
+          'flashMessage': 'saved'
         }
-        res.send({
-          'result': {
-            'status': 'ok',
-            'flashLevel': 'success',
-            'flashMessage': 'saved'
-          }
-        });
       });
     });
   });
@@ -373,8 +421,19 @@ module.exports = function (server) {
       },
       function notifyTagged(news, post, cb) { // notify tagged
         post.tags = [];
-        var re = /\(tag-user-([^)]+)\)/g;
+        var re = /\(tag-hash-([^)]+)\)/g;
         var tags = post.body.match(re);
+        if (tags) {
+          for (var i = 0; i < tags.length; i++) {
+            var tag = tags[i];
+            tag = tag.replace(/^\(tag-hash-/, '');
+            tag = tag.replace(/\)$/, '');
+            post.tags.push('#' + tag);
+          }
+        }
+
+        re = /\(tag-user-([^)]+)\)/g;
+        tags = post.body.match(re);
         async.map(tags, function (tag, doneTag) {
           var friendEndPoint = tag;
           friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
