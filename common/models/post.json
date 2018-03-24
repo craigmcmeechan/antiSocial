@@ -64,9 +64,6 @@
     },
     "tags": {
       "type": ["string"]
-    },
-    "resolvedTags": {
-      "type": "object"
     }
   },
   "validations": [],

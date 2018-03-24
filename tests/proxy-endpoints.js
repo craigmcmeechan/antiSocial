@@ -196,14 +196,8 @@ describe('proxy endpoints', function () {
 
 	it('user2 should be able to post (friends only) w/tags', function (done) {
 		var payload = {
-			'body': 'Hello world',
+			'body': 'Hello world [user one with many spaces](tag-user-' + endpoint1 + ')',
 			'visibility': ['friends'],
-			'tags': ['@user one with many spaces', '@user three', '#some-hashtag'],
-			'resolvedTags': {
-				'@user one with many spaces': {
-					'endpoint': endpoint1
-				}
-			}
 		};
 
 		client2.post('http://127.0.0.1:3000/post').send(payload).end(function (err, res) {
@@ -328,7 +322,7 @@ describe('proxy endpoints', function () {
 	});
 
 	it('user1 should be able to get user2 tagged posts (json)', function (done) {
-		client1.get(endpoint2 + '/posts.json?tags=["@user one with many spaces"]').end(function (err, res) {
+		client1.get(endpoint2 + '/posts.json?tags=["@' + endpoint1 + '"]').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');

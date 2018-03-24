@@ -372,12 +372,14 @@ module.exports = function (server) {
         });
       },
       function notifyTagged(news, post, cb) { // notify tagged
-        var re = /\(tag-([^\)]+)\)/g;
+        post.tags = [];
+        var re = /\(tag-user-([^)]+)\)/g;
         var tags = post.body.match(re);
         async.map(tags, function (tag, doneTag) {
           var friendEndPoint = tag;
-          friendEndPoint = friendEndPoint.replace(/^\(tag-/, '');
+          friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
+          post.tags.push('@' + friendEndPoint);
           server.models.Friend.findOne({
             'where': {
               'remoteEndPoint': friendEndPoint
@@ -400,6 +402,9 @@ module.exports = function (server) {
             });
           });
         }, function (err) {
+          if (post.tags.length) {
+            post.save();
+          }
           cb(null, news, post);
         });
       },

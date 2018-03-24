@@ -184,18 +184,6 @@
 				}
 				geo = JSON.parse(geo);
 
-				var tags = self.element.find('.tags').val();
-				if (!tags) {
-					tags = '[]';
-				}
-				tags = JSON.parse(tags);
-
-				var resolvedTags = self.element.find('.resolved-tags').val();
-				if (!resolvedTags) {
-					resolvedTags = '{}';
-				}
-				resolvedTags = JSON.parse(resolvedTags);
-
 				var payload = {
 					'body': self.element.find('.posting-markdown').val(),
 					'geoDescription': geo.description,
@@ -204,9 +192,7 @@
 					'categories': JSON.stringify(self.categories),
 					'about': self.about,
 					'photos': photos,
-					'photoId': photoId,
-					'tags': tags,
-					'resolvedTags': resolvedTags
+					'photoId': photoId
 				};
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {

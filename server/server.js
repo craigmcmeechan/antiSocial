@@ -59,9 +59,9 @@ function renderMarkdown(markdown) {
     return '[' + tag + '](' + tag + ')';
   });
 
-  tagged = tagged.replace(/\(tag-([^\)]+)\)/g, function (tag) {
+  tagged = tagged.replace(/\(tag-user-([^\)]+)\)/g, function (tag) {
     var friendEndPoint = tag;
-    friendEndPoint = friendEndPoint.replace(/^\(tag-/, '');
+    friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
     friendEndPoint = friendEndPoint.replace(/\)$/, '');
     return '(' + proxyEndPoint(friendEndPoint) + ')';
   });
