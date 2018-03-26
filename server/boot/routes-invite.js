@@ -59,7 +59,8 @@ module.exports = function (server) {
 					'email': invitation.user().email,
 					'url': url,
 					'endpoint': endpoint,
-					'note': invitation.note
+					'note': invitation.note,
+					'config': server.locals.config
 				};
 
 				mailer(server, 'emails/invite-friend', options, function (err) {
