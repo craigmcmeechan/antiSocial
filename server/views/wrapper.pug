@@ -72,7 +72,7 @@ html(lang="en")
 								span.hidden-not-digitopia-xsmall
 									|  Settings
 					ul.nav.navbar-nav.navbar-right
-						if globalSettings.multiUser === 'invite'
+						if globalSettings.multiUser === 'invite' && !inviteToken
 							li.hidden-logged-in
 								a(href="#" data-toggle="modal" data-target="#request-invite-form") Request Account
 						if globalSettings.multiUser === 'open' || inviteToken
