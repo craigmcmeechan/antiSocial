@@ -175,11 +175,12 @@ block content
 										input(type="checkbox" name="communityChannel")
 									| Community Channel
 						
-						.form-group
-							h3 Community Background
-							- var endpoint = "/api/Settings/1/upload/background"
-							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-								img(data-jsclass="digitopiaLazyImg" data-lazy-src= communityBackground.url)
-								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-									.dz-message.
-										Drop your image here<br><small>(or click to upload)</small>
+						if globalSettings.instance
+							.form-group
+								h3 Community Background
+								- var endpoint = "/api/Settings/"+globalSettings.instance.id.toString()+"/upload/background"
+								.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+									img(data-jsclass="digitopiaLazyImg" data-lazy-src= communityBackground.url)
+									.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+										.dz-message.
+											Drop your image here<br><small>(or click to upload)</small>
