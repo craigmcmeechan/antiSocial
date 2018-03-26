@@ -7,10 +7,14 @@ block seo
 block content
 	- var photo = getUploadForProperty('photo',user.uploads(),'large',headshotFPO)
 	- var background = getUploadForProperty('background',user.uploads(),'large',FPO)
-
+	- var communityBackground = { 'url': '/images/fpo.jpg' }
+	if globalSettings.instance
+		- communityBackground =getUploadForProperty('background',globalSettings.instance.uploads(),'large',FPO)
 	.container-fluid.content-padding-top.content
 		.row
-			.col-sm-8.left-column
+			.col-sm-6.left-column
+				h2 User Settings
+
 				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/api/MyUsers/me")
 					.form-group
 							.checkbox
@@ -24,20 +28,20 @@ block content
 
 					if !user.username
 						.form-group
-								label User Name (one time edit)
-								.input-relative
-									input.form-control(type="text" name="username" placeholder="Username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-suffix= user.unique data-unique-endpoint= "/api/MyUsers/isunique?field=username")
-									.input-ok-indicator
-										span.glyphicon.glyphicon-ok
-									.validation-help
+							label User Name (one time edit)
+							.input-relative
+								input.form-control(type="text" name="username" placeholder="Username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-suffix= user.unique data-unique-endpoint= "/api/MyUsers/isunique?field=username")
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
 					if !user.name
 						.form-group
-								label Full Name
-								.input-relative
-									input.form-control(type="text" name="name" placeholder="Full Name" data-validate="required" value= user.name)
-									.input-ok-indicator
-										span.glyphicon.glyphicon-ok
-									.validation-help
+							label Full Name
+							.input-relative
+								input.form-control(type="text" name="name" placeholder="Full Name" data-validate="required" value= user.name)
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
 
 					.form-group
 							label Email
@@ -80,8 +84,7 @@ block content
 							- tw= identity
 							
 				if environment.FACEBOOK_CLIENT_ID
-					.row
-						.col-xs-12
+					.form-group
 							if fb
 								p Linked w/facebook account
 							else
@@ -89,42 +92,94 @@ block content
 									a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
 				
 				if environment.TWITTER_CONSUMER_KEY
-					.row
-						.col-xs-12
+					.form-group
 							if tw
 								p Linked w/twitter account
 							else
 								p
 									a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
 
-		#scope-upload
-			.row
-				.col-sm-4
-					h3 Profile Photo
-					- var endpoint = "/api/MyUsers/me/upload/photo"
-					.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-						img(data-jsclass="digitopiaLazyImg" data-lazy-src= photo.url)
-						.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-							.dz-message.
-								Drop your photo here<br><small>(or click to upload)</small>
-
-			.row
-				.col-sm-8
-					h3 Profile Background
-					- var endpoint = "/api/MyUsers/me/upload/background"
-					.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-						img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
-						.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-							.dz-message.
-								Drop your image here<br><small>(or click to upload)</small>
-
-			if isAdmin
-				.row
+				#scope-upload
 					.col-sm-8
-						h3 Community Background
-						- var endpoint = "/api/MyUsers/me/upload/community-background"
-						.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-							img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
-							.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-								.dz-message.
-									Drop your image here<br><small>(or click to upload)</small>
+						.form-group
+							h3 Profile Photo
+							- var endpoint = "/api/MyUsers/me/upload/photo"
+							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+								img(data-jsclass="digitopiaLazyImg" data-lazy-src= photo.url)
+								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+									.dz-message.
+										Drop your photo here<br><small>(or click to upload)</small>
+
+					.col-sm-12
+						.form-group
+							h3 Profile Background
+							- var endpoint = "/api/MyUsers/me/upload/background"
+							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+								img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
+								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+									.dz-message.
+										Drop your image here<br><small>(or click to upload)</small>
+		
+			
+			.col-sm-6
+				if isAdmin
+					.page-heading
+						h2 Server Settings
+					form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/server-settings")
+						.form-group
+							.input-relative
+								label Multi-user
+									select.form-control(name='multiUser' data-validate="required")
+										if globalSettings.multiUser === '' || globalSettings.multiUser === 'closed'
+											option(value='closed' selected) Single User
+										else
+											option(value='closed') Single User
+											
+										if globalSettings.multiUser === 'open'
+											option(value='open' selected) Open
+										else
+											option(value='open') Open
+											
+										if globalSettings.multiUser === 'invite'
+											option(value='invite' selected) By Invitation
+										else
+											option(value='invite') By Invitation
+						//
+							.form-group
+								label Server Name
+								.input-relative
+									input.form-control(type="text" name="serverName" placeholder="Server Name" data-validate="required" value= globalSettings.serverName)
+									.input-ok-indicator
+										span.glyphicon.glyphicon-ok
+									.validation-help
+						.form-group
+							label Server Title
+							.input-relative
+								input.form-control(type="text" name="serverTitle" placeholder="Server Title" data-validate="required" value= globalSettings.serverTitle)
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+						.form-group
+							label serverDescription
+							.input-relative
+								textarea.form-control(type="text" name="serverDescription" placeholder="Server Description" data-validate="required")= globalSettings.serverDescription
+								.input-ok-indicator
+									span.glyphicon.glyphicon-ok
+								.validation-help
+						.form-group
+							.checkbox
+								label
+									if globalSettings.communityChannel
+										input(type="checkbox" name="communityChannel" checked)
+									else
+										input(type="checkbox" name="communityChannel")
+									| Community Channel
+						
+						.form-group
+							h3 Community Background
+							- var endpoint = "/api/Settings/1/upload/background"
+							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+								img(data-jsclass="digitopiaLazyImg" data-lazy-src= communityBackground.url)
+								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+									.dz-message.
+										Drop your image here<br><small>(or click to upload)</small>
