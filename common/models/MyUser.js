@@ -110,17 +110,6 @@ module.exports = function (MyUser) {
 				maxHeight: 300,
 				maxWidth: 300,
 				aspect: '1:1'
-			}],
-			'community-background': [{
-				suffix: 'large',
-				quality: 90,
-				maxHeight: 2048,
-				maxWidth: 2048,
-			}, {
-				suffix: 'thumb',
-				quality: 90,
-				maxHeight: 300,
-				maxWidth: 300,
 			}]
 		};
 
@@ -473,7 +462,7 @@ module.exports = function (MyUser) {
 			for (var i = 0; i < friends.length; i++) {
 				matches.push({
 					'id': friends[i].id.toString(),
-					'endPoint': friends[i].remoteEndPoint,
+					'endPoint': friends[i].remoteEndPoint.replace(/^/, 'tag-user-'),
 					'name': friends[i].remoteName
 				})
 			}

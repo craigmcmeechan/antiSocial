@@ -12,16 +12,14 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					textarea.posting-body.form-control(type="text" name="body" placeholder= placeholder data-validate="required")
+					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '')
 						if editing
-							= post.body
+							!= marked(post.body,true)
+					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
+						
 					.input-ok-indicator
 						span.glyphicon.glyphicon-ok
 					.validation-help
-				.form-group.hide-until-subject-focus
-					input.tags.form-control(type="text" placeholder="tags")
-					input.resolvedTags(type="hidden")
-			#preview-tab.hide-until-subject-focus.markdown
 
 		.hide-until-subject-focus
 			.upload-zone
@@ -33,19 +31,22 @@
 					a#post-upload-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom") <i class="glyphicon glyphicon-upload"></i>
 				if environment.GOOGLE_MAPS_API_KEY
 					a#post-geo-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom") <i class="glyphicon glyphicon-map-marker"></i>
-				a#post-preview-button.btn.btn-sm.btn-default(href="#") Preview
 				a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
 
 			.geo-zone
 				.form-group.input-relative
+					- var loc
+					if editing && post.geoDescription
+						- loc = JSON.stringify({ "description": post.geoDescription , "loc": post.geoLocation})
+						
 					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
-					input#geo-location(type="hidden" value= editing ? JSON.stringify(post.geoLocation) : '')
+					input#geo-location(type="hidden" value= editing ? loc : '')
 				.dropdown
 					ul#geo-pulldown.dropdown-menu
 					#geo-attributions
 
 			.form-group.input-relative.text-center.audience-select
-				.checkbox-group.lazy-instantiate(data-lazy-jsclass="checkboxGroupController" data-target=".posting-visibility")
+				.checkbox-group(data-jsclass="checkboxGroupController" data-target=".posting-visibility")
 					input.posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= editing ?  JSON.stringify(post.visibility)  : '["friends"]')
 
 					label.checkbox-inline Audience:

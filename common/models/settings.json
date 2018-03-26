@@ -45,6 +45,12 @@
     "principalType": "ROLE",
     "principalId": "admin",
     "permission": "ALLOW"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "admin",
+    "permission": "ALLOW",
+    "property": "upload"
   }],
   "methods": {}
 }

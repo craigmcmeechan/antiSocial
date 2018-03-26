@@ -6,6 +6,8 @@ var uuid = require('uuid');
 var NodeCache = require('node-cache');
 var proxyEndPoint = require('./lib/proxy-endpoint');
 var websockets = require('./lib/websockets');
+var http = require('http');
+var setupHTTPS = require('./lib/setupHTTPS');
 
 var app = module.exports = loopback();
 
@@ -27,6 +29,7 @@ app.locals.headshotFPO = '/images/slug.png';
 app.locals.FPO = '/images/fpo.jpg';
 app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
+app.locals.appDir = __dirname;
 
 // markdown renderer
 var marked = require('marked');
@@ -48,26 +51,54 @@ marked.setOptions({
   'smartypants': true
 });
 
-function renderMarkdown(markdown) {
+function renderMarkdown(markdown, editing) {
   if (!markdown) {
     return '';
   }
-  var tagged = markdown.replace(/\#([A-Za-z0-9\-\_\.])+/g, function (tag) {
-    return '[' + tag + '](' + tag + ')';
-  });
 
-  tagged = tagged.replace(/\(tag\:([^\)]+)\)/g, function (tag) {
-    var friendEndPoint = tag;
-    friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
-    friendEndPoint = friendEndPoint.replace(/\)$/, '');
-    return '(' + proxyEndPoint(friendEndPoint) + ')';
-  });
+  var tagged;
 
-  tagged = tagged.replace(/:([A-Za-z0-9_\-\+]+?):/g, function (emoji) {
-    return '<span class="em em-' + emoji.replace(/:/g, '') + '"></span>';
-  });
+  if (editing) {
+    tagged = markdown;
+  }
+  else {
+    tagged = markdown.replace(/\[[^\]]+\]\(tag-hash-([^)]+)\)/g, function (tag) {
+      tag = tag.replace(/tag-hash-/, '#');
+      tag = tag.replace(/\[/, '[#');
+      return tag;
+    });
 
-  return marked(tagged);
+    tagged = tagged.replace(/\[[^\]]+\]\(tag-user-([^)]+)\)/g, function (tag) {
+      var friendEndPoint = tag;
+      friendEndPoint = friendEndPoint.replace(/.*\(tag-user-/, '');
+      friendEndPoint = friendEndPoint.replace(/\)$/, '');
+      tag = tag.replace(/\(.*\)/, '(' + proxyEndPoint(friendEndPoint) + ')');
+      tag = tag.replace(/^\[/, '[@');
+      return tag;
+    });
+  }
+
+  var html = marked(tagged);
+
+  if (editing) {
+    html = html.replace(/<a href="tag-user-[^>]+>/g, function (usertag) {
+      var forEditor = usertag.replace('<a href="', '<a class="in-editor tag-user" href="');
+      forEditor = forEditor.replace(/>/, '><span class="em-usertag"></span>');
+      return forEditor;
+    });
+
+    html = html.replace(/<a href="tag-hash-[^>]+>/g, function (hashtag) {
+      var forEditor = hashtag.replace('<a href="', '<a class="in-editor tag-hash" href="');
+      forEditor = forEditor.replace(/>/, '><span class="em-hashtag"></span>');
+      return forEditor;
+    });
+
+    html = html.replace(/<div class="ogPreview"/g, function (preview) {
+      return preview.replace('<div class="ogPreview"', '<div class="ogPreview in-editor tag-hash"');
+    });
+  }
+
+  return html;
 }
 app.locals.marked = renderMarkdown;
 
@@ -178,7 +209,7 @@ var csp = require('helmet-csp');
 app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets + '://' + app.locals.config.host + ':' + app.locals.config.port],
+    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets],
     'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', '\'unsafe-eval\'', function (req, res) {
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
@@ -186,7 +217,7 @@ app.use(csp({
     'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
     'frameSrc': ['\'self\'', 'www.youtube.com'],
     'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com'],
-    'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups'],
+    'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
     'reportUri': '/csp-violation',
     'objectSrc': ['\'none\''],
     'upgradeInsecureRequests': false
@@ -214,14 +245,34 @@ if (app.get('env') === 'development') {
 }
 
 app.start = function () {
-  return app.listen(function () {
-    app.emit('started');
-    var baseUrl = app.get('url').replace(/\/$/, '');
-    app.locals.logger.info('Web server listening at: %s (%s) ', baseUrl, app.get('env'));
-    if (app.get('loopback-component-explorer')) {
-      var explorerPath = app.get('loopback-component-explorer').mountPath;
-      app.locals.logger.info('Browse your REST API at %s%s', baseUrl, explorerPath);
+  app.locals.logger.info('app started');
+
+  var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
+    if (err) {
+      app.locals.logger.error('http could not be started', err);
+      return;
     }
+    app.emit('started');
+    app.locals.logger.info('http started');
+
+    if (!process.env.HTTPS_LISTENER) {
+      app.io = require('socket.io')(listener);
+      websockets.mount(app);
+      app.locals.logger.info('sebsockets ws started');
+      return;
+    }
+
+    setupHTTPS(app, function (err, sslListener) {
+      if (err) {
+        app.locals.logger.info('https could not start', err);
+        return;
+      }
+      app.locals.logger.info('https started');
+
+      app.io = require('socket.io')(sslListener);
+      websockets.mount(app);
+      app.locals.logger.info('sebsockets wss started');
+    });
   });
 };
 
@@ -229,7 +280,6 @@ boot(app, __dirname, function (err) {
   if (err) throw err;
   // start the server if `$ node server.js`
   if (require.main === module) {
-    app.io = require('socket.io')(app.start());
-    websockets.mount(app);
+    app.start();
   }
 });

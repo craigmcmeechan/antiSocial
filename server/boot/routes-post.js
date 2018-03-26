@@ -94,6 +94,29 @@ module.exports = function (server) {
           cb(null, post);
         });
       },
+      function updatePost(post, cb) {
+
+        if (!post.versions) {
+          post.versions = [];
+        }
+        post.versions.push({
+          'body': post.body,
+          'visibility': post.visibility,
+          'timestamp': new Date(),
+          'geoDescription': post.geoDescription,
+          'geoLocation': post.geoLocation
+        });
+        post.body = req.body.body;
+        post.visibility = req.body.visibility;
+        post.geoDescription = req.body.geoDescription;
+        post.geoLocation = req.body.geoLocation;
+        post.save(function (err) {
+          if (err) {
+            cb(err);
+          }
+          cb(null, post);
+        });
+      },
       function makeNewsFeedItem(post, cb) { // notify self
         var item = {
           'uuid': uuid(),
@@ -115,132 +138,56 @@ module.exports = function (server) {
 
           cb(err, post);
         });
+      },
+      function notifyTagged(post, cb) { // notify tagged
+        post.tags = [];
+        var re = /\(tag-hash-([^)]+)\)/g;
+        var tags = post.body.match(re);
+        if (tags) {
+          for (var i = 0; i < tags.length; i++) {
+            var tag = tags[i];
+            tag = tag.replace(/^\(tag-hash-/, '');
+            tag = tag.replace(/\)$/, '');
+            post.tags.push('#' + tag);
+          }
+        }
+
+        re = /\(tag-user-([^)]+)\)/g;
+        tags = post.body.match(re);
+        async.map(tags, function (tag, doneTag) {
+          var friendEndPoint = tag;
+          friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
+          friendEndPoint = friendEndPoint.replace(/\)$/, '');
+          post.tags.push('@' + friendEndPoint);
+          server.models.Friend.findOne({
+            'where': {
+              'remoteEndPoint': friendEndPoint
+            }
+          }, function (err, friend) {
+            currentUser.pushNewsFeedItems.create({
+              'uuid': uuid(),
+              'type': 'tag',
+              'source': server.locals.config.publicHost + '/' + currentUser.username,
+              'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+              'target': friend.remoteEndPoint,
+              'visibility': post.visibility,
+              'details': {}
+            }, function (err, news) {
+              if (err) {
+                var e = new VError(err, 'could push news feed');
+                return doneTag(e);
+              }
+              doneTag(null);
+            });
+          });
+        }, function (err) {
+          if (post.tags.length) {
+            post.save();
+          }
+          cb(null, post);
+        });
       }
     ], function (err, post) {
-      if (err) {
-        return res.send({
-          'result': {
-            'status': err
-          }
-        });
-      }
-
-      if (!post.versions) {
-        post.versions = [];
-      }
-      post.versions.push({
-        'body': post.body,
-        'visibility': post.visibility,
-        'timestamp': new Date(),
-        'geoDescription': post.geoDescription,
-        'geoLocation': post.geoLocation
-      });
-      post.body = req.body.body;
-      post.visibility = req.body.visibility;
-      post.geoDescription = req.body.geoDescription;
-      post.geoLocation = req.body.geoLocation;
-      post.save(function (err) {
-        if (err) {
-          return res.send({
-            'result': {
-              'status': err
-            }
-          });
-        }
-        res.send({
-          'result': {
-            'status': 'ok',
-            'flashLevel': 'success',
-            'flashMessage': 'saved'
-          }
-        });
-      });
-    });
-  });
-
-  // delete a post
-  // TODO improve error handling
-  router.delete('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
-    var ctx = req.myContext;
-    var currentUser = ctx.get('currentUser');
-    var postId = req.params.id;
-    async.waterfall([
-      function getPost(cb) {
-        var query = {
-          'where': {
-            'and': [{
-              'uuid': postId
-            }, {
-              'userId': currentUser.id
-            }]
-          }
-        };
-
-        server.models.Post.findOne(query, function (err, post) {
-          if (err) {
-            return cb(err);
-          }
-
-          if (!post) {
-            err = new Error('Post not found');
-            err.statusCode = 404;
-            return cb(err);
-          }
-
-          cb(null, post);
-        });
-      },
-      function deletePhotos(post, cb) {
-        server.models.PostPhoto.destroyAll({
-          'postId': post.id
-        }, function (err, data) {
-          console.log('deletePhotos', err, data);
-          cb(err, post);
-        });
-      },
-      function deletePushNews(post, cb) {
-        server.models.PushNewsFeedItem.destroyAll({
-          'about': {
-            'like': new RegExp('^' + post.source + '/post/' + post.uuid + '.*')
-          }
-        }, function (err, data) {
-          console.log('deletePushNews', err, data);
-          cb(err, post);
-        });
-      },
-      function deleteNewsFeedItems(post, cb) {
-        server.models.NewsFeedItem.destroyAll({
-          'about': {
-            'like': new RegExp('^' + post.source + '/post/' + post.uuid + '.*')
-          }
-        }, function (err, data) {
-          console.log('deleteNewsFeedItems', err, data);
-          cb(err, post);
-        });
-      },
-      function notifyNetwork(post, cb) { // tell the world
-        currentUser.pushNewsFeedItems.create({
-          'uuid': uuid(),
-          'type': 'post delete',
-          'source': post.source,
-          'about': post.source + '/post/' + post.uuid,
-          'target': post.about,
-          'visibility': post.visibility,
-          'details': {}
-        }, function (err, news) {
-          if (err) {
-            var e = new VError(err, 'could push news feed');
-            return cb(e);
-          }
-          cb(null, post);
-        });
-      },
-      function deletePost(post, cb) {
-        post.destroy(function (err) {
-          cb(err);
-        });
-      }
-    ], function (err) {
       if (err) {
         return res.send({
           'result': {
@@ -253,10 +200,109 @@ module.exports = function (server) {
         'result': {
           'status': 'ok',
           'flashLevel': 'success',
-          'flashMessage': 'deleted'
+          'flashMessage': 'saved'
         }
       });
     });
+  });
+
+  // delete a post
+  // TODO improve error handling
+  router.delete('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+    var ctx = req.myContext;
+    var currentUser = ctx.get('currentUser');
+    var postId = req.params.id;
+    async.waterfall([
+        function getPost(cb) {
+          var query = {
+            'where': {
+              'and': [{
+                'uuid': postId
+              }, {
+                'userId': currentUser.id
+              }]
+            }
+          };
+
+          server.models.Post.findOne(query, function (err, post) {
+            if (err) {
+              return cb(err);
+            }
+
+            if (!post) {
+              err = new Error('Post not found');
+              err.statusCode = 404;
+              return cb(err);
+            }
+
+            cb(null, post);
+          });
+        },
+        function deletePhotos(post, cb) {
+          server.models.PostPhoto.destroyAll({
+            'postId': post.id
+          }, function (err, data) {
+            console.log('deletePhotos', err, data);
+            cb(err, post);
+          });
+        },
+        function markPushNewsDeleted(post, cb) {
+          var q = {
+            'where': {
+              'and': [{
+                'about': {
+                  'like': new RegExp('^' + post.source + '/post/' + post.uuid)
+                }
+              }, {
+                'userId': currentUser.id
+              }]
+            }
+          };
+
+          server.models.PushNewsFeedItem.find(q, function (err, items) {
+            for (var i = 0; i < items.length; i++) {
+              items[i].updateAttribute('deleted', true);
+            }
+            cb(err, post);
+          });
+        },
+        function deleteNewsFeedItems(post, cb) {
+          server.models.NewsFeedItem.destroyAll({
+            'and': [{
+              'userId': currentUser.id
+            }, {
+              'about': {
+                'like': new RegExp('^' + post.source + '/post/' + post.uuid)
+              }
+            }]
+          }, function (err, data) {
+            console.log('deleteNewsFeedItems', err, data);
+            cb(err, post);
+          });
+        },
+        function deletePost(post, cb) {
+          post.destroy(function (err) {
+            cb(err);
+          });
+        }
+      ],
+      function (err) {
+        if (err) {
+          return res.send({
+            'result': {
+              'status': err
+            }
+          });
+        }
+
+        res.send({
+          'result': {
+            'status': 'ok',
+            'flashLevel': 'success',
+            'flashMessage': 'deleted'
+          }
+        });
+      });
   });
 
   // create a new post
@@ -374,12 +420,25 @@ module.exports = function (server) {
         });
       },
       function notifyTagged(news, post, cb) { // notify tagged
-        var re = /\(tag\:([^\)]+)\)/g;
+        post.tags = [];
+        var re = /\(tag-hash-([^)]+)\)/g;
         var tags = post.body.match(re);
+        if (tags) {
+          for (var i = 0; i < tags.length; i++) {
+            var tag = tags[i];
+            tag = tag.replace(/^\(tag-hash-/, '');
+            tag = tag.replace(/\)$/, '');
+            post.tags.push('#' + tag);
+          }
+        }
+
+        re = /\(tag-user-([^)]+)\)/g;
+        tags = post.body.match(re);
         async.map(tags, function (tag, doneTag) {
           var friendEndPoint = tag;
-          friendEndPoint = friendEndPoint.replace(/^\(tag\:/, '');
+          friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
+          post.tags.push('@' + friendEndPoint);
           server.models.Friend.findOne({
             'where': {
               'remoteEndPoint': friendEndPoint
@@ -402,6 +461,9 @@ module.exports = function (server) {
             });
           });
         }, function (err) {
+          if (post.tags.length) {
+            post.save();
+          }
           cb(null, news, post);
         });
       },

@@ -72,7 +72,7 @@ html(lang="en")
 								span.hidden-not-digitopia-xsmall
 									|  Settings
 					ul.nav.navbar-nav.navbar-right
-						if globalSettings.multiUser === 'invite'
+						if globalSettings.multiUser === 'invite' && !inviteToken
 							li.hidden-logged-in
 								a(href="#" data-toggle="modal" data-target="#request-invite-form") Request Account
 						if globalSettings.multiUser === 'open' || inviteToken
@@ -252,6 +252,7 @@ html(lang="en")
 						<h4 class="modal-title">Edit comment</h4>
 					.modal-body
 						| edit form here
+						
 		#content(data-hijax="true")
 			block content
 				
@@ -261,7 +262,7 @@ html(lang="en")
 
 		#ajax-status
 
-		#news-feed(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets + '://' + config.host + ':' + config.port)
+		#news-feed(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets )
 			include components/news-feed
 
 		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")

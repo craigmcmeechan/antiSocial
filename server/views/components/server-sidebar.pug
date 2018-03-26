@@ -5,20 +5,14 @@
 			| myAntiSocial.net
 	.page-header
 		h4
-			!= globalSettings.serverName
-		p
-			if globalSettings.serverTitle
-				!= globalSettings.serverTitle
-			if globalSettings.serverDescription
-				small
-					p
-						!= globalSettings.serverDescription
-						
-	.page-header
-		if !globalSettings.multiUser
-			h4 This server is closed to new users
-		else
-			h4 This is a community server
+			!= config.host
+	p
+		if globalSettings.serverTitle
+			!= globalSettings.serverTitle
+		if globalSettings.serverDescription
+			small
+				p
+					!= globalSettings.serverDescription
 
 	if publicUsers && publicUsers.length
 		h4 Public users on this server

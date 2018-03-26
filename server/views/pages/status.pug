@@ -10,14 +10,22 @@ block content
 			h1 Testbench
 		.row
 			.col-xs-12
-				if sockets
-					strong Open Websockets
+				if clients
+					strong Clients
 					ul
-						for socket in sockets
+						for socket in clients
 							li= socket.currentUser.username
+				if servers
+					strong Watchers
+					ul
+						for socket in servers
+							-var user = socket.friend.user() ? socket.friend.user().username : 'unknown'
+							li= user + '->' + socket.friend.remoteEndPoint
+
 				if connections
-					strong Open EventSource
+					strong Watching
 					ul
 						for connection in connections
-							li= connection.key + ' ' + connection.status
+							-var name = connection.currentUser ? connection.currentUser.username : 'unknown'
+							li= name + '<-' + connection.friend.remoteEndPoint
 					

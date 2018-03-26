@@ -7,11 +7,15 @@
 
 		this.start = function () {
 			this.element.on('DigitopiaDidResize', function (e) {
-				self.fixAspectRatio();
+				if (e.target === this) {
+					self.fixAspectRatio();
+				}
 			});
 
 			this.element.on('DigitopiaDidLoadNewPage', function (e) {
-				self.fixAspectRatio();
+				if (e.target === this) {
+					self.fixAspectRatio();
+				}
 			});
 
 			self.fixAspectRatio();

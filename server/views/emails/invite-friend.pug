@@ -1,36 +1,42 @@
-p Please join me (#{user} #{email}) on myAntiSocial.net
+.wrapper(style="border: thin solid #333;border-radius:7px;margin:30px;")
+	.header(style="background-color:#333;text-align:center")
+		img(src= config.publicHost + "/images/logo.svg" style="margin:0 auto;width:75;padding:14px;")
+	.content(style="padding:14px;")
+		h2 Hello,
 
-p= note
+		p Please join me (#{user} #{email}) on <strong>myAntiSocial.net</strong>
 
-h4 You can create an account on my server if you do not already have a myAntiSocial account:
-ul
-	li 
-		| View #{user}'s profile 
-		a(href= url) Here
-	li Click the "Create Account" button at the top of the page and complete the registration form to create an antiSocialNet account and automatically add me as a friend.
-	
-h4 If you do have a myAntiSocial account:
-ul
-	li Log on to your account on your server.
-	li Select your "friends" page.
-	li Paste #{endpoint} into the "Add friend by Public Page URL" field.
+		p= note
 
-p This experimental prototype is an implementation of a "distributed" social network (a social network consisting of many user controlled servers). We have worked out most of the protocols that allow the application to behave like a centralized service.
+		h4 You can create an account on my server (if you do not already have a myAntiSocial.net account):
+		ul
+			li 
+				| First, view my profile 
+				a(href= url style="color:blue;font-weight:bold;") HERE
+			li Then click the "Create Account" button at the top of the page and complete the registration form to create an antiSocialNet account and automatically add me as a friend.
+			
+		p In the unlikely event that you already have a myAntiSocial.net account:
+		ul
+			li Log on to your account on your server.
+			li Select your "friends" page.
+			li Paste #{endpoint} into the "Add friend by Public Page URL" field.
 
-p What is the same as other services:
-ul
-	li Establish friend relationships
-	li Create posts with explicit audience permission w/ optional photos and geotagging
-	li Real time updates of new posts, comments and likes in your friend network
+		p This experimental prototype is an implementation of a "distributed" social network (a social network consisting of many user controlled servers). We have worked out most of the protocols that allow the application to behave like a centralized service.
 
-p What is different:
-ul
-	li News feeds contain only content created by your friends (and friends of friends if one of your friends interacted with that content.)
-	li No advertising, no data collection, no demographic information shared with anyone
-	li Total user control and ownership of content
-	li End-to-end strong cryptography and signed messages for communication between servers that can only be decrypted by the target user
-	li More expressive posts: typography, imagery, multiple links
+		p What is the same as other social networking services:
+		ul
+			li Establish friend relationships with other users
+			li Create posts with explicit audience permission w/ optional photos and geotagging
+			li Real time updates of new posts, comments and likes in your friend network
 
-p This is a work in progress and this particular implementation is mostly aimed at proving protocol theories but it kinda works. At this stage I need some people to use it a bit (make some posts, make some friends and like and comment on stuff)
+		p What is different about myAntiSocial.net:
+		ul
+			li News feeds contain only content created by your friends (and friends of friends if one of your friends interacted with that content.)
+			li No advertising, no data collection, no demographic information shared with anyone
+			li Total user control and ownership of content
+			li End-to-end strong cryptography and signed messages for communication between servers that can only be decrypted by the target user
+			li More expressive posts: typography, imagery, multiple links
 
-p Expect things to be broken and half implemented. The mobile experience is mostly workable (works best if you save the page to your home screen and use it via that "bookmark" because it does away with the safari/chrome UI which jut gets in the way.)
+		p This is a work in progress and this particular implementation is mostly aimed at proving protocol theories but it kinda works. At this stage we need some people to use it a bit (make some posts, make some friends and like and comment on stuff)
+
+		p <strong>Please expect things to be broken and half implemented</strong>. The mobile experience is mostly workable (works best if you save the page to your home screen and use it via that "bookmark" because it does away with the safari/chrome UI which jut gets in the way.)

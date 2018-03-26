@@ -104,7 +104,7 @@
 				return;
 			}
 			var formatted = event.data.humanReadable;
-			if (formatted) {
+			if (formatted && !event.data.deleted) {
 				var li = $('<div class="news-feed-item">');
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);

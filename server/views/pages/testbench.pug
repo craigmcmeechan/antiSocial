@@ -10,8 +10,10 @@ block content
 		.page-header
 			h1 Testbench
 		.row
-			.col-xs-8
-				.test(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets + '://' + config.host + ':' + config.port)
-					.news-feed-items
-			.col-xs-4
-				#newsfeed-here-test
+			form
+				.col-xs-6
+					.editable(data-jsclass="markdownEditorController" data-target=".markdown" style="min-height:300px;border:thin dashed red;")
+						p.
+							this is a test
+				.col-xs-6
+					pre.markdown(style="min-height:300px;border:thin dashed green;")

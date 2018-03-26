@@ -88,6 +88,10 @@ a
 #invite-friend-form
 	margin-bottom:30px
 
+.page-header
+	.digitopia-xsmall &
+		margin:7px
+
 #sidebar
 	background-color:#ccc
 	text-align:center
@@ -95,6 +99,9 @@ a
 	border: thin solid #eee
 	border-radius: 4px
 	margin-bottom: 30px
+	.digitopia-xsmall &
+		margin-right:30px
+		margin-left:30px
 	.dark-background
 		background-color:#333
 		margin:-16px
@@ -231,6 +238,7 @@ img.avatar
 		padding-left:5px
 		height:18px
 		color: red
+		pointer-events:none
 
 	.input-error
 		&.touched
@@ -273,7 +281,7 @@ img.avatar
 				margin-bottom:0px
 				overflow:hidden
 			#form-tab
-				textarea
+				.posting-body
 					min-height:33vh
 					border-radius:0
 					border-top-left-radius: 4px
@@ -364,9 +372,11 @@ img.avatar
 		display:none
 	.focused .hide-until-subject-focus
 		display:block
-	textarea
+	.posting-body
 		font-family: "Lucida Console", Monaco, monospace
 		min-height:2.5em
+		padding: 7px
+		height:auto
 	.focused textarea
 		min-height:calc(33vh - 8px)
 	label
@@ -395,14 +405,19 @@ img.avatar
 		margin-bottom:.5em
 	a
 		text-decoration:underline
+	b
+		color:black
+	.in-editor
+		pointer-events:none
 
 .constrained
 	position:relative
 	overflow:hidden
 	cursor:pointer
 	&:after
-		font-size: 12px
+		font-size: 16px
 		text-align: center
+		font-weight: bold
 		content: "MORE \2193"
 		position: absolute
 		z-index: 1
@@ -411,9 +426,10 @@ img.avatar
 		width: 100%
 		height: 1.5em
 		line-height: 1.5em
-		color: #FF8166
+		color: #eee
 		padding-top: 0px
-		background-color: rgba(255,255,255,.9)
+		background-color: rgba(0,0,0,.7)
+		border-top: thin dashed #eee
 
 #scope-post-list
 	.not-digitopia-xsmall &
