@@ -1,20 +1,20 @@
 .header(style="background-color:#333;text-align:center")
-	img(src="/images/logo.svg" style="margin:0 auto;width:150;padding:15px;")
+	img(src= config.publicHost + "/images/logo.svg" style="margin:0 auto;width:150;padding:15px;")
 
-h2 Hello #{to},
+h2 Hello,
 
 p Please join me (#{user} #{email}) on <strong>myAntiSocial.net</strong>
 
 p= note
 
-h4 You can create an account on my server if you do not already have a myAntiSocial account:
+h4 You can create an account on my server (if you do not already have a myAntiSocial.net account):
 ul
 	li 
-		| View #{user}'s profile 
-		a(href= url) HERE
+		| First, view my profile 
+		a(href= url style="color:blue;font-weight:bold;") HERE
 	li Click the "Create Account" button at the top of the page and complete the registration form to create an antiSocialNet account and automatically add me as a friend.
 	
-h4 In the (very) unlikely event that you already have a myAntiSocial account:
+p In the unlikely event that you already have a myAntiSocial.net account:
 ul
 	li Log on to your account on your server.
 	li Select your "friends" page.
@@ -22,13 +22,13 @@ ul
 
 p This experimental prototype is an implementation of a "distributed" social network (a social network consisting of many user controlled servers). We have worked out most of the protocols that allow the application to behave like a centralized service.
 
-p What is the same as other services:
+p What is the same as other social networking services:
 ul
 	li Establish friend relationships with other users
 	li Create posts with explicit audience permission w/ optional photos and geotagging
 	li Real time updates of new posts, comments and likes in your friend network
 
-p What is different:
+p What is different about myAntiSocial.net:
 ul
 	li News feeds contain only content created by your friends (and friends of friends if one of your friends interacted with that content.)
 	li No advertising, no data collection, no demographic information shared with anyone
