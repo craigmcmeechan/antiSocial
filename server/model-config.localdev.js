@@ -56,7 +56,7 @@ module.exports = {
   },
   'Settings': {
     'dataSource': 'db',
-    'public': process.env.ADMIN ? true : false
+    'public': true
   },
   'OgTag': {
     'dataSource': 'db',

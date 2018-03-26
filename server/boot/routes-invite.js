@@ -91,8 +91,7 @@ module.exports = function (server) {
 
 		server.models.Invitation.findOne({
 			'where': {
-				'token': req.params.token,
-				'status': 'pending'
+				'token': req.params.token
 			},
 			'include': ['user']
 		}, function (err, invite) {
@@ -104,19 +103,25 @@ module.exports = function (server) {
 				return res.sendStatus(404);
 			}
 
-			invite.updateAttribute('status', 'processing', function (err) {
-				if (err) {
-					return next(err);
-				}
+			var endpoint = server.locals.config.publicHost + '/' + invite.user().username;
 
-				res.cookie('invite', invite.token, {
-					signed: req.signedCookies ? true : false
+			if (invite.status === 'pending' || invite.status === 'processing') {
+
+				invite.updateAttribute('status', 'processing', function (err) {
+					if (err) {
+						return next(err);
+					}
+
+					res.cookie('invite', invite.token, {
+						signed: req.signedCookies ? true : false
+					});
+
+					res.redirect(endpoint);
 				});
-
-				var endpoint = server.locals.config.publicHost + '/' + invite.user().username;
-
+			}
+			else {
 				res.redirect(endpoint);
-			});
+			}
 		});
 	});
 

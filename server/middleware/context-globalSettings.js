@@ -4,26 +4,31 @@ module.exports = function () {
 		req.app.models.Settings.findOne({
 			'where': {
 				'group': 'global'
-			}
+			},
+			'include': ['uploads']
 		}, function (err, group) {
 			if (err) {
 				return next(err);
 			}
-			reqContext.set('globalSettings', group ? group.settings : {
+
+			var settings = {
 				'multiUser': process.env.REGISTER_POLICY ? process.env.REGISTER_POLICY : 'invite',
 				'serverName': 'AntiSocial',
 				'serverTitle': 'User centered Distibuted Social Networking',
 				'serverDescription': 'Your server. Your data. Your network.',
-				'communityChannel': true,
+				'communityChannel': false,
 				'community': {
 					'name': 'Community Name',
-					'tagline': 'Community tagline',
-					'background': {
-						'url': '/images/fpo.jpg',
-						'urlSmall': '/images/fpo.jpg'
-					}
+					'tagline': 'Community tagline'
 				}
-			});
+			};
+
+			if (group) {
+				settings = group.settings;
+				settings.instance = group;
+			}
+
+			reqContext.set('globalSettings', settings);
 			next();
 		});
 	};
