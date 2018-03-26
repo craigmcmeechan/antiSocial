@@ -35,9 +35,10 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 												input(type="checkbox" data-value= audience)
 												= audience
 
-				else
-					| pending friend request
+				else 
+					if friend.status === 'pending'
+						| pending friend request
 			else
 				if user && !isMe && profile.endpoint
 					button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= '/friend?endpoint=' + encodeURIComponent(profile.endpoint)) Add Friend
-					| this user can see my public posts.
+					|  this user can see my public posts.
