@@ -1,0 +1,35 @@
+extends ../wrapper
+
+
+block seo
+	-var profile = data.profile
+	-var photos = data.photos
+
+	-var title = user.name + ' photos'
+	-var image = profile.background.url
+	-var summary = '';
+	
+	title= title
+	meta(property="og:type" content="article")
+	meta(property="og:image" content= image)
+	meta(property="og:title" content= title)
+	meta(property="og:description" content= summary)
+
+block content
+	include profile-hero
+	
+	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
+		.container-fluid.content-padding-top.content.no-gutters
+			.row
+				.col-sm-8.left-column
+					.row
+						
+						for photo in photos
+							.col-sm-3
+								.thumbnail
+									img.responsive(src = photo.uploads()[0].imageSet.thumb.url)
+				.col-sm-4
+					if user
+						#newsfeed-here
+					else
+						include ../components/server-sidebar
