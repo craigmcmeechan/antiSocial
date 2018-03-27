@@ -1181,8 +1181,8 @@ diff@^3.0.0:
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.4.0.tgz#b1d85507daf3964828de54b37d0d73ba67dda56c"
 
 digitopia-admin@*:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/digitopia-admin/-/digitopia-admin-0.0.9.tgz#93f774390e684e3546dd0dbefad57f003919b53a"
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/digitopia-admin/-/digitopia-admin-0.0.10.tgz#d5722ec4c59bc2c71c2b64691131e2876abf7ce9"
   dependencies:
     async "^1.5.2"
     csv "^1.1.0"
@@ -3434,11 +3434,11 @@ moment-timezone@^0.5.14:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0", moment@^2.10.6, moment@^2.12.0, moment@^2.20.1:
+"moment@>= 2.9.0", moment@^2.10.6, moment@^2.20.1:
   version "2.20.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
 
-moment@^2.18.1:
+moment@^2.12.0, moment@^2.18.1:
   version "2.21.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.21.0.tgz#2a114b51d2a6ec9e6d83cf803f838a878d8a023a"
 

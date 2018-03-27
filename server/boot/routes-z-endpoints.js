@@ -350,6 +350,7 @@ module.exports = function (server) {
                   'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
                 },
                 'me': server.locals.config.publicHost + '/' + currentUser.username,
+                'profile': getProfile(user),
                 'friends': results
               };
 
@@ -413,6 +414,7 @@ module.exports = function (server) {
               'friend': friend ? friend.remoteUsername : false,
               'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
             },
+            'profile': getProfile(user),
             'friends': graphlib.json.write(g)
           };
 

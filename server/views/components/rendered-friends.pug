@@ -1,5 +1,39 @@
-for friend, index in data.friends
-	if data.pov.isMe
-		p= index + friend.length
-	else 
-		p= friend
+extends ../wrapper
+
+
+block seo
+	-var profile = data.profile
+
+	-var title = user.name + ' photos'
+	-var image = profile.background.url
+	-var summary = '';
+	
+	title= title
+	meta(property="og:type" content="article")
+	meta(property="og:image" content= image)
+	meta(property="og:title" content= title)
+	meta(property="og:description" content= summary)
+
+block content
+	include profile-hero
+	
+	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
+		.container-fluid
+			ul.nav.nav-tabs.subnav-tabs
+				li
+					a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
+				li
+					a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
+				li.active
+					a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+					
+		.container-fluid.content-padding-top.content.no-gutters
+			.row
+				.col-sm-8.left-column
+					.row
+						p TODO: depending on settings list friends, or just mutual friends or no friends
+				.col-sm-4
+					if user
+						#newsfeed-here
+					else
+						include ../components/server-sidebar

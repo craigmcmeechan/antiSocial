@@ -139,7 +139,7 @@ module.exports = function (server) {
 					'myEndpoint': getPOVEndpoint(currentUser),
 					'wantSummary': template === 'comment',
 					'isPermalink': isPermalink,
-					'cache': true
+					'cache': process.env.NODE_ENV === 'production' ? true : false
 				});
 			}
 		});

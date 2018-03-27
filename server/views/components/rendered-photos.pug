@@ -1,9 +1,7 @@
 extends ../wrapper
 
-
 block seo
 	-var profile = data.profile
-	-var photos = data.photos
 
 	-var title = user.name + ' photos'
 	-var image = profile.background.url
@@ -17,17 +15,27 @@ block seo
 
 block content
 	include profile-hero
-	
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
+		.container-fluid
+			ul.nav.nav-tabs.subnav-tabs
+				li
+					a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
+				li.active
+					a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
+				li
+					a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+					
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
 				.col-sm-8.left-column
 					.row
-						
-						for photo in photos
+						each photo in data.photos
+							-var uploads = photo.uploads
+							if typeof uploads === 'function'
+								- uploads = uploads()
 							.col-sm-3
 								.thumbnail
-									img.responsive(src = photo.uploads()[0].imageSet.thumb.url)
+									img.responsive(src = uploads[0].imageSet.thumb.url)
 				.col-sm-4
 					if user
 						#newsfeed-here
