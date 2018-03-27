@@ -1,6 +1,5 @@
 extends ../wrapper
 
-
 block seo
 	-var profile = data.profile
 
@@ -16,22 +15,36 @@ block seo
 
 block content
 	include profile-hero
-	
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 		.container-fluid
 			ul.nav.nav-tabs.subnav-tabs
 				li
 					a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
-				li
-					a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
 				li.active
+					a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
+				li
 					a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
 					
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
 				.col-sm-8.left-column
-					.row
-						p TODO: depending on settings list friends, or just mutual friends or no friends
+					p TODO photo organizer - create and edit albums
+					- var itemsPerColumn = math.ceil(data.photos.length / 4)
+					.thumb-grid
+						.grid-row
+							-var count = 0;
+							each photo in data.photos
+								-var uploads = photo.uploads
+								if typeof uploads === 'function'
+									- uploads = uploads()
+								if count === 0
+									<div class="grid-column">
+								if count++ === itemsPerColumn
+									- count = 1;
+									</div><div class="grid-column">
+								
+								img.img-responsive(src = uploads[0].imageSet.thumb.url)
+							</div>
 				.col-sm-4
 					if user
 						#newsfeed-here

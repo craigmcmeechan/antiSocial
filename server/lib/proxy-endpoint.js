@@ -8,17 +8,20 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 		return;
 	}
 
-	var path = url.parse(endpoint).pathname;
+	var parsed = url.parse(endpoint);
+
+	var path = parsed.pathname;
 
 	var matches = path.match(checkProxyRE);
 
 	if (matches && matches.length > 1) {
 
 		var friendUsername = matches[1];
+		var userEndpoint = parsed.protocol + '//' + parsed.host + '/' + friendUsername;
 
 		if (currentUser) {
 			if (currentUser.username === friendUsername) {
-				var unproxied = url.parse(endpoint).pathname;
+				var unproxied = parsed.pathname;
 				debug('proxyEndPoint me ' + unproxied);
 				if (embed) {
 					unproxied += '?embed=1';
@@ -27,8 +30,8 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 			}
 			for (var i = 0; i < currentUser.friends().length; i++) {
 				var friend = currentUser.friends()[i];
-				if (friend.remoteEndPoint === endpoint) {
-					var unproxied = url.parse(endpoint).pathname;
+				if (friend.remoteEndPoint === userEndpoint) {
+					var unproxied = parsed.pathname;
 
 					// use uniqued username for local request url form
 					unproxied = unproxied.replace(/^\/[a-zA-Z0-9-]+/, '/' + friend.uniqueRemoteUsername);

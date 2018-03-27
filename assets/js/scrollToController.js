@@ -6,10 +6,10 @@
 		this.timer = null;
 		var self = this;
 		this.start = function () {
-			if (!$(window).scrollTop()) {
-				var key = document.location.href;
-				key = key.replace(/\/post.*/, '');
+			var key = document.location.pathname;
+			key = key.replace(/^\/([^/]+).*/, "/$1");
 
+			if (!$(window).scrollTop()) {
 				if (cache[key]) {
 					var vh = $(window).height();
 					$(window).scrollTop(((vh / 3) * 2));
@@ -29,6 +29,8 @@
 					}, 1000);
 				}
 			}
+
+			cache[key] = true;
 		};
 
 		this.stop = function () {

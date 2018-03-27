@@ -25,6 +25,7 @@ module.exports = function (server) {
 
   var profileRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)(\.json)?(\?.*)?$/;
   var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)?$/;
+  var photosRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photos(\.json)?$/;
   var postsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/posts(\.json)?(\?.*)?$/;
   var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?$/;
   var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/reactions(\.json)?$/;
@@ -131,6 +132,90 @@ module.exports = function (server) {
           });
         });
       }
+    });
+  });
+
+  router.get(photosRE, getCurrentUser(), checkNeedProxyRewrite('photos'), getFriendAccess(), function (req, res, next) {
+    var ctx = req.myContext;
+    var redirectProxy = ctx.get('redirectProxy');
+    if (redirectProxy) {
+      return next();
+    }
+    var currentUser = ctx.get('currentUser');
+    var friend = ctx.get('friendAccess');
+
+    var matches = req.url.match(photosRE);
+    var username = matches[1];
+    var view = matches[2];
+
+    var isMe = false;
+    async.waterfall([
+      function (cb) {
+        getUser(username, function (err, user) {
+          if (err) {
+            return cb(err);
+          }
+          if (currentUser) {
+            if (currentUser.id.toString() === user.id.toString()) {
+              isMe = true;
+            }
+          }
+
+          if (!friend && !isMe) {
+            var error = new Error('access denied');
+            error.httpStatusCode = 401;
+            cb(error);
+          }
+
+          cb(err, user);
+        });
+      },
+      function (user, cb) {
+        var query = {
+          'where': {
+            'userId': user.id
+          },
+          'include': ['uploads']
+        };
+
+        server.models.Photo.find(query, function (err, photos) {
+          cb(err, user, photos);
+        });
+      }
+    ], function (err, user, photos) {
+      if (err) {
+        return next(err);
+      }
+
+      var data = {
+        'pov': {
+          'user': user.username,
+          'isMe': isMe,
+          'friend': friend ? friend.remoteUsername : false,
+          'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+        },
+        'profile': getProfile(user),
+        'photos': photos
+      };
+
+      if (view === '.json') {
+        return res.send(encryptIfFriend(friend, data));
+      }
+
+      var options = {
+        'data': data,
+        'user': currentUser,
+        'friend': friend,
+        'isMe': isMe,
+        'myEndpoint': getPOVEndpoint(friend, currentUser)
+      };
+
+      renderFile('/components/rendered-photos.pug', options, req, function (err, html) {
+        if (err) {
+          return next(err);
+        }
+        return res.send(encryptIfFriend(friend, html));
+      });
     });
   });
 
@@ -265,6 +350,7 @@ module.exports = function (server) {
                   'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
                 },
                 'me': server.locals.config.publicHost + '/' + currentUser.username,
+                'profile': getProfile(user),
                 'friends': results
               };
 
@@ -328,6 +414,7 @@ module.exports = function (server) {
               'friend': friend ? friend.remoteUsername : false,
               'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
             },
+            'profile': getProfile(user),
             'friends': graphlib.json.write(g)
           };
 

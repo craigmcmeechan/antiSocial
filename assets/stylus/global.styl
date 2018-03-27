@@ -194,6 +194,15 @@ img.avatar
 	min-height:calc(100vh - 50px)
 	background-color:white
 
+.subnav-tabs
+	margin-top:-38px
+	border-bottom: none
+	li
+		a
+			background-color:rgba(255,255,255,.4)
+			padding:7px
+			color:#333
+
 #ajax-status
 	position:fixed
 	right:10px
@@ -737,6 +746,11 @@ img.avatar
 	border-radius:21px
 	z-index:2000
 .friend-card
+	.friend-controls
+		display:none
+	&:hover
+		.friend-controls
+			display:block
 	img
 		max-width:50px
 		border-radius:25px

@@ -50,24 +50,35 @@ block content
 				else
 					.row
 						for friend in friends
-							.col-4.col-sm-6
-								.media.friend-card
-									.media-left.media-top
-										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
-									.media-body
-										h4
-											a(href= proxyEndPoint(friend.remoteEndPoint,user))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
-										p
-											if friend.status === 'pending'
-											
-												if !friend.originator
-													button.btn.btn-primary.btn-md(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
-													| [decline] [block]
-												else
-													| Request Pending [cancel]
-											else
-												|  [delete]
+							if friend.status === 'pending' || friend.status === 'accepted'
+								.col-4.col-sm-6
+									.media.friend-card
+										.media-left.media-top
+											img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
+										.media-body
+											.friend-controls.pull-right
+												if friend.status === 'pending'
+													if !friend.originator
+														div
+															button.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint))
+																span.fa.fa-fw.fa-check
+														div
+															button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"declined"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+																span.fa.fa-fw.fa-times
+														div
+															button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"blocked"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+																span.fa.fa-fw.fa-ban
+													else
+														| pending 
+														button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"canceled"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+															span.fa.fa-fw.fa-times
 
+												else
+													if friend.status === 'accepted'
+														button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"deleted"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+															span.fa.fa-fw.fa-times
+
+											a(href= proxyEndPoint(friend.remoteEndPoint,user))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
 
 		if friends.length
 			.row
