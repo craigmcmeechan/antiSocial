@@ -30,6 +30,7 @@ app.locals.FPO = '/images/fpo.jpg';
 app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
 app.locals.appDir = __dirname;
+app.locals.math = require('mathjs');
 
 // markdown renderer
 var marked = require('marked');
