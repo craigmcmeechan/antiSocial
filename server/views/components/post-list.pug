@@ -35,18 +35,20 @@
 										a(href= posterUrl)
 											img.media-object(src= thumb)
 									.media-body
-										.post-actions.pull-right
-											.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
-												button.btn-xs(data-toggle="dropdown")
-													i.fa.fa-ellipsis-h
-												ul.dropdown-menu
-													if isMine
-														li 
-															a.edit-post(href="#") Edit Post
-														li 
-															a.delete-post(href="#") Delete Post
-													li
-														a.hide-post(href="#") Hide Post
+										if isMine
+											.post-actions.pull-right
+												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
+													button.btn-xs(data-toggle="dropdown")
+														i.fa.fa-ellipsis-h
+													ul.dropdown-menu
+														if isMine
+															li 
+																a.edit-post(href="#") Edit Post
+															li 
+																a.delete-post(href="#") Delete Post
+														//
+															li
+																a.hide-post(href="#") Hide Post
 												
 										h4.media-heading
 											a(href= posterUrl)= name
