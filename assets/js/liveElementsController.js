@@ -9,7 +9,10 @@
 				self.element.find('.live-element[data-watch="' + about + '"]').each(function () {
 					var element = $(this);
 					element.addClass('changed');
-					if (type === 'post edit' && element.data('watch-type') === type) {
+					if (type === 'post' && eventType === 'delete') {
+						element.closest('.newsfeed-item').remove();
+					}
+					else if (type === 'post' && element.data('watch-type') === type) {
 						var item = $('<div>');
 						item.load('/proxy-post?endpoint=' + encodeURIComponent(endpoint), function () {
 							element.empty().append(item.find('.post').html());
