@@ -210,184 +210,192 @@ function getListener(server, connection) {
 					oldNews.details = myNewsFeedItem.details;
 					oldNews.versions = myNewsFeedItem.versions;
 					oldNews.deleted = myNewsFeedItem.deleted;
+					oldNews.tags = myNewsFeedItem.tags;
 					oldNews.save();
 
 					// cleanup all my interations with this item
 					if (myNewsFeedItem.deleted) {
-						server.models.NewsFeedItem.destroyAll({
-							'and': [{
-								'userId': currentUser.id
-							}, {
-								'about': {
-									'like': new RegExp('^' + myNewsFeedItem.about)
-								}
-							}]
-						}, function (err, data) {
-							console.log('deleteNewsFeedItems', err, data);
-						});
-
-						var q = {
-							'where': {
-								'and': [{
-									'about': {
-										'like': new RegExp('^' + myNewsFeedItem.about)
+						async.series([
+							function updateNewsFeedItem(cb) {
+								server.models.NewsFeedItem.destroyAll({
+									'and': [{
+										'userId': currentUser.id
+									}, {
+										'about': {
+											'like': new RegExp('^' + myNewsFeedItem.about)
+										}
+									}]
+								}, function (err, data) {
+									cb(err);
+								});
+							},
+							function updatePushNewsFeedItem(cb) {
+								var q = {
+									'where': {
+										'and': [{
+											'about': {
+												'like': new RegExp('^' + myNewsFeedItem.about)
+											}
+										}, {
+											'userId': currentUser.id
+										}]
 									}
-								}, {
-									'userId': currentUser.id
-								}]
-							}
-						};
+								};
 
-						server.models.PushNewsFeedItem.find(q, function (err, items) {
-							for (var i = 0; i < items.length; i++) {
-								items[i].updateAttribute('deleted', true);
+								server.models.PushNewsFeedItem.find(q, function (err, items) {
+									for (var i = 0; i < items.length; i++) {
+										items[i].updateAttribute('deleted', true);
+									}
+									cb(err);
+								});
 							}
+						], function (err) {
+							return;
 						});
 					}
-
-					return;
 				}
 				else {
 					debug('watchFeed listener ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
 					return;
 				}
 			}
-			else {
+			else { // not old news
 				if (message.type === 'update') {
 					debug('watchFeed listener ' + currentUser.username + ' received update but NewsFeedItem not found %j', message);
-				}
-			}
-
-			var about = myNewsFeedItem.about;
-			var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
-			var isMe = false;
-			if (whoAbout === server.locals.config.publicHost + '/' + currentUser.username) {
-				isMe = true;
-			}
-
-			var filter = {
-				'where': {
-					'or': [{
-						'remoteEndPoint': whoAbout
-					}]
-				}
-			};
-
-			if (myNewsFeedItem.target) {
-				filter.where.or.push({
-					'remoteEndPoint': myNewsFeedItem.target
-				});
-			}
-
-			server.models.Friend.find(filter, function (err, found) {
-				if (err) {
-					logger.error({
-						err: err
-					}, 'error finding friends');
 					return;
 				}
 
-				if (!found.length && !isMe) {
-					debug('watchFeed ' + currentUser.username + ' ' + server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
-					return;
+				var about = myNewsFeedItem.about;
+				var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
+				var isMe = false;
+				if (whoAbout === server.locals.config.publicHost + '/' + currentUser.username) {
+					isMe = true;
 				}
 
-				async.series([
-					function createNewFeedItem(cb) {
+				var filter = {
+					'where': {
+						'or': [{
+							'remoteEndPoint': whoAbout
+						}]
+					}
+				};
 
-						delete myNewsFeedItem.id;
-						delete myNewsFeedItem.visibility;
-						myNewsFeedItem.userId = currentUser.id;
-						myNewsFeedItem.friendId = friend.id;
+				if (myNewsFeedItem.target) {
+					filter.where.or.push({
+						'remoteEndPoint': myNewsFeedItem.target
+					});
+				}
 
-						debug('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
+				server.models.Friend.find(filter, function (err, found) {
+					if (err) {
+						logger.error({
+							err: err
+						}, 'error finding friends');
+						return;
+					}
 
-						server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
-							if (err) {
-								logger.error({
-									'myNewsFeedItem': myNewsFeedItem
-								}, 'error saving NewsFeedItem item');
-								return cb(err);
-							}
-							cb();
-						});
-					},
-					function notifyNetwork(cb) {
-						// somebody posted to my wall
-						if (!message.data.target || message.data.type !== 'post' || message.data.target !== server.locals.config.publicHost + '/' + currentUser.username) {
-							return process.nextTick(function () {
-								cb();
-							});
-						}
+					if (!found.length && !isMe) {
+						debug('watchFeed ' + currentUser.username + ' ' + server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
+						return;
+					}
 
-						async.waterfall([
-							function (cbPostOnMyWall) { // make a Post record
-								var post = {
-									'uuid': message.data.uuid,
-									'athoritativeEndpoint': message.data.about,
-									'source': message.data.source,
-									'userId': currentUser.id,
-									'visibility': message.data.visibility
-								};
+					async.series([
+							function createNewFeedItem(cb) {
 
-								server.models.Post.create(post, function (err, post) {
+								delete myNewsFeedItem.id;
+								delete myNewsFeedItem.visibility;
+								myNewsFeedItem.userId = currentUser.id;
+								myNewsFeedItem.friendId = friend.id;
+
+								debug('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
+
+								server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 									if (err) {
-										var e = new VError(err, 'could create Post');
-										return cbPostOnMyWall(e);
+										logger.error({
+											'myNewsFeedItem': myNewsFeedItem
+										}, 'error saving NewsFeedItem item');
+										return cb(err);
 									}
-									cbPostOnMyWall(null, post);
+									cb();
 								});
 							},
-							function (post, cbPostOnMyWall) { // make a PushNewsFeed record
-								server.models.PushNewsFeedItem.create({
-									'uuid': message.data.uuid,
-									'type': 'post',
-									'source': server.locals.config.publicHost + '/' + currentUser.username,
-									'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
-									'visibility': post.visibility,
-									'details': {},
-									'userId': currentUser.id
-								}, function (err, news) {
-									if (err) {
-										var e = new VError(err, 'could push news feed');
-										return cb(e);
+							function notifyNetwork(cb) {
+								// somebody posted to my wall
+								if (!message.data.target || message.data.type !== 'post' || message.data.target !== server.locals.config.publicHost + '/' + currentUser.username) {
+									return process.nextTick(function () {
+										cb();
+									});
+								}
+
+								async.waterfall([
+									function (cbPostOnMyWall) { // make a Post record
+										var post = {
+											'uuid': message.data.uuid,
+											'athoritativeEndpoint': message.data.about,
+											'source': message.data.source,
+											'userId': currentUser.id,
+											'visibility': message.data.visibility
+										};
+
+										server.models.Post.create(post, function (err, post) {
+											if (err) {
+												var e = new VError(err, 'could create Post');
+												return cbPostOnMyWall(e);
+											}
+											cbPostOnMyWall(null, post);
+										});
+									},
+									function (post, cbPostOnMyWall) { // make a PushNewsFeed record
+										server.models.PushNewsFeedItem.create({
+											'uuid': message.data.uuid,
+											'type': 'post',
+											'source': server.locals.config.publicHost + '/' + currentUser.username,
+											'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+											'visibility': post.visibility,
+											'details': {},
+											'userId': currentUser.id
+										}, function (err, news) {
+											if (err) {
+												var e = new VError(err, 'could push news feed');
+												return cb(e);
+											}
+											cbPostOnMyWall(null);
+										});
 									}
-									cbPostOnMyWall(null);
+
+								], function (err) {
+									cb(err);
+								});
+							},
+							function updateHighwater(cb) {
+
+								debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
+
+								friend.updateAttributes({
+									'highWater': message.data.createdOn
+								}, function (err, updated) {
+									if (err) {
+										logger.error({
+											err: err
+										}, 'error saving highwater');
+										return cb(err);
+									}
+									cb();
 								});
 							}
-
-						], function (err) {
-							cb(err);
-						});
-					},
-					function updateHighwater(cb) {
-
-						debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
-
-						friend.updateAttributes({
-							'highWater': message.data.createdOn
-						}, function (err, updated) {
-							if (err) {
+						],
+						function (e) {
+							if (e) {
 								logger.error({
-									err: err
-								}, 'error saving highwater');
-								return cb(err);
+									err: e
+								}, 'error processing newsfeed');
 							}
-							cb();
+							return;
 						});
-					}
-				], function (e) {
-					if (e) {
-						logger.error({
-							err: e
-						}, 'error processing newsfeed');
-					}
-					return;
 				});
-			});
+			}
 		});
 	};
-
 }
 
 module.exports.connect = watchFeed;

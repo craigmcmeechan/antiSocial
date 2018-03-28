@@ -53,6 +53,9 @@
     },
     "deleted": {
       "type": "boolean"
+    },
+    "tags": {
+      "type": ["string"]
     }
   },
   "validations": [],

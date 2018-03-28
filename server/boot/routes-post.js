@@ -104,7 +104,8 @@ module.exports = function (server) {
           'visibility': post.visibility,
           'timestamp': new Date(),
           'geoDescription': post.geoDescription,
-          'geoLocation': post.geoLocation
+          'geoLocation': post.geoLocation,
+          'tags': post.tags
         });
         post.body = req.body.body;
         post.visibility = req.body.visibility;
@@ -115,28 +116,6 @@ module.exports = function (server) {
             cb(err);
           }
           cb(null, post);
-        });
-      },
-      function makeNewsFeedItem(post, cb) { // notify self
-        var item = {
-          'uuid': uuid(),
-          'type': 'post edit',
-          'source': post.source,
-          'about': post.source + '/post/' + post.uuid,
-          'target': post.about,
-          'userId': currentUser.id,
-          'createdOn': new Date(),
-          'updatedOn': new Date(),
-          'details': {}
-        };
-
-        req.app.models.NewsFeedItem.create(item, function (err, item) {
-          if (err) {
-            var e = new VError(err, 'could not save NewsFeedItem');
-            return cb(e);
-          }
-
-          cb(err, post);
         });
       },
       function notifyTagged(post, cb) { // notify tagged
@@ -159,6 +138,8 @@ module.exports = function (server) {
           friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           post.tags.push('@' + friendEndPoint);
+          doneTag();
+          /*
           server.models.Friend.findOne({
             'where': {
               'remoteEndPoint': friendEndPoint
@@ -171,7 +152,8 @@ module.exports = function (server) {
               'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
               'target': friend.remoteEndPoint,
               'visibility': post.visibility,
-              'details': {}
+              'details': {},
+              'tags': post.tags
             }, function (err, news) {
               if (err) {
                 var e = new VError(err, 'could push news feed');
@@ -180,10 +162,45 @@ module.exports = function (server) {
               doneTag(null);
             });
           });
+          */
         }, function (err) {
           if (post.tags.length) {
             post.save();
           }
+          cb(null, post);
+        });
+      },
+      function updatePushNewsFeedItem(post, cb) {
+        req.app.models.PushNewsFeedItem.findOne({
+          'where': {
+            'type': 'post',
+            'about': post.source + '/post/' + post.uuid,
+            'userId': currentUser.id
+          }
+        }, function (err, news) {
+          if (err) {
+            var e = new VError(err, 'could not update PushNewsFeedItem');
+            return cb(e);
+          }
+          news.tags = post.tags;
+          news.save();
+          cb(null, post);
+        });
+      },
+      function makeNewsFeedItem(post, cb) { // notify self
+        req.app.models.NewsFeedItem.findOne({
+          'where': {
+            'type': 'post',
+            'about': post.source + '/post/' + post.uuid,
+            'userId': currentUser.id
+          }
+        }, function (err, news) {
+          if (err) {
+            var e = new VError(err, 'could not update NewsFeedItem');
+            return cb(e);
+          }
+          news.tags = post.tags;
+          news.save();
           cb(null, post);
         });
       }
@@ -371,13 +388,13 @@ module.exports = function (server) {
       },
       function (post, postPhotoInstances, cb) { // update the photos
         if (!req.body.photos) {
-          return cb(null, post, null);
+          return cb(null, post);
         }
         // get photos for PostPhotos
         req.app.models.PostPhoto.include(postPhotoInstances, 'photo', function (err) {
           if (err) {
             var e = new VError(err, 'error including photos in PostPhotos');
-            return cb(e, post, postPhotoInstances);
+            return cb(e, post);
           }
 
           // update the photo status from pending to complete
@@ -396,30 +413,13 @@ module.exports = function (server) {
           }, function (err) {
             if (err) {
               var e = new VError(err, 'error marking status of Photos');
-              return cb(e, post, postPhotoInstances);
+              return cb(e, post);
             }
-            cb(null, post, postPhotoInstances);
+            cb(null, post);
           });
         });
       },
-      function (post, postPhotoInstances, cb) { // tell the world
-        currentUser.pushNewsFeedItems.create({
-          'uuid': uuid(),
-          'type': 'post',
-          'source': server.locals.config.publicHost + '/' + currentUser.username,
-          'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
-          'target': post.about,
-          'visibility': post.visibility,
-          'details': {}
-        }, function (err, news) {
-          if (err) {
-            var e = new VError(err, 'could push news feed');
-            return cb(e);
-          }
-          cb(null, news, post);
-        });
-      },
-      function notifyTagged(news, post, cb) { // notify tagged
+      function notifyTagged(post, cb) { // notify tagged
         post.tags = [];
         var re = /\(tag-hash-([^)]+)\)/g;
         var tags = post.body.match(re);
@@ -439,6 +439,8 @@ module.exports = function (server) {
           friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           post.tags.push('@' + friendEndPoint);
+          doneTag();
+          /*
           server.models.Friend.findOne({
             'where': {
               'remoteEndPoint': friendEndPoint
@@ -451,7 +453,8 @@ module.exports = function (server) {
               'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
               'target': friend.remoteEndPoint,
               'visibility': post.visibility,
-              'details': {}
+              'details': {},
+              'tags': post.tags
             }, function (err, news) {
               if (err) {
                 var e = new VError(err, 'could push news feed');
@@ -460,9 +463,28 @@ module.exports = function (server) {
               doneTag(null);
             });
           });
+          */
         }, function (err) {
           if (post.tags.length) {
             post.save();
+          }
+          cb(null, post);
+        });
+      },
+      function (post, cb) { // tell the world
+        currentUser.pushNewsFeedItems.create({
+          'uuid': uuid(),
+          'type': 'post',
+          'source': server.locals.config.publicHost + '/' + currentUser.username,
+          'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+          'target': post.about,
+          'visibility': post.visibility,
+          'details': {},
+          'tags': post.tags
+        }, function (err, news) {
+          if (err) {
+            var e = new VError(err, 'could push news feed');
+            return cb(e);
           }
           cb(null, news, post);
         });
@@ -477,7 +499,8 @@ module.exports = function (server) {
           'userId': currentUser.id,
           'createdOn': news.createdOn,
           'updatedOn': news.updatedOn,
-          'details': {}
+          'details': {},
+          'tags': post.tags
         };
 
         req.app.models.NewsFeedItem.create(item, function (err, item) {
