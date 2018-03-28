@@ -210,6 +210,7 @@ function getListener(server, connection) {
 					oldNews.details = myNewsFeedItem.details;
 					oldNews.versions = myNewsFeedItem.versions;
 					oldNews.deleted = myNewsFeedItem.deleted;
+					oldNews.tags = myNewsFeedItem.tags;
 					oldNews.save();
 
 					// cleanup all my interations with this item
@@ -293,97 +294,98 @@ function getListener(server, connection) {
 				}
 
 				async.series([
-					function createNewFeedItem(cb) {
+						function createNewFeedItem(cb) {
 
-						delete myNewsFeedItem.id;
-						delete myNewsFeedItem.visibility;
-						myNewsFeedItem.userId = currentUser.id;
-						myNewsFeedItem.friendId = friend.id;
+							delete myNewsFeedItem.id;
+							delete myNewsFeedItem.visibility;
+							myNewsFeedItem.userId = currentUser.id;
+							myNewsFeedItem.friendId = friend.id;
 
-						debug('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
+							debug('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
 
-						server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
-							if (err) {
-								logger.error({
-									'myNewsFeedItem': myNewsFeedItem
-								}, 'error saving NewsFeedItem item');
-								return cb(err);
+							server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
+								if (err) {
+									logger.error({
+										'myNewsFeedItem': myNewsFeedItem
+									}, 'error saving NewsFeedItem item');
+									return cb(err);
+								}
+								cb();
+							});
+						},
+						function notifyNetwork(cb) {
+							// somebody posted to my wall
+							if (!message.data.target || message.data.type !== 'post' || message.data.target !== server.locals.config.publicHost + '/' + currentUser.username) {
+								return process.nextTick(function () {
+									cb();
+								});
 							}
-							cb();
-						});
-					},
-					function notifyNetwork(cb) {
-						// somebody posted to my wall
-						if (!message.data.target || message.data.type !== 'post' || message.data.target !== server.locals.config.publicHost + '/' + currentUser.username) {
-							return process.nextTick(function () {
+
+							async.waterfall([
+								function (cbPostOnMyWall) { // make a Post record
+									var post = {
+										'uuid': message.data.uuid,
+										'athoritativeEndpoint': message.data.about,
+										'source': message.data.source,
+										'userId': currentUser.id,
+										'visibility': message.data.visibility
+									};
+
+									server.models.Post.create(post, function (err, post) {
+										if (err) {
+											var e = new VError(err, 'could create Post');
+											return cbPostOnMyWall(e);
+										}
+										cbPostOnMyWall(null, post);
+									});
+								},
+								function (post, cbPostOnMyWall) { // make a PushNewsFeed record
+									server.models.PushNewsFeedItem.create({
+										'uuid': message.data.uuid,
+										'type': 'post',
+										'source': server.locals.config.publicHost + '/' + currentUser.username,
+										'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+										'visibility': post.visibility,
+										'details': {},
+										'userId': currentUser.id
+									}, function (err, news) {
+										if (err) {
+											var e = new VError(err, 'could push news feed');
+											return cb(e);
+										}
+										cbPostOnMyWall(null);
+									});
+								}
+
+							], function (err) {
+								cb(err);
+							});
+						},
+						function updateHighwater(cb) {
+
+							debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
+
+							friend.updateAttributes({
+								'highWater': message.data.createdOn
+							}, function (err, updated) {
+								if (err) {
+									logger.error({
+										err: err
+									}, 'error saving highwater');
+									return cb(err);
+								}
 								cb();
 							});
 						}
-
-						async.waterfall([
-							function (cbPostOnMyWall) { // make a Post record
-								var post = {
-									'uuid': message.data.uuid,
-									'athoritativeEndpoint': message.data.about,
-									'source': message.data.source,
-									'userId': currentUser.id,
-									'visibility': message.data.visibility
-								};
-
-								server.models.Post.create(post, function (err, post) {
-									if (err) {
-										var e = new VError(err, 'could create Post');
-										return cbPostOnMyWall(e);
-									}
-									cbPostOnMyWall(null, post);
-								});
-							},
-							function (post, cbPostOnMyWall) { // make a PushNewsFeed record
-								server.models.PushNewsFeedItem.create({
-									'uuid': message.data.uuid,
-									'type': 'post',
-									'source': server.locals.config.publicHost + '/' + currentUser.username,
-									'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
-									'visibility': post.visibility,
-									'details': {},
-									'userId': currentUser.id
-								}, function (err, news) {
-									if (err) {
-										var e = new VError(err, 'could push news feed');
-										return cb(e);
-									}
-									cbPostOnMyWall(null);
-								});
-							}
-
-						], function (err) {
-							cb(err);
-						});
-					},
-					function updateHighwater(cb) {
-
-						debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
-
-						friend.updateAttributes({
-							'highWater': message.data.createdOn
-						}, function (err, updated) {
-							if (err) {
-								logger.error({
-									err: err
-								}, 'error saving highwater');
-								return cb(err);
-							}
-							cb();
-						});
-					}
-				], function (e) {
-					if (e) {
-						logger.error({
-							err: e
-						}, 'error processing newsfeed');
-					}
-					return;
-				});
+					],
+					function (e) {
+						if (e) {
+							logger.error({
+								err: e
+							}, 'error processing newsfeed');
+						}
+						return;
+					});
 			});
 		});
 	};

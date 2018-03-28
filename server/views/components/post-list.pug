@@ -18,9 +18,9 @@
 						!= post.commentSummary
 				
 				if post.athoritativeEndpoint
-					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post edit")
+					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post")
 				else 
-					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post edit")
+					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post")
 						.post-identity
 							.post-avatar
 								.media

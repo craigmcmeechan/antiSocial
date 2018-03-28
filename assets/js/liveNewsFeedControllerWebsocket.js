@@ -104,14 +104,15 @@
 				return;
 			}
 			var formatted = event.data.humanReadable;
-			if (formatted && !event.data.deleted) {
+			if (formatted && !event.data.deleted && event.type !== 'update') {
+
 				var li = $('<div class="news-feed-item">');
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);
 				didInjectContent(self.element);
 			}
 			if (!event.backfill) {
-				if (event.data.type === 'post') {
+				if (event.data.type === 'post' && event.type === 'create') {
 					var item = $('<div>');
 					var endpoint = event.data.about;
 					item.load(endpoint, function () {
@@ -120,8 +121,13 @@
 						didInjectContent($('#scope-post-list').find('.newsfeed-item')[0]);
 					});
 				}
-				else if (event.data.type === 'post edit') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about]);
+				else if (event.data.type === 'post' && event.type === 'update') {
+					if (event.data.deleted) {
+						$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about, 'delete']);
+					}
+					else {
+						$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about]);
+					}
 				}
 				else if (event.data.type === 'comment') {
 					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid, event.type]);
