@@ -60,25 +60,26 @@ block content
 												if friend.status === 'pending'
 													if !friend.originator
 														div
-															button.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint))
+															a.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint) data-toggle="tooltip" title="Accept Request")
 																span.fa.fa-fw.fa-check
 														div
-															button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"declined"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+															a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"declined"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Decline Request")
 																span.fa.fa-fw.fa-times
 														div
-															button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"blocked"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+															a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"blocked"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Block Request")
 																span.fa.fa-fw.fa-ban
 													else
-														| pending 
-														button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"canceled"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+														a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"canceled"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Cancel Request")
 															span.fa.fa-fw.fa-times
 
 												else
 													if friend.status === 'accepted'
-														button.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"deleted"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString())
+														a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"deleted"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Delete")
 															span.fa.fa-fw.fa-times
 
 											a(href= proxyEndPoint(friend.remoteEndPoint,user))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
+											if friend.status === 'pending'
+												|  (pending) 
 
 		if friends.length
 			.row

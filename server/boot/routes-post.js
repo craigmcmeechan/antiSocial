@@ -139,30 +139,6 @@ module.exports = function (server) {
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           post.tags.push('@' + friendEndPoint);
           doneTag();
-          /*
-          server.models.Friend.findOne({
-            'where': {
-              'remoteEndPoint': friendEndPoint
-            }
-          }, function (err, friend) {
-            currentUser.pushNewsFeedItems.create({
-              'uuid': uuid(),
-              'type': 'tag',
-              'source': server.locals.config.publicHost + '/' + currentUser.username,
-              'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
-              'target': friend.remoteEndPoint,
-              'visibility': post.visibility,
-              'details': {},
-              'tags': post.tags
-            }, function (err, news) {
-              if (err) {
-                var e = new VError(err, 'could push news feed');
-                return doneTag(e);
-              }
-              doneTag(null);
-            });
-          });
-          */
         }, function (err) {
           if (post.tags.length) {
             post.save();
