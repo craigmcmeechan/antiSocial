@@ -163,8 +163,8 @@ module.exports = function (server) {
 
           if (!friend && !isMe) {
             var error = new Error('access denied');
-            error.httpStatusCode = 401;
-            cb(error);
+            error.statusCode = 401;
+            return cb(error);
           }
 
           cb(err, user);

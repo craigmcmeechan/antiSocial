@@ -158,8 +158,10 @@ module.exports = function (server) {
             var e = new VError(err, 'could not update PushNewsFeedItem');
             return cb(e);
           }
-          news.tags = post.tags;
-          news.save();
+          if (news) {
+            news.tags = post.tags;
+            news.save();
+          }
           cb(null, post);
         });
       },
@@ -175,8 +177,10 @@ module.exports = function (server) {
             var e = new VError(err, 'could not update NewsFeedItem');
             return cb(e);
           }
-          news.tags = post.tags;
-          news.save();
+          if (news) {
+            news.tags = post.tags;
+            news.save();
+          }
           cb(null, post);
         });
       }
