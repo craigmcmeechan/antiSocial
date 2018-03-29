@@ -18,14 +18,15 @@ block content
 	include profile-hero
 	
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
-		.container-fluid
-			ul.nav.nav-tabs.subnav-tabs
-				li
-					a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
-				li
-					a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
-				li.active
-					a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+		if user
+			.container-fluid
+				ul.nav.nav-tabs.subnav-tabs
+					li
+						a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
+					li
+						a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
+					li.active
+						a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
 					
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
