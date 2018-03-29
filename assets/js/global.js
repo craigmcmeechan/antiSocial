@@ -39,6 +39,11 @@
 		$('.avatar').toggle();
 	})
 
+	$('body').on('click', '.bug-report', function () {
+		var err = new Error('other error');
+		handleRouteError(err);
+	});
+
 	$.fn.extend({
 		animateCss: function (animationName, callback) {
 			var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
