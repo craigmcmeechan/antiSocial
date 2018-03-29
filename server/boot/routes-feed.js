@@ -67,12 +67,27 @@ module.exports = function (server) {
           });
         }
 
+        if (req.query.tags) {
+          var tags;
+          try {
+            tags = JSON.parse(req.query.tags);
+          }
+          catch (e) {
+            tags = [];
+          }
+          query.where.and.push({
+            'tags': {
+              'inq': tags
+            }
+          });
+        }
+
         debug('get more items %j', query);
 
         server.models.NewsFeedItem.find(query, function (err, items) {
           if (err) {
             var e = new VError(err, 'error reading NewsFeedItems');
-            cb(err);
+            cb(e);
           }
 
           async.map(items, resolveProfiles, function (err) {

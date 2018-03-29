@@ -88,6 +88,8 @@
 						selection.start += deltaLength;
 						selection.end = selection.start;
 						self.editor.importSelection(selection);
+						self.updateMarkdown();
+						self.element.closest('form').find(self.target).trigger('change');
 						didInjectContent(self.element);
 					}
 
