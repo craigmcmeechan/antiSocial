@@ -31,6 +31,8 @@ app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
 app.locals.appDir = __dirname;
 app.locals.math = require('mathjs');
+app.locals.base64 = require('base-64');
+
 
 // markdown renderer
 var marked = require('marked');

@@ -42,7 +42,12 @@ block content
 
 				#sidebar
 					h4 Your Public Endpoint
-					p= config.publicHost + '/' + user.username
+					- var endpoint = config.publicHost + '/' + user.username;
+					//- endpoint = base64.encode(endpoint)
+					p= endpoint
+					//p= base64.decode(endpoint)
+					
+
 
 			.col-sm-6
 				if !friends.length
