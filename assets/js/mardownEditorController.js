@@ -49,14 +49,15 @@
 					self.lookupDebounce = undefined;
 					var markup = self.element.html().replace('&nbsp', ' ');
 
-					// url on a line by itself - preview
-					var urls = markup.match(/<p>(http[^<]+)<\/p></g);
+					// url on a line by itself - preview "<p>some url<br>" or "<p>some url</p>" perhaps some spaces after url
+					// TODO not optimal. URLs would notmally be pasted in not typed so it works for that but a pause while typeing would trigger the preview as soon as the url was valid even though partially typed
+					var urls = markup.match(/<p>(http[^<]+)\s*<[/b]/g);
 					if (urls) {
 						var value = self.element.html();
 						var selection = self.editor.exportSelection();
 						var deltaLength = 0;
 						for (var i = 0; i < urls.length; i++) {
-							var url = urls[i].replace(/^<p>/, '').replace(/<\/p><$/, '');
+							var url = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
 							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
 								var previewTag = '<div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
 								value = value.replace(url, previewTag);
