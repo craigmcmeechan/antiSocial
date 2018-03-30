@@ -358,11 +358,18 @@ module.exports = function (server) {
                 return res.send(encryptIfFriend(friend, data));
               }
               else {
+                var friendMap = {};
+                for (var i = 0; i < currentUser.friends().length; i++) {
+                  var f = currentUser.friends()[i];
+                  friendMap[f.remoteEndPoint] = f;
+                }
+
                 var options = {
                   'data': data,
                   'user': currentUser,
                   'friend': friend,
                   'isMe': isMe,
+                  'friendMap': friendMap,
                   'myEndpoint': getPOVEndpoint(friend, currentUser)
                 };
 

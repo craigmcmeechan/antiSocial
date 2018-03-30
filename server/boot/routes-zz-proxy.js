@@ -129,6 +129,13 @@ module.exports = function (server) {
 				if (template === 'post' && !req.query.embed) {
 					isPermalink = true;
 				}
+
+				var friendMap = {};
+				for (var i = 0; i < currentUser.friends().length; i++) {
+					var f = currentUser.friends()[i];
+					friendMap[f.remoteEndPoint] = f;
+				}
+
 				res.render('components/rendered-' + template, {
 					'globalSettings': ctx.get('globalSettings'),
 					'data': data,
@@ -139,6 +146,7 @@ module.exports = function (server) {
 					'myEndpoint': getPOVEndpoint(currentUser),
 					'wantSummary': template === 'comment',
 					'isPermalink': isPermalink,
+					'friendMap': friendMap,
 					'cache': process.env.NODE_ENV === 'production' ? true : false
 				});
 			}

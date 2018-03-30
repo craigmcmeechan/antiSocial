@@ -18,28 +18,46 @@ block content
 	include profile-hero
 	
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
-		if user
+		if user && friend
 			.container-fluid
 				ul.nav.nav-tabs.subnav-tabs
 					li
 						a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
 					li
 						a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
-					li.active
-						a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+					if !isMe
+						li.active
+							a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
 					
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
-				.col-sm-8.left-column
-					.row
-						p Very Rudimentary TODO: depending on settings list friends, or just mutual friends or no friends. Show faces.
-						if !friends 
-							- friends = data.friends
-							
+				.col-sm-8.left-column(style="background-color:white;padding:15px")
+					p Very Rudimentary TODO: depending on settings list friends, or just mutual friends or no friends. Show faces.
+					if !friends 
+						- friends = data.friends
+					.page-heading
+						h2 Mutual Friends
+					ul
+						- var count =0
 						each friend in friends.nodes
-							li
-								a(href="/proxy-profile?profile=" + encodeURIComponent(friend.v))= friend.value.name
-								
+							if friendMap[friend.v] && friend.v !== data.profile.endpoint
+								- count++
+								li
+									a(href="/proxy-profile?endpoint=" + encodeURIComponent(friend.v))= friend.value.name
+						if !count
+							| none
+							
+					.page-heading
+						h2 More Friends
+					ul
+						- var count =0
+						each friend in friends.nodes
+							if !friendMap[friend.v] && friend.v !== data.profile.endpoint
+								- count++
+								li
+									a(href="/proxy-profile?endpoint=" + encodeURIComponent(friend.v))= friend.value.name
+						if !count
+							| none
 				.col-sm-4
 					if user
 						#newsfeed-here
