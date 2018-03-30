@@ -7,6 +7,7 @@
 		this.lookupDebounce = null;
 		this.turndownService = null;
 		this.inModal = this.element.data('in-modal');
+		this.placeholder = this.element.data('placeholder');
 		this.cache = {};
 
 		var self = this;
@@ -21,7 +22,7 @@
 				'disableExtraSpaces': true,
 				'buttonLabels': 'fontawesome',
 				'placeholder': {
-					'text': 'What\'s on your mind?'
+					'text': self.placeholder
 				}
 			};
 

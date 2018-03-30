@@ -7,7 +7,20 @@
 		this.start = function () {
 			this.element.on('submit', function (e) {
 				e.preventDefault();
-				loadPage('/proxy-profile?endpoint=' + encodeURIComponent(self.element.find('[name="endpoint"]').val()));
+				var endpoint = self.element.find('[name="endpoint"]').val();
+				if (endpoint.match(/==$/)) {
+					try {
+						endpoint = base64.decode(endpoint);
+					}
+					catch (e) {}
+				}
+				var match = endpoint.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi);
+				if (match) {
+					loadPage('/proxy-profile?endpoint=' + encodeURIComponent(endpoint));
+				}
+				else {
+					flashAjaxStatus('warning', 'unable to retrieve endpoint');
+				}
 			});
 		};
 

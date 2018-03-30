@@ -6,6 +6,7 @@ var debug = require('debug')('invitation');
 var uuid = require('uuid');
 var async = require('async');
 var mailer = require('../../server/lib/mail');
+var base64 = require('base-64');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
@@ -58,7 +59,7 @@ module.exports = function (server) {
 					'user': invitation.user().name,
 					'email': invitation.user().email,
 					'url': url,
-					'endpoint': endpoint,
+					'endpoint': base64.encode(endpoint),
 					'note': invitation.note,
 					'config': server.locals.config
 				};
