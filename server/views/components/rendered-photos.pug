@@ -23,8 +23,10 @@ block content
 						a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
 					li.active
 						a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
-					li
-						a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+					if !isMe
+						li
+							a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+					
 						
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
