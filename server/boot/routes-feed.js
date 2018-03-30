@@ -23,6 +23,13 @@ module.exports = function (server) {
     var currentUser = ctx.get('currentUser');
     var userSettings = ctx.get('userSettings');
 
+    var friendMap = {};
+    friendMap[server.locals.config.publicHost + '/' + currentUser.username] = true;
+    for (var i = 0; i < currentUser.friends().length; i++) {
+      var f = currentUser.friends()[i];
+      friendMap[f.remoteEndPoint] = f;
+    }
+
     async.waterfall([
       function getScrollSession(cb) {
         var session = cache.get('scrollSession-' + currentUser.id.toString());
@@ -117,12 +124,15 @@ module.exports = function (server) {
               if (items[i].type === 'post' || items[i].type === 'coment' || items[i].type === 'react') {
                 var key = items[i].about;
                 key = key.replace(/\/(comment|photo)\/.*/, '');
-                if (!map[key]) {
-                  map[key] = 0;
-                  grouped[key] = [];
+                var whoAbout = key.replace(/\/post\/.*/, '');
+                if (friendMap[whoAbout]) {
+                  if (!map[key]) {
+                    map[key] = 0;
+                    grouped[key] = [];
+                  }
+                  ++map[key];
+                  grouped[key].push(items[i]);
                 }
-                ++map[key];
-                grouped[key].push(items[i]);
               }
             }
 
