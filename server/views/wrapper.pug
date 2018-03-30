@@ -56,12 +56,12 @@ html(lang="en")
 								<i class="fa fa-users fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Friends Feed
-						li#nav-page.hidden-logged-out
+						li#nav-profile.hidden-logged-out
 							a(href="/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom")
 								<i class="fa fa-user fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Your Posts
-						li#nav-settings.hidden-logged-out
+						li#nav-friends.hidden-logged-out
 							a(href="/friends" data-toggle="tooltip" title="Your friends." data-placement="bottom")
 								<i class="fa fa-user-plus fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
@@ -72,7 +72,7 @@ html(lang="en")
 								span.hidden-not-digitopia-xsmall
 									|  Settings
 						if environment.RAVEN_DSN_PUBLIC
-							li#nav-settings.hidden-logged-out
+							li#nav-bugs.hidden-logged-out
 								a.bug-report(href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom")
 									<i class="fa fa-bug fa-fw"></i>
 									span.hidden-not-digitopia-xsmall
@@ -92,7 +92,8 @@ html(lang="en")
 						li.menu-icon-placeholder.hidden-digitopia-xsmall
 							#menu-icon(data-hijax="true")
 								if user
-									img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)
+									a(href='/profile')
+										img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)
 
 		#login-form.modal.fade(tabindex="-1" role="dialog")
 			.modal-dialog(role="document")
