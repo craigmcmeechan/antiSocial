@@ -21,6 +21,7 @@ module.exports = function (server) {
   router.get('/feed', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.getCurrentContext();
     var currentUser = ctx.get('currentUser');
+    var userSettings = ctx.get('userSettings');
 
     async.waterfall([
       function getScrollSession(cb) {
@@ -64,6 +65,12 @@ module.exports = function (server) {
             'createdOn': {
               'lt': session.feedHighwater
             }
+          });
+        }
+
+        if (userSettings.feedSortOrder === 'post') {
+          query.where.and.push({
+            'type': 'post'
           });
         }
 
@@ -239,6 +246,7 @@ module.exports = function (server) {
       res.render('pages/feed', {
         'user': ctx.get('currentUser'),
         'globalSettings': ctx.get('globalSettings'),
+        'userSettings': ctx.get('userSettings'),
         'items': items
       });
 

@@ -5,17 +5,18 @@ var ensureAdminUser = require('../middleware/context-ensureAdminUser');
 module.exports = function serverSettings(server) {
 	var router = server.loopback.Router();
 
-	router.patch('/server-settings', getCurrentUser(), ensureLoggedIn(), ensureAdminUser(), function (req, res, next) {
+	router.patch('/user-settings', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
 		var ctx = req.myContext;
-		var settings = ctx.get('globalSettings');
+		var currentUser = ctx.get('currentUser');
+		var settings = ctx.get('userSettings');
 		var payload = req.body;
 
 		req.app.models.Settings.findOrCreate({
 			'where': {
-				'group': 'global'
+				'group': currentUser.username
 			}
 		}, {
-			'group': 'global',
+			'group': currentUser.username,
 			'settings': settings
 		}, function (err, group) {
 			if (err) {
@@ -29,6 +30,7 @@ module.exports = function serverSettings(server) {
 				if (payload[prop] === 'false') {
 					payload[prop] = false;
 				}
+
 				group.settings[prop] = payload[prop];
 			}
 
