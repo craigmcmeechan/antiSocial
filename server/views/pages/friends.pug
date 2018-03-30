@@ -8,9 +8,9 @@ block content
 	.container-fluid.content-padding-top.content
 		.page-header
 			.pull-right
-				- var endpoint = config.publicHost + '/' + user.username;
-				- endpoint = base64.encode(endpoint)
-				input#myendpoint(type="text" value= endpoint style="opacity:0;width:10px;")
+				- var myendpoint = config.publicHost + '/' + user.username;
+				- myendpoint = base64.encode(myendpoint)
+				input#myendpoint(type="text" value= myendpoint style="opacity:0;width:10px;")
 				button.btn.btn-xs.btn-primary.copy-to-clipboard(data-target="#myendpoint") Copy Your Endpoint to Clipboard
 			h3 Friends
 				
