@@ -16,7 +16,7 @@ block seo
 block content
 	include profile-hero
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
-		if user
+		if user && friend
 			.container-fluid
 				ul.nav.nav-tabs.subnav-tabs
 					li
