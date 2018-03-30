@@ -31,6 +31,8 @@ app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
 app.locals.appDir = __dirname;
 app.locals.math = require('mathjs');
+app.locals.base64 = require('base-64');
+
 
 // markdown renderer
 var marked = require('marked');
@@ -182,7 +184,7 @@ options.streams = [{
 }];
 
 var ravenClient;
-if (process.env.RAVEN) {
+if (process.env.RAVEN_DSN) {
   app.raven = require('raven');
   app.raven.config(process.env.RAVEN_DSN, {
     'environment': process.env.NODE_ENV,
@@ -211,7 +213,7 @@ app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
     'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets],
-    'scriptSrc': ['\'self\'', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', '\'unsafe-eval\'', function (req, res) {
+    'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', '\'unsafe-eval\'', function (req, res) {
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
     'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],

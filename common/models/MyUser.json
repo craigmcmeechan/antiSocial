@@ -32,7 +32,10 @@
       "uploads",
       "identities",
       "posts",
-      "settings"
+      "friends",
+      "pushNewsFeedItems",
+      "newsFeeds",
+      "photos"
     ],
     "helpers": [{
       "type": "upload",

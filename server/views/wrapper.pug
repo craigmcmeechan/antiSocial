@@ -71,6 +71,13 @@ html(lang="en")
 								<i class="fa fa-cog fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Settings
+						if environment.RAVEN_DSN_PUBLIC
+							li#nav-settings.hidden-logged-out
+								a.bug-report(href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom")
+									<i class="fa fa-bug fa-fw"></i>
+									span.hidden-not-digitopia-xsmall
+										|  Bug Report
+									
 					ul.nav.navbar-nav.navbar-right
 						if globalSettings.multiUser === 'invite' && !inviteToken
 							li.hidden-logged-in
@@ -277,10 +284,14 @@ html(lang="en")
 		else
 			script(src="/dist/js/jquery.js")
 
-		if environment.RAVEN
+		if environment.RAVEN_DSN_PUBLIC
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
 			script(nonce= nonce).
 				Raven.config('#{environment.RAVEN_DSN_PUBLIC}').install();
+				function handleRouteError(err) {
+					Raven.captureException(err);
+					Raven.showReportDialog();
+				}
 
 		script(src="/socket.io/socket.io.js")
 

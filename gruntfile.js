@@ -20,6 +20,7 @@ module.exports = function (grunt) {
 		'node_modules/node-vibrant/dist/vibrant.js',
 		'node_modules/medium-editor/dist/js/medium-editor.js',
 		'node_modules/turndown/dist/turndown.js',
+		'node_modules/base-64/base64.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];

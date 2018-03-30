@@ -39,6 +39,22 @@
 		$('.avatar').toggle();
 	})
 
+	$('body').on('click', '.bug-report', function () {
+		var err = new Error('other error');
+		handleRouteError(err);
+	});
+
+	$('body').on('click', '.copy-to-clipboard', function () {
+		var self = $(this);
+		$(self.data('target'))[0].select();
+		document.execCommand("Copy");
+		var saveText = self.text();
+		self.text('Copied');
+		setTimeout(function () {
+			self.text(saveText);
+		}, 1000);
+	});
+
 	$.fn.extend({
 		animateCss: function (animationName, callback) {
 			var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
