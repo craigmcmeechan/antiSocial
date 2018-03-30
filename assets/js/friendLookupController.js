@@ -8,7 +8,7 @@
 			this.element.on('submit', function (e) {
 				e.preventDefault();
 				var endpoint = self.element.find('[name="endpoint"]').val();
-				if (endpoint.match(/==$/)) {
+				if (!endpoint.match(/^htt/)) {
 					try {
 						endpoint = base64.decode(endpoint);
 					}
