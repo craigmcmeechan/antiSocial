@@ -219,6 +219,13 @@ module.exports = function (server) {
     });
   });
 
+  /*
+    TODO
+    if userSettings.friendListVisibility === 'none' return empty
+    if userSettings.friendListVisibility === 'mutual' call friend webook on each to determine if mutual
+    otherwise return all friends
+  */
+
   router.get(friendsRE, getCurrentUser(), checkNeedProxyRewrite('friends'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');

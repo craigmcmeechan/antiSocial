@@ -11,7 +11,17 @@ module.exports = function () {
 		var reqContext = req.getCurrentContext();
 
 		req.app.models.MyUser.findById(req.accessToken.userId, {
-			include: ['uploads', 'identities', 'friends']
+			'include': [
+				'uploads',
+				'identities', {
+					'relation': 'friends',
+					'scope': {
+						'where': {
+							'status': 'accepted'
+						}
+					}
+				}
+			]
 		}, function (err, user) {
 
 			if (err) {

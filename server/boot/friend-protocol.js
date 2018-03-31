@@ -669,6 +669,13 @@ module.exports = function (server) {
 				{ 'status': 'ok' }
 	*/
 
+
+	/*
+		TODO: is-friend?endpoint=xxx
+		if userSettings.friendListVisibility === 'all' || userSettings.friendListVisibility === 'mutual' and match return true else false
+		in response return visibility policy so caller can stop requesting if applicable
+	*/
+
 	var webhookRegex = /^\/([a-zA-Z0-9\-.]+)\/friend-webhook\/(friend-request-accepted|change-address|friend-request-canceled|friend-request-declined)$/;
 
 	router.post(webhookRegex, function (req, res, next) {
