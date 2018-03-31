@@ -138,6 +138,7 @@ module.exports = function (server) {
 
 				res.render('components/rendered-' + template, {
 					'globalSettings': ctx.get('globalSettings'),
+					'userSettings': ctx.get('userSettings'),
 					'data': data,
 					'friend': friend,
 					'user': currentUser,
