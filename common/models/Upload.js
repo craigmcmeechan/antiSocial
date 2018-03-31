@@ -29,12 +29,12 @@ module.exports = function (Upload) {
 						});
 					}
 					else {
-						var file = image.path;
+						var fname = image.path;
 						if (image.url) {
-							file = image.url.replace(Upload.app.locals.config.publicHost, '');
-							file = path.resolve(__dirname, '../../client/' + file);
+							fname = image.url.replace(Upload.app.locals.config.publicHost, '');
+							fname = path.resolve(__dirname, '../../client/' + fname);
 						}
-						fs.unlink(file, function (err) {
+						fs.unlink(fname, function (err) {
 							doneDeleting(err);
 						});
 					}

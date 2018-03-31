@@ -21,6 +21,14 @@ module.exports = function (server) {
   router.get('/feed', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.getCurrentContext();
     var currentUser = ctx.get('currentUser');
+    var userSettings = ctx.get('userSettings');
+
+    var friendMap = {};
+    friendMap[server.locals.config.publicHost + '/' + currentUser.username] = true;
+    for (var i = 0; i < currentUser.friends().length; i++) {
+      var f = currentUser.friends()[i];
+      friendMap[f.remoteEndPoint] = f;
+    }
 
     async.waterfall([
       function getScrollSession(cb) {
@@ -67,12 +75,33 @@ module.exports = function (server) {
           });
         }
 
+        if (userSettings.feedSortOrder === 'post') {
+          query.where.and.push({
+            'type': 'post'
+          });
+        }
+
+        if (req.query.tags) {
+          var tags;
+          try {
+            tags = JSON.parse(req.query.tags);
+          }
+          catch (e) {
+            tags = [];
+          }
+          query.where.and.push({
+            'tags': {
+              'inq': tags
+            }
+          });
+        }
+
         debug('get more items %j', query);
 
         server.models.NewsFeedItem.find(query, function (err, items) {
           if (err) {
             var e = new VError(err, 'error reading NewsFeedItems');
-            cb(err);
+            cb(e);
           }
 
           async.map(items, resolveProfiles, function (err) {
@@ -95,12 +124,15 @@ module.exports = function (server) {
               if (items[i].type === 'post' || items[i].type === 'coment' || items[i].type === 'react') {
                 var key = items[i].about;
                 key = key.replace(/\/(comment|photo)\/.*/, '');
-                if (!map[key]) {
-                  map[key] = 0;
-                  grouped[key] = [];
+                var whoAbout = key.replace(/\/post\/.*/, '');
+                if (friendMap[whoAbout]) {
+                  if (!map[key]) {
+                    map[key] = 0;
+                    grouped[key] = [];
+                  }
+                  ++map[key];
+                  grouped[key].push(items[i]);
                 }
-                ++map[key];
-                grouped[key].push(items[i]);
               }
             }
 
@@ -224,6 +256,7 @@ module.exports = function (server) {
       res.render('pages/feed', {
         'user': ctx.get('currentUser'),
         'globalSettings': ctx.get('globalSettings'),
+        'userSettings': ctx.get('userSettings'),
         'items': items
       });
 

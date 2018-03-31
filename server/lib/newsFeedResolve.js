@@ -53,7 +53,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			}
 			myNewsFeedItem.humanReadable += '</div>';
 		}
-
+		/*
 		if (myNewsFeedItem.type === 'post edit') {
 			if (myNewsFeedItem.target === myEndPoint) {
 				debug(sourceProfile.profile.name + '" edited ' + myNewsFeedItem.about + ' to your wall');
@@ -70,7 +70,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			}
 			myNewsFeedItem.humanReadable += '</div>';
 		}
-
+		*/
 		if (myNewsFeedItem.type === 'tag') {
 			if (myNewsFeedItem.target === myEndPoint) {
 				debug(sourceProfile.profile.name + '" tagged me in ' + myNewsFeedItem.about);

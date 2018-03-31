@@ -13,6 +13,17 @@ block content
 	include profile-hero
 
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
+		if user && friend
+			.container-fluid
+				ul.nav.nav-tabs.subnav-tabs
+					li.active
+						a(href= proxyEndPoint(data.profile.endpoint,user)) Posts
+					li
+						a(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
+					if !isMe
+						li
+							a(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+		
 		.container-fluid.content-padding-top.content.no-gutters
 			.row
 				.col-sm-8.left-column

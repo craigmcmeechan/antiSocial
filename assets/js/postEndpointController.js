@@ -4,12 +4,18 @@
 
 		var self = this;
 
-		self.submitter = $(self.element.data('submitter'));
-		self.endpoint = self.element.attr('action');
-		self.method = self.element.attr('method') ? self.element.attr('method') : 'POST';
+		self.submitter = self.element.data('submitter') ? $(self.element.data('submitter')) : self.element;
+		self.endpoint = self.element.attr('action') ? self.element.attr('action') : self.element.data('endpoint');
+		if (self.element.data('method')) {
+			self.method = self.element.data('method');
+		}
+		else {
+			self.method = self.element.attr('method') ? self.element.attr('method') : 'POST';
+		}
 		self.prompt = $(self.submitter).html();
 		self.modal = self.element.data('modal') ? $(self.element.data('modal')) : null;
 		self.successPrompt = self.element.data('success-prompt');
+		self.data = self.element.data('data') ? self.element.data('data') : null;
 
 		self.start = function () {
 			self.submitter.on('click', function (e) {
@@ -24,7 +30,13 @@
 		};
 
 		self.doIt = function () {
-			var data = self.element.serializeObject();
+			var data;
+			if (self.data) {
+				data = self.data;
+			}
+			else {
+				data = self.element.serializeObject();
+			}
 			flashAjaxStatus('info', 'saving');
 			$.ajax({
 				'method': self.method,

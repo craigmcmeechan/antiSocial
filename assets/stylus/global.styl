@@ -85,6 +85,10 @@ a
 					padding-right: 0
 					padding-left: 0
 
+.feed-controls
+	margin-bottom:7px
+	margin-top:7px
+
 #invite-friend-form
 	margin-bottom:30px
 
@@ -193,6 +197,15 @@ img.avatar
 	margin-top:calc(100vh + 50px)
 	min-height:calc(100vh - 50px)
 	background-color:white
+
+.subnav-tabs
+	margin-top:-38px
+	border-bottom: none
+	li
+		a
+			background-color:rgba(255,255,255,.6)
+			padding:7px
+			color:#333
 
 #ajax-status
 	position:fixed
@@ -463,20 +476,20 @@ img.avatar
 			display: inline-block
 			text-transform:capitalize
 		.post-actions
-			width:200px
 			text-align: right
-			.dropdown-menu
-				font-size: .75em
 			button
 				border:none
 				background-color:rgba(0,0,0,0)
 				&:focus
 					outline: none
 			.dropdown-menu
+				font-size: .75em
 				text-align:left
 				position: absolute
 				top: 0px
 				right: 20px
+				left: -200px
+
 		.permalink
 			display: inline-block
 		.post-geo
@@ -737,6 +750,12 @@ img.avatar
 	border-radius:21px
 	z-index:2000
 .friend-card
+	margin-bottom:7px
+	.friend-controls
+		display:none
+	&:hover
+		.friend-controls
+			display:block
 	img
 		max-width:50px
 		border-radius:25px

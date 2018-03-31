@@ -9,6 +9,20 @@ block content
 		.row
 			.col-sm-8.left-column
 				include ../components/posting-form
+				.feed-controls
+					if userSettings.feedSortOrder === 'post'
+						| Sorted by Original Posting Time 
+						
+					if userSettings.feedSortOrder === 'activity'
+						| Sorted by last Activity Time 
+					
+					.pull-right
+						if userSettings.feedSortOrder !== 'post'
+							a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"post"}' data-endpoint= '/user-settings') Sort By Posting Time
+							
+						if userSettings.feedSortOrder !== 'activity'
+							a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"activity"}' data-endpoint= '/user-settings') Sort By Activity Time
+							
 				#scope-post-list
 					for item in items
 						if item.type === 'post' || item.type === 'interaction' || item.type === 'tag'
@@ -16,7 +30,7 @@ block content
 							- post = post.replace(/\/(comment|photo)\/.*/,'')
 							.newsfeed-item
 								.news-summary!= item.feedSummary
-								.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post edit")
+								.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post")
 
 				.text-center
 					.loader(data-jsclass="loadMoreController")

@@ -170,7 +170,7 @@
 					},
 					error: function (request, status, error) {
 						if (request.responseText) {
-							alert('could not load page.');
+							flashAjaxStatus('danger', 'could not load page.');
 						}
 					}
 				});

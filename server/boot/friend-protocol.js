@@ -669,7 +669,14 @@ module.exports = function (server) {
 				{ 'status': 'ok' }
 	*/
 
-	var webhookRegex = /^\/([a-zA-Z0-9\-\.]+)\/friend-webhook\/(friend\-request\-accepted|change\-address)$/;
+
+	/*
+		TODO: is-friend?endpoint=xxx
+		if userSettings.friendListVisibility === 'all' || userSettings.friendListVisibility === 'mutual' and match return true else false
+		in response return visibility policy so caller can stop requesting if applicable
+	*/
+
+	var webhookRegex = /^\/([a-zA-Z0-9\-.]+)\/friend-webhook\/(friend-request-accepted|change-address|friend-request-canceled|friend-request-declined)$/;
 
 	router.post(webhookRegex, function (req, res, next) {
 		var matches = req.url.match(webhookRegex);
@@ -678,141 +685,133 @@ module.exports = function (server) {
 
 		//debug('/friend-webhook/%s got payload %j', action, req.body);
 
-		if (action === 'friend-request-accepted') {
-
-			async.waterfall(
-				[
-					function readFriend(cb) {
-						debug('/friend-webhook/%s readFriend', action);
-
-						req.app.models.Friend.findOne({
-							'where': {
-								'localAccessToken': req.body.accessToken
-							},
-							'include': [{
-								'user': ['uploads']
-							}]
-						}, function (err, friend) {
-							if (err) {
-								return cb(new VError(err, '/friend-webhook/friend-request-accepted readFriend failed'));
-							}
-							if (!friend) {
-								return cb(new VError(err, '/friend-webhook/friend-request-accepted readFriend friend not found'));
-							}
-							cb(null, friend);
-						});
-					},
-					function saveFriend(friend, cb) {
-						debug('/friend-webhook/%s saveFriend', action);
-
-						friend.updateAttributes({
-							status: 'accepted',
-							audiences: ['public', 'community', 'friends']
-						}, function (err) {
-							cb(err, friend);
-						});
-					},
-					function pushNews(friend, cb) {
-						debug('/friend-webhook/%s pushNews', action);
-
-						var item = {
-							'userId': friend.user().id,
-							'uuid': uuid(),
-							'type': 'friend',
-							'source': server.locals.config.publicHost + '/' + friend.user().username,
-							'about': friend.remoteEndPoint,
-							'visibility': ['friends'],
-							'details': {}
-						};
-						req.app.models.PushNewsFeedItem.create(item, function (err, item) {
-							if (err) {
-								return cb(new VError(err, '/friend-webhook/friend-request-accepted pushNews could not create PushNewsFeedItem %j', item));
-							}
-							cb(null, friend);
-						});
-					}
-				],
-				function (err, friend) {
-					if (err) {
-						var e = new WError(err, '/friend-webhook/friend-request-accepted failed');
-						req.logger.error(e.toString());
-						return res.send({
-							'status': e.cause().message
-						});
-					}
-
-					debug('/friend-webhook/friend-request-accepted opening feed', friend);
-					watchFeed.connect(req.app, friend);
-
-					var payload = {
-						'status': 'ok'
-					};
-
-					//debug('webhook response %j', payload);
-
-					return res.send(payload);
+		req.app.models.Friend.findOne({
+			'where': {
+				'localAccessToken': req.body.accessToken
+			},
+			'include': [{
+				'user': ['uploads']
+			}]
+		}, function (err, friend) {
+			if (err) {
+				var error = new WError(err, '/' + action + ' readFriend failed');
+				req.logger.error(error.toString());
+				return res.send({
+					'status': error.cause().message
 				});
-		}
+			}
+			if (!friend) {
+				var error = WError(err, '/' + action + ' readFriend friend not found');
+				req.logger.error(error.toString());
+				return res.send({
+					'status': error.cause().message
+				});
+			}
 
-		if (action === 'change-address') {
-			async.waterfall(
-				[
-					function readFriend(cb) {
-						debug('/friend-webhook/%s readFriend', action);
+			if (action === 'friend-request-canceled' || action === 'friend-request-declined') {
+				friend.destroy();
+				var payload = {
+					'status': 'ok'
+				};
+				return res.send(payload);
+			}
 
-						req.app.models.Friend.findOne({
-							'where': {
-								'localAccessToken': req.body.accessToken
-							}
-						}, function (err, friend) {
-							if (err) {
-								return cb(new VError(err, '/friend-webhook/change-address readFriend failed'));
-							}
-							if (!friend) {
-								return cb(new VError(err, '/friend-webhook/change-address readFriend friend not found'));
-							}
-							cb(null, friend);
-						});
-					},
-					function saveFriend(friend, cb) {
-						debug('/friend-webhook/%s saveFriend', action);
+			if (action === 'friend-request-accepted') {
+				async.waterfall([
+						function saveFriend(cb) {
+							debug('/friend-webhook/%s saveFriend', action);
 
-						var parsed = url.parse(req.body.newEndPoint);
+							friend.updateAttributes({
+								status: 'accepted',
+								audiences: ['public', 'community', 'friends']
+							}, function (err) {
+								cb(err, friend);
+							});
+						},
+						function pushNews(friend, cb) {
+							debug('/friend-webhook/%s pushNews', action);
 
-						friend.updateAttributes({
-							'remoteEndPoint': req.body.newEndPoint,
-							'remoteHost': parsed.protocol + '://' + parsed.host,
-							'remoteUsername': parsed.pathname.substring(1)
-						}, function (err) {
-							if (err) {
-								return cb(new VError(err, '/friend-webhook/change-address saveFriend failed'));
-							}
-							cb(err, friend);
-						});
+							var item = {
+								'userId': friend.user().id,
+								'uuid': uuid(),
+								'type': 'friend',
+								'source': server.locals.config.publicHost + '/' + friend.user().username,
+								'about': friend.remoteEndPoint,
+								'visibility': ['friends'],
+								'details': {}
+							};
+							req.app.models.PushNewsFeedItem.create(item, function (err, item) {
+								if (err) {
+									return cb(new VError(err, '/friend-webhook/friend-request-accepted pushNews could not create PushNewsFeedItem %j', item));
+								}
+								cb(null, friend);
+							});
+						}
+					],
+					function (err, friend) {
+						if (err) {
+							var e = new WError(err, '/friend-webhook/friend-request-accepted failed');
+							req.logger.error(e.toString());
+							return res.send({
+								'status': e.cause().message
+							});
+						}
+
+						debug('/friend-webhook/friend-request-accepted opening feed', friend);
+						watchFeed.connect(req.app, friend);
+
+						var payload = {
+							'status': 'ok'
+						};
+
+						//debug('webhook response %j', payload);
+
+						return res.send(payload);
+					});
+			}
+
+			if (action === 'change-address') {
+				async.waterfall([
+						function saveFriend(cb) {
+							debug('/friend-webhook/%s saveFriend', action);
+
+							var parsed = url.parse(req.body.newEndPoint);
+
+							friend.updateAttributes({
+								'remoteEndPoint': req.body.newEndPoint,
+								'remoteHost': parsed.protocol + '://' + parsed.host,
+								'remoteUsername': parsed.pathname.substring(1)
+							}, function (err) {
+								if (err) {
+									return cb(new VError(err, '/friend-webhook/change-address saveFriend failed'));
+								}
+								cb(err, friend);
+							});
+						}
+					],
+					function (err, friend) {
+						if (err) {
+							var e = new WError(err, 'friend-webhook/address-change failed');
+							req.logger.error(e.toString());
+							return res.send({
+								'status': e.cause().message
+							});
+						}
+
+						debug('webhook/address-change opening feed', friend);
+						watchFeed.connect(req.app, friend);
+
+						var payload = {
+							'status': 'ok'
+						};
+
+						debug('webhook response %j', payload);
+
+						return res.send(payload);
 					}
-				],
-				function (err, friend) {
-					if (err) {
-						var e = new WError(err, 'friend-webhook/address-change failed');
-						req.logger.error(e.toString());
-						return res.send({
-							'status': e.cause().message
-						});
-					}
-
-					debug('webhook/address-change opening feed', friend);
-					watchFeed.connect(req.app, friend);
-
-					var payload = {
-						'status': 'ok'
-					};
-
-					debug('webhook response %j', payload);
-
-					return res.send(payload);
-				}
-			);
-		}
+				);
+			}
+		});
 	});
 
 	server.use(router);

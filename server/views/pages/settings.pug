@@ -62,19 +62,25 @@ block content
 									span.glyphicon.glyphicon-ok
 								.validation-help
 
-					//
-						.form-group
-								.input-relative
-									label Post Categories
-									- var init = user.categories === ""
-									- var categories = JSON.stringify(user.categories ? user.categories : ['LOL','WTF','politics'])
-									input#category-list.form-control(type="hidden" name="categories" placeholder="Categories" data-validate="required" value= categories)
-									.list-edit(data-jsclass="editListController" data-target="#category-list" data-add-only= !init)
-									.input-ok-indicator
-										span.glyphicon.glyphicon-ok
-									.validation-help
+				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/user-settings")
+					.form-group
+						label Friends can see my friends list
+							select.form-control(name='friendListVisibility' data-validate="required")
+								if userSettings.friendListVisibility === 'none'
+									option(value="none" selected) No friends visible
+								else
+									option(value="none") No friends visible
+									
+								if userSettings.friendListVisibility === 'mutual'
+									option(value="mutual" selected) Mutual friends only
+								else
+									option(value="mutual") Mutual friends only
+								
+								if userSettings.friendListVisibility === 'all'
+									option(value="all" selected) All friends
+								else
+									option(value="all") All friends
 
-				
 				- var fb,tw
 				if user.identities()
 					for identity in user.identities()
@@ -85,19 +91,19 @@ block content
 							
 				if environment.FACEBOOK_CLIENT_ID
 					.form-group
-							if fb
-								p Linked w/facebook account
-							else
-								p
-									a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
+						span.fa.fa-2x.fa-facebook-square(style="color:#3B5998;margin-right:7px;")
+						if fb
+							| Linked w/facebook account
+						else
+							a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
 				
 				if environment.TWITTER_CONSUMER_KEY
 					.form-group
-							if tw
-								p Linked w/twitter account
-							else
-								p
-									a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
+						span.fa.fa-2x.fa-twitter-square(style="color:#3B5998;margin-right:7px")
+						if tw
+							| Linked w/twitter account
+						else
+							a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
 
 				#scope-upload
 					.col-sm-8
@@ -119,7 +125,6 @@ block content
 								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
 									.dz-message.
 										Drop your image here<br><small>(or click to upload)</small>
-		
 			
 			.col-sm-6
 				if isAdmin

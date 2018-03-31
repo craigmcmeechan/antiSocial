@@ -13,7 +13,7 @@ var debugVerbose = require('debug')('proxy:verbose');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|reactions|reaction|comments|comment|post|photo|friends)/;
+	var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
 
 	function getPOVEndpoint(currentUser) {
 		if (currentUser) {
@@ -129,8 +129,16 @@ module.exports = function (server) {
 				if (template === 'post' && !req.query.embed) {
 					isPermalink = true;
 				}
+
+				var friendMap = {};
+				for (var i = 0; i < currentUser.friends().length; i++) {
+					var f = currentUser.friends()[i];
+					friendMap[f.remoteEndPoint] = f;
+				}
+
 				res.render('components/rendered-' + template, {
 					'globalSettings': ctx.get('globalSettings'),
+					'userSettings': ctx.get('userSettings'),
 					'data': data,
 					'friend': friend,
 					'user': currentUser,
@@ -139,7 +147,8 @@ module.exports = function (server) {
 					'myEndpoint': getPOVEndpoint(currentUser),
 					'wantSummary': template === 'comment',
 					'isPermalink': isPermalink,
-					'cache': true
+					'friendMap': friendMap,
+					'cache': process.env.NODE_ENV === 'production' ? true : false
 				});
 			}
 		});

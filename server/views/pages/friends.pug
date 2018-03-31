@@ -7,19 +7,25 @@ block seo
 block content
 	.container-fluid.content-padding-top.content
 		.page-header
+			.pull-right
+				- var myendpoint = config.publicHost + '/' + user.username;
+				- myendpoint = base64.encode(myendpoint)
+				input#myendpoint(type="text" value= myendpoint style="opacity:0;width:10px;")
+				button.btn.btn-xs.btn-primary.copy-to-clipboard(data-target="#myendpoint") Copy Your Endpoint to Clipboard
 			h3 Friends
-		
+				
 		.row
 			.col-sm-6.fold-column
 							
 				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
-					h4 Add friend by Public Page URL
+					h4 Add friend by Public Page Endpoint
 					.form-group
 						.input-group
 							.input-relative
-								input.form-control(type="text" name="endpoint" placeholder="Endpoint" data-validate="required,url" value= endpoint)
+								input.form-control(type="text" name="endpoint" placeholder="Endpoint" data-validate="required" value= endpoint)
 							.input-group-btn
 								button#lookup-button.btn.btn-primary Lookup
+								
 							
 				h4 - or - Invite a friend via Email
 
@@ -40,36 +46,44 @@ block content
 							.validation-help
 					button#send-invite.btn.btn-primary.btn-sm Send
 
-				#sidebar
-					h4 Your Public Endpoint
-					p= config.publicHost + '/' + user.username
-
 			.col-sm-6
 				if !friends.length
 					p Oops. No friends yet.
 				else
 					.row
 						for friend in friends
-							.col-4.col-sm-6
-								.media.friend-card
-									.media-left.media-top
-										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
-									.media-body
-										h4
-											a(href= proxyEndPoint(friend.remoteEndPoint,user))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
-										p
-											if friend.status === 'pending'
-											
-												if !friend.originator
-													button.btn.btn-primary.btn-md(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
-													| [decline] [block]
-												else
-													| Request Pending [cancel]
-											else
-												|  [delete]
+							if friend.status === 'pending' || friend.status === 'accepted'
+								.col-4.col-sm-6
+									.media.friend-card
+										.media-left.media-top
+											img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
+										.media-body
+											.friend-controls.pull-right
+												if friend.status === 'pending'
+													if !friend.originator
+														div
+															a.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint) data-toggle="tooltip" title="Accept Request")
+																span.fa.fa-fw.fa-check
+														div
+															a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"declined"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Decline Request")
+																span.fa.fa-fw.fa-times
+														div
+															a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"blocked"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Block Request")
+																span.fa.fa-fw.fa-ban
+													else
+														a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"canceled"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Cancel Request")
+															span.fa.fa-fw.fa-times
 
+												else
+													if friend.status === 'accepted'
+														a.btn.btn-default.btn-xs(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"deleted"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Delete")
+															span.fa.fa-fw.fa-times
+
+											a(href= proxyEndPoint(friend.remoteEndPoint,user))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
+											if friend.status === 'pending'
+												|  (pending) 
 
 		if friends.length
 			.row
 				.col-xs-12
-					#my-friends-graph.graph(style="margin:0 auto;width:90%;height:90vh;background-color:white;" data-jsclass="graphController" data-endpoint= '/' + user.username + '/friends.json')
+					#my-friends-graph.graph(style=";height:100vh;background-color:white;" data-jsclass="graphController" data-endpoint= '/' + user.username + '/friends.json')

@@ -27,8 +27,10 @@ if photos && photos.length
 			- var cols = 3
 			if photos.length > 8
 				- limit = 8 
-			else 
-				- cols = 12 / photos.length
+			else if photos.length > 4
+				- limit = 4
+			else
+				- cols = Math.ceil(12 / photos.length)
 			
 			for photo,index in photos
 				if photo
@@ -46,7 +48,7 @@ if photos && photos.length
 						if !upload
 							p= JSON.stringify(photos)
 						else
-							.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop="true" data-align="center" data-width-percent="1")
+							.img-thumb(class= cssClass data-jsclass="digitopiaViewport" data-crop= photos.length === 1 ? "" : "true"  data-align="center" data-width-percent="1")
 								img(data-jsclass="digitopiaLazyImg,launchSlideshowController" data-lazy-src= upload.url data-uuid= post.uuid data-index= index)
 								if index + 1 === limit && photos.length > limit
 									.more-photos

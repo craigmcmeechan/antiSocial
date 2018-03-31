@@ -1,5 +1,5 @@
-var loopback = require('loopback');
 var debug = require('debug')('authentication');
+var async = require('async');
 
 module.exports = function () {
 	return function contextCurrentUser(req, res, next) {
@@ -8,8 +8,20 @@ module.exports = function () {
 			return next();
 		}
 
+		var reqContext = req.getCurrentContext();
+
 		req.app.models.MyUser.findById(req.accessToken.userId, {
-			include: ['uploads', 'identities', 'friends']
+			'include': [
+				'uploads',
+				'identities', {
+					'relation': 'friends',
+					'scope': {
+						'where': {
+							'status': 'accepted'
+						}
+					}
+				}
+			]
 		}, function (err, user) {
 
 			if (err) {
@@ -23,19 +35,47 @@ module.exports = function () {
 				return next();
 			}
 
-			var q = {
-				'where': {
-					'principalType': req.app.models.RoleMapping.USER,
-					'principalId': user.id
-				},
-				'include': ['role']
-			};
+			reqContext.set('currentUser', user);
+			reqContext.set('ip', req.ip);
 
-			req.app.models.RoleMapping.find(q, function (err, roles) {
-				var reqContext = req.getCurrentContext();
-				reqContext.set('currentUser', user);
-				reqContext.set('ip', req.ip);
-				reqContext.set('currentUserRoles', roles);
+			async.series([
+				function (cb) {
+					var q = {
+						'where': {
+							'principalType': req.app.models.RoleMapping.USER,
+							'principalId': user.id
+						},
+						'include': ['role']
+					};
+
+					req.app.models.RoleMapping.find(q, function (err, roles) {
+						reqContext.set('currentUserRoles', roles);
+						cb();
+					});
+				},
+				function (cb) {
+					var q = {
+						'where': {
+							'group': user.username
+						}
+					};
+
+					req.app.models.Settings.findOne(q, function (err, group) {
+						var settings;
+						if (group) {
+							settings = group.settings;
+						}
+						if (!settings) {
+							settings = {
+								'friendListVisibility': 'all', // all, mutual, none
+								'feedSortOrder': 'activity' // post, activity
+							};
+						}
+						reqContext.set('userSettings', settings);
+						cb();
+					});
+				}
+			], function (err) {
 				next();
 			});
 		});
