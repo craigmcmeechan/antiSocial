@@ -72,6 +72,9 @@
     },
     "online": {
       "type": "boolean"
+    },
+    "hash": {
+      "type": "string"
     }
   },
   "validations": [],

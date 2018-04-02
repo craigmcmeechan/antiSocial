@@ -73,6 +73,14 @@ module.exports = function (server) {
 			query.push('tags=' + req.query.tags);
 		}
 
+		if (template === 'friends') {
+			var hashes = [];
+			for (var i = 0; i < currentUser.friends().length; i++) {
+				hashes.push(currentUser.friends()[i].hash);
+			}
+			query.push('hashes=' + hashes.join(','));
+		}
+
 		if (query.length) {
 			options.url += '?' + query.join('&');
 		}
