@@ -24,7 +24,7 @@ module.exports = function (server) {
   // the poster's authoritative server (users resident on this server)
 
   var profileRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)(\.json)?(\?.*)?$/;
-  var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)?$/;
+  var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)(\?.*)?$/;
   var photosRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photos(\.json)?$/;
   var postsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/posts(\.json)?(\?.*)?$/;
   var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?$/;
@@ -219,13 +219,6 @@ module.exports = function (server) {
     });
   });
 
-  /*
-    TODO
-    if userSettings.friendListVisibility === 'none' return empty
-    if userSettings.friendListVisibility === 'mutual' call friend webook on each to determine if mutual
-    otherwise return all friends
-  */
-
   router.get(friendsRE, getCurrentUser(), checkNeedProxyRewrite('friends'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
@@ -234,11 +227,14 @@ module.exports = function (server) {
     }
 
     var currentUser = ctx.get('currentUser');
+    var userSettings = ctx.get('userSettings');
+
     var friend = ctx.get('friendAccess');
 
     var matches = req.url.match(friendsRE);
     var username = matches[1];
     var view = matches[2];
+    var hashes = req.query.hashes ? req.query.hashes.split(/,/) : [];
 
     var isMe = false;
     var endpoints = [];
@@ -285,7 +281,9 @@ module.exports = function (server) {
             'name': currentUser.username
           });
 
+          var hashes = [];
           for (var i = 0; i < friends.length; i++) {
+            hashes.push(friends[i].hash);
             g.setNode(friends[i].remoteEndPoint, {
               'name': friends[i].remoteUsername
             });
@@ -294,7 +292,7 @@ module.exports = function (server) {
           async.map(friends, function (friend, cb) {
 
             var options = {
-              'url': friend.remoteEndPoint + '/friends.json',
+              'url': friend.remoteEndPoint + '/friends.json?hashes=' + hashes.join(','),
               'headers': {
                 'friend-access-token': friend.remoteAccessToken
               },
@@ -406,51 +404,63 @@ module.exports = function (server) {
           }
         };
 
-        server.models.Friend.find(query, function (err, friends) {
+        getUserSettings(user, function (err, userSettings) {
 
-          g.setNode(server.locals.config.publicHost + '/' + user.username, {
-            'name': user.username
-          });
 
-          for (var i = 0; i < friends.length; i++) {
-            g.setNode(friends[i].remoteEndPoint, {
-              'name': friends[i].remoteUsername
-            });
+          server.models.Friend.find(query, function (err, friends) {
 
-            g.setEdge(server.locals.config.publicHost + '/' + user.username, friends[i].remoteEndPoint)
+            if (userSettings.friendListVisibility !== 'none') {
+              g.setNode(server.locals.config.publicHost + '/' + user.username, {
+                'name': user.username
+              });
 
-          }
+              for (var i = 0; i < friends.length; i++) {
+                var allowed = true;
+                if (userSettings.friendListVisibility !== 'mutual') {
+                  if (hashes.indexOf(friend.hash) === -1) {
+                    allowed = false;
+                  }
+                }
+                if (allowed) {
+                  g.setNode(friends[i].remoteEndPoint, {
+                    'name': friends[i].remoteUsername
+                  });
+                  g.setEdge(server.locals.config.publicHost + '/' + user.username, friends[i].remoteEndPoint);
+                }
+              }
+            }
 
-          var data = {
-            'pov': {
-              'user': user.username,
-              'isMe': isMe,
-              'friend': friend ? friend.remoteUsername : false,
-              'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
-            },
-            'profile': getProfile(user),
-            'friends': graphlib.json.write(g)
-          };
-
-          if (view === '.json') {
-            return res.send(encryptIfFriend(friend, data));
-          }
-          else {
-            var options = {
-              'data': data,
-              'user': currentUser,
-              'friend': friend,
-              'isMe': isMe,
-              'myEndpoint': getPOVEndpoint(friend, currentUser)
+            var data = {
+              'pov': {
+                'user': user.username,
+                'isMe': isMe,
+                'friend': friend ? friend.remoteUsername : false,
+                'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
+              },
+              'profile': getProfile(user),
+              'friends': graphlib.json.write(g)
             };
 
-            renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
-              if (err) {
-                return next(err);
-              }
-              return res.send(encryptIfFriend(friend, html));
-            });
-          }
+            if (view === '.json') {
+              return res.send(encryptIfFriend(friend, data));
+            }
+            else {
+              var options = {
+                'data': data,
+                'user': currentUser,
+                'friend': friend,
+                'isMe': isMe,
+                'myEndpoint': getPOVEndpoint(friend, currentUser)
+              };
+
+              renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+                if (err) {
+                  return next(err);
+                }
+                return res.send(encryptIfFriend(friend, html));
+              });
+            }
+          });
         });
       }
     });
@@ -1748,7 +1758,7 @@ module.exports = function (server) {
       'where': {
         'username': username
       },
-      'include': ['uploads']
+      'include': ['uploads', ]
     }, function (err, user) {
       if (err) {
         return cb(err);
@@ -1759,6 +1769,28 @@ module.exports = function (server) {
         return cb(err);
       }
       cb(null, user);
+    });
+  }
+
+  function getUserSettings(user, cb) {
+    var q = {
+      'where': {
+        'group': user.username
+      }
+    };
+
+    server.models.Settings.findOne(q, function (err, group) {
+      var settings;
+      if (group) {
+        settings = group.settings;
+      }
+      if (!settings) {
+        settings = {
+          'friendListVisibility': 'all', // all, mutual, none
+          'feedSortOrder': 'activity' // post, activity
+        };
+      }
+      cb(null, settings);
     });
   }
 
