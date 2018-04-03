@@ -1,4 +1,3 @@
-// TODO: populate tags and resolvedTags when user types @xxxxx xxxx xxx or #xxxxx-xxx
 (function ($) {
 	function postingFormController(elem) {
 		this.element = $(elem);

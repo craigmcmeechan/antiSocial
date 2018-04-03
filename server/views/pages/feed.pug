@@ -11,17 +11,17 @@ block content
 				include ../components/posting-form
 				.feed-controls
 					if userSettings.feedSortOrder === 'post'
-						| Sorted by Original Posting Time 
+						| Sorted by Post 
 						
 					if userSettings.feedSortOrder === 'activity'
-						| Sorted by last Activity Time 
+						| Sorted by Activity 
 					
 					.pull-right
 						if userSettings.feedSortOrder !== 'post'
-							a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"post"}' data-endpoint= '/user-settings') Sort By Posting Time
+							a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"post"}' data-endpoint= '/user-settings') Sort By Posting
 							
 						if userSettings.feedSortOrder !== 'activity'
-							a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"activity"}' data-endpoint= '/user-settings') Sort By Activity Time
+							a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"activity"}' data-endpoint= '/user-settings') Sort By Activity
 							
 				#scope-post-list
 					for item in items
