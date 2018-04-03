@@ -72,8 +72,12 @@
     },
     "online": {
       "type": "boolean"
+    },
+    "hash": {
+      "type": "string"
     }
   },
+  "protected": ["keys", "localRequestToken", "localAccessToken", "remoteRequestToken", "remoteAccessToken"],
   "validations": [],
   "relations": {
     "user": {
