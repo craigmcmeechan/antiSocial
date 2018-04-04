@@ -37,7 +37,9 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 
 				else 
 					if friend.status === 'pending'
-						| pending friend request
+						| Pending friend request 
+						if !friend.originator
+							a.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
 			else
 				if user && !isMe && profile.endpoint
 					button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= '/friend?endpoint=' + encodeURIComponent(profile.endpoint)) Add Friend
