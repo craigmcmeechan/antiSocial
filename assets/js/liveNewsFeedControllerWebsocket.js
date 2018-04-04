@@ -6,6 +6,7 @@
 		this.active = false;
 		this.pendingConnection = null;
 		this.endpoint = this.element.data('endpoint');
+		this.reconnecting = false;
 
 		this.start = function () {
 			self.element.on('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged', function () {
@@ -86,7 +87,7 @@
 					});
 				});
 				self.setTop();
-			}, 5000);
+			}, self.reconnecting ? 5000 : 0);
 		};
 
 		this.disconnect = function () {
@@ -141,6 +142,7 @@
 		};
 
 		this.errors = function (e) {
+			self.reconnecting = true;
 			self.disconnect();
 			self.connect();
 		};

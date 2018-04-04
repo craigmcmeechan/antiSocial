@@ -15,7 +15,7 @@ module.exports = function nag(server, done, username) {
 		async.map(users, function (user, cb) {
 			debug('starting task for user ' + user.username);
 			// daily
-			tasks[user.username] = cron.schedule('0 0 * * *', function () {
+			tasks[user.username] = cron.schedule('0 11 * * *', function () {
 				debug('task running for %s', user.username);
 				doNotificationEmail(user.username, function (err) {});
 			});
