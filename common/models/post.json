@@ -38,23 +38,16 @@
       }
     },
     "visibility": {
-      "type": [
-        "string"
-      ],
-      "required": true
+      "type": ["string"]
     },
     "categories": {
-      "type": [
-        "string"
-      ]
+      "type": ["string"]
     },
     "geoDescription": {
       "type": "string"
     },
     "geoLocation": {
-      "type": [
-        "number"
-      ]
+      "type": ["number"]
     },
     "athoritativeEndpoint": {
       "type": "string"
@@ -64,6 +57,9 @@
     },
     "tags": {
       "type": ["string"]
+    },
+    "posted": {
+      "type": "boolean"
     },
     "autopost": {
       "type": "date"

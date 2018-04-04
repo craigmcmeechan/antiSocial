@@ -33,8 +33,14 @@
 				if environment.GOOGLE_MAPS_API_KEY
 					a#post-geo-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom")
 						i.glyphicon.glyphicon-map-marker
-				a#post-autopost-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Autopost" data-placement="bottom")
-					i.glyphicon.glyphicon-calendar
+							
+				-var canEditAutopost = true
+				if editing && post.posted
+					- canEditAutopost = false
+					
+				if canEditAutopost
+					a#post-autopost-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Autopost" data-placement="bottom")
+						i.glyphicon.glyphicon-calendar
 				a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
 
 			.geo-zone
@@ -76,6 +82,6 @@
 			.autopost-zone
 				.form-group.input-relative
 					.input-group.date(data-jsclass="dateTimePickerController")
-						input.form-control(type='text' name="autopost" value= editing ? post.autopost.toISOString() : '' placeholder="Autopost time")
+						input.form-control(type='text' name="autopost" value= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
 						span.input-group-addon
 							span.glyphicon.glyphicon-calendar

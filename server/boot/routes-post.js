@@ -18,7 +18,6 @@ var path = require('path');
 var pug = require('pug');
 var FB = require('fb');
 
-
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
 
@@ -332,18 +331,26 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) { // create the post
+        if (req.body.autopost) {
+          req.body.posted = false;
+        }
+        else {
+          req.body.posted = true;
+        }
+
         currentUser.posts.create(req.body, function (err, post) {
           if (err) {
             var e = new VError(err, 'could create Post');
             return cb(e);
           }
-
           cb(null, post);
         });
       },
       function (post, cb) { // associate uploaded pending photos through PostPhoto
         if (!req.body.photos) {
-          return cb(null, post, null);
+          return async.setImmediate(function () {
+            cb(null, post, null);
+          });
         }
         var count = 0;
         async.mapSeries(req.body.photos, function (photo, mapCallback) {
@@ -370,7 +377,9 @@ module.exports = function (server) {
       },
       function (post, postPhotoInstances, cb) { // update the photos
         if (!req.body.photos) {
-          return cb(null, post);
+          return async.setImmediate(function () {
+            cb(null, post);
+          });
         }
         // get photos for PostPhotos
         req.app.models.PostPhoto.include(postPhotoInstances, 'photo', function (err) {
@@ -454,6 +463,11 @@ module.exports = function (server) {
         });
       },
       function (post, cb) { // tell the world
+        if (!post.posted) {
+          return async.setImmediate(function () {
+            cb(null, null, post);
+          });
+        }
         currentUser.pushNewsFeedItems.create({
           'uuid': uuid(),
           'type': 'post',
@@ -472,6 +486,12 @@ module.exports = function (server) {
         });
       },
       function makeNewsFeedItem(news, post, cb) { // notify self
+        if (!post.posted) {
+          return async.setImmediate(function () {
+            cb(null, post);
+          });
+        }
+
         var item = {
           'uuid': news.uuid,
           'type': 'post',
@@ -495,8 +515,10 @@ module.exports = function (server) {
         });
       },
       function crossPostFacebook(post, cb) {
-        if (!fbIdentity || post.visibility.indexOf('facebook') === -1) {
-          return cb(null, post);
+        if (!post.posted || !fbIdentity || post.visibility.indexOf('facebook') === -1) {
+          return async.setImmediate(function () {
+            cb(null, post);
+          });
         }
 
         resolvePostPhotos([post], function (err) {
