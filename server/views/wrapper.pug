@@ -34,6 +34,11 @@ html(lang="en")
 			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
 			if(cookie){document.body.className = cookie;}
 
+		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")
+			#splash-logo
+				img(src="/images/logo.svg" height="200px" style="margin:0 auto;")
+				| myAntiSocial.net
+
 		nav.navbar.navbar-inverse.navbar-fixed-top
 			.container-fluid
 				.navbar-header
@@ -272,11 +277,6 @@ html(lang="en")
 
 		#news-feed(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets )
 			include components/news-feed
-
-		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")
-			#splash-logo
-				img(src="/images/logo.svg" height="200px" style="margin:0 auto;")
-				| myAntiSocial.net
 
 		block controller
 

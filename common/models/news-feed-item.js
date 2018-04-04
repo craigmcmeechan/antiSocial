@@ -27,7 +27,7 @@ module.exports = function (NewsFeedItem) {
 				'userId': user.id
 			},
 			'order': 'createdOn DESC',
-			'limit': 60
+			'limit': 30
 		};
 
 		NewsFeedItem.find(query, function (e, items) {
