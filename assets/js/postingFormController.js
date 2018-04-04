@@ -180,7 +180,8 @@
 					'categories': JSON.stringify(self.categories),
 					'about': self.about,
 					'photos': photos,
-					'photoId': photoId
+					'photoId': photoId,
+					'autopost': self.element.find('[name="autopost"]').val()
 				};
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {
@@ -223,6 +224,11 @@
 				didInjectContent(self.element);
 			});
 
+			this.element.on('click', '#post-autopost-button', function (e) {
+				e.preventDefault();
+				self.element.find('.autopost-zone').toggle();
+			});
+
 		};
 
 		this.stop = function () {
@@ -231,6 +237,7 @@
 			this.element.off('click', '#post-cancel');
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
+			this.element.off('click', '#post-autopost-button');
 		};
 
 		this.hideForm = function () {

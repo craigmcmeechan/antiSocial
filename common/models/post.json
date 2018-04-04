@@ -64,6 +64,9 @@
     },
     "tags": {
       "type": ["string"]
+    },
+    "autopost": {
+      "type": "date"
     }
   },
   "validations": [],

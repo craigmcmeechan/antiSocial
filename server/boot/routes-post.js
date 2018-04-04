@@ -105,12 +105,14 @@ module.exports = function (server) {
           'timestamp': new Date(),
           'geoDescription': post.geoDescription,
           'geoLocation': post.geoLocation,
-          'tags': post.tags
+          'tags': post.tags,
+          'autopost': post.autopost
         });
         post.body = req.body.body;
         post.visibility = req.body.visibility;
         post.geoDescription = req.body.geoDescription;
         post.geoLocation = req.body.geoLocation;
+        post.autopost = req.body.autopost;
         post.save(function (err) {
           if (err) {
             cb(err);

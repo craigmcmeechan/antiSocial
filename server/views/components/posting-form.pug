@@ -28,9 +28,13 @@
 			.form-group.input-relative.button-zone
 				button.post-submit-button.btn.btn-sm.btn-primary Post
 				if !editing
-					a#post-upload-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom") <i class="glyphicon glyphicon-upload"></i>
+					a#post-upload-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom")
+						i.glyphicon.glyphicon-upload
 				if environment.GOOGLE_MAPS_API_KEY
-					a#post-geo-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom") <i class="glyphicon glyphicon-map-marker"></i>
+					a#post-geo-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom")
+						i.glyphicon.glyphicon-map-marker
+				a#post-autopost-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Autopost" data-placement="bottom")
+					i.glyphicon.glyphicon-calendar
 				a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
 
 			.geo-zone
@@ -68,3 +72,10 @@
 							label.checkbox-inline
 								input(type="checkbox" data-value= audience)
 								= audience
+			
+			.autopost-zone
+				.form-group.input-relative
+					.input-group.date(data-jsclass="dateTimePickerController")
+						input.form-control(type='text' name="autopost" value= editing ? post.autopost.toISOString() : '' placeholder="Autopost time")
+						span.input-group-addon
+							span.glyphicon.glyphicon-calendar
