@@ -1,5 +1,5 @@
 (function ($) {
-	function navController(elem) {
+	function subnavController(elem) {
 		// handy reference in jQuery context
 		this.element = $(elem);
 
@@ -26,16 +26,25 @@
 			// split the path /some/path/page will end up with 'some' in index 1 of the array
 			path = path.replace(/\?.*$/, '');
 			var root = path.split('/');
-			if (!root[1]) {
-				root[1] = 'home';
+			$(self.element).find('.active').removeClass('active');
+
+			if (!root[2]) {
+				$('#subnav-posts').addClass('active');
+			}
+			else {
+				if (root[2] === 'photos') {
+					$('#subnav-photos').addClass('active');
+				}
+				if (root[2] === 'friends') {
+					$('#subnav-friends').addClass('active');
+				}
 			}
 			// deselect last nav item
-			$(self.element).find('.active').removeClass('active');
 			// select new nave item which has id #nav- followed by section name
-			$('#nav-' + root[1]).addClass('active');
+
 		};
 	}
 
 	// build jquery plugin
-	$.fn.navController = GetJQueryPlugin('navController', navController);
+	$.fn.subnavController = GetJQueryPlugin('subnavController', subnavController);
 })(jQuery);
