@@ -10,8 +10,7 @@ module.exports = function (server) {
 			return res.redirect('/');
 		}
 
-		req.url = req.url.replace(/\/profile/, '/' + currentUser.username);
-		next();
+		res.set('x-digitopia-hijax-location', '/' + currentUser.username).send('redirect to ' + '/' + currentUser.username);
 	});
 
 	server.use(router);

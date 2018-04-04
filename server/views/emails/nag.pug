@@ -1,0 +1,19 @@
+.wrapper(style="border: thin solid #333;border-radius:7px;margin:30px;")
+	.header(style="background-color:#333;text-align:center")
+		img(src= config.publicHost + "/images/logo.svg" style="margin:0 auto;width:75;padding:14px;")
+	.content(style="padding:14px;")
+		h2 Hi!
+		p Some stuff has been happening.
+		
+		if friends 
+			a(href= config.publicHost + '/friends') Click Here 
+			| to see pending friend request(s)
+
+			ul
+			for friend in friends
+				li
+					a(href= config.publicHost + '/proxy-profile?endpoint=' +  encodeURIComponent(friend.remoteEndPoint))= friend.remoteName
+			
+		//
+			if notifications
+				for notification in notifications
