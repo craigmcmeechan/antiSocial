@@ -121,7 +121,7 @@ module.exports = function (server) {
 
             // group news feed items by 'about'
             for (var i = 0; i < items.length; i++) {
-              if (items[i].type === 'post' || items[i].type === 'coment' || items[i].type === 'react') {
+              if (items[i].type === 'post' || items[i].type === 'comment' || items[i].type === 'react') {
                 var key = items[i].about;
                 key = key.replace(/\/(comment|photo)\/.*/, '');
                 var whoAbout = key.replace(/\/post\/.*/, '');

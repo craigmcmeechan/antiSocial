@@ -10,7 +10,7 @@ if !about
 - var saveAbout = about
 .post-comments.live-element(data-watch= about data-watch-type="comment")
 	include rendered-comment-summary
-	.comments-list(class= commentCount ? 'collapse' : '' id= 'comments-' + post.uuid)
+	.comments-list(class= commentCount > 5 ? 'collapse' : '' id= 'comments-' + post.uuid)
 		.comments
 			if comments
 				for comment,index in comments
