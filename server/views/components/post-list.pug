@@ -56,24 +56,27 @@
 												span.glyphicon.glyphicon-arrow-right.target-arrow
 												a(href= proxyEndPoint(post.about,user))= about.name
 										div.secondary
-											if post.versions
-												.post-edited
-													| (edited)
-											.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())
+											
+											span.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())
 												= moment(post.createdOn).calendar()
 												
-											.visibility
-												if post.visibility.indexOf('public') !== -1
-													i.glyphicon.glyphicon-globe
-												else
-													i.glyphicon.glyphicon-eye-open
-												= ' ' + post.visibility.join(', ')
-											if isPublic && !isPermalink
-												.permalink
-													a(href= postEndpoint)
-														i.glyphicon.glyphicon-link
-																
-											
+											if post.versions
+												span.post-edited
+													| (edited)
+											div
+												.visibility
+													if post.visibility.indexOf('public') !== -1
+														i.glyphicon.glyphicon-globe
+													else
+														i.glyphicon.glyphicon-eye-open
+													= ' ' + post.visibility.join(', ')
+												if isPublic && !isPermalink
+													.permalink
+														a(href= postEndpoint)
+															i.glyphicon.glyphicon-link
+												if !post.posted
+													|  (pending)
+												
 											if post.geoDescription
 												.post-geo
 													<i class="glyphicon glyphicon-map-marker"></i>

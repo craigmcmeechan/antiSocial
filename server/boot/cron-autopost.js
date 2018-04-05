@@ -5,7 +5,7 @@ var doPostNotifications = require('../lib/doPostNotifications');
 
 module.exports = function autopost(server) {
 	debug('starting autopost daemon');
-	cron.schedule('*/5 * * * *', function () {
+	cron.schedule('*/1 * * * *', function () {
 		debug('autopost task running');
 		server.models.Post.find({
 			'where': {

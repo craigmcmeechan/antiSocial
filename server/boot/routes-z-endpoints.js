@@ -1825,6 +1825,9 @@ module.exports = function (server) {
 
     if (!isMe) {
       query.where.and.push({
+        'posted': true
+      });
+      query.where.and.push({
         'visibility': {
           'inq': friend && friend.audiences ? friend.audiences : ['public']
         }

@@ -248,6 +248,7 @@
 			self.element.find('.touched').removeClass('touched input-error input-ok');
 			self.element.find('.posting-markdown').val('');
 			self.element.find('.posting-body').css('height', 'auto').empty();
+			self.element.find('[name="autopost"]').val('');
 			self.element.data('formValidator').initInput(self.element);
 		};
 	}
