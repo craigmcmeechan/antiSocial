@@ -64,16 +64,13 @@ module.exports = function doPostNotifications(currentUser, post, done) {
 						var e = new VError(err, 'could not save NewsFeedItem');
 						return cb(e);
 					}
+					delete item.resolvedProfiles; // TODO not sure why this has resolvedProfiles set...
 					item.save();
 					cb(err, post);
 				});
 			},
 			function crossPostFacebook(post, cb) {
-				if (!post.posted || !fbIdentity || post.visibility.indexOf('facebook') === -1) {
-					return async.setImmediate(function () {
-						cb(null, post);
-					});
-				}
+
 
 				var fbIdentity;
 				var twIdentity;
@@ -87,6 +84,12 @@ module.exports = function doPostNotifications(currentUser, post, done) {
 							twIdentity = identity;
 						}
 					}
+				}
+
+				if (!post.posted || !fbIdentity || post.visibility.indexOf('facebook') === -1) {
+					return async.setImmediate(function () {
+						cb(null, post);
+					});
 				}
 
 				resolvePostPhotos([post], function (err) {

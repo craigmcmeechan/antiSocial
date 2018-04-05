@@ -304,6 +304,7 @@ function getListener(server, connection) {
 
 								delete myNewsFeedItem.id;
 								delete myNewsFeedItem.visibility;
+
 								myNewsFeedItem.userId = currentUser.id;
 								myNewsFeedItem.friendId = friend.id;
 
