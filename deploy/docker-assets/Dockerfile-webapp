@@ -35,7 +35,7 @@ RUN cd /var/app/current; cp deploy/docker-assets/webapp/supervisord.conf /etc/su
 ADD package.json /var/app/current/package.json
 ADD yarn.lock /var/app/current/
 ADD node_modules /var/app/current/node_modules
-RUN cd /var/app/current; yarn add phantomjs-prebuilt
+RUN cd /var/app/current; yarn global add phantomjs-prebuilt
 
 # copy app from local repository into container
 ADD assets /var/app/current/assets
