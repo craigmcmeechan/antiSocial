@@ -181,7 +181,7 @@
 					'about': self.about,
 					'photos': photos,
 					'photoId': photoId,
-					'autopost': self.element.find('[name="autopost"]').val()
+					'autopost': moment(self.element.find('[name="autopost"]').val()).tz('GMT').toISOString()
 				};
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {
