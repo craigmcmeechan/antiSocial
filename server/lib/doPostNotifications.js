@@ -112,9 +112,11 @@ module.exports = function doPostNotifications(currentUser, post, done) {
 						body = post.body;
 
 						// extract first link
-						links = post.body.match(/^(http[^\s\b]*)/gm);
-						if (links) {
-							body = body.replace(/^(http[^\s\b]*)/gm, '');
+						if (post.body.match(/^(http[^\s\b]*)/gm)) {
+							links = post.body.match(/^(http[^\s\b]*)/gm);
+							if (links) {
+								body = body.replace(/^(http[^\s\b]*)/gm, '');
+							}
 						}
 
 						// strip all other markup
@@ -139,7 +141,7 @@ module.exports = function doPostNotifications(currentUser, post, done) {
 						'/me/feed',
 						'POST', {
 							'message': body,
-							'link': links.length ? links[0] : null
+							'link': links && links.length ? links[0] : null
 						},
 						function (response) {
 							if (response && response.error) {
