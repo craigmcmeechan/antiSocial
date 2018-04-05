@@ -180,9 +180,12 @@
 					'categories': JSON.stringify(self.categories),
 					'about': self.about,
 					'photos': photos,
-					'photoId': photoId,
-					'autopost': moment(self.element.find('[name="autopost"]').val()).tz('GMT').toISOString()
+					'photoId': photoId
 				};
+
+				if (self.element.find('[name="autopost"]').val()) {
+					payload.autopost = moment(self.element.find('[name="autopost"]').val()).tz('GMT').toISOString()
+				}
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {
 					if (status !== 'success') {
