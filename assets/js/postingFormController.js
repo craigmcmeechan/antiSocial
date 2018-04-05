@@ -183,6 +183,10 @@
 					'photoId': photoId
 				};
 
+				if (self.element.find('[name="autopost"]').val()) {
+					payload.autopost = moment(self.element.find('[name="autopost"]').val()).tz('GMT').toISOString()
+				}
+
 				$.post(self.endpoint, payload, function (data, status, xhr) {
 					if (status !== 'success') {
 						flashAjaxStatus('danger', xhr.statusText);
@@ -223,6 +227,11 @@
 				didInjectContent(self.element);
 			});
 
+			this.element.on('click', '#post-autopost-button', function (e) {
+				e.preventDefault();
+				self.element.find('.autopost-zone').toggle();
+			});
+
 		};
 
 		this.stop = function () {
@@ -231,6 +240,7 @@
 			this.element.off('click', '#post-cancel');
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
+			this.element.off('click', '#post-autopost-button');
 		};
 
 		this.hideForm = function () {
@@ -238,6 +248,7 @@
 			self.element.find('.touched').removeClass('touched input-error input-ok');
 			self.element.find('.posting-markdown').val('');
 			self.element.find('.posting-body').css('height', 'auto').empty();
+			self.element.find('[name="autopost"]').val('');
 			self.element.data('formValidator').initInput(self.element);
 		};
 	}

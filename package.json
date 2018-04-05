@@ -22,6 +22,7 @@
     "digitopia": "git+https://github.com/mediapolis/digitopia.git#jquery-3-working",
     "digitopia-admin": "*",
     "dtrace-provider": "^0.8.6",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "express-session": "^1.15.4",
     "fb": "^2.0.0",
     "graphlib": "^2.1.5",
