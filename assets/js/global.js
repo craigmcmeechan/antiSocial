@@ -70,6 +70,8 @@
 
 })(jQuery);
 
+var tz = moment.tz.guess();
+
 function loadPage(href) {
 	$('body').trigger('DigitopiaLoadPage', href);
 }
