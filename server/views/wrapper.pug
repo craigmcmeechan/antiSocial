@@ -76,12 +76,11 @@ html(lang="en")
 								<i class="fa fa-cog fa-fw"></i>
 								span.hidden-not-digitopia-xsmall
 									|  Settings
-						if environment.RAVEN_DSN_PUBLIC
-							li#nav-bugs.hidden-logged-out
-								a.bug-report(href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom")
-									<i class="fa fa-bug fa-fw"></i>
-									span.hidden-not-digitopia-xsmall
-										|  Bug Report
+						li#nav-bugs.hidden-logged-out
+							a.bug-report(href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom")
+								<i class="fa fa-bug fa-fw"></i>
+								span.hidden-not-digitopia-xsmall
+									|  Bug Report
 									
 					ul.nav.navbar-nav.navbar-right
 						if globalSettings.multiUser === 'invite' && !inviteToken

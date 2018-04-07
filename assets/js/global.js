@@ -40,8 +40,7 @@
 	})
 
 	$('body').on('click', '.bug-report', function () {
-		var err = new Error('other error');
-		handleRouteError(err);
+		open('https://github.com/antiSocialNet/antiSocial/issues/new');
 	});
 
 	$('body').on('click', '.copy-to-clipboard', function () {
