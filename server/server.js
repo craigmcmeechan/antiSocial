@@ -37,6 +37,9 @@ app.locals.base64 = require('base-64');
 // markdown renderer
 var marked = require('marked');
 var myRenderer = new marked.Renderer();
+myRenderer.image = function (href, title, text) {
+  return '<img class="img-responsive" src="' + href + '">';
+};
 myRenderer.link = function (href, title, text) {
   if (text && text.match(/^http/i)) {
     return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div>';

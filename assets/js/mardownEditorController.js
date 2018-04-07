@@ -16,10 +16,8 @@
 			var options = {
 				toolbar: {
 					'allowMultiParagraphSelection': false,
-					'buttons': ['bold', 'italic', 'h1', 'h2', 'h3', 'h4', 'quote', 'unorderedlist', 'orderedlist', 'anchor', 'image']
+					'buttons': ['bold', 'italic', 'h1', 'h2', 'quote', 'unorderedlist', 'orderedlist', 'anchor']
 				},
-				'disableDoubleReturn': true,
-				'disableExtraSpaces': true,
 				'buttonLabels': 'fontawesome',
 				'placeholder': {
 					'text': self.placeholder
@@ -31,7 +29,6 @@
 			}
 
 			self.editor = new MediumEditor(self.element, options);
-
 
 			self.turndownService = new TurndownService();
 
