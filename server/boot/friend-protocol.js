@@ -3,6 +3,8 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var watchFeed = require('../lib/watchFeedWebsockets');
 var resolveProfiles = require('../lib/resolveProfiles');
 var forge = require('node-forge');
+var crc = require('crc');
+
 
 var url = require('url');
 var uuid = require('uuid');
@@ -103,7 +105,8 @@ module.exports = function (server) {
 					'localAccessToken': uuid(),
 					'keys': pair,
 					'audiences': ['public'],
-					'uniqueRemoteUsername': unique ? endpoint.pathname.substring(1) + '-' + unique : endpoint.pathname.substring(1)
+					'uniqueRemoteUsername': unique ? endpoint.pathname.substring(1) + '-' + unique : endpoint.pathname.substring(1),
+					'hash': crc.crc32(req.query.endpoint).toString(16)
 				}, function (err, friend) {
 					if (err) {
 						var e = new VError(err, '/friend createFriend failed');
@@ -399,7 +402,8 @@ module.exports = function (server) {
 					'localAccessToken': uuid(),
 					'keys': pair,
 					'audiences': ['public'],
-					'uniqueRemoteUsername': unique ? remoteEndPoint.pathname.substring(1) + '-' + unique : remoteEndPoint.pathname.substring(1)
+					'uniqueRemoteUsername': unique ? remoteEndPoint.pathname.substring(1) + '-' + unique : remoteEndPoint.pathname.substring(1),
+					'hash': crc.crc32(req.body.remoteEndPoint).toString(16)
 				}, function (err, friend) {
 					if (err) {
 						var e = new VError(err, '/friend-request createPendingFriend failed');

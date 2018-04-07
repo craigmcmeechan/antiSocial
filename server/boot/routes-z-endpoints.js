@@ -24,7 +24,7 @@ module.exports = function (server) {
   // the poster's authoritative server (users resident on this server)
 
   var profileRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)(\.json)?(\?.*)?$/;
-  var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)(\?.*)?$/;
+  var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)?(\?.*)?$/;
   var photosRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photos(\.json)?$/;
   var postsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/posts(\.json)?(\?.*)?$/;
   var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?$/;
@@ -416,7 +416,7 @@ module.exports = function (server) {
 
               for (var i = 0; i < friends.length; i++) {
                 var allowed = true;
-                if (userSettings.friendListVisibility !== 'mutual') {
+                if (userSettings.friendListVisibility === 'mutual') {
                   if (hashes.indexOf(friend.hash) === -1) {
                     allowed = false;
                   }
@@ -1824,6 +1824,9 @@ module.exports = function (server) {
     };
 
     if (!isMe) {
+      query.where.and.push({
+        'posted': true
+      });
       query.where.and.push({
         'visibility': {
           'inq': friend && friend.audiences ? friend.audiences : ['public']
