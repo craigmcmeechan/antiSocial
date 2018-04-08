@@ -43,9 +43,12 @@ module.exports = function (server) {
 
       req.app.models.Post.find({
         'where': {
-          'visibility': {
-            'inq': ['public']
-          }
+          'and': [{
+            'visibility': {
+              'inq': ['public']
+            },
+            'posted': true
+          }]
         },
         'order': 'createdOn DESC',
         'limit': 30,

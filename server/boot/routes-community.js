@@ -26,9 +26,12 @@ module.exports = function (server) {
 
     var query = {
       'where': {
-        'visibility': {
-          'inq': ['community']
-        }
+        'and': [{
+          'visibility': {
+            'inq': ['community']
+          },
+          'posted': true
+        }]
       },
       'order': 'createdOn DESC',
       'limit': 30,
