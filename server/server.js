@@ -45,10 +45,15 @@ myRenderer.link = function (href, title, text) {
     return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div>';
   }
   else {
-    if (href.match(/^http/i)) {
-      return '<a href="' + href + '" target="_blank">' + text + '</a>';
+    if (!text) {
+      return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div>';
     }
-    return '<a href="' + href + '">' + text + '</a>';
+    else {
+      if (href.match(/^http/i)) {
+        return '<a href="' + href + '" target="_blank">' + text + '</a>';
+      }
+      return '<a href="' + href + '">' + text + '</a>';
+    }
   }
 };
 
