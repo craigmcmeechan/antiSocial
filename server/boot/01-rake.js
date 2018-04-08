@@ -1,6 +1,8 @@
 var async = require('async');
 var crc = require('crc');
 module.exports = function rake(server, updateDone) {
+	return updateDone(); // nothing to do at the moment
+	/*
 	server.models.Settings.findOrCreate({
 		'where': {
 			'group': 'db_version_history'
@@ -58,4 +60,5 @@ module.exports = function rake(server, updateDone) {
 			updateDone();
 		});
 	});
+	*/
 };

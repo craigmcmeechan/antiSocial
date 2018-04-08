@@ -9,7 +9,9 @@
 ### Affected platforms
 
 <!-- Please provide specific version of affected browsers or platforms. -->
+- [ ] Server Side Issue
 
+or Client Side Browser
 - [ ] Chrome
 - [ ] Firefox
 - [ ] Internet Explorer

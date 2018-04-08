@@ -42,13 +42,19 @@ myRenderer.image = function (href, title, text) {
 };
 myRenderer.link = function (href, title, text) {
   if (text && text.match(/^http/i)) {
-    return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div>';
+    return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div><!--endog-->';
   }
   else {
-    if (href.match(/^http/i)) {
-      return '<a href="' + href + '" target="_blank">' + text + '</a>';
+    if (!text) {
+      href = href.replace(/&amp;/g, '&');
+      return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div><!--endog-->';
     }
-    return '<a href="' + href + '">' + text + '</a>';
+    else {
+      if (href.match(/^http/i)) {
+        return '<a href="' + href + '" target="_blank">' + text + '</a>';
+      }
+      return '<a href="' + href + '">' + text + '</a>';
+    }
   }
 };
 
