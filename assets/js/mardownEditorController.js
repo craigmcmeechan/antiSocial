@@ -57,7 +57,7 @@
 						for (var i = 0; i < urls.length; i++) {
 							var url = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
 							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
-								var previewTag = '<div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div>';
+								var previewTag = '<div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div><!--endog-->';
 								value = value.replace(url, previewTag);
 								deltaLength -= url.length;
 							}
@@ -108,7 +108,6 @@
 
 							var get = $.get('/api/MyUsers/me/tag?value=' + encodeURIComponent(q))
 								.done(function (data, textStatus, jqXHR) {
-									console.log(match, data);
 									data.match = match;
 									data.q = q;
 									data.punctuation = punctuation ? punctuation[1] : '';
@@ -159,7 +158,7 @@
 
 		this.updateMarkdown = function () {
 			var html = self.element.html();
-			html = html.replace(/<div class="ogPreview.*?" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"[^>]*>.*?<\/div><\/div>/g, '<a href="$1"></a>');
+			html = html.replace(/<div class="ogPreview.*?" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"[^>]*>.*?<\/div><!--endog-->/g, '<a href="$1"></a>');
 			var markdown = self.turndownService.turndown(html);
 			self.element.closest('form').find(self.target).val(markdown);
 		};
