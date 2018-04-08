@@ -57,7 +57,7 @@
 						for (var i = 0; i < urls.length; i++) {
 							var url = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
 							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
-								var previewTag = '<div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div><!--endog-->';
+								var previewTag = '<p><br></p><div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div><!--endog--><p><br></p>';
 								value = value.replace(url, previewTag);
 								deltaLength -= url.length;
 							}
