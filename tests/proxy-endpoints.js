@@ -174,7 +174,7 @@ describe('proxy endpoints', function () {
 
 	it('user2 should be able to post (friends only)', function (done) {
 		var payload = {
-			'body': 'Hello world',
+			'body': 'Hello world with a markdown link [with a title](https://www.google.com/?utm_1=1&utm_2=2&utm_3=3)\na markdown link with no title \n[](https://www.google.com/?utm_1=1&utm_2=2&utm_3=3)\n\nand a raw link\nhttps://www.google.com/?utm_1=1&utm_2=2&utm_3=3\n\n',
 			'visibility': ['friends'],
 			'photos': [{
 				'id': postPhoto,
