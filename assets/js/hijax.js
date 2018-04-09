@@ -225,8 +225,13 @@
 					$('#' + id).empty().append(chunk.children());
 				});
 
-				var title = $(html).filter("title").text();
-				document.title = title;
+				try {
+					var title = $(html).filter("title").text();
+					document.title = title;
+				}
+				catch (e) {
+
+				}
 
 				this.contentMerged();
 			}
