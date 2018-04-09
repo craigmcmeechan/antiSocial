@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="zContent-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <link rel="stylesheet" href="dist/css/DigitopiaSocial.css">
+    </head>
+    <body id="document-body" data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController,liveTimeController,tagController">
+      <script nonce="70c9e546-3164-49fa-896a-3ddab0982b9f">
+        var result;
+        var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
+        if(cookie){document.body.className = cookie;}
+      </script>
+      <div id="splash" style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;">
+        <div id="splash-logo"><img src="/images/logo.svg" height="200px" style="margin:0 auto;">myAntiSocial.net</div>
+      </div>
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button><a class="navbar-brand" href="/"><div class="header-logo"></div></a>
+          </div>
+          <div class="collapse navbar-collapse" id="navbar" data-jsclass="navController">
+            <ul class="nav navbar-nav">
+              <li class="hidden-logged-out" id="nav-feed"><a href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom"><i class="fa fa-users fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Friends Feed</span></a></li>
+              <li class="hidden-logged-out" id="nav-profile"><a href="/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom"><i class="fa fa-user fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Your Posts</span></a></li>
+              <li class="hidden-logged-out" id="nav-friends"><a href="/friends" data-toggle="tooltip" title="Your friends." data-placement="bottom"><i class="fa fa-user-plus fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Friends</span></a></li>
+              <li class="hidden-logged-out" id="nav-settings"><a href="/settings" data-toggle="tooltip" title="Your Settings." data-placement="bottom"><i class="fa fa-cog fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Settings</span></a></li>
+              <li class="hidden-logged-out" id="nav-bugs"><a class="bug-report" href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom"><i class="fa fa-bug fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Bug Report</span></a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="hidden-logged-in"><a href="#" data-toggle="modal" data-target="#request-invite-form">Request Account</a></li>
+              <li class="hidden-logged-in"><a href="#" data-toggle="modal" data-target="#login-form">Login</a></li>
+              <li class="hidden-logged-out"><a href="" data-jsclass="logoutController">Logout</a></li>
+              <li class="menu-icon-placeholder hidden-digitopia-xsmall">
+                <div id="menu-icon" data-hijax="true">
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div class="modal fade" id="login-form" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <form class="form form-validation" data-jsclass="loginController,formValidator" data-submitter="#login-button" data-modal="#login-form">
+            <div class="modal-content">
+              <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Login</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-sm-6 form-group">
+                    <label>Email Address</label>
+                    <div class="input-relative">
+                      <input class="login-email-address form-control" type="text" name="email" placeholder="Email address" data-validate="required,email">
+                      <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
+                      <div class="validation-help"></div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6 form-group">
+                    <label>Password</label>
+                    <div class="input-relative">
+                      <input class="form-control" type="password" name="password" placeholder="Password" data-validate="required,password">
+                      <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
+                      <div class="validation-help"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div class="pull-left"><a href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal">Forgot Password</a>
+                </div>
+                <button class="btn btn-primary" id="login-button" type="submit">Login</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal fade" id="password-request-reset-form" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <form class="form form-validation" action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.">
+            <div class="modal-content">
+              <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Recover Password</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-sm-6 form-group">
+                    <label>Email Address</label>
+                    <div class="input-relative">
+                      <input class="login-email-address form-control" type="text" name="email" placeholder="Email address" data-validate="required,email">
+                      <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
+                      <div class="validation-help"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div class="pull-left"><a href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal">Login</a>
+                </div>
+                <button class="btn btn-primary" id="reset-request-button" type="submit">Password Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal fade" id="password-reset-form" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <form class="form form-validation" action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form">
+            <input type="hidden" name="access_token">
+            <div class="modal-content">
+              <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Reset Password</h4>
+              </div>
+              <div class="modal-body">
+                <div class="form-group input-relative">
+                  <input class="form-control" type="password" name="password" placeholder="Password" data-validate="required,password">
+                  <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
+                  <div class="validation-help"></div>
+                </div>
+                <div class="form-group input-relative">
+                  <input class="form-control" type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']">
+                  <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
+                  <div class="validation-help"></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div class="pull-left"><a href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal">Login</a></div>
+                <button class="btn btn-primary" id="reset-button">Reset Password</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal fade" id="request-invite-form" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <form class="form form-validation" action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.">
+            <div class="modal-content">
+              <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Request an Account on This Server</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-sm-6 form-group">
+                    <label>Your Email Address</label>
+                    <div class="input-relative">
+                      <input class="login-email-address form-control" type="text" name="email" placeholder="Email address" data-validate="required,email">
+                      <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
+                      <div class="validation-help"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <p>This is a very, very early prototype. Once things are more stable we will add users who want to help us test the system.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" id="request-invite-button" type="submit">Send Request</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal fade" id="edit-post-form" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Edit post</h4>
+            </div>
+            <div class="modal-body">edit form here</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="edit-comment-form" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Edit comment</h4>
+            </div>
+            <div class="modal-body">edit form here</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="content" data-hijax="true"></div>
+
+      <div class="container-fluid text-center" id="tmks"><span>
+          Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
+          </span></div>
+      <div id="ajax-status"></div>
+      <div id="news-feed" data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint="ws://127.0.0.1:3000">
+        <div class="news-feed-header">
+          <div class="status pull-right"></div>Activity Feed
+        </div>
+        <div class="news-feed-items">
+          <div class="news-feed-item"><img src="/images/slug.png">
+            <div>listening for events</div>
+          </div>
+        </div>
+        <div class="news-feed-footer"><a href="/feed">More</a></div>
+      </div>
+      <script type="text/javascript" src="cordova.js"></script>
+      <script type="text/javascript" src="dist/js/jquery.min.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
+      <script type="text/javascript" src="dist/js/DigitopiaSocial.js" async defer></script>
+    </body>
+</html>
