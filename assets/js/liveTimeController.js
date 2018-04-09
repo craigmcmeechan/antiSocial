@@ -32,13 +32,17 @@
 		this.updateTimes = function () {
 			$('.timestamp:in-viewport').each(function () {
 				if ($(this).data('timestamp')) {
-					var delta = self.getDeltaTime($(this).data('timestamp'));
+					var delta = self.getDeltaTime($(this).data('timestamp'), $(this).data('format'));
 					$(this).html(delta);
 				}
 			});
 		};
 
-		this.getDeltaTime = function (timestamp) {
+		this.getDeltaTime = function (timestamp, format) {
+			if (format === 'absolute') {
+				return moment(timestamp).tz(self.tz).format('LLLL');
+			}
+
 			var delta;
 			if (moment().diff(moment(timestamp), 'hours') > 48) {
 				delta = moment(timestamp).tz(self.tz).calendar().split(' at')[0];
@@ -48,7 +52,6 @@
 			}
 			return delta;
 		};
-
 	}
 
 	$.fn.liveTimeController = GetJQueryPlugin('liveTimeController', liveTimeController);
