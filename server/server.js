@@ -270,7 +270,7 @@ app.start = function () {
     if (!process.env.HTTPS_LISTENER) {
       app.io = require('socket.io')(listener);
       websockets.mount(app);
-      app.locals.logger.info('sebsockets ws started');
+      app.locals.logger.info('websockets ws started');
       return;
     }
 
