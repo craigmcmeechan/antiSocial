@@ -104,8 +104,12 @@ module.exports = function doPostNotifications(currentUser, post, done) {
 					var links = [];
 
 					if (post.visibility.indexOf('public') !== -1) {
-						// pass the permilink of the post to facebook and let it build the preview
-						links = [server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid];
+						// pass the permalink of the post to facebook and let it build the preview
+						// strip all other markup from body
+						body = server.locals.marked(post.body);
+						body = body.replace('</p>', '\n');
+						body = body.replace(/<[^>]+>/g, ' ');
+						links = [server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid + '?source=facebook'];
 					}
 					else {
 						// try to adapt the post to facebook limitations
