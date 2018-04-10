@@ -75,7 +75,9 @@
 														a(href= postEndpoint)
 															i.glyphicon.glyphicon-link
 												if !post.posted
-													|  (pending)
+													= ' (pending '
+													span.timestamp(data-timestamp= moment(post.autopost).toISOString() data-format="absolute")
+													= ')'
 												
 											if post.geoDescription
 												.post-geo

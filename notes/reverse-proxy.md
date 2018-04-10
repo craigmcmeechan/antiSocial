@@ -7,9 +7,11 @@ The UI templates construct links in the appropriate form so all of this is trans
 > TL;DR Michael's browser requests all information about Alan via a reverse proxy on Michael's server. Michael and Alan's servers work out the permissions for the information being requested.
 
 Implementation:
-[boot/routes-z-endpoints.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/boot/routes-z-endpoints.js)
-[middleware/rewriteUrls.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/middleware/rewriteUrls.js)
-[boot/routes-zz-proxy.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/boot/routes-zz-proxy.js)
+- [boot/routes-z-endpoints.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/boot/routes-z-endpoints.js)
+
+- [middleware/rewriteUrls.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/middleware/rewriteUrls.js)
+
+- [boot/routes-zz-proxy.js](https://github.com/antiSocialNet/antiSocial/blob/master/server/boot/routes-zz-proxy.js)
 
 Permissions:
 * The logged in owner of the account sees all their information

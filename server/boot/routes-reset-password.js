@@ -13,6 +13,8 @@ module.exports = function (server) {
 					if (err) {
 						return res.sendStatus(404);
 					}
+					res.header('x-digitopia-hijax-flash-level', 'info');
+					res.header('x-digitopia-hijax-flash-message', 'password updated');
 					res.sendStatus(200);
 				});
 			}

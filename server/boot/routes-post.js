@@ -60,7 +60,8 @@ module.exports = function (server) {
     ], function (err, post) {
       res.render('components/posting-form', {
         'editing': true,
-        'post': post
+        'post': post,
+        'user': currentUser
       });
     });
   });

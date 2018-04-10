@@ -12,16 +12,21 @@ describe('proxy endpoints', function () {
 	var client1 = request.agent();
 	var client2 = request.agent();
 	var client3 = request.agent();
+	var client4 = request.agent();
 
 	var clientAnon = request.agent();
 
 	var email1 = 'mrhodes+test+proxy1@myantisocial.net';
 	var email2 = 'mrhodes+test+proxy2@myantisocial.net';
 	var email3 = 'mrhodes+test+proxy3@myantisocial.net';
+	var email4 = 'mrhodes+test+proxy4@myantisocial.net';
 
 	var endpoint1 = 'http://127.0.0.1:3000/';
 	var endpoint2 = 'http://127.0.0.1:3000/';
 	var endpoint3 = 'http://127.0.0.1:3000/';
+	var endpoint4 = 'http://127.0.0.1:3000/';
+
+	var userID1, userID2, userID3, userID4;
 
 	var password = 'testing123';
 	var post1;
@@ -66,6 +71,7 @@ describe('proxy endpoints', function () {
 					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 					expect(accessToken).to.be.a('string');
 					endpoint1 += res.body.result.username;
+					userID1 = res.body.result.id;
 					done();
 				});
 		});
@@ -84,6 +90,7 @@ describe('proxy endpoints', function () {
 					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 					expect(accessToken).to.be.a('string');
 					endpoint2 += res.body.result.username;
+					userID2 = res.body.result.id;
 					done();
 				});
 		});
@@ -102,6 +109,26 @@ describe('proxy endpoints', function () {
 					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 					expect(accessToken).to.be.a('string');
 					endpoint3 += res.body.result.username;
+					userID3 = res.body.result.id;
+					done();
+				});
+		});
+
+		it('should be able to create account 4', function (done) {
+			client4.post('http://127.0.0.1:3000/api/MyUsers/register')
+				.type('form')
+				.send({
+					'email': email4,
+					'password': password,
+					'name': 'user four'
+				})
+				.end(function (err, res) {
+					expect(err).to.be(null);
+					expect(res.status).to.equal(200);
+					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
+					expect(accessToken).to.be.a('string');
+					endpoint4 += res.body.result.username;
+					userID4 = res.body.result.id;
 					done();
 				});
 		});
@@ -141,6 +168,24 @@ describe('proxy endpoints', function () {
 				done();
 			});
 		});
+
+		it('user4 should be able to friend user2', function (done) {
+			client4.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint2).end(function (err, res) {
+				// console.log('request friend %j', res.body);
+				expect(res.status).to.be(200);
+				expect(res.body.status).to.equal('ok');
+				done();
+			});
+		});
+
+		it('user2 should be able to accept friend request from user4', function (done) {
+			client2.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint4)).end(function (err, res) {
+				// console.log('accept friend %j', res.body);
+				expect(res.status).to.be(200);
+				expect(res.body.status).to.equal('ok');
+				done();
+			});
+		});
 	}
 
 	it('user2 should be able to post (public)', function (done) {
@@ -152,13 +197,13 @@ describe('proxy endpoints', function () {
 			expect(res.body.status).to.be('ok');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
 			expect(res.body.status).to.be('ok');
-			// console.log('post public %j', res.body);
+			console.log('post public %j', res.body);
 			post1 = res.body.uuid;
 			done();
 		});
 	});
 
-	it('user 2 should be able to upload a post photo', function (done) {
+	it('user2 should be able to upload a post photo', function (done) {
 		var url = 'http://localhost:3000/pending-upload';
 		var file = 'tests/images/test-image.jpg';
 
@@ -194,6 +239,8 @@ describe('proxy endpoints', function () {
 		});
 	});
 
+	// TODO post notifications to user1 user2 user4 not user3
+
 	it('user2 should be able to post (friends only) w/tags', function (done) {
 		var payload = {
 			'body': 'Hello world [hashtag](tag-hash-hashtag) [user one with many spaces](tag-user-' + endpoint1 + ')',
@@ -223,6 +270,8 @@ describe('proxy endpoints', function () {
 		});
 	});
 
+	// TODO react notifications to user1 user2 user4 not user3
+
 	it('user1 should be able to comment on user2 post', function (done) {
 		client1.post('http://127.0.0.1:3000/comment').send({
 			'body': 'a comment',
@@ -250,7 +299,7 @@ describe('proxy endpoints', function () {
 		});
 	});
 
-	it('user 2 should be able to upload a post comment photo', function (done) {
+	it('user2 should be able to upload a post comment photo', function (done) {
 		var url = 'http://localhost:3000/pending-upload';
 		var file = 'tests/images/test-image.jpg';
 
@@ -301,7 +350,7 @@ describe('proxy endpoints', function () {
 		});
 	});
 
-	it('user1 should be able to get user2 posts (json)', function (done) {
+	it('user1 should be able to get all user2 posts (json)', function (done) {
 		client1.get(endpoint2 + '/posts.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
@@ -343,7 +392,29 @@ describe('proxy endpoints', function () {
 		});
 	});
 
-	it('user 2 should be able to get all user 2 posts (json)', function (done) {
+	it('user3 user should only able to get user2 public posts (json)', function (done) {
+		client3.get(endpoint2 + '/posts.json').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body).to.be.an('object');
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			// console.log('public posts %j', res.body);
+			expect(res.body.posts.length).to.be(1);
+			done();
+		});
+	});
+
+	it('user4 user should be able to get all user2 posts (json)', function (done) {
+		client4.get(endpoint2 + '/posts.json').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body).to.be.an('object');
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			// console.log('public posts %j', res.body);
+			expect(res.body.posts.length).to.be(3);
+			done();
+		});
+	});
+
+	it('user2 should be able to get all user 2 posts (json)', function (done) {
 		client2.get(endpoint2 + '/posts.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
@@ -354,7 +425,7 @@ describe('proxy endpoints', function () {
 		});
 	});
 
-	it('user1 should be able to get user2 post (json)', function (done) {
+	it('user1 should be able to get all user2 post (json)', function (done) {
 		client1.get(endpoint2 + '/post/' + post1 + '.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
@@ -629,6 +700,20 @@ describe('proxy endpoints', function () {
 		client2.get(endpoint1 + '/photo/' + postCommentPhotoUUID).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
+			done();
+		});
+	});
+
+	it('check notifications about ', function (done) {
+		console.log(endpoint2 + '/post/' + post1);
+		app.models.NewsFeedItem.find({
+			'where': {
+				'about': endpoint2 + '/post/' + post1
+			}
+		}, function (err, notifications) {
+			expect(err).to.be(null);
+			console.log(notifications);
+			expect(notifications.length).to.be(3);
 			done();
 		});
 	});

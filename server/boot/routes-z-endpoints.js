@@ -27,7 +27,7 @@ module.exports = function (server) {
   var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)?(\?.*)?$/;
   var photosRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photos(\.json)?$/;
   var postsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/posts(\.json)?(\?.*)?$/;
-  var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?$/;
+  var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?(\?source=facebook)?$/;
   var postReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/reactions(\.json)?$/;
   var postCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comments(\.json)?$/;
   var postCommentRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)(\.json)?$/;
@@ -595,8 +595,24 @@ module.exports = function (server) {
         resolveReactionsCommentsAndProfiles([post], isMe, function (err) {
           cb(err, user, post);
         });
+      },
+      function (user, post, cb) {
+        var body = post.body ? server.locals.marked(post.body) : '';
+        var matches = body.match(/<div class="ogPreview" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"><\/div>/)
+        if (!matches) {
+          return cb(null, user, post);
+        }
+
+        server.models.OgTag.findOne({
+          'where': {
+            'url': matches[1]
+          },
+          'include': ['uploads']
+        }, function (err, og) {
+          cb(null, user, post, og);
+        });
       }
-    ], function (err, user, post) {
+    ], function (err, user, post, og) {
       if (err) {
         return next(err);
       }
@@ -609,7 +625,8 @@ module.exports = function (server) {
           'visibility': friend ? friend.audiences : isMe ? 'all' : 'public'
         },
         'profile': getProfile(user),
-        'post': post
+        'post': post,
+        'og': og
       };
 
       if (view === '.json') {
@@ -622,7 +639,8 @@ module.exports = function (server) {
         'friend': friend,
         'isPermalink': req.query.embed ? false : true,
         'isMe': isMe,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
+        'myEndpoint': getPOVEndpoint(friend, currentUser),
+        'source': req.query.source
       };
 
       renderFile('/components/rendered-post.pug', options, req, function (err, html) {
