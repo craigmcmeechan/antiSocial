@@ -1,6 +1,6 @@
 ###  Feeds
 
-Events are propagated through the friend network using websockets. The framework this prototype is built on, [Loopback](https://loopback.io/doc/en/lb3/Realtime-server-sent-events.html), has built in support for subscribing to 'ChangeStreams' on the REST API the framework mounts for data models (tables) all watchers can see any changes to the tables in real-time.
+Events are propagated through the friend network using websockets so all watchers can see any changes events in real-time.
 
 The news feeds are authenticated using the accessTokens that were exchanged in the friending protocol and all content is encrypted and signed using [hybrid public key cryptography](https://en.wikipedia.org/wiki/Hybrid_cryptosystem).
 
@@ -80,10 +80,10 @@ Michael's Browser         Michael's server           Alan's server            Al
 -----------------         ----------------          ----------------         ----------------
 
 GET --------------------->
-http://rhodes.com/api/NewsFeedItems/me/live
+wss://rhodes.com/api/NewsFeedItems/me/live
 
                                                     <---------------------- GET
-                                                                            ws://emtage.com
+                                                                            wss://emtage.com
 
                           GET --------------------->
                           wss://emtage.com
@@ -93,7 +93,7 @@ http://rhodes.com/api/NewsFeedItems/me/live
                           }
 
                           <------------------------ GET
-                                                    ws://rhodes.com
+                                                    wss://rhodes.com
                                                     HEADERS: {
                                                       'friend-access-token': Alan's Access token for Michael,
                                                       'friend-high-water': Latest record seen
