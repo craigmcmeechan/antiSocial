@@ -84,6 +84,9 @@ var watchFeed = function watchFeed(server, friend) {
 			if (friend.highWater) {
 				endpoint += '&friend-high-water=' + friend.highWater;
 			}
+
+			debugWebsockets('watchFeed %s connecting %s', key, endpoint);
+
 			var socket = require('socket.io-client')(endpoint);
 
 			var connection = {

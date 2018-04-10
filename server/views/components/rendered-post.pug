@@ -31,23 +31,21 @@ block seo
 			- imageSet= posts[0].sortedPhotos[0].uploads()[0].imageSet
 		else
 			- imageSet= posts[0].sortedPhotos[0].uploads[0].imageSet
+			
 		if imageSet.large 
 			- image = imageSet.large.url
 		else
 			- image = imageSet.original.url
-	else
-		
-		- var t = _.get(og,'ogData.data.ogTitle')
-		if !title && t
-			- title = t
-			
-		- var i = _.get(og,'ogData.data.ogImage.url')
-		if i
-			- image = i
-			
+	
+	if og
+		- image = _.get(og,'ogData.data.ogImage.url') || image
+		if source === 'facebook'
+			- title = _.get(og,'ogData.data.ogTitle') || title
+			- summary = _.get(og,'ogData.data.ogDescription') || summary
+
 	if !title
 		- title = 'Story by ' + posts[0].resolvedProfiles[posts[0].source].profile.name
-		
+			
 	title= title
 	meta(property="og:type" content="article")
 	meta(property="og:image" content= image)

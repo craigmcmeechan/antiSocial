@@ -142,8 +142,8 @@ module.exports.mount = function websocketsMount(app) {
 
 	app.io.on('connection', function (socket) {
 		debug('websocketsMount a user connected');
-		socket.on('disconnect', function (reason) {
-			debug('websocketsMount %s disconnect %s', socket.connectionKey, reason);
-		});
+		//socket.on('disconnect', function (reason) {
+		//	debug('websocketsMount %s disconnect %s', socket.connectionKey, reason);
+		//});
 	});
 };

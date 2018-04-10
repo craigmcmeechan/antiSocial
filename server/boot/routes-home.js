@@ -34,7 +34,7 @@ module.exports = function (server) {
       res.redirect('/setup');
     }
     else {
-      if (ctx.get('currentUser')) {
+      if (ctx.get('currentUser') && !req.query.access_token) { // if access_token then doing password reset
         if (req.headers['x-digitopia-hijax']) {
           return res.set('x-digitopia-hijax-location', '/feed').send('redirect to ' + '/feed');
         }
