@@ -6,7 +6,9 @@ This prototype is built in [Nodejs](https://nodejs.org) on the [loopback](https:
 
 Fork the repository and clone it to your development computer
 
-install node if you don't already have it
+install node if you don't already have it.
+
+set up the environment
 
 `cp localdev-example.env localdev.env`
 
@@ -14,7 +16,7 @@ Note that by default all data is ephemeral using the loopback memory connector. 
 
 run `npm install`
 
-run `grunt devel &`
+run `grunt devel &` to build client side css and javascript distribution
 
 run tests:
 
