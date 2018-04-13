@@ -82,6 +82,11 @@ block content
 											if friend.status === 'pending'
 												|  (pending) 
 
+				if invites && invites.length
+					.page-header Invitations
+					ul
+						for invite in invites
+							li= invite.email + ' (' + invite.status + ')'
 	//
 		if friends.length
 			.row

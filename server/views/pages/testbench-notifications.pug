@@ -14,7 +14,10 @@ block content
 				ul
 					for pushItem in pushItems
 						li
-							= pushItem.type
+							strong= pushItem.type
+							if pushItem.deleted
+								span(style="color:red")
+									|  DELETED
 							if pushItem.type === 'friend'
 								= ' (i am now friends with) '
 							if pushItem.type === 'post'
@@ -26,7 +29,9 @@ block content
 							a(href="?uuid=" + pushItem.uuid) 
 								= pushItem.about
 							div
-								= JSON.stringify(pushItem.visibility)
+								= 'visibility: ' + JSON.stringify(pushItem.visibility)
+								if pushItem.tags && pushItem.tags.length
+									= ', tags: ' + JSON.stringify(pushItem.tags)
 		if notifyItems
 			.row
 				.col-xs-12
@@ -58,6 +63,11 @@ block content
 										= ' reacted to '
 									else
 										= ' ' + notify.type + ' '
+										
+									if notify.deleted 
+										|  DELETED 
 									= notify.about
+									if notify.details && JSON.stringify(notify.details) !== '{}'
+										div= JSON.stringify(notify.details)
 								else
 									div= JSON.stringify(notify)
