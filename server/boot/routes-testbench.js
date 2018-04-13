@@ -1,5 +1,6 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
+var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
 var watchFeed = require('../lib/watchFeedWebsockets');
 var async = require('async');
@@ -21,12 +22,27 @@ module.exports = function (server) {
 	});
 
 	// testbench
-	router.get('/testbench-editor', getCurrentUser(), function (req, res, next) {
+	router.get('/testbench-editor', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 
 		res.render('pages/testbench-editor', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser')
+		});
+	});
+
+	// testbench
+	router.get('/requests', getCurrentUser(), function (req, res, next) {
+		var ctx = req.myContext;
+		server.models.Request.find({
+			'where': {},
+			'order': 'createdOn ASC'
+		}, function (err, requests) {
+			res.render('pages/requests', {
+				'globalSettings': ctx.get('globalSettings'),
+				'currentUser': ctx.get('currentUser'),
+				'requests': requests
+			});
 		});
 	});
 
