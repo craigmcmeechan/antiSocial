@@ -68,6 +68,7 @@ module.exports = function (PushNewsFeedItem) {
 					if (hit) {
 
 						// if it's a comment only send the comment body to the owner of the post
+						/*
 						if (data.type === 'comment') {
 							var about = data.about;
 							var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
@@ -77,6 +78,7 @@ module.exports = function (PushNewsFeedItem) {
 								data.versions = [];
 							}
 						}
+						*/
 
 						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(data));
 
@@ -141,6 +143,7 @@ module.exports = function (PushNewsFeedItem) {
 			}
 
 			// if it's a comment only send the comment body to the owner of the post
+			/*
 			if (data.type === 'comment') {
 				var about = data.about;
 				var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
@@ -149,6 +152,7 @@ module.exports = function (PushNewsFeedItem) {
 					data.details = {};
 				}
 			}
+			*/
 
 			// the data includes the id or the where includes the id
 			var target;
