@@ -135,7 +135,6 @@ describe('proxy endpoints', function () {
 
 		it('user1 should be able to friend user2', function (done) {
 			client1.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint2).end(function (err, res) {
-				// console.log('request friend %j', res.body);
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -144,7 +143,6 @@ describe('proxy endpoints', function () {
 
 		it('user2 should be able to accept friend request from user1', function (done) {
 			client2.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint1)).end(function (err, res) {
-				// console.log('accept friend %j', res.body);
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -153,7 +151,6 @@ describe('proxy endpoints', function () {
 
 		it('user3 should be able to friend user1', function (done) {
 			client3.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint1).end(function (err, res) {
-				// console.log('request friend %j', res.body);
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -162,7 +159,6 @@ describe('proxy endpoints', function () {
 
 		it('user1 should be able to accept friend request from user3', function (done) {
 			client1.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint3)).end(function (err, res) {
-				// console.log('accept friend %j', res.body);
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -171,7 +167,6 @@ describe('proxy endpoints', function () {
 
 		it('user4 should be able to friend user2', function (done) {
 			client4.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint2).end(function (err, res) {
-				// console.log('request friend %j', res.body);
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -180,7 +175,6 @@ describe('proxy endpoints', function () {
 
 		it('user2 should be able to accept friend request from user4', function (done) {
 			client2.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint4)).end(function (err, res) {
-				// console.log('accept friend %j', res.body);
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -197,7 +191,6 @@ describe('proxy endpoints', function () {
 			expect(res.body.status).to.be('ok');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
 			expect(res.body.status).to.be('ok');
-			console.log('post public %j', res.body);
 			post1 = res.body.uuid;
 			done();
 		});
@@ -211,7 +204,6 @@ describe('proxy endpoints', function () {
 			.end(function (err, res) {
 				expect(err).to.be(null);
 				expect(res.status).to.be(200);
-				// console.log('upload photo %j', res.body);
 				postPhoto = res.body.id;
 				done();
 			});
@@ -229,10 +221,8 @@ describe('proxy endpoints', function () {
 		};
 
 		client2.post('http://127.0.0.1:3000/post').send(payload).end(function (err, res) {
-			// console.log(res.body);
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('post w/photo %j', res.body);
 			expect(res.body.status).to.be('ok');
 			post2 = res.body.uuid;
 			done();
@@ -248,10 +238,8 @@ describe('proxy endpoints', function () {
 		};
 
 		client2.post('http://127.0.0.1:3000/post').send(payload).end(function (err, res) {
-			// console.log(res.body);
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('post w/photo %j', res.body);
 			expect(res.body.status).to.be('ok');
 			done();
 		});
@@ -264,7 +252,6 @@ describe('proxy endpoints', function () {
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('react to post %j', res.body);
 			expect(res.body.status).to.be('ok');
 			done();
 		});
@@ -279,7 +266,6 @@ describe('proxy endpoints', function () {
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('comment on post %j', res.body);
 			expect(res.body.status).to.be('ok');
 			commentId = res.body.comment.uuid;
 			done();
@@ -293,7 +279,6 @@ describe('proxy endpoints', function () {
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('react to post comment %j', res.body);
 			expect(res.body.status).to.be('ok');
 			done();
 		});
@@ -307,7 +292,6 @@ describe('proxy endpoints', function () {
 			.end(function (err, res) {
 				expect(err).to.be(null);
 				expect(res.status).to.be(200);
-				// console.log('upload photo %j', res.body);
 				postCommentPhoto = res.body.id;
 				postCommentPhotoUUID = res.body.uuid;
 				done();
@@ -324,7 +308,6 @@ describe('proxy endpoints', function () {
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('comment on post %j', res.body);
 			expect(res.body.status).to.be('ok');
 			commentId = res.body.comment.uuid;
 			done();
@@ -336,7 +319,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('profile %j', res.body);
 			done();
 		});
 	});
@@ -355,7 +337,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('posts %j', res.body);
 			expect(res.body.posts.length).to.be(3);
 			done();
 		});
@@ -375,7 +356,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('posts %j', res.body);
 			expect(res.body.posts.length).to.be(1);
 			done();
 		});
@@ -386,7 +366,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('public posts %j', res.body);
 			expect(res.body.posts.length).to.be(1);
 			done();
 		});
@@ -397,7 +376,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('public posts %j', res.body);
 			expect(res.body.posts.length).to.be(1);
 			done();
 		});
@@ -408,7 +386,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('public posts %j', res.body);
 			expect(res.body.posts.length).to.be(3);
 			done();
 		});
@@ -419,7 +396,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('public posts %j', res.body);
 			expect(res.body.posts.length).to.be(3);
 			done();
 		});
@@ -430,7 +406,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('post %j', res.body);
 			expect(res.body.post).to.be.an('object');
 			expect(res.body.post.uuid).to.equal(post1);
 			done();
@@ -451,7 +426,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('reactions %j', res.body);
 			expect(res.body.reactions).to.be.an('object');
 			expect(res.body.reactions.length).to.be(1);
 			done();
@@ -471,7 +445,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('comments %j', res.body);
 			expect(res.body.comments).to.be.an('object');
 			expect(res.body.comments.length).to.be(2);
 			done();
@@ -491,7 +464,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('comment %j', res.body);
 			expect(res.body.comment).to.be.an('object');
 			expect(res.body.comment.uuid).to.equal(commentId);
 			done();
@@ -511,7 +483,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('comment reactions %j', res.body);
 			expect(res.body.reactions).to.be.an('array');
 			done();
 		});
@@ -531,7 +502,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('photos %j', res.body);
 			expect(res.body.photos).to.be.an('array');
 			expect(res.body.photos.length).to.be(1);
 			postPhotoUUID = res.body.photos[0].uuid;
@@ -554,7 +524,6 @@ describe('proxy endpoints', function () {
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('comment on post %j', res.body);
 			expect(res.body.status).to.be('ok');
 			photoCommentId = res.body.comment.uuid;
 			done();
@@ -568,7 +537,6 @@ describe('proxy endpoints', function () {
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('react to post photo %j', res.body);
 			expect(res.body.status).to.be('ok');
 			done();
 		});
@@ -581,7 +549,6 @@ describe('proxy endpoints', function () {
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('comment to post photo %j', res.body);
 			expect(res.body.status).to.be('ok');
 			done();
 		});
@@ -592,7 +559,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('photo %j', res.body);
 			expect(res.body.photo).to.be.an('object');
 			done();
 		});
@@ -611,7 +577,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('photo reactions %j', res.body);
 			expect(res.body.reactions).to.be.an('array');
 			done();
 		});
@@ -630,7 +595,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('photos comments %j', res.body);
 			expect(res.body.comments).to.be.an('array');
 			done();
 		});
@@ -649,7 +613,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('photos comment %j', res.body);
 			expect(res.body.comment).to.be.an('object');
 			done();
 		});
@@ -668,7 +631,6 @@ describe('proxy endpoints', function () {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('photos comment %j', res.body);
 			expect(res.body.reactions).to.be.an('array');
 			done();
 		});
@@ -684,19 +646,16 @@ describe('proxy endpoints', function () {
 
 
 	it('user1 should be able to get user1 comment photo (json)', function (done) {
-		//console.log(endpoint1 + '/photo/' + postCommentPhotoUUID + '.json');
 		client2.get(endpoint1 + '/photo/' + postCommentPhotoUUID + '.json').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body).to.be.an('object');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			// console.log('photo %j', res.body);
 			expect(res.body.photo).to.be.an('object');
 			done();
 		});
 	});
 
 	it('user1 should be able to get user1 comment photo (html)', function (done) {
-		//console.log(endpoint1 + '/photo/' + postCommentPhotoUUID);
 		client2.get(endpoint1 + '/photo/' + postCommentPhotoUUID).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
@@ -704,16 +663,17 @@ describe('proxy endpoints', function () {
 		});
 	});
 
-	it('check notifications about ', function (done) {
-		console.log(endpoint2 + '/post/' + post1);
+	it('check notifications about post1', function (done) {
 		app.models.NewsFeedItem.find({
 			'where': {
 				'about': endpoint2 + '/post/' + post1
 			}
 		}, function (err, notifications) {
 			expect(err).to.be(null);
-			console.log(notifications);
 			expect(notifications.length).to.be(3);
+			for (var i = 0; i < notifications.length; i++) {
+				console.log(notifications[i].about, ' notified user:', notifications[i].userId, 'friend:', notifications[i].friendId || 'self');
+			}
 			done();
 		});
 	});

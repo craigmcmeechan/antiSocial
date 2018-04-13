@@ -7,19 +7,20 @@
 		self.debug = this.element.data('debug');
 
 		this.start = function () {
-			if(self.debug) {
+			if (self.debug) {
 				$(self.debug).empty().text('Loading...').show();
 			}
 			// once digitopiaAjax has loaded the data from the endpoint, build the ui
 			this.element.on('data', function (e, data) {
 				self.data = data.result;
 
-				if(self.debug) {
+				if (self.debug) {
 					$(self.debug).empty().text(JSON.stringify(data, null, 4)).show();
 				}
 
-				var src = getUploadForProperty('image', data.result.uploads, 'large', true).url;
-				var img = $('<img data-jsclass="digitopiaLazyImg" data-lazy-src="' + src + '">');
+				var upload = getUploadForProperty('image', data.result.uploads, 'large', true);
+				var src = upload.url;
+				var img = $('<img src="' + src + '" data-width=' + upload.width + ' data-height=' + upload.height + '>');
 				var caption = $('<div class="caption">');
 				var site = data.result.ogData.data.ogSiteName ? data.result.ogData.data.ogSiteName : parseUri(self.url).host;
 				var title = data.result.ogData.data.ogTitle ? data.result.ogData.data.ogTitle : 'Link'

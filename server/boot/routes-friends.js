@@ -1,6 +1,7 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var getFriends = require('../middleware/context-getFriends');
+var getFriendInvites = require('../middleware/context-getFriendInvites');
 
 var async = require('async');
 var request = require('request');
@@ -13,12 +14,13 @@ module.exports = function (server) {
   var router = server.loopback.Router();
 
   // friends page
-  router.get('/friends', getCurrentUser(), ensureLoggedIn(), getFriends(), function (req, res, next) {
+  router.get('/friends', getCurrentUser(), ensureLoggedIn(), getFriends(), getFriendInvites(), function (req, res, next) {
     var ctx = req.myContext;
     res.render('pages/friends', {
       'user': ctx.get('currentUser'),
       'globalSettings': ctx.get('globalSettings'),
-      'friends': ctx.get('friends')
+      'friends': ctx.get('friends'),
+      'invites': ctx.get('invites')
     });
   });
 

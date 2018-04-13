@@ -67,6 +67,9 @@ module.exports = function (server) {
 
     getUser(username, function (err, user) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -184,6 +187,9 @@ module.exports = function (server) {
       }
     ], function (err, user, photos) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -242,6 +248,9 @@ module.exports = function (server) {
 
     getUser(username, function (err, user) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -513,6 +522,9 @@ module.exports = function (server) {
       }
     ], function (err, user, posts) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -614,6 +626,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post, og) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -714,6 +729,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -812,6 +830,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -910,6 +931,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1014,6 +1038,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1118,6 +1145,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1201,6 +1231,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1296,6 +1329,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1400,6 +1436,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1507,6 +1546,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1631,6 +1673,9 @@ module.exports = function (server) {
       }
     ], function (err, user, post) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
@@ -1736,6 +1781,9 @@ module.exports = function (server) {
       }
     ], function (err, user, photo) {
       if (err) {
+        if (err.statusCode === 404) {
+          return res.sendStatus(404);
+        }
         return next(err);
       }
 
