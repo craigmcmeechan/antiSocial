@@ -3,10 +3,44 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
 var watchFeed = require('../lib/watchFeedWebsockets');
+var clientWebsockets = require('../lib/websockets');
+
 var async = require('async');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
+
+	router.get('/stop-ws', function (req, res, next) {
+		server.models.MyUser.find({}, function (err, users) {
+			for (var i = 0; i < users.length; i++) {
+				watchFeed.disconnectAll(server, users[i]);
+			}
+			clientWebsockets.disconnectAll(server);
+			res.send('ok');
+		});
+	});
+
+	router.get('/start-ws', function (req, res, next) {
+		var query = {
+			'where': {
+				'status': 'accepted'
+			},
+			'include': ['user']
+		};
+
+		server.models.Friend.find(query, function (err, friends) {
+			if (err) {
+				console.log('Friend.find failed', err);
+				return;
+			}
+
+			for (var i = 0; i < friends.length; i++) {
+				var friend = friends[i];
+				watchFeed.connect(server, friend);
+			}
+		});
+		res.send('ok');
+	});
 
 	router.get('/status', getCurrentUser(), function (req, res, next) {
 		var ctx = req.myContext;
