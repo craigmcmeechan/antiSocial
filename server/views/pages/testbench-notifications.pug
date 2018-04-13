@@ -1,0 +1,63 @@
+
+block seo
+	title.
+		Testbench
+
+block content
+	.container-fluid.content-padding-top.content
+
+		.page-header
+			h1= 'Testbench notifications for: ' + currentUser.name
+		.row
+			.col-xs-12
+				strong Pushed to my network
+				ul
+					for pushItem in pushItems
+						li
+							= pushItem.type
+							if pushItem.type === 'friend'
+								= ' (i am now friends with) '
+							if pushItem.type === 'post'
+								= ' (i posted) '
+							if pushItem.type === 'react'
+								= ' (i reacted to) '
+							if pushItem.type === 'comment'
+								= ' (i commented on) '
+							a(href="?uuid=" + pushItem.uuid) 
+								= pushItem.about
+							div
+								= JSON.stringify(pushItem.visibility)
+		if notifyItems
+			.row
+				.col-xs-12
+					if uuid
+						strong= 'I Notified my network about ' + uuid
+					else 
+						strong= 'I received notifications from my network'
+						
+					ul
+						for notify in notifyItems
+							li
+								if uuid
+									if notify.user().id.toString() === currentUser.id.toString()
+										| self
+									else
+										= notify.user().username 
+									= ' notified that '
+								if notify.type === 'pending friend request'
+									= ' I have a friend request from ' + notify.source
+								else if notify.type === 'friend'
+									= notify.source + ' is now friends with ' + notify.about
+								else if notify.type === 'post' || notify.type === 'react' || notify.type === 'comment'
+									= notify.source 
+									if notify.type === 'post'
+										= ' posted '
+									else if notify.type === 'comment'
+										= ' commented on '
+									else if notify.type === 'react'
+										= ' reacted to '
+									else
+										= ' ' + notify.type + ' '
+									= notify.about
+								else
+									div= JSON.stringify(notify)

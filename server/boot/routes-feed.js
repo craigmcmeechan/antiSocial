@@ -13,6 +13,9 @@ var url = require('url');
 var debug = require('debug')('scroll');
 var debugVerbose = require('debug')('scroll:verbose');
 
+var ITEMS_PER_PAGE = 30;
+var ITEMS_PER_SELECT = 50;
+
 module.exports = function (server) {
   var router = server.loopback.Router();
   var cache = server.locals.myCache;
@@ -64,7 +67,7 @@ module.exports = function (server) {
             }]
           },
           'order': 'createdOn DESC',
-          'limit': 100
+          'limit': ITEMS_PER_SELECT
         };
 
         if (session.feedHighwater) {
@@ -152,13 +155,13 @@ module.exports = function (server) {
       },
       function computeSummary(session, cb) {
         if (req.query.more) {
-          session.currentSlice.start += 30;
+          session.currentSlice.start += ITEMS_PER_PAGE;
           if (session.currentSlice.start > session.queue.length - 1) {
             return cb(null, session, []);
           }
         }
 
-        session.currentSlice.end = session.currentSlice.start + 29;
+        session.currentSlice.end = session.currentSlice.start + (ITEMS_PER_PAGE - 1);
         if (session.currentSlice.end > session.queue.length - 1) {
           session.currentSlice.end = session.queue.length - 1;
         }

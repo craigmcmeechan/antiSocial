@@ -2,6 +2,7 @@ var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
 var getCurrentUser = require('../middleware/context-currentUser');
+var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var encryption = require('../lib/encryption');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
@@ -21,11 +22,14 @@ module.exports = function (server) {
 		}
 	}
 
+	// TODO should this require logged in user? probably
+
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
 
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
 		var json = req.query.format === 'json';
+		var logger = req.logger;
 
 		var matches = req.url.match(proxyRE);
 
@@ -99,7 +103,8 @@ module.exports = function (server) {
 		request.get(options, function (err, response, body) {
 			if (err) {
 				var e = new VError(err, 'could not load endpoint ' + endpoint);
-				return next(e);
+				logger.error('proxy error %s %j', endpoint, e);
+				return res.status(response && response.statusCode ? response.statusCode : 500).send(e.message);
 			}
 			if (response.statusCode !== 200) {
 				return res.sendStatus(response.statusCode);
@@ -139,9 +144,11 @@ module.exports = function (server) {
 				}
 
 				var friendMap = {};
-				for (var i = 0; i < currentUser.friends().length; i++) {
-					var f = currentUser.friends()[i];
-					friendMap[f.remoteEndPoint] = f;
+				if (currentUser && currentUser.friends()) {
+					for (var i = 0; i < currentUser.friends().length; i++) {
+						var f = currentUser.friends()[i];
+						friendMap[f.remoteEndPoint] = f;
+					}
 				}
 
 				res.render('components/rendered-' + template, {
