@@ -10,12 +10,12 @@ var async = require('async');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	router.get('/shutdown-ws', function (req, res, next) {
-		clientWebsockets.disconnectAll(server);
+	router.get('/stop-ws', function (req, res, next) {
 		server.models.MyUser.find({}, function (err, users) {
 			for (var i = 0; i < users.length; i++) {
 				watchFeed.disconnectAll(server, users[i]);
 			}
+			clientWebsockets.disconnectAll(server);
 			res.send('ok');
 		});
 	});
