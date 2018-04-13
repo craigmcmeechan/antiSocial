@@ -946,9 +946,7 @@ module.exports = function (server) {
       }
 
       if (!theComment) {
-        var err = new Error('Comment not found');
-        err.statusCode = 404;
-        return next(err);
+        return res.sendStatus(404);
       }
 
       resolveProfiles(theComment, function (err) {
@@ -1053,9 +1051,7 @@ module.exports = function (server) {
       }
 
       if (!theComment) {
-        var e = new Error('Comment not found');
-        e.statusCode = 404;
-        return next(e);
+        return res.sendStatus(404);
       }
 
       async.map(theComment.resolvedReactions, resolveProfiles, function (err) {
@@ -1247,9 +1243,7 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        var e = new Error('Photo not found');
-        e.statusCode = 404;
-        return next(e);
+        return res.sendStatus(404);
       }
 
       var data = {
@@ -1345,9 +1339,7 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        var e = new Error('Photo not found');
-        e.statusCode = 404;
-        return next(e);
+        return res.sendStatus(404);
       }
 
       // TODO kludge
@@ -1452,9 +1444,7 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        var e = new Error('Photo not found');
-        e.statusCode = 404;
-        return next(e);
+        return res.sendStatus(404);
       }
 
       // TODO kludge
@@ -1562,9 +1552,7 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        var e = new Error('Photo not found');
-        e.statusCode = 404;
-        return next(e);
+        return res.sendStatus(404);
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
@@ -1579,9 +1567,7 @@ module.exports = function (server) {
         }
 
         if (!theComment) {
-          var e = new Error('Comment not found');
-          e.statusCode = 404;
-          return next(e);
+          return res.sendStatus(404);
         }
 
         async.map([theComment], resolveProfiles, function (err) {
@@ -1689,9 +1675,7 @@ module.exports = function (server) {
       }
 
       if (!thePhoto) {
-        var e = new Error('Photo not found');
-        e.statusCode = 404;
-        return next(e);
+        return res.sendStatus(404);
       }
 
       thePhoto.about = post.source + '/post/' + post.uuid;
@@ -1706,9 +1690,7 @@ module.exports = function (server) {
         }
 
         if (!theComment) {
-          var e = new Error('Comment not found');
-          e.statusCode = 404;
-          return next(e);
+          return res.sendStatus(404);
         }
 
         var data = {

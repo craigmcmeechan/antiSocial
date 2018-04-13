@@ -1,6 +1,15 @@
 var debug = require('debug')('websockets');
 var watchFeed = require('./watchFeedWebsockets');
 
+module.exports.disconnectAll = function (app) {
+	if (app.openWebsocketClients) {
+		for (var key in app.openWebsocketClients) {
+			var connection = app.openWebsocketClients[key];
+			connection.disconnect();
+		}
+	}
+};
+
 module.exports.mount = function websocketsMount(app) {
 	if (!app.openWebsocketClients) {
 		app.openWebsocketClients = {};
