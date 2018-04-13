@@ -12,7 +12,7 @@ module.exports.connections = connections;
 module.exports.disconnectAll = function disconnectAll(server, user) {
 	for (var key in connections) {
 		var connection = connections[key];
-		if (connection.currentUser.id === user.id) {
+		if (connection.currentUser.id.toString() === user.id.toString()) {
 			connection.socket.close();
 			connection.status = 'closed';
 			debugWebsockets('watchFeed closed %s', connection.key);
@@ -24,7 +24,7 @@ module.exports.disconnectAll = function disconnectAll(server, user) {
 var disConnect = function disConnect(server, friend) {
 	for (var key in connections) {
 		var connection = connections[key];
-		if (connection.friend.id === friend.id) {
+		if (connection.friend.id.toString() === friend.id.toString()) {
 			connection.socket.close();
 			connection.status = 'closed';
 			debugWebsockets('watchFeed disConnect %s closed', connection.key);
