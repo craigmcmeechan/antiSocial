@@ -256,6 +256,15 @@ if (app.get('env') === 'development') {
   app.use(basicAuth);
 }
 
+if (process.env.xray) {
+  var AWSXray = require('aws-xray-sdk');
+  AWSXray.config([
+    AWSXray.plugins.EC2Plugin // Add the EC2 plugin
+  ]);
+  app.use(AWSXray.express.openSegment('myAntiSocial'));
+  app.middleware('routes:after', AWSXray.express.closeSegment());
+}
+
 app.start = function () {
   app.locals.logger.info('app started');
 

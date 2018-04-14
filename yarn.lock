@@ -244,6 +244,13 @@ async-limiter@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
 
+async-listener@^0.6.0:
+  version "0.6.9"
+  resolved "https://registry.yarnpkg.com/async-listener/-/async-listener-0.6.9.tgz#51bc95e41095417f33922fb4dee4f232b3226488"
+  dependencies:
+    semver "^5.3.0"
+    shimmer "^1.1.0"
+
 async@0.9.x, async@^0.9.0, async@~0.9.0:
   version "0.9.2"
   resolved "https://registry.yarnpkg.com/async/-/async-0.9.2.tgz#aea74d5e61c1f899613bf64bda66d4c78f2fd17d"
@@ -257,6 +264,10 @@ async@^2.0.0, async@^2.0.1, async@^2.1.4, async@^2.1.5, async@^2.3.0, async@^2.4
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.0.tgz#61a29abb6fcc026fea77e56d1c6ec53a795951f4"
   dependencies:
     lodash "^4.14.0"
+
+async@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/async/-/async-1.0.0.tgz#f8fc04ca3a13784ade9e1641af98578cfbd647a9"
 
 async@~2.1.4:
   version "2.1.5"
@@ -296,6 +307,39 @@ aws-sign2@~0.6.0:
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
+
+aws-xray-sdk-core@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/aws-xray-sdk-core/-/aws-xray-sdk-core-1.2.0.tgz#28c6e5397fd5c0fa66365d5bd6f58b9d551d4e22"
+  dependencies:
+    continuation-local-storage "^3.2.0"
+    moment "^2.15.2"
+    pkginfo "^0.4.0"
+    semver "^5.3.0"
+    underscore "^1.8.3"
+    winston "^2.2.0"
+
+aws-xray-sdk-express@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/aws-xray-sdk-express/-/aws-xray-sdk-express-1.2.0.tgz#8bf3529089ddb47b2736314576970d4c689f3f31"
+
+aws-xray-sdk-mysql@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/aws-xray-sdk-mysql/-/aws-xray-sdk-mysql-1.2.0.tgz#9f89b5c9137abadcab9f69a27cc455c7fe4fdcbd"
+
+aws-xray-sdk-postgres@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/aws-xray-sdk-postgres/-/aws-xray-sdk-postgres-1.2.0.tgz#6b8342764359e823eaf5be5acefbab63ffc37c7e"
+
+aws-xray-sdk@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/aws-xray-sdk/-/aws-xray-sdk-1.2.0.tgz#ffe16a7eac8287635fa1ce40c36137276ebaf42a"
+  dependencies:
+    aws-xray-sdk-core "^1.2.0"
+    aws-xray-sdk-express "^1.2.0"
+    aws-xray-sdk-mysql "^1.2.0"
+    aws-xray-sdk-postgres "^1.2.0"
+    pkginfo "^0.4.0"
 
 aws4@^1.2.1, aws4@^1.6.0:
   version "1.6.0"
@@ -814,6 +858,10 @@ color-name@^1.1.1:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
 
+colors@1.0.x:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
+
 colors@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
@@ -955,6 +1003,13 @@ content-type-parser@^1.0.2:
 content-type@~1.0.1, content-type@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
+
+continuation-local-storage@^3.2.0:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/continuation-local-storage/-/continuation-local-storage-3.2.1.tgz#11f613f74e914fe9b34c92ad2d28fe6ae1db7ffb"
+  dependencies:
+    async-listener "^0.6.0"
+    emitter-listener "^1.1.1"
 
 cookie-parser@^1.4.1:
   version "1.4.3"
@@ -1107,6 +1162,10 @@ currently-unhandled@^0.4.1:
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
   dependencies:
     array-find-index "^1.0.1"
+
+cycle@1.0.x:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/cycle/-/cycle-1.0.3.tgz#21e80b2be8580f98b468f379430662b046c34ad2"
 
 dashdash@^1.12.0:
   version "1.14.1"
@@ -1364,6 +1423,12 @@ ejs@^2.3.1, ejs@^2.5.5, ejs@^2.5.7:
 emitter-component@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/emitter-component/-/emitter-component-1.1.1.tgz#065e2dbed6959bf470679edabeaf7981d1003ab6"
+
+emitter-listener@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/emitter-listener/-/emitter-listener-1.1.1.tgz#e8bbbe8244bc8e0d0b4ef71cd14294c7f241c7ec"
+  dependencies:
+    shimmer "^1.2.0"
 
 encode-3986@^1.0.0:
   version "1.0.0"
@@ -1728,7 +1793,7 @@ extsprintf@^1.2.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
 
-eyes@0.1.8:
+eyes@0.1.8, eyes@0.1.x:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/eyes/-/eyes-0.1.8.tgz#62cf120234c683785d902348a800ef3e0cc20bc0"
 
@@ -2697,7 +2762,7 @@ isomorphic-form-data@0.0.1:
   dependencies:
     form-data "^1.0.0-rc3"
 
-isstream@~0.1.2:
+isstream@0.1.x, isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
@@ -3523,7 +3588,7 @@ moment-timezone@^0.5.14:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.6.0", moment@^2.10:
+"moment@>= 2.6.0", moment@^2.10, moment@^2.15.2:
   version "2.22.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.0.tgz#7921ade01017dd45186e7fee5f424f0b8663a730"
 
@@ -4114,6 +4179,10 @@ pkgcloud@^1.1.0:
     through2 "0.6.x"
     url-join "0.0.x"
     xml2js "0.1.x"
+
+pkginfo@^0.4.0:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.4.1.tgz#b5418ef0439de5425fc4995042dced14fb2a84ff"
 
 platform@1.3.5:
   version "1.3.5"
@@ -4838,6 +4907,10 @@ shelljs@0.3.x:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.3.0.tgz#3596e6307a781544f591f37da618360f31db57b1"
 
+shimmer@^1.1.0, shimmer@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.2.0.tgz#f966f7555789763e74d8841193685a5e78736665"
+
 shorthash@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/shorthash/-/shorthash-0.0.2.tgz#59b268eecbde59038b30da202bcfbddeb2c4a4eb"
@@ -5007,6 +5080,10 @@ stable@^0.1.5:
 stack-trace@0.0.9:
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.9.tgz#a8f6eaeca90674c333e7c43953f275b451510695"
+
+stack-trace@0.0.x:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.10.tgz#547c70b347e8d32b4e108ea1a2a159e5fdde19c0"
 
 statuses@1, "statuses@>= 1.3.1 < 2":
   version "1.4.0"
@@ -5505,6 +5582,10 @@ underscore.string@~3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-3.2.3.tgz#806992633665d5e5fcb4db1fb3a862eb68e9e6da"
 
+underscore@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
+
 underscore@~1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.7.0.tgz#6bbaf0877500d36be34ecaa584e0db9fef035209"
@@ -5701,6 +5782,17 @@ which@~1.2.1, which@~1.2.10:
 window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
+
+winston@^2.2.0:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/winston/-/winston-2.4.1.tgz#a3a9265105564263c6785b4583b8c8aca26fded6"
+  dependencies:
+    async "~1.0.0"
+    colors "1.0.x"
+    cycle "1.0.x"
+    eyes "0.1.x"
+    isstream "0.1.x"
+    stack-trace "0.0.x"
 
 with@^5.0.0:
   version "5.1.1"

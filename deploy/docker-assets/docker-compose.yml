@@ -14,6 +14,16 @@ services:
       - /data/images:/var/app/current/client/uploads
     networks:
       - frontend
-
+  "xray-antisocial":
+    container_name: xray-antisocial
+    image: xray-antisocial
+    restart: always
+    build:
+      context: ../../
+      dockerfile: deploy/docker-assets/Dockerfile-xray
+    ports:
+      - "2000:2000"
+    networks:
+      - frontend
 networks:
   frontend:

@@ -8,6 +8,7 @@
   "dependencies": {
     "archiver": "^2.1.1",
     "async": "^2.3.0",
+    "aws-xray-sdk": "^1.2.0",
     "base-64": "^0.1.0",
     "basic-auth": "^2.0.0",
     "body-parser": "^1.17.2",

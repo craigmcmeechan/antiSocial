@@ -47,6 +47,8 @@ module.exports = function (PushNewsFeedItem) {
 
 				for (var i = 0; i < items.length; i++) {
 					var data = items[i];
+
+					// copy data
 					data = JSON.parse(JSON.stringify(data));
 
 					var hit = false;
@@ -68,17 +70,18 @@ module.exports = function (PushNewsFeedItem) {
 					if (hit) {
 
 						// if it's a comment only send the comment body to the owner of the post
-						/*
 						if (data.type === 'comment') {
 							var about = data.about;
 							var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
 							if (friend.remoteEndPoint !== whoAbout) {
-								//console.log(friend.remoteEndPoint + '!==' + whoAbout);
+								debug('stripping comment body from notification ' + friend.remoteEndPoint + '!==' + whoAbout);
 								data.details = {};
 								data.versions = [];
 							}
+							else {
+								debug('allowing comment body from notification ' + friend.remoteEndPoint + '===' + whoAbout);
+							}
 						}
-						*/
 
 						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(data));
 
@@ -117,6 +120,9 @@ module.exports = function (PushNewsFeedItem) {
 			var where = ctx.where;
 			var data = ctx.instance || ctx.data;
 
+			// copy data
+			data = JSON.parse(JSON.stringify(data));
+
 			// check instance belongs to user
 			if (data.userId.toString() !== user.id.toString()) {
 				return next();
@@ -143,16 +149,19 @@ module.exports = function (PushNewsFeedItem) {
 			}
 
 			// if it's a comment only send the comment body to the owner of the post
-			/*
+
 			if (data.type === 'comment') {
 				var about = data.about;
 				var whoAbout = about.replace(/\/(post|photo)\/.*$/, '');
 				if (friend.remoteEndPoint !== whoAbout) {
-					//console.log(friend.remoteEndPoint + '!==' + whoAbout);
+					debug('stripping comment body from notification ' + friend.remoteEndPoint + '!==' + whoAbout);
 					data.details = {};
+					data.versions = [];
+				}
+				else {
+					debug('allowing comment body from notification ' + friend.remoteEndPoint + '===' + whoAbout);
 				}
 			}
-			*/
 
 			// the data includes the id or the where includes the id
 			var target;
