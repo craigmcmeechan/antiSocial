@@ -256,10 +256,10 @@ if (app.get('env') === 'development') {
   app.use(basicAuth);
 }
 
-if (process.env.xray) {
+if (process.env.XRAY) {
   var AWSXray = require('aws-xray-sdk');
   AWSXray.config([
-    AWSXray.plugins.EC2Plugin // Add the EC2 plugin
+    AWSXray.plugins.ECSPlugin // Add the ECS plugin
   ]);
   app.use(AWSXray.express.openSegment('myAntiSocial'));
   app.middleware('routes:after', AWSXray.express.closeSegment());
