@@ -257,6 +257,7 @@ if (app.get('env') === 'development') {
 }
 
 if (process.env.XRAY) {
+  app.locals.logger.debug('setting up AWS XRAY');
   var AWSXray = require('aws-xray-sdk');
   AWSXray.config([
     AWSXray.plugins.ECSPlugin // Add the ECS plugin
