@@ -10,6 +10,11 @@ var async = require('async');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
+	router.get('/invalidate-cache', function (req, res, next) {
+		server.locals.myCache.flushAll();
+		res.send(server.locals.myCache.getStats());
+	});
+
 	router.get('/stop-ws', function (req, res, next) {
 		server.models.MyUser.find({}, function (err, users) {
 			for (var i = 0; i < users.length; i++) {
