@@ -15,6 +15,7 @@ var request = require('request');
 var _ = require('lodash');
 
 var debug = require('debug')('friends');
+var AWSXray = require('aws-xray-sdk');
 
 /*
 	protocol for making a friend request
@@ -37,6 +38,9 @@ var debug = require('debug')('friends');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
+	if (process.env.XRAY) {
+		AWSXray.express.openSegment('myAntiSocial/friends');
+	}
 
 	/*
 		GET /friend
@@ -821,6 +825,10 @@ module.exports = function (server) {
 			}
 		});
 	});
+
+	if (process.env.XRAY) {
+		AWSXray.express.closeSegment();
+	}
 
 	server.use(router);
 };

@@ -10,9 +10,14 @@ var async = require('async');
 var request = require('request');
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
+var AWSXray = require('aws-xray-sdk');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
+
+	if (process.env.XRAY) {
+		AWSXray.express.openSegment('myAntiSocial/proxy');
+	}
 
 	var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
 
@@ -168,6 +173,10 @@ module.exports = function (server) {
 			}
 		});
 	});
+
+	if (process.env.XRAY) {
+		AWSXray.express.closeSegment();
+	}
 
 	server.use(router);
 };
