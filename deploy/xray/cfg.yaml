@@ -3,7 +3,7 @@ TotalBufferSizeMB: 0
 # Maximum number of concurrent calls to AWS X-Ray to upload segment documents.
 Concurrency: 8
 # Send segments to AWS X-Ray service in a specific region
-Region: ""
+Region: "us-east-1"
 # Change the X-Ray service endpoint to which the daemon sends segment documents.
 Endpoint: ""
 Socket:
@@ -12,11 +12,11 @@ Socket:
 Logging:
   LogRotation: true
   # Change the log level, from most verbose to least: dev, debug, info, warn, error, prod (default).
-  LogLevel: "prod"
+  LogLevel: "debug"
   # Output logs to the specified file path.
   LogPath: ""
 # Turn on local mode to skip EC2 instance metadata check.
-LocalMode: false
+LocalMode: true
 # Amazon Resource Name (ARN) of the AWS resource running the daemon.
 ResourceARN: ""
 # Assume an IAM role to upload segments to a different account.
