@@ -12,7 +12,6 @@ var urlParse = require('url');
 var mime = require('mime-types');
 var uuid = require('uuid');
 var RemoteRouting = require('loopback-remote-routing');
-var AWSXray = require('aws-xray-sdk');
 
 module.exports = function (OgTag) {
 	if (!process.env.ADMIN) {
@@ -47,9 +46,6 @@ module.exports = function (OgTag) {
 	//   Save resized image in s3 if needed
 
 	OgTag.scrape = function (url, ctx, done) {
-		if (process.env.zXRAY) {
-			AWSXray.express.openSegment('myAntiSocial-ogScrape');
-		}
 
 		var refresh = _.get(ctx, 'req.query.refresh') ? true : false;
 
@@ -71,9 +67,7 @@ module.exports = function (OgTag) {
 				console.log(e.toString());
 				return done(null, {});
 			}
-			if (process.env.zXRAY) {
-				AWSXray.express.closeSegment();
-			}
+
 			done(err, instance);
 		});
 

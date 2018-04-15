@@ -6,10 +6,21 @@ var uuid = require('uuid');
 var NodeCache = require('node-cache');
 var proxyEndPoint = require('./lib/proxy-endpoint');
 var websockets = require('./lib/websockets');
-var http = require('http');
-var setupHTTPS = require('./lib/setupHTTPS');
 
 var app = module.exports = loopback();
+
+if (process.env.XRAY) {
+  console.log('setting up AWS XRAY');
+  var AWSXray = require('aws-xray-sdk');
+  AWSXray.config([
+    AWSXray.plugins.ECSPlugin // Add the ECS plugin
+  ]);
+  AWSXray.middleware.enableDynamicNaming('*.myantisocial.net');
+  AWSXray.captureHTTPsGlobal(require('https'));
+  AWSXray.capturePromise();
+  app.use(AWSXray.express.openSegment('myAntiSocial'));
+  app.middleware('routes:after', AWSXray.express.closeSegment());
+}
 
 app.enable('trust proxy');
 
@@ -256,21 +267,11 @@ if (app.get('env') === 'development') {
   app.use(basicAuth);
 }
 
-if (process.env.XRAY) {
-  app.locals.logger.debug('setting up AWS XRAY');
-  var AWSXray = require('aws-xray-sdk');
-  AWSXray.config([
-    AWSXray.plugins.ECSPlugin // Add the ECS plugin
-  ]);
-  AWSXray.capturePromise();
-  app.use(AWSXray.express.openSegment('myAntiSocial'));
-  AWSXray.middleware.enableDynamicNaming('*.myantisocial.net');
-  AWSXray.captureHTTPsGlobal(require('https'));
-  app.middleware('routes:after', AWSXray.express.closeSegment());
-}
-
 app.start = function () {
   app.locals.logger.info('app started');
+
+  var http = require('http');
+  var setupHTTPS = require('./lib/setupHTTPS');
 
   var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
     if (err) {

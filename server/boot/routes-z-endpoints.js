@@ -16,15 +16,9 @@ var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
 var request = require('request');
 var graphlib = require('graphlib');
-var AWSXray = require('aws-xray-sdk');
-
 
 module.exports = function (server) {
   var router = server.loopback.Router();
-
-  if (process.env.zXRAY) {
-    AWSXray.express.openSegment('myAntiSocial-api');
-  }
 
   // URL forms for getting posts and associated data from
   // the poster's authoritative server (users resident on this server)
@@ -2011,10 +2005,6 @@ module.exports = function (server) {
       }
       cb(null, html);
     });
-  }
-
-  if (process.env.zXRAY) {
-    AWSXray.express.closeSegment();
   }
 
   server.use(router);

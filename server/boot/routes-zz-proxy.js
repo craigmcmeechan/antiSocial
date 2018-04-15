@@ -10,7 +10,6 @@ var async = require('async');
 var request = require('request');
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
-var AWSXray = require('aws-xray-sdk');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
@@ -27,10 +26,6 @@ module.exports = function (server) {
 	// TODO should this require logged in user? probably
 
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
-
-		if (process.env.XRAY) {
-			AWSXray.express.openSegment('proxy');
-		}
 
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
@@ -172,14 +167,8 @@ module.exports = function (server) {
 					'cache': process.env.NODE_ENV === 'production' ? true : false
 				});
 			}
-
-			if (process.env.XRAY) {
-				AWSXray.express.closeSegment();
-			}
 		});
 	});
-
-
 
 	server.use(router);
 };
