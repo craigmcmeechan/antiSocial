@@ -22,8 +22,8 @@ var AWSXray = require('aws-xray-sdk');
 module.exports = function (server) {
   var router = server.loopback.Router();
 
-  if (process.env.XRAY) {
-    AWSXray.express.openSegment('myAntiSocial/api');
+  if (process.env.zXRAY) {
+    AWSXray.express.openSegment('myAntiSocial-api');
   }
 
   // URL forms for getting posts and associated data from
@@ -2013,7 +2013,7 @@ module.exports = function (server) {
     });
   }
 
-  if (process.env.XRAY) {
+  if (process.env.zXRAY) {
     AWSXray.express.closeSegment();
   }
 

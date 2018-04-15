@@ -15,8 +15,8 @@ var AWSXray = require('aws-xray-sdk');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	if (process.env.XRAY) {
-		AWSXray.express.openSegment('myAntiSocial/proxy');
+	if (process.env.zXRAY) {
+		AWSXray.express.openSegment('myAntiSocial-proxy');
 	}
 
 	var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
@@ -174,7 +174,7 @@ module.exports = function (server) {
 		});
 	});
 
-	if (process.env.XRAY) {
+	if (process.env.zXRAY) {
 		AWSXray.express.closeSegment();
 	}
 

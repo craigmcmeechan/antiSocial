@@ -38,8 +38,8 @@ var AWSXray = require('aws-xray-sdk');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
-	if (process.env.XRAY) {
-		AWSXray.express.openSegment('myAntiSocial/friends');
+	if (process.env.zXRAY) {
+		AWSXray.express.openSegment('myAntiSocial-friends');
 	}
 
 	/*
@@ -826,7 +826,7 @@ module.exports = function (server) {
 		});
 	});
 
-	if (process.env.XRAY) {
+	if (process.env.zXRAY) {
 		AWSXray.express.closeSegment();
 	}
 
