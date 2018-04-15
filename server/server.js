@@ -262,7 +262,7 @@ if (process.env.XRAY) {
   AWSXray.config([
     AWSXray.plugins.ECSPlugin // Add the ECS plugin
   ]);
-
+  AWSXray.capturePromise();
   app.use(AWSXray.express.openSegment('myAntiSocial'));
   AWSXray.middleware.enableDynamicNaming('*.myantisocial.net');
   AWSXray.captureHTTPsGlobal(require('http'));
