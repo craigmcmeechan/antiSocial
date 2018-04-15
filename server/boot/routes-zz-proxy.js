@@ -15,9 +15,6 @@ var AWSXray = require('aws-xray-sdk');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	if (process.env.zXRAY) {
-		AWSXray.express.openSegment('myAntiSocial-proxy');
-	}
 
 	var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
 
@@ -30,6 +27,10 @@ module.exports = function (server) {
 	// TODO should this require logged in user? probably
 
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
+
+		if (process.env.XRAY) {
+			AWSXray.express.openSegment('proxy');
+		}
 
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
@@ -171,12 +172,14 @@ module.exports = function (server) {
 					'cache': process.env.NODE_ENV === 'production' ? true : false
 				});
 			}
+
+			if (process.env.XRAY) {
+				AWSXray.express.closeSegment();
+			}
 		});
 	});
 
-	if (process.env.zXRAY) {
-		AWSXray.express.closeSegment();
-	}
+
 
 	server.use(router);
 };
