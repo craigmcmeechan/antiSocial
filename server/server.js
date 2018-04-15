@@ -265,7 +265,7 @@ if (process.env.XRAY) {
   AWSXray.capturePromise();
   app.use(AWSXray.express.openSegment('myAntiSocial'));
   AWSXray.middleware.enableDynamicNaming('*.myantisocial.net');
-  AWSXray.captureHTTPsGlobal(require('http'));
+  AWSXray.captureHTTPsGlobal(require('https'));
   app.middleware('routes:after', AWSXray.express.closeSegment());
 }
 
