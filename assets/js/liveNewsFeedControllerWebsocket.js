@@ -101,7 +101,8 @@
 
 		this.processNews = function (event) {
 			self.element.find('.status').removeClass('offline');
-			if (event.type === 'heartbeat') {
+			if (event.type === 'offline') {
+				self.disconnect();
 				return;
 			}
 			var formatted = event.data.humanReadable;

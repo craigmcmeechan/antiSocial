@@ -229,7 +229,6 @@ describe('proxy endpoints', function () {
 		});
 	});
 
-	// TODO post notifications to user1 user2 user4 not user3
 
 	it('user2 should be able to post (friends only) w/tags', function (done) {
 		var payload = {
@@ -256,8 +255,6 @@ describe('proxy endpoints', function () {
 			done();
 		});
 	});
-
-	// TODO react notifications to user1 user2 user4 not user3
 
 	it('user1 should be able to comment on user2 post', function (done) {
 		client1.post('http://127.0.0.1:3000/comment').send({
@@ -662,6 +659,8 @@ describe('proxy endpoints', function () {
 			done();
 		});
 	});
+
+	// TODO post notifications to user1 user2 user4 not user3
 
 	it('check notifications about post1', function (done) {
 		app.models.NewsFeedItem.find({

@@ -1,3 +1,49 @@
+/*
+
+Notifications happen through updates to 2 tables
+	PushNewsFeedItem: announcements that propagate through the friend network
+		Updated when things are created or changed.
+		Eg: I posted something, I commented on something, I reacted to something.
+
+	NewsFeedItem: user cache of applicable events from their POV
+		Used to build "news feed" for user
+		Eg: I posted something, My friend xxx posted something, Someone reacted to someone elses post
+
+Users watch all their friends PushNewsFeedItem feeds for changes. When a friend
+starts listenting they are sent all PushNewsFeedItems that have been modified
+since they last connected. While they are listenting they are sent changes in real time.
+
+When you creates a post, reaction or a comment
+	Make an entry in PushNewsFeedItems
+When you modify a post, reaction or a comment
+	Update the entry in PushNewsFeedItem
+When you delete a post or a comment
+	Mark then entry in PushNewsFeedItem as deleted=true
+
+PushNewsFeedItems events are filtered based on friend visibility permisions.
+	if the PushNewsFeedItem is being created and it is visible to the listenting friend
+		Send a 'create' event
+	if the PushNewsFeedItem is being updated
+		if is not visible to the listenting friend
+			Send a 'remove' event (allow them to remove it from their cache
+			it was formally visible)
+		else
+			Send an update event
+
+The listening friend updates their local NewsFeedItem database when events in their
+friends PushNewsFeedItems are receieved
+	If it's a create event, create a NewsFeedItem
+	If it's a remove, destroy the NewsFeedItem
+	If it's an update
+		if it exists, update the existing NewsFeedItem
+		else create it again (edge case - was visible to me, then not, then was again)
+
+Notes:
+	PushNewsFeedItems are never deleted - they are marked as deleted so backfilling
+	can occur to offline friends.
+
+*/
+
 var url = require('url');
 var async = require('async');
 var VError = require('verror').VError;
@@ -6,29 +52,29 @@ var encryption = require('./encryption');
 var debug = require('debug')('feeds');
 var debugWebsockets = require('debug')('websockets');
 
-var connections = {};
-module.exports.connections = connections;
+var watchFeedConnections = {};
+module.exports.watchFeedConnections = watchFeedConnections;
 
 module.exports.disconnectAll = function disconnectAll(server, user) {
-	for (var key in connections) {
-		var connection = connections[key];
+	for (var key in watchFeedConnections) {
+		var connection = watchFeedConnections[key];
 		if (connection.currentUser.id.toString() === user.id.toString()) {
 			connection.socket.close();
-			connection.status = 'closed';
+			//connection.status = 'closed';
 			debugWebsockets('watchFeed closed %s', connection.key);
-			delete connections[key];
+			//delete watchFeedConnections[key];
 		}
 	}
 };
 
 var disConnect = function disConnect(server, friend) {
-	for (var key in connections) {
-		var connection = connections[key];
+	for (var key in watchFeedConnections) {
+		var connection = watchFeedConnections[key];
 		if (connection.friend.id.toString() === friend.id.toString()) {
 			connection.socket.close();
-			connection.status = 'closed';
 			debugWebsockets('watchFeed disConnect %s closed', connection.key);
-			delete connections[key];
+			//connection.status = 'closed';
+			//delete watchFeedConnections[key];
 		}
 	}
 };
@@ -69,7 +115,7 @@ var watchFeed = function watchFeed(server, friend) {
 
 		var key = currentUser.username + '<-' + friend.remoteEndPoint;
 
-		if (connections[key] && connections[key].status === 'open') {
+		if (watchFeedConnections[key] && watchFeedConnections[key].status === 'open') {
 			debugWebsockets('watchFeed %s already listening ', key);
 		}
 		else {
@@ -87,7 +133,7 @@ var watchFeed = function watchFeed(server, friend) {
 
 			debugWebsockets('watchFeed %s connecting %s', key, endpoint);
 
-			var socket = require('socket.io-client')(endpoint);
+			var socket = require('socket.io-client')(endpoint, {});
 
 			var connection = {
 				'key': key,
@@ -97,42 +143,46 @@ var watchFeed = function watchFeed(server, friend) {
 				'friend': friend,
 				'status': 'closed'
 			};
-			connections[key] = connection;
+			watchFeedConnections[key] = connection;
 			socket.emit('authentication', {
 				'subscriptions': {
 					'PushNewsFeedItem': ['after save']
 				}
 			});
 			socket.on('authenticated', function () {
-				debugWebsockets('watchFeed %s listening', key);
+				debugWebsockets('watchFeed %s authenticated', key);
 				socket.on('data', getListener(server, connection));
 			});
 			socket.on('connect', getOpenHandler(server, connection));
 			socket.on('disconnect', getCloseHandler(server, connection));
+			socket.on('error', getErrorHandler(server, connection));
 		}
 	});
 };
 
 function getOpenHandler(server, connection) {
-	return function (e) {
+	return function openHandler(e) {
 		connection.status = 'open';
-		debugWebsockets('watchFeed getOpenHandler %s %j ', connection.key, e);
+		debugWebsockets('watchFeed openHandler %s', connection.key);
 	};
 }
 
 function getCloseHandler(server, connection) {
-	return function (e) {
+	return function closeHandler(e) {
 		connection.status = 'closed';
-		debugWebsockets('watchFeed getCloseHandler %s %j', connection.key, e);
-		delete connections[connection.key];
+		debugWebsockets('watchFeed closeHandler %s because %j', connection.key, e);
+		//delete watchFeedConnections[connection.key];
+		setTimeout(function () {
+			watchFeed(server, connection.friend);
+		}, 5000);
 	};
 }
 
 function getErrorHandler(server, connection) {
-	return function (e) {
+	return function errorHandler(e) {
 		connection.status = 'error';
-		debugWebsockets('watchFeed getErrorHandler %s %j', connection.key, e);
-		delete connections[connection.key];
+		debugWebsockets('watchFeed errorHandler %s %j', connection.key, e);
+		//delete watchFeedConnections[connection.key];
 	};
 }
 
@@ -140,7 +190,7 @@ function getListener(server, connection) {
 	var friend = connection.friend;
 	var currentUser = friend.user();
 
-	return function (data) {
+	return function listener(data) {
 
 		var logger = server.locals.logger;
 
@@ -149,18 +199,13 @@ function getListener(server, connection) {
 		if (message.type === 'offline') {
 			debugWebsockets('watchFeed listener %s received offline message', connection.key);
 			connection.socket.close();
-			connection.status = 'closed';
-			delete connections[connection.key];
+			//connection.status = 'closed';
+			//delete watchFeedConnections[connection.key];
 			return;
 		}
 
 		if (message.type === 'online') {
 			debugWebsockets('watchFeed listener %s received online message', connection.key);
-			return;
-		}
-
-		if (message.type === 'heartbeat') {
-			debugWebsockets('watchFeed listener %s received heartbeat', connection.key);
 			return;
 		}
 
@@ -208,6 +253,10 @@ function getListener(server, connection) {
 					debug('watchFeed listener ' + currentUser.username + ' skipping old news %j %j', oldNews);
 					return;
 				}
+				else if (message.type === 'remove') {
+					oldNews.destroy();
+					return;
+				}
 				else if (message.type === 'update' || message.type === 'backfill') {
 					debug('watchFeed listener ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
 					oldNews.details = myNewsFeedItem.details;
@@ -216,8 +265,18 @@ function getListener(server, connection) {
 					oldNews.tags = myNewsFeedItem.tags;
 					oldNews.save();
 
-					// cleanup all my interations with this item
 					if (myNewsFeedItem.deleted) {
+
+						// cleanup all my interactions with this item
+						// the 'about' field has an implied hierarchy
+						// endpoint/post/xxx
+						// endpoint/post/xxx/comment/xxx
+						// endpoint/post/xxx/reaction/xxx
+						// endpoint/post/xxx/photo/xxx/comment/xxx
+						// etc.
+						// so if the post is deleted we should cleanup all the things we did to that post
+						// we cand find them all with a regex
+
 						async.series([
 							function updateNewsFeedItem(cb) {
 								server.models.NewsFeedItem.destroyAll({
@@ -263,8 +322,13 @@ function getListener(server, connection) {
 				}
 			}
 			else { // not old news
-				if (message.type === 'update') {
-					debug('watchFeed listener ' + currentUser.username + ' received update but NewsFeedItem not found %j', message);
+				if (message.type !== 'create' && message.type !== 'update' && message.type !== 'backfill') {
+					debug('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' but NewsFeedItem not found %j', myNewsFeedItem);
+					return;
+				}
+
+				if (myNewsFeedItem.deleted) {
+					debug('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' marked as deleted but NewsFeedItem not found %j', myNewsFeedItem);
 					return;
 				}
 
