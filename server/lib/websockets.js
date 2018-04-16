@@ -2,29 +2,33 @@ var debug = require('debug')('websockets');
 var watchFeed = require('./watchFeedWebsockets');
 
 module.exports.disconnectAll = function (app) {
-	if (app.openWebsocketServers) {
-		for (var key in app.openWebsocketServers) {
-			var connection = app.openWebsocketServers[key];
-			connection.disconnect();
-			delete app.openWebsocketServers[key];
+	// tell friends to disconnect
+	if (app.openFriendListeners) {
+		for (var key in app.openFriendListeners) {
+			var connection = app.openFriendListeners[key];
+			connection.emit('data', {
+				'type': 'offline'
+			});
 		}
 	}
 
-	if (app.openWebsocketClients) {
-		for (var key in app.openWebsocketClients) {
-			var connection = app.openWebsocketClients[key];
-			connection.disconnect();
-			delete app.openWebsocketClients[key];
+	// tell users to disconnect
+	if (app.openClientListeners) {
+		for (var key in app.openClientListeners) {
+			var connection = app.openClientListeners[key];
+			connection.emit('data', {
+				'type': 'offline'
+			});
 		}
 	}
 };
 
 module.exports.mount = function websocketsMount(app) {
-	if (!app.openWebsocketClients) {
-		app.openWebsocketClients = {};
+	if (!app.openClientListeners) {
+		app.openClientListeners = {};
 	}
-	if (!app.openWebsocketServers) {
-		app.openWebsocketServers = {};
+	if (!app.openFriendListeners) {
+		app.openFriendListeners = {};
 	}
 	require('socketio-auth')(app.io, {
 		'authenticate': function (socket, data, callback) {
@@ -84,7 +88,7 @@ module.exports.mount = function websocketsMount(app) {
 				socket.currentUser = socket.friend.user();
 				socket.connectionKey = socket.friend.remoteEndPoint + '<-' + socket.friend.user().username;
 				socket.highwater = socket.handshake.query['friend-high-water'] || 0;
-				app.openWebsocketServers[socket.connectionKey] = socket;
+				app.openFriendListeners[socket.connectionKey] = socket;
 				if (data.subscriptions) {
 					for (var model in data.subscriptions) {
 						var events = data.subscriptions[model];
@@ -109,7 +113,7 @@ module.exports.mount = function websocketsMount(app) {
 					}
 					socket.connectionKey = currentUser.username;
 					socket.currentUser = currentUser;
-					app.openWebsocketClients[socket.connectionKey] = socket;
+					app.openClientListeners[socket.connectionKey] = socket;
 
 					if (data.subscriptions) {
 						for (var model in data.subscriptions) {
@@ -139,14 +143,14 @@ module.exports.mount = function websocketsMount(app) {
 						debug('websocketsChangeHandler ' + socket.connectionKey + ' stopped subscribing to NewsFeedItem "' + eventType + '" because ' + reason);
 						app.models[model].removeObserver(eventType, handler);
 						if (socket.friend) {
-							delete app.openWebsocketServers[socket.connectionKey];
+							delete app.openFriendListeners[socket.connectionKey];
 							socket.friend.updateAttribute('online', false);
 							if (!process.env.KEEP_FEEDS_OPEN) {
 								watchFeed.disConnect(app, socket.friend);
 							}
 						}
 						else {
-							delete app.openWebsocketClients[socket.connectionKey];
+							delete app.openClientListeners[socket.connectionKey];
 							socket.currentUser.updateAttribute('online', false);
 							if (!process.env.KEEP_FEEDS_OPEN) {
 								watchFeed.disconnectAll(app, socket.currentUser);

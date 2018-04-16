@@ -16,16 +16,16 @@ block content
 						for socket in clients
 							li= socket.currentUser.username
 				if servers
-					strong Watchers
+					strong Watchers:
 					ul
 						for socket in servers
 							-var user = socket.friend.user() ? socket.friend.user().username : 'unknown'
 							li= user + '->' + socket.friend.remoteEndPoint
 
 				if connections
-					strong Watching
+					strong Watching:
 					ul
 						for connection in connections
 							-var name = connection.currentUser ? connection.currentUser.username : 'unknown'
-							li= name + '<-' + connection.friend.remoteEndPoint
+							li= name + '<-' + connection.friend.remoteEndPoint + ' ('+connection.status+')'
 					
