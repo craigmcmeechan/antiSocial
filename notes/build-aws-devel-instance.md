@@ -6,8 +6,8 @@ sudo usermod -a -G docker ec2-user
 sudo service docker start
 aws ecr get-login --no-include-email
 docker login <output from last command>
-create environment file: ~/antisocial-development.env
-docker run --env-file=~/antisocial-development.env -p 80:80 -p 443:443 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
+create environment file: /root/antisocial-development.env
+docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
 ```
 
 # Set up for container development
@@ -41,7 +41,7 @@ cd deploy/docker-assets
 runs on port 3000
 
 if running ssl:
-docker run --env-file=~/antisocial-development.env -p 80:80 -p 443:443 webapp-antisocial
+docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 webapp-antisocial
 
 ```
 
