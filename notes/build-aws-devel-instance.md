@@ -7,13 +7,19 @@ sudo service docker start
 aws ecr get-login --no-include-email
 docker login <output from last command>
 create environment file: /root/antisocial-development.env
-docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
+docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 --name=webapp-antisocial --rm -d  980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
 ```
 
+# Useful commands
+-----------------
 ```
+docker logs -f webapp-antisocial
+docker restart webapp-antisocial
+
 docker pull 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
 
-docker restart
+```
+
 # Set up for container development
 ----------------------------------
 ```
