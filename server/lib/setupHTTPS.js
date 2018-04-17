@@ -52,14 +52,11 @@ module.exports = function setupSSL(app, finished) {
 		if (err) {
 			return finished(err);
 		}
-
-		var server = https.createServer({
+		var listener = https.createServer({
 			'key': sslKey,
 			'cert': sslCert,
-		}, app);
-
-		server.listen(443);
-
-		finished(err, server);
+		}, app).listen(443, function (err) {
+			finished(err, listener);
+		});
 	});
 };

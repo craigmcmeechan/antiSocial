@@ -187,7 +187,7 @@ app.use(myContext);
 
 // logging
 
-app.use(require('morgan')('tiny'));
+app.use(require('morgan')('short'));
 
 var options = {
   'name': 'anti-social',
@@ -294,7 +294,6 @@ app.start = function () {
         return;
       }
       app.locals.logger.info('https started');
-
       app.io = require('socket.io')(sslListener);
       websockets.mount(app);
       app.locals.logger.info('websockets wss started');
