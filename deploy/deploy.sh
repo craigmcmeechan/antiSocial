@@ -64,10 +64,11 @@ deploy_ecs () {
 		echo "deploying mr"
 		aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-mr --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-mr --force-new-deployment
 	fi
-	if [ "$CIRCLE_BRANCH" == "development" ]; then
-		#echo "deploying development"
-		#aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-fargate --service arn:aws:ecs:us-east-1:980978009426:service/sample-app-service --force-new-deployment
-	fi
+	
+	#if [ "$CIRCLE_BRANCH" == "development" ]; then
+	#	echo "deploying development"
+	#	aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-fargate --service arn:aws:ecs:us-east-1:980978009426:service/sample-app-service --force-new-deployment
+	#fi
 }
 
 run_grunt
