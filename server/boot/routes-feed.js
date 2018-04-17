@@ -13,8 +13,8 @@ var url = require('url');
 var debug = require('debug')('scroll');
 var debugVerbose = require('debug')('scroll:verbose');
 
-var ITEMS_PER_PAGE = 30;
-var ITEMS_PER_SELECT = 50;
+var ITEMS_PER_PAGE = 10;
+var ITEMS_PER_SELECT = 15;
 
 module.exports = function (server) {
   var router = server.loopback.Router();

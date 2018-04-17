@@ -297,7 +297,7 @@ app.start = function () {
 
       app.io = require('socket.io')(sslListener);
       websockets.mount(app);
-      app.locals.logger.info('sebsockets wss started');
+      app.locals.logger.info('websockets wss started');
     });
   });
 };

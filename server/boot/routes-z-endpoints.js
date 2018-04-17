@@ -1868,7 +1868,7 @@ module.exports = function (server) {
         }]
       },
       'order': 'createdOn DESC',
-      'limit': 30
+      'limit': 10
     };
 
     if (!isMe) {
