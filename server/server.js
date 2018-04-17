@@ -268,26 +268,24 @@ if (app.get('env') === 'development') {
 }
 
 app.start = function () {
-  app.locals.logger.info('app started');
+  app.locals.logger.info('app staring');
 
-  var http = require('http');
-  var setupHTTPS = require('./lib/setupHTTPS');
-
-  var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
-    if (err) {
-      app.locals.logger.error('http could not be started', err);
-      return;
-    }
-    app.emit('started');
-    app.locals.logger.info('http started');
-
-    if (!process.env.HTTPS_LISTENER) {
+  if (!process.env.HTTPS_LISTENER) {
+    var http = require('http');
+    var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
+      if (err) {
+        app.locals.logger.error('http could not be started', err);
+        return;
+      }
+      app.emit('started');
+      app.locals.logger.info('http started');
       app.io = require('socket.io')(listener);
       websockets.mount(app);
       app.locals.logger.info('websockets ws started');
-      return;
-    }
-
+    });
+  }
+  else {
+    var setupHTTPS = require('./lib/setupHTTPS');
     setupHTTPS(app, function (err, sslListener) {
       if (err) {
         app.locals.logger.info('https could not start', err);
@@ -298,7 +296,7 @@ app.start = function () {
       websockets.mount(app);
       app.locals.logger.info('websockets wss started');
     });
-  });
+  }
 };
 
 boot(app, __dirname, function (err) {

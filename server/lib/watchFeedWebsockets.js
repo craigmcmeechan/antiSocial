@@ -131,7 +131,7 @@ var watchFeed = function watchFeed(server, friend) {
 				endpoint += '&friend-high-water=' + friend.highWater;
 			}
 
-			debugWebsockets('watchFeed %s connecting %s', key, endpoint);
+			debugWebsockets('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
 
 			var socket = require('socket.io-client')(endpoint, {});
 
