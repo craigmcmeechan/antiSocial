@@ -7,17 +7,53 @@ var debug = require('debug')('mail');
 var debugVerbose = require('debug')('mail:verbose');
 
 module.exports = function (server, template, options, cb) {
-	if (!process.env.SES_KEY_ID) {
+	var transporter;
+	if (process.env.OUTBOUND_MAIL === 'SES') {
+		var config;
+		if (process.env.SES_KEY_ID || process.env.SES_KEY) {
+			config = {
+				'service': 'SES-US-EAST-1',
+				'auth': {
+					'user': process.env.SES_KEY_ID,
+					'pass': process.env.SES_KEY
+				}
+			};
+		}
+		else {
+			var aws = require('aws-sdk');
+			if (process.env.AWS_CONFIG) {
+				aws.config.loadFromPath(process.env.AWS_CONFIG);
+			}
+			config = {
+				SES: new aws.SES({
+					apiVersion: '2010-12-01'
+				})
+			};
+		}
+
+		transporter = nodemailer.createTransport(config);
+	}
+	else if (process.env.OUTBOUND_MAIL === 'SENDMAIL') {
+		transporter = nodemailer.createTransport({
+			'sendmail': true,
+			'newline': 'unix',
+			'path': process.env.OUTBOUND_MAIL_SENDMAIL_PATH || '/usr/sbin/sendmail'
+		});
+	}
+	else if (process.env.OUTBOUND_MAIL === 'SMTP') {
+		transporter = nodemailer.createTransport({
+			host: process.env.OUTBOUND_MAIL_SMTP_HOST,
+			port: process.env.OUTBOUND_MAIL_SMTP_PORT || 25,
+			secure: false,
+			auth: {
+				user: process.env.OUTBOUND_MAIL_SMTP_USER,
+				pass: process.env.OUTBOUND_MAIL_SMTP_PASSWORD
+			}
+		});
+	}
+	else {
 		return cb();
 	}
-
-	var transporter = nodemailer.createTransport({
-		service: 'SES-US-EAST-1',
-		auth: {
-			user: process.env.SES_KEY_ID,
-			pass: process.env.SES_KEY
-		}
-	});
 
 	debug('payload %j', options);
 

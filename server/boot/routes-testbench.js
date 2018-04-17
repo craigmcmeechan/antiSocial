@@ -4,7 +4,8 @@ var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
 var watchFeed = require('../lib/watchFeedWebsockets');
 var clientWebsockets = require('../lib/websockets');
-
+var VError = require('verror').VError;
+var WError = require('verror').WError;
 var async = require('async');
 
 module.exports = function (server) {
@@ -66,6 +67,27 @@ module.exports = function (server) {
 		res.render('pages/testbench-editor', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser')
+		});
+	});
+
+	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
+
+		var mailer = require('../lib/mail');
+		var options = {
+			'to': 'mrhodes@myantisocial.net',
+			'from': 'noreply@myantisocial.net',
+			'subject': 'Testing email transport',
+			'config': server.locals.config
+		};
+
+		mailer(server, 'emails/test', options, function (err) {
+			if (err) {
+				var e = new WError(err, 'could not send test email');
+				console.log(e.toString());
+				console.log(e.stack);
+				return res.send(e);
+			}
+			res.send('ok');
 		});
 	});
 
