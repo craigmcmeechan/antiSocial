@@ -4,8 +4,7 @@
 sudo yum install -y docker
 sudo usermod -a -G docker ec2-user
 sudo service docker start
-aws ecr get-login --no-include-email
-docker login <output from last command>
+eval $(aws ecr get-login --no-include-email)
 create environment file: /root/antisocial-development.env
 docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 --name=webapp-antisocial --rm -d  980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
 ```
@@ -84,4 +83,4 @@ docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 webap
 | MONGO_USERNAME |  | | |
 | MONGO_PASSWORD |  | | |
 | MONGO_HOSTNAME | | localhost | |
-| MONGO_URL |  | | mongo://<credentuals url>&authSource=admin&w=majority&readPreference=primaryPreferred |
+| MONGO_URL |  | | mongo://[mongo credentials url] url options: &authSource=admin &w=majority &readPreference=primaryPreferred |
