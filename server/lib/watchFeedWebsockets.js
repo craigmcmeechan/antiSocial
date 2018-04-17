@@ -123,7 +123,7 @@ var watchFeed = function watchFeed(server, friend) {
 			var remoteEndPoint = url.parse(friend.remoteEndPoint);
 			var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host;
 
-			var endpoint = remoteEndPoint.protocol === 'https' ? 'wss' : 'ws';
+			var endpoint = remoteEndPoint.protocol === 'https:' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
 
 			endpoint += '?friend-access-token=' + friend.remoteAccessToken;
