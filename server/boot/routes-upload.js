@@ -3,6 +3,8 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var mime = require('mime');
 var uuid = require('uuid');
 var multer = require('multer');
+var VError = require('verror').VError;
+var WError = require('verror').WError;
 
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');

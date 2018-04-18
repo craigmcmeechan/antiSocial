@@ -10,7 +10,7 @@ module.exports = function (server, template, options, cb) {
 	var transporter;
 	if (process.env.OUTBOUND_MAIL === 'SES') {
 		var config;
-		if (process.env.SES_KEY_ID || process.env.SES_KEY) {
+		if (process.env.SES_KEY_ID && process.env.SES_KEY) {
 			config = {
 				'service': 'SES-US-EAST-1',
 				'auth': {

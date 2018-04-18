@@ -65,18 +65,19 @@ docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 webap
 | PUBLIC_PORT     | Yes      | PORT      | public port of server  |
 | PUBLIC_PROTOCOL | No       | http      | http, https |
 | HTTPS_LISTENER  | No       | false     | set to true if service support ssl directly |
+| ACCESS_LOG      | No       |           | combined, common, dev, short, tiny |
 | S3_SSL_KEY_PATH | No       |           | S3 path to key.pem |
 | S3_SSL_CERT_PATH| No       |           | S3 path to fullchain1.pem |
 | AWS_REGION      | No       |           | region for AWS account |
 | AWS_S3_KEY      | No       |           | if storing images or SSL keys in S3 |
 | AWS_S3_KEY_ID   | No       |           | if storing images or SSL keys in S3 |
-| S3_BUCKET       | No       |           | if storing images in S3 |
-| S3_REGION       | No       |           | if storing images or SSL keys in S3 |
+| AWS_S3_BUCKET       | No       |           | if storing images in S3 |
+| AWS_S3_REGION       | No       |           | if storing images or SSL keys in S3 |
 | FACEBOOK_CLIENT_ID | No | | Facebook account OAuth app |
 | FACEBOOK_CLIENT_SECRET | No | | Facebook account OAuth app |
 | GOOGLE_MAPS_API_KEY | No | | Client Side Geocoding |
-| SES_KEY          | No | | Outbound SES Email IAM keys |
-| SES_KEY_ID       | No | | Outbound SES Email IAM keys |
+| AWS_SES_KEY          | No | | Outbound SES Email IAM keys |
+| AWS_SES_KEY_ID       | No | | Outbound SES Email IAM keys |
 | CONNECTOR        | No | Memory | mongo |
 | MONGO_DB_NAME | | | |
 | MONGO_USERNAME |  | | |

@@ -14,8 +14,8 @@ var s3 = require('s3');
 var resize = require('im-resize');
 
 // where uploads get saved
-var bucket = process.env.S3_BUCKET ? process.env.S3_BUCKET : 'site-uploads';
-var region = process.env.S3_REGION ? process.env.S3_REGION : 'us-standard';
+var bucket = process.env.AWS_S3_BUCKET ? process.env.AWS_S3_BUCKET : 'site-uploads';
+var region = process.env.AWS_S3_REGION ? process.env.AWS_S3_REGION : 'us-standard';
 
 module.exports = function () {
 

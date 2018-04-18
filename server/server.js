@@ -187,7 +187,9 @@ app.use(myContext);
 
 // logging
 
-app.use(require('morgan')('short'));
+if (process.env.ACCESS_LOG) {
+  app.use(require('morgan')(process.env.ACCESS_LOG));
+}
 
 var options = {
   'name': 'anti-social',
