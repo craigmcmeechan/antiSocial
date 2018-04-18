@@ -74,6 +74,8 @@
 				self.pendingConnection = null;
 				self.element.find('ul').empty();
 				self.socket = io.connect(self.endpoint);
+				self.socket.on('disconnect', self.errors);
+				self.socket.on('error', self.errors);
 				self.socket.on('connect', function () {
 					self.socket.emit('authentication', {
 						'subscriptions': {
@@ -83,7 +85,6 @@
 					self.socket.on('authenticated', function () {
 						console.log('authenticated');
 						self.socket.on('data', self.processNews);
-						self.socket.on('disconnect', self.errors);
 					});
 				});
 				self.setTop();
@@ -101,7 +102,8 @@
 
 		this.processNews = function (event) {
 			self.element.find('.status').removeClass('offline');
-			if (event.type === 'heartbeat') {
+			if (event.type === 'offline') {
+				self.disconnect();
 				return;
 			}
 			var formatted = event.data.humanReadable;

@@ -8,11 +8,21 @@ module.exports = function setupSSL(app, finished) {
 		function (cb) {
 			// download the keys from s3
 			var AWS = require('aws-sdk');
-			AWS.config.update({
-				'accessKeyId': process.env.AWS_S3_KEY_ID,
-				'secretAccessKey': process.env.AWS_S3_KEY,
-				'region': process.env.S3_REGION
-			});
+
+			if (process.env.AWS_S3_KEY_ID && process.env.AWS_S3_KEY && process.env.AWS_S3_REGION) {
+				AWS.config.update({
+					'accessKeyId': process.env.AWS_S3_KEY_ID,
+					'secretAccessKey': process.env.AWS_S3_KEY,
+					'region': process.env.AWS_S3_REGION
+				});
+			}
+			else if (process.env.AWS_CONFIG) {
+				AWS.config.loadFromPath(process.env.AWS_CONFIG);
+			}
+			else {
+				AWS.config.credentials = new AWS.EC2MetadataCredentials();
+			}
+
 			var s3 = new AWS.S3();
 
 			// get the key

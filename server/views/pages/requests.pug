@@ -1,0 +1,13 @@
+block seo
+	title.
+		Testbench
+
+block content
+	.container-fluid.content-padding-top.content
+		.page-header
+			h1 Requests
+		.row
+			.col-xs-12
+				for request in requests
+					li= request.email + ' ('+request.name+')'
+	

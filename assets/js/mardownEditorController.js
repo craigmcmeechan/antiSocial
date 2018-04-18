@@ -158,7 +158,7 @@
 
 		this.updateMarkdown = function () {
 			var html = self.element.html();
-			html = html.replace(/<div class="ogPreview.*?" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"[^>]*>.*?<\/div><!--endog-->/sg, '<a href="$1"></a>');
+			html = html.replace(/<div class="ogPreview.*?" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"[^>]*>[\s\S]*?<\/div><!--endog-->/g, '<a href="$1"></a>');
 			var markdown = self.turndownService.turndown(html);
 			self.element.closest('form').find(self.target).val(markdown);
 		};

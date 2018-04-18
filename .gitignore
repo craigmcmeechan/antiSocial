@@ -20,6 +20,7 @@ npm-debug.log
 working
 localdev.env
 docker.env
+development.env
 
 
 # Elastic Beanstalk Files

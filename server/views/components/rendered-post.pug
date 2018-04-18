@@ -38,7 +38,17 @@ block seo
 			- image = imageSet.original.url
 	
 	if og
-		- image = _.get(og,'ogData.data.ogImage.url') || image
+		// try from link OG, from OG uploads (screenshot), profile
+		- var ogimage = _.get(og,'ogData.data.ogImage.url')
+		if !ogimage && og.uploads
+			if typeof og.uploads === 'function'
+				- ogimage = _.get(og.uploads()[0],'imageSet.large.url')
+			else
+				- ogimage = _.get(og.uploads[0],'imageSet.large.url')
+
+		if ogimage
+			- image = ogimage
+			
 		if source === 'facebook'
 			- title = _.get(og,'ogData.data.ogTitle') || title
 			- summary = _.get(og,'ogData.data.ogDescription') || summary

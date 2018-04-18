@@ -1,27 +1,10 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
-var isInitialized = require('../middleware/context-initialized');
-var publicUsers = require('../middleware/context-publicUsers');
-var resolveProfiles = require('../lib/resolveProfiles');
-var resolvePostPhotos = require('../lib/resolvePostPhotos');
-var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
-var encryption = require('../lib/encryption');
 var doPostNotifications = require('../lib/doPostNotifications');
-
-var url = require('url');
 var uuid = require('uuid');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');
-var request = require('request');
-var _ = require('lodash');
-var multer = require('multer');
-var path = require('path');
-var pug = require('pug');
-var FB = require('fb');
-
-var debug = require('debug')('routes');
-var debugVerbose = require('debug')('routes:verbose');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -170,6 +153,7 @@ module.exports = function (server) {
           }
           if (news) {
             news.tags = post.tags;
+            news.visibility = post.visibility;
             news.save();
           }
           cb(null, post);
@@ -255,7 +239,7 @@ module.exports = function (server) {
           server.models.PostPhoto.destroyAll({
             'postId': post.id
           }, function (err, data) {
-            console.log('deletePhotos', err, data);
+            //console.log('deletePhotos', err, data);
             cb(err, post);
           });
         },
@@ -289,7 +273,7 @@ module.exports = function (server) {
               }
             }]
           }, function (err, data) {
-            console.log('deleteNewsFeedItems', err, data);
+            //console.log('deleteNewsFeedItems', err, data);
             cb(err, post);
           });
         },

@@ -20,6 +20,7 @@ build_images() {
 	cd ~/repo/deploy/docker-assets
 	docker-compose build
 	docker tag webapp-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
+	#docker tag xray-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:xray-antisocial
 	#docker tag nginx-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:nginx-antisocial
 
 	echo "docker login"
@@ -27,6 +28,9 @@ build_images() {
 
 	echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial"
 	docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
+
+	#echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:xray-antisocial"
+	#docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:xray-antisocial
 
 	#echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:nginx-antisocial"
 	#docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:nginx-antisocial
@@ -60,10 +64,11 @@ deploy_ecs () {
 		echo "deploying mr"
 		aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-mr --service arn:aws:ecs:us-east-1:980978009426:service/antisocial-mr --force-new-deployment
 	fi
-	if [ "$CIRCLE_BRANCH" == "development" ]; then
-		echo "deploying development"
-		aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-fargate --service arn:aws:ecs:us-east-1:980978009426:service/sample-app-service --force-new-deployment
-	fi
+	
+	#if [ "$CIRCLE_BRANCH" == "development" ]; then
+	#	echo "deploying development"
+	#	aws ecs update-service --cluster arn:aws:ecs:us-east-1:980978009426:cluster/antisocial-fargate --service arn:aws:ecs:us-east-1:980978009426:service/sample-app-service --force-new-deployment
+	#fi
 }
 
 run_grunt

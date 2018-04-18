@@ -6,10 +6,20 @@ var uuid = require('uuid');
 var NodeCache = require('node-cache');
 var proxyEndPoint = require('./lib/proxy-endpoint');
 var websockets = require('./lib/websockets');
-var http = require('http');
-var setupHTTPS = require('./lib/setupHTTPS');
 
 var app = module.exports = loopback();
+
+if (process.env.XRAY) {
+  console.log('setting up AWS XRAY');
+  var AWSXray = require('aws-xray-sdk');
+  AWSXray.config([
+    AWSXray.plugins.ECSPlugin // Add the ECS plugin
+  ]);
+  app.use(AWSXray.express.openSegment('myAntiSocial'));
+  AWSXray.middleware.enableDynamicNaming('*.myantisocial.net');
+  AWSXray.captureHTTPsGlobal(require('https'));
+  app.middleware('routes:after', AWSXray.express.closeSegment());
+}
 
 app.enable('trust proxy');
 
@@ -32,7 +42,6 @@ app.locals.myCache = new NodeCache();
 app.locals.appDir = __dirname;
 app.locals.math = require('mathjs');
 app.locals.base64 = require('base-64');
-
 
 // markdown renderer
 var marked = require('marked');
@@ -178,6 +187,10 @@ app.use(myContext);
 
 // logging
 
+if (process.env.ACCESS_LOG) {
+  app.use(require('morgan')(process.env.ACCESS_LOG));
+}
+
 var options = {
   'name': 'anti-social',
   'serializers': {
@@ -257,35 +270,35 @@ if (app.get('env') === 'development') {
 }
 
 app.start = function () {
-  app.locals.logger.info('app started');
+  app.locals.logger.info('app staring');
 
-  var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
-    if (err) {
-      app.locals.logger.error('http could not be started', err);
-      return;
-    }
-    app.emit('started');
-    app.locals.logger.info('http started');
-
-    if (!process.env.HTTPS_LISTENER) {
+  if (!process.env.HTTPS_LISTENER) {
+    var http = require('http');
+    var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
+      if (err) {
+        app.locals.logger.error('http could not be started', err);
+        return;
+      }
+      app.emit('started');
+      app.locals.logger.info('http started');
       app.io = require('socket.io')(listener);
       websockets.mount(app);
       app.locals.logger.info('websockets ws started');
-      return;
-    }
-
+    });
+  }
+  else {
+    var setupHTTPS = require('./lib/setupHTTPS');
     setupHTTPS(app, function (err, sslListener) {
       if (err) {
         app.locals.logger.info('https could not start', err);
         return;
       }
       app.locals.logger.info('https started');
-
       app.io = require('socket.io')(sslListener);
       websockets.mount(app);
-      app.locals.logger.info('sebsockets wss started');
+      app.locals.logger.info('websockets wss started');
     });
-  });
+  }
 };
 
 boot(app, __dirname, function (err) {
