@@ -13,9 +13,8 @@ docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 --nam
 -----------------
 ```
 docker logs -f webapp-antisocial
-docker restart webapp-antisocial
-
 docker pull 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
+docker restart webapp-antisocial
 
 ```
 

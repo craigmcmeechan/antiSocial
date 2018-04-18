@@ -20,12 +20,15 @@ module.exports = function (server, template, options, cb) {
 			};
 		}
 		else {
-			var aws = require('aws-sdk');
+			var AWS = require('aws-sdk');
 			if (process.env.AWS_CONFIG) {
-				aws.config.loadFromPath(process.env.AWS_CONFIG);
+				AWS.config.loadFromPath(process.env.AWS_CONFIG);
+			}
+			else {
+				AWS.config.credentials = new AWS.EC2MetadataCredentials();
 			}
 			config = {
-				SES: new aws.SES({
+				SES: new AWS.SES({
 					apiVersion: '2010-12-01'
 				})
 			};
