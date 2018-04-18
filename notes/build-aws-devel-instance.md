@@ -58,28 +58,26 @@ docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 webap
 
 | Variable Name   | Required | Default   | Description |
 | -------------   | -------- | --------- | ----------- |
-| KEEP_FEEDS_OPEN | Yes      | false     | Use 'true' for now |
-| LOG_LEVEL       | No       | error     | error,warning,info,debug |
-| NODE_ENV        | Yes      |           | localdev, development, production |
-| PORT            | No       | 3000      | port service listens on  |
-| PUBLIC_HOST     | Yes      | 127.0.0.1 | public dns hostname of server  |
-| PUBLIC_PORT     | Yes      | PORT      | public port of server  |
-| PUBLIC_PROTOCOL | No       | http      | http, https |
-| HTTPS_LISTENER  | No       | false     | set to true if service support ssl directly |
-| ACCESS_LOG      | No       |           | combined, common, dev, short, tiny |
-| S3_SSL_KEY_PATH | No       |           | S3 path to key.pem |
-| S3_SSL_CERT_PATH| No       |           | S3 path to fullchain1.pem |
-| AWS_REGION      | No       |           | region for AWS account |
-| AWS_S3_KEY      | No       |           | if storing images or SSL keys in S3 |
-| AWS_S3_KEY_ID   | No       |           | if storing images or SSL keys in S3 |
-| AWS_S3_BUCKET       | No       |           | if storing images in S3 |
-| AWS_S3_REGION       | No       |           | if storing images or SSL keys in S3 |
-| FACEBOOK_CLIENT_ID | No | | Facebook account OAuth app |
-| FACEBOOK_CLIENT_SECRET | No | | Facebook account OAuth app |
+| KEEP_FEEDS_OPEN | Yes | false | Use 'true' for now |
+| LOG_LEVEL       | No | error | error,warning,info,debug |
+| NODE_ENV        | Yes | | localdev, development, production |
+| PORT            | No | 3000 | port service listens on  |
+| PUBLIC_HOST     | Yes | 127.0.0.1 | public dns hostname of server  |
+| PUBLIC_PORT     | Yes | PORT | public port of server  |
+| PUBLIC_PROTOCOL | No | http | http, https |
+| HTTPS_LISTENER  | No | false | set to true if service support ssl directly |
+| ACCESS_LOG      | No | | combined, common, dev, short, tiny |
+| S3_SSL_KEY_PATH | No | | S3 path to key.pem |
+| S3_SSL_CERT_PATH| No | | S3 path to fullchain1.pem |
+| AWS_REGION      | No | | region for AWS account |
+| AWS_S3_KEY      | No | from ec2 role | if storing images or SSL keys in S3 |
+| AWS_S3_KEY_ID   | No | from ec2 role | if storing images or SSL keys in S3 |
+| AWS_S3_BUCKET | No | | if storing images in S3 |
+| AWS_S3_REGION | No | | if storing images or SSL keys in S3 |
 | GOOGLE_MAPS_API_KEY | No | | Client Side Geocoding |
-| AWS_SES_KEY          | No | | Outbound SES Email IAM keys |
-| AWS_SES_KEY_ID       | No | | Outbound SES Email IAM keys |
-| CONNECTOR        | No | Memory | mongo |
+| AWS_SES_KEY | No | from ec2 role  | Outbound SES Email IAM keys |
+| AWS_SES_KEY_ID | No | from ec2 role  | Outbound SES Email IAM keys |
+| CONNECTOR | No | Memory | mongo |
 | MONGO_DB_NAME | | | |
 | MONGO_USERNAME |  | | |
 | MONGO_PASSWORD |  | | |
