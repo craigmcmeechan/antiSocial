@@ -13,9 +13,6 @@ var im = require('imagemagick');
 var s3 = require('s3');
 var resize = require('im-resize');
 
-// where uploads get saved
-var bucket = process.env.AWS_S3_BUCKET ? process.env.AWS_S3_BUCKET : 'site-uploads';
-var region = process.env.AWS_S3_REGION ? process.env.AWS_S3_REGION : 'us-standard';
 
 module.exports = function () {
 
@@ -126,6 +123,31 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 	var folder = model + '-' + property + '/';
 
 	var versions = versionsByProperty[property] ? versionsByProperty[property] : [];
+
+	// where uploads get saved
+	var bucket = process.env.AWS_S3_BUCKET ? process.env.AWS_S3_BUCKET : 'site-uploads';
+	var region = process.env.AWS_S3_REGION ? process.env.AWS_S3_REGION : 'us-standard';
+
+	var AWS = require('aws-sdk');
+
+	// configure AWS from ENV or file or EC2 metadata
+	if (process.env.AWS_S3_KEY_ID && process.env.AWS_S3_KEY && process.env.AWS_S3_REGION) {
+		AWS.config.update({
+			'accessKeyId': process.env.AWS_S3_KEY_ID,
+			'secretAccessKey': process.env.AWS_S3_KEY,
+			'region': process.env.AWS_S3_REGION
+		});
+	}
+	else if (process.env.AWS_CONFIG) {
+		AWS.config.loadFromPath(process.env.AWS_CONFIG);
+	}
+	else {
+		AWS.config.credentials = new AWS.EC2MetadataCredentials();
+	}
+
+	// get credentials from configured AWS so we can hand it to s3Uploader and s3 config
+	var AWS_S3_KEY_ID = AWS.config.credentials.accessKeyId;
+	var AWS_S3_KEY = AWS.config.credentials.secretAccessKey;
 
 	// steps for processing the request
 	async.waterfall([
@@ -318,8 +340,8 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 
 				var client = s3.createClient({
 					s3Options: {
-						accessKeyId: process.env.AWS_S3_KEY_ID,
-						secretAccessKey: process.env.AWS_S3_KEY,
+						accessKeyId: AWS_S3_KEY_ID,
+						secretAccessKey: AWS_S3_KEY,
 					},
 				});
 
@@ -359,8 +381,8 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 					region: region,
 					path: folder,
 					acl: 'public-read',
-					accessKeyId: process.env.AWS_S3_KEY_ID,
-					secretAccessKey: process.env.AWS_S3_KEY,
+					accessKeyId: AWS_S3_KEY_ID,
+					secretAccessKey: AWS_S3_KEY,
 					httpOptions: {
 						timeout: 120000
 					}
