@@ -4,9 +4,9 @@
 sudo yum install -y docker
 sudo usermod -a -G docker ec2-user
 sudo service docker start
-eval $(aws ecr get-login --no-include-email)
-create environment file: /root/antisocial-development.env
-docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 --name=webapp-antisocial --rm -d  980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
+eval $(aws ecr get-login --no-include-email --region=us-east-1)
+create environment file: /root/antisocial.env
+docker run --env-file=/root/antisocial.env -p 80:80 -p 443:443 --name=webapp-antisocial --rm -d  980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
 ```
 
 # Useful commands
@@ -69,14 +69,14 @@ docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 webap
 | ACCESS_LOG      | No | | combined, common, dev, short, tiny |
 | S3_SSL_KEY_PATH | No | | S3 path to key.pem |
 | S3_SSL_CERT_PATH| No | | S3 path to fullchain1.pem |
-| AWS_REGION      | No | | region for AWS account |
+| AWS_REGION      | If using AWS services | | region for AWS account |
 | AWS_S3_KEY      | No | from ec2 role | if storing images or SSL keys in S3 |
 | AWS_S3_KEY_ID   | No | from ec2 role | if storing images or SSL keys in S3 |
-| AWS_S3_BUCKET | No | | if storing images in S3 |
-| AWS_S3_REGION | No | | if storing images or SSL keys in S3 |
+| AWS_S3_BUCKET | If using AWS services | | if storing images in S3 |
+| AWS_S3_REGION | If using AWS services | | if storing images or SSL keys in S3 |
 | GOOGLE_MAPS_API_KEY | No | | Client Side Geocoding |
-| AWS_SES_KEY | No | from ec2 role  | Outbound SES Email IAM keys |
-| AWS_SES_KEY_ID | No | from ec2 role  | Outbound SES Email IAM keys |
+| AWS_SES_KEY | If using AWS services | from ec2 role  | Outbound SES Email IAM keys |
+| AWS_SES_KEY_ID | If using AWS services | from ec2 role  | Outbound SES Email IAM keys |
 | CONNECTOR | No | Memory | mongo |
 | MONGO_DB_NAME | | | |
 | MONGO_USERNAME |  | | |
