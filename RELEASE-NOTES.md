@@ -1,3 +1,9 @@
+# 18-April-2018
+
+Activity feed descriptions more... descriptive.
+
+Added 'description' to post extracted from post body to provide more context to activity items.
+
 # 17-April-2018
 
 ### Rationalize AWS environment configuration
