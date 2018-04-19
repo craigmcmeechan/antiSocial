@@ -118,7 +118,8 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			myNewsFeedItem.humanReadable += ' reacted to <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name, true) + '</a>';
+			myNewsFeedItem.humanReadable += ' reacted with <span class="em em-' + myNewsFeedItem.details.reaction + '"></span>';
+			myNewsFeedItem.humanReadable += ' to <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name, true) + '</a>';
 			var description = kindOfThing(about);
 			if (myNewsFeedItem.description) {
 				description += ' about: ' + myNewsFeedItem.description;

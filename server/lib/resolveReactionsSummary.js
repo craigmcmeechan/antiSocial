@@ -15,7 +15,7 @@ module.exports = function resolveReactionsSummary(item, done) {
 
 		for (var i = 0; i < reactions.length; i++) {
 			var reaction = reactions[i];
-			var key = '<div class="reaction-button-container reaction-button"><span class="em em-' + reaction.details.reaction + '"></div>';
+			var key = '<div class="reaction-button-container reaction-button"><span class="em em-' + reaction.details.reaction + '"></span></div>';
 
 			if (!hash[reaction.source]) {
 				hash[reaction.source] = true;

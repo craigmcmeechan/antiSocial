@@ -104,8 +104,8 @@ module.exports = function (server) {
           postDescription = postDescription.match(/^<h\d[^>]*>([^<]*)/)[0];
         }
         postDescription = postDescription.replace(/<.*?>/g, '').replace(/\n/g, ' ');
-        if (postDescription.length > 20) {
-          postDescription = postDescription.substring(0, 20) + '...';
+        if (postDescription.length > 30) {
+          postDescription = postDescription.substring(0, 30) + '...';
         }
 
         post.description = postDescription;
@@ -357,8 +357,8 @@ module.exports = function (server) {
           postDescription = postDescription.match(/^<h\d[^>]*>([^<]*)/)[0];
         }
         postDescription = postDescription.replace(/<.*?>/g, '').replace(/\n/g, ' ');
-        if (postDescription.length > 20) {
-          postDescription = postDescription.substring(0, 20) + '...';
+        if (postDescription.length > 30) {
+          postDescription = postDescription.substring(0, 30) + '...';
         }
 
         req.body.description = postDescription;
