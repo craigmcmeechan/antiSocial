@@ -133,11 +133,14 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 	function fixNameYou(endpoint, myendpoint, name, your) {
 		if (endpoint === myendpoint) {
 			if (your) {
-				return 'your'
-			};
+				return 'your';
+			}
 			return 'you';
 		}
-		return name + '\'s';
+		if (your) {
+			return name + '\'s';
+		}
+		return name;
 	}
 
 	function kindOfThing(about) {
