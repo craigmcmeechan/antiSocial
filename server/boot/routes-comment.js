@@ -75,7 +75,8 @@ module.exports = function (server) {
           'details': {
             'body': req.body.body,
             'photo': photo ? server.locals.config.publicHost + '/' + currentUser.username + '/photo/' + photo.uuid : ''
-          }
+          },
+          'description': req.body.description
         };
 
         currentUser.pushNewsFeedItems.create(item, function (err, pushNews) {
@@ -98,7 +99,8 @@ module.exports = function (server) {
           },
           'userId': currentUser.id,
           'createdOn': news.createdOn,
-          'updatedOn': news.updatedOn
+          'updatedOn': news.updatedOn,
+          'description': news.description
         };
 
         req.app.models.NewsFeedItem.create(item, function (err, item) {

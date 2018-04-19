@@ -93,13 +93,19 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			var about = myNewsFeedItem.about;
 			about = about.replace(/\/(comment|photo)\/.*/, '');
 
+			//xxx commented on [this,your] [kind of thing] about: xxx
+
 			debug(sourceProfile.profile.name + '" commented on ' + myNewsFeedItem.about);
+
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			var description = myNewsFeedItem.description || 'this post';
-			myNewsFeedItem.humanReadable += ' on <a href="' + proxyEndPoint(about, currentUser) + '">' + description + '</a>';
-			myNewsFeedItem.humanReadable += ' by <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' commented on <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name, true) + '</a>';
+			var description = kindOfThing(about);
+			if (myNewsFeedItem.description) {
+				description += ' about: ' + myNewsFeedItem.description;
+			}
+			myNewsFeedItem.humanReadable += ' <a href="' + proxyEndPoint(about, currentUser) + '">' + description + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
@@ -112,9 +118,12 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += myNewsFeedItem.summary;
-			var description = myNewsFeedItem.description || 'this post';
-			myNewsFeedItem.humanReadable += ' reacted to <a href="' + proxyEndPoint(about, currentUser) + '">' + description + '</a>';
-			myNewsFeedItem.humanReadable += ' by <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name) + '</a>';
+			myNewsFeedItem.humanReadable += ' reacted to <a href="' + proxyEndPoint(whoAbout, currentUser) + '">' + fixNameYou(myEndPoint, whoAbout, aboutProfile.profile.name, true) + '</a>';
+			var description = kindOfThing(about);
+			if (myNewsFeedItem.description) {
+				description += ' about: ' + myNewsFeedItem.description;
+			}
+			myNewsFeedItem.humanReadable += ' <a href="' + proxyEndPoint(about, currentUser) + '">' + description + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
@@ -128,6 +137,19 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			};
 			return 'you';
 		}
-		return name;
+		return name + '\'s';
+	}
+
+	function kindOfThing(about) {
+		var kind = 'post';
+		if (about.match('/post/')) {
+			if (about.match('/photo/')) {
+				kind = 'photo';
+			}
+			if (about.match('/comment/')) {
+				kind = 'comment';
+			}
+		}
+		return kind;
 	}
 };

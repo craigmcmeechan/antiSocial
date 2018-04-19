@@ -436,12 +436,14 @@ module.exports = function (NewsFeedItem) {
 				}
 
 				theItem.summary = summary;
+				/*
 				if (theItem.type === 'comment') {
 					theItem.summary += ' commented';
 				}
 				if (theItem.type === 'react') {
 					theItem.summary += ' reacted';
 				}
+				*/
 			}
 
 			newsFeedItems.push(theItem);

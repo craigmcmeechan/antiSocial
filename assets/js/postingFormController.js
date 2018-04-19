@@ -14,6 +14,7 @@
 		this.lookupDebounce = null;
 		this.singleUpload = this.element.data('single-upload');
 		this.modal = this.element.data('modal');
+		this.description = this.element.data('description');
 
 		this.start = function () {
 			if (self.element.find('.upload-zone')) {
@@ -180,7 +181,8 @@
 					'categories': JSON.stringify(self.categories),
 					'about': self.about,
 					'photos': photos,
-					'photoId': photoId
+					'photoId': photoId,
+					'description': self.description
 				};
 
 				if (self.element.find('[name="autopost"]').val()) {

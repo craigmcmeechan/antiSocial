@@ -8,5 +8,5 @@ if !about
 	- about = data.about
 	
 .ajax-load.live-element(data-watch= about data-watch-type="react")
-	.post-reactions(data-jsclass="reactionController" data-endpoint= about)
+	.post-reactions(data-jsclass="reactionController" data-endpoint= about data-description= post ? post.description : '')
 		include reactions

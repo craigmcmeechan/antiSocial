@@ -5,6 +5,7 @@
 
 		this.endpoint = this.element.data('endpoint');
 		this.photoId = this.element.data('photoId');
+		this.description = this.element.data('description');
 
 		this.debounceIn = null;
 		this.debounceOut = null;
@@ -80,7 +81,8 @@
 			var payload = {
 				'reaction': reaction,
 				'endpoint': self.endpoint,
-				'photoId': this.photoId
+				'photoId': this.photoId,
+				'description': self.description
 			};
 			$.post('/react', payload, function (data, status, xhr) {
 				if (status !== 'success') {
