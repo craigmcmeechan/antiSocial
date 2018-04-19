@@ -106,10 +106,10 @@
 				self.disconnect();
 				return;
 			}
-			var formatted = event.data.humanReadable;
-			if (formatted && !event.data.deleted && event.type !== 'update') {
-
+			var formatted = $(event.data.humanReadable);
+			if (formatted && !event.data.deleted && event.type !== 'update' && !event.isMe) {
 				var li = $('<div class="news-feed-item">');
+				formatted.append('<br><span class="post-timestamp timestamp" data-timestamp="' + moment(event.data.updatedOn).toISOString() + '"></span>');
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);
 				didInjectContent(self.element);

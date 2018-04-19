@@ -48,7 +48,8 @@ module.exports = function (NewsFeedItem) {
 								'type': 'create',
 								'where': {},
 								'data': data,
-								'backfill': true
+								'backfill': true,
+								'isMe': data.source === myEndpoint
 							};
 
 							debugVerbose('backfilling NewsFeedItem %j', data);
@@ -112,7 +113,8 @@ module.exports = function (NewsFeedItem) {
 						'type': mytype,
 						'model': 'NewsFeedItem',
 						'eventType': eventType,
-						'data': data
+						'data': data,
+						'isMe': data.source === myEndpoint
 					};
 					try {
 						socket.emit('data', change);

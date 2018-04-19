@@ -22,7 +22,8 @@ module.exports = function doPostNotifications(currentUser, post, done) {
 					'target': post.about,
 					'visibility': post.visibility,
 					'details': {},
-					'tags': post.tags
+					'tags': post.tags,
+					'description': post.description
 				}, function (err, news) {
 					if (err) {
 						var e = new VError(err, 'could push news feed');
@@ -56,7 +57,8 @@ module.exports = function doPostNotifications(currentUser, post, done) {
 					'createdOn': now,
 					'updatedOn': now,
 					'userId': currentUser.id,
-					'details': {}
+					'details': {},
+					'description': post.description
 				};
 
 				server.models.NewsFeedItem.findOrCreate(query, pendingItem, function (err, item) {

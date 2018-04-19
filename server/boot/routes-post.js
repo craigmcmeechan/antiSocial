@@ -98,6 +98,18 @@ module.exports = function (server) {
         post.geoDescription = req.body.geoDescription;
         post.geoLocation = req.body.geoLocation;
         post.autopost = req.body.autopost;
+
+        var postDescription = server.locals.marked(post.body);
+        if (postDescription.match(/^<h\d[^>]*>([^<]*)/)) {
+          postDescription = postDescription.match(/^<h\d[^>]*>([^<]*)/)[0];
+        }
+        postDescription = postDescription.replace(/<.*?>/g, '').replace(/\n/g, ' ');
+        if (postDescription.length > 20) {
+          postDescription = postDescription.substring(0, 20) + '...';
+        }
+
+        post.description = postDescription;
+
         post.save(function (err) {
           if (err) {
             cb(err);
@@ -151,9 +163,11 @@ module.exports = function (server) {
             var e = new VError(err, 'could not update PushNewsFeedItem');
             return cb(e);
           }
+
           if (news) {
             news.tags = post.tags;
             news.visibility = post.visibility;
+            news.description = post.description;
             news.save();
           }
           cb(null, post);
@@ -179,6 +193,7 @@ module.exports = function (server) {
           }
           if (news) {
             news.tags = post.tags;
+            news.description = post.description;
             news.save();
           }
           cb(null, post);
@@ -336,6 +351,17 @@ module.exports = function (server) {
         else {
           req.body.posted = true;
         }
+
+        var postDescription = server.locals.marked(req.body.body);
+        if (postDescription.match(/^<h\d[^>]*>([^<]*)/)) {
+          postDescription = postDescription.match(/^<h\d[^>]*>([^<]*)/)[0];
+        }
+        postDescription = postDescription.replace(/<.*?>/g, '').replace(/\n/g, ' ');
+        if (postDescription.length > 20) {
+          postDescription = postDescription.substring(0, 20) + '...';
+        }
+
+        req.body.description = postDescription;
 
         currentUser.posts.create(req.body, function (err, post) {
           if (err) {
