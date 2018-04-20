@@ -1,3 +1,7 @@
+# 19-April-2018
+
+Shorter negative cache for remote profiles "unknown user."
+
 # 18-April-2018
 
 Activity feed descriptions more... descriptive.
