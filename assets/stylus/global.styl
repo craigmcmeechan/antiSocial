@@ -708,6 +708,8 @@ img.avatar
 			margin-bottom:5px
 #fixed-footer
 	text-align:center
+	.not-digitopia-xsmall &
+		display:none
 	.digitopia-xsmall &
 		position:fixed
 		height:40px
@@ -716,6 +718,7 @@ img.avatar
 		bottom:0px
 		background-color:#333
 	.footer-button
+		position:relative
 		border: thin solid #999
 		border-radius: 4px
 		display:inline-block
@@ -724,6 +727,11 @@ img.avatar
 		margin-right:10px
 		&.active
 			color:#999
+	.activity-count
+		position: absolute
+		font-size: 9px
+		top: -10px
+		right: -15px
 #news-feed
 	position:absolute
 	top:calc(100vh + 75px)
@@ -778,6 +786,8 @@ img.avatar
 			border-bottom:thin dashed $borderColor
 			padding-right: 10px
 			margin-left:50px
+			&.is-new
+				background-color:#fee
 			img
 				height:39px
 				border-radius:25px

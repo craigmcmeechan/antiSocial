@@ -7,16 +7,18 @@
 		this.pendingConnection = null;
 		this.endpoint = this.element.data('endpoint');
 		this.reconnecting = false;
+		this.newItems = 0;
 
 		this.start = function () {
 			self.element.on('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged', function () {
 				self.checkActive();
 			});
 			self.checkActive();
+			this.updateBadge();
 		};
 
 		this.stop = function () {
-			if (self.active) {
+			if (this.socket) {
 				self.disconnect();
 			}
 			self.element.off('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged');
@@ -26,8 +28,10 @@
 		this.checkActive = function () {
 			var state = $('#document-body').hasClass('is-logged-in');
 
-			if (state !== self.active) {
-				if (self.active) {
+			if (state !== self.loggedIn) {
+				self.loggedIn = state;
+
+				if (!state) { //
 					self.disconnect();
 				}
 				else {
@@ -35,13 +39,12 @@
 				}
 			}
 
-			self.active = state;
-
 			self.setTop();
 		};
 
 		this.setTop = function () {
-			if (self.active) {
+			var notMobile = $('#document-body').hasClass('not-digitopia-xsmall');
+			if (self.loggedIn && notMobile) {
 				if ($('#newsfeed-here').length) {
 					var top = $('#newsfeed-here').offset().top;
 					var width = $('#newsfeed-here').width();
@@ -57,7 +60,7 @@
 
 		this.connect = function () {
 			if (self.pendingConnection) {
-				clearTimeout(self.pendingConnection)
+				clearTimeout(self.pendingConnection);
 			}
 			self.pendingConnection = setTimeout(function () {
 				flashAjaxStatus('info', 'connecting');
@@ -87,8 +90,29 @@
 			$('body').addClass('offline');
 			self.element.find('.news-feed-items').empty();
 			if (self.socket) {
-				self.socket.close();
+				self.socket.disconnect();
 				self.socket = null;
+			}
+			self.reconnecting = false;
+			if (self.loggedIn) {
+				self.reconnecting = true;
+				self.connect();
+			}
+		};
+
+		this.clearCounter = function () {
+			self.newItems = 0;
+			self.element.find('.is-new').removeClass('is-new');
+			self.updateBadge();
+		};
+
+		this.updateBadge = function () {
+			$('.activity-count').html(self.newItems);
+			if (self.newItems) {
+				$('.activity-count').show();
+			}
+			else {
+				$('.activity-count').hide();
 			}
 		};
 
@@ -104,6 +128,11 @@
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);
 				didInjectContent(self.element);
+				if (!event.backfill) {
+					li.addClass('is-new');
+					++self.newItems;
+					self.updateBadge();
+				}
 			}
 			if (!event.backfill) {
 				if (event.data.type === 'post' && event.type === 'create') {
@@ -135,10 +164,7 @@
 		};
 
 		this.errors = function (e) {
-			console.log(e);
-			self.reconnecting = true;
 			self.disconnect();
-			self.connect();
 		};
 	}
 

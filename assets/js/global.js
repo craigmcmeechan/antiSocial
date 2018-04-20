@@ -51,6 +51,7 @@
 		$('.on-screen').toggleClass('on-screen');
 		$('#content').show();
 		$("html, body").scrollTop(0);
+		$('#news-feed').data('liveNewsFeedItemWebsocketController').clearCounter();
 	});
 
 	$('.show-notifications-button').on('click', function (e) {
