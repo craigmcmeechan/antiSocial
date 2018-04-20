@@ -1,3 +1,9 @@
+# 18-April-2018
+
+Activity feed descriptions more... descriptive.
+
+Added 'description' to post extracted from post body to provide more context to activity items.
+
 # 17-April-2018
 
 ### Rationalize AWS environment configuration
@@ -5,14 +11,16 @@
 The instance iAM role is now the preferred way of granting permissions to AWS services when running on AWS.
 
 If using these services the Instance role should be granted permission to:
-	ses:SendEmail
-	ses:SendRawEmail
-	s3:PutObject
-  s3:DeleteObject
+- ses:SendEmail
+- ses:SendRawEmail
+- s3:PutObject
+- s3:DeleteObject
 
-If not using instance role permissions, S3 iAM credentials:
+If not using instance role permissions, use S3 iAM credentials:
 - process.env.AWS_S3_KEY
 - process.env.AWS_S3_KEY_ID
+
+Always required if using S3
 - process.env.AWS_S3_REGION
 - process.env.AWS_S3_BUCKET
 
@@ -29,7 +37,7 @@ process.env.OUTBOUND_MAIL_SMTP_USER
 process.env.OUTBOUND_MAIL_SMTP_PASSWORD
 process.env.OUTBOUND_MAIL_RETURN_ADDRESS
 
-If not using instance role permissions, SES iAM credentials:
+If not using instance role permissions, provide SES iAM credentials:
 process.env.AWS_SES_KEY_ID
 process.env.AWS_SES_KEY
 ```

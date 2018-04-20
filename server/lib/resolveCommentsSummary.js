@@ -31,9 +31,6 @@ module.exports = function resolveCommentsSummary(item, done) {
 			}
 		}
 
-		if (summary) {
-			summary += ' commented';
-		}
 		item.commentSummary = summary;
 	}
 
