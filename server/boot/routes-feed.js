@@ -260,7 +260,8 @@ module.exports = function (server) {
         'user': ctx.get('currentUser'),
         'globalSettings': ctx.get('globalSettings'),
         'userSettings': ctx.get('userSettings'),
-        'items': items
+        'items': items,
+        'more': req.query.more
       });
 
     });

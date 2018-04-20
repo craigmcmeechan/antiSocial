@@ -40,7 +40,6 @@
 			self.setTop();
 		};
 
-		// position and maintain visibility
 		this.setTop = function () {
 			if (self.active) {
 				if ($('#newsfeed-here').length) {
@@ -52,17 +51,7 @@
 						'width': width,
 						'left': left
 					});
-
-					if (!$('#document-body').hasClass('digitopia-xsmall')) {
-						self.element.show();
-					}
 				}
-				else {
-					self.element.hide();
-				}
-			}
-			else {
-				self.element.hide();
 			}
 		};
 
@@ -71,6 +60,7 @@
 				clearTimeout(self.pendingConnection)
 			}
 			self.pendingConnection = setTimeout(function () {
+				flashAjaxStatus('info', 'connecting');
 				self.pendingConnection = null;
 				self.element.find('ul').empty();
 				self.socket = io.connect(self.endpoint);
@@ -83,25 +73,26 @@
 						}
 					});
 					self.socket.on('authenticated', function () {
-						console.log('authenticated');
+						flashAjaxStatus('info', 'online');
 						self.socket.on('data', self.processNews);
+						$('body').removeClass('offline');
 					});
 				});
 				self.setTop();
-			}, self.reconnecting ? 5000 : 0);
+			}, self.reconnecting ? 1000 : 0);
 		};
 
 		this.disconnect = function () {
+			flashAjaxStatus('info', 'offline');
+			$('body').addClass('offline');
 			self.element.find('.news-feed-items').empty();
 			if (self.socket) {
 				self.socket.close();
 				self.socket = null;
 			}
-			self.element.hide();
 		};
 
 		this.processNews = function (event) {
-			self.element.find('.status').removeClass('offline');
 			if (event.type === 'offline') {
 				self.disconnect();
 				return;
@@ -144,6 +135,7 @@
 		};
 
 		this.errors = function (e) {
+			console.log(e);
 			self.reconnecting = true;
 			self.disconnect();
 			self.connect();
