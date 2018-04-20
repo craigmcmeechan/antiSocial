@@ -25,7 +25,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - data_uploads:/var/app/antiSocial/client/uploads
+      - data_uploads:/var/app/current/client/uploads
     networks:
       - frontend
     env_file: ~/antisocial-development.env
