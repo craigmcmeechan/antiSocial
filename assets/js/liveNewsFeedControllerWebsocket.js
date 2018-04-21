@@ -133,6 +133,11 @@
 					++self.newItems;
 					self.updateBadge();
 				}
+				li.data('about', event.endpoint);
+				li.on('click', function (e) {
+					e.preventDefault();
+					loadPage($(this).data('about'));
+				});
 			}
 			if (!event.backfill) {
 				if (event.data.type === 'post' && event.type === 'create') {

@@ -2,6 +2,8 @@
 
 Shorter negative cache for remote profiles "unknown user."
 
+Mobile notifications view. Static footer nav for mobile.
+
 # 18-April-2018
 
 Activity feed descriptions more... descriptive.

@@ -1,0 +1,10 @@
+extends ../wrapper
+
+block seo
+	title.
+		Testbench
+
+block content
+	.row
+		.col-xs-12
+			#my-friends-graph.graph(style=";height:100vh;background-color:white;" data-jsclass="graphController" data-endpoint= '/' + currentUser.username + '/friends.json')

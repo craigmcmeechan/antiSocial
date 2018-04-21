@@ -87,8 +87,4 @@ block content
 					ul
 						for invite in invites
 							li= invite.email + ' (' + invite.status + ')'
-	//
-		if friends.length
-			.row
-				.col-xs-12
-					#my-friends-graph.graph(style=";height:100vh;background-color:white;" data-jsclass="graphController" data-endpoint= '/' + user.username + '/friends.json')
+	

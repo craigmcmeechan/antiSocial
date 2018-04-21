@@ -70,6 +70,15 @@ module.exports = function (server) {
 		});
 	});
 
+	router.get('/testbench-friends', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+		var ctx = req.myContext;
+
+		res.render('pages/testbench-friends', {
+			'globalSettings': ctx.get('globalSettings'),
+			'currentUser': ctx.get('currentUser')
+		});
+	});
+
 	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 
 		var mailer = require('../lib/mail');

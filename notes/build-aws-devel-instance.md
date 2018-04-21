@@ -21,6 +21,7 @@ eval $(aws ecr get-login --no-include-email --region=us-east-1)
 docker pull 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
 docker stop webapp-antisocial
 docker run --env-file=/root/antisocial.env -p 80:80 -p 443:443 --name=webapp-antisocial --rm -d  980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
+
 ```
 
 # Set up for container development
