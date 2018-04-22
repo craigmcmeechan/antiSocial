@@ -10,7 +10,7 @@ var resolveComments = require('../lib/resolveComments');
 var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var encryption = require('../lib/encryption');
-var resolvePostOg = require('../lib/resolvePostOg');
+var resolvePostOg = require('../lib/resolvePostOG');
 
 var async = require('async');
 var pug = require('pug');
