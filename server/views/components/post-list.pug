@@ -1,5 +1,3 @@
-// TODO: render tags as links, implement hashtag filter
-
 #scope-post-list
 	if posts && posts.length
 		for post in posts
@@ -105,3 +103,9 @@
 								- var commentSummary = post.commentSummary
 								- var commentCount = post.commentCount
 								include rendered-comments
+
+	if data.ogMap
+		for og in data.ogMap
+			.og-json
+				script(id= 'json-og-' + og.hash type="application/json")
+					!= JSON.stringify(og)

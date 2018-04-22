@@ -54,12 +54,31 @@
 				didInjectContent(self.element);
 			});
 
-			// set up arguments to ajax call to OgTag endpoint specified in element's data-src
-			self.element.digitopiaAjax({
-				args: {
-					url: self.url
+			// do we have the json in the document?
+			var hash = 0,
+				i, chr;
+			if (self.url.length) {
+				for (i = 0; i < self.url.length; i++) {
+					chr = self.url.charCodeAt(i);
+					hash = ((hash << 5) - hash) + chr;
+					hash |= 0; // Convert to 32bit integer
 				}
-			});
+			}
+			var jsonElement = $('#json-og-' + hash);
+			if (jsonElement && jsonElement.length) {
+				var data = JSON.parse(jsonElement.html());
+				this.element.trigger('data', {
+					'result': data
+				});
+			}
+			else {
+				// set up arguments to ajax call to OgTag endpoint specified in element's data-src
+				self.element.digitopiaAjax({
+					args: {
+						url: self.url
+					}
+				});
+			}
 
 			// open url on click
 			self.element.on('click', function (e) {

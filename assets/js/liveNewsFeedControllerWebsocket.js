@@ -128,7 +128,7 @@
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);
 				didInjectContent(self.element);
-				if (!event.backfill) {
+				if (!event.backfill || self.getHighwater() > event.data.id) {
 					li.addClass('is-new');
 					++self.newItems;
 					self.updateBadge();
@@ -138,6 +138,8 @@
 					e.preventDefault();
 					loadPage($(this).data('about'));
 				});
+
+				self.saveHighwater(event.data.id);
 			}
 			if (!event.backfill) {
 				if (event.data.type === 'post' && event.type === 'create') {
@@ -170,6 +172,18 @@
 
 		this.errors = function (e) {
 			self.disconnect();
+		};
+
+		this.getHighwater = function () {
+			return $.cookie('notification-highwater');
+		};
+
+		this.saveHighwater = function (highwater) {
+			var options = {
+				path: '/',
+				expires: 30,
+			};
+			$.cookie('notification-highwater', highwater, options);
 		};
 	}
 

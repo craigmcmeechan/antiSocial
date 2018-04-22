@@ -10,6 +10,8 @@ var resolveComments = require('../lib/resolveComments');
 var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var encryption = require('../lib/encryption');
+var resolvePostOg = require('../lib/resolvePostOg');
+
 var async = require('async');
 var pug = require('pug');
 var debug = require('debug')('proxy');
@@ -105,13 +107,19 @@ module.exports = function (server) {
             });
           },
           function (user, posts, cb) {
+            resolvePostOg(posts, function (err, postOgMap) {
+              cb(err, user, posts, postOgMap);
+            });
+          },
+          function (user, posts, postOgMap, cb) {
             resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
-              cb(err, user, posts);
+              cb(err, user, posts, postOgMap);
             });
           }
-        ], function (err, user, posts) {
+        ], function (err, user, posts, postOgMap) {
           data.posts = posts;
           data.highwater = data.posts && data.posts.length ? data.posts[data.posts.length - 1].createdOn.toISOString() : '';
+          data.ogMap = postOgMap;
 
           var options = {
             'data': data,
@@ -516,11 +524,16 @@ module.exports = function (server) {
         });
       },
       function (user, posts, cb) {
+        resolvePostOg(posts, function (err, postOgMap) {
+          cb(err, user, posts, postOgMap);
+        });
+      },
+      function (user, posts, postOgMap, cb) {
         resolveReactionsCommentsAndProfiles(posts, isMe, function (err) {
-          cb(err, user, posts);
+          cb(err, user, posts, postOgMap);
         });
       }
-    ], function (err, user, posts) {
+    ], function (err, user, posts, postOgMap) {
       if (err) {
         if (err.statusCode === 404) {
           return res.sendStatus(404);
@@ -537,7 +550,8 @@ module.exports = function (server) {
         },
         'profile': getProfile(user),
         'posts': posts,
-        'highwater': posts && posts.length ? posts[posts.length - 1].createdOn.toISOString() : ''
+        'highwater': posts && posts.length ? posts[posts.length - 1].createdOn.toISOString() : '',
+        'ogMap': postOgMap
       };
 
       if (view === '.json') {
@@ -609,22 +623,11 @@ module.exports = function (server) {
         });
       },
       function (user, post, cb) {
-        var body = post.body ? server.locals.marked(post.body) : '';
-        var matches = body.match(/<div class="ogPreview" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"><\/div>/)
-        if (!matches) {
-          return cb(null, user, post);
-        }
-
-        server.models.OgTag.findOne({
-          'where': {
-            'url': matches[1]
-          },
-          'include': ['uploads']
-        }, function (err, og) {
-          cb(null, user, post, og);
+        resolvePostOg([post], function (err, postOgMap) {
+          cb(err, user, post, postOgMap);
         });
       }
-    ], function (err, user, post, og) {
+    ], function (err, user, post, postOgMap) {
       if (err) {
         if (err.statusCode === 404) {
           return res.sendStatus(404);
@@ -641,7 +644,7 @@ module.exports = function (server) {
         },
         'profile': getProfile(user),
         'post': post,
-        'og': og
+        'ogMap': postOgMap
       };
 
       if (view === '.json') {
