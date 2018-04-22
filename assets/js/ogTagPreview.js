@@ -3,7 +3,7 @@
 		this.element = $(elem);
 		var self = this;
 
-		self.url = this.element.data('url');
+		self.url = decodeURIComponent(this.element.data('url'));
 		self.debug = this.element.data('debug');
 
 		this.start = function () {

@@ -57,7 +57,7 @@
 						for (var i = 0; i < urls.length; i++) {
 							var url = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
 							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
-								var previewTag = '<p><br></p><div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" contentEditable=false></div><!--endog--><p><br></p>';
+								var previewTag = '<p><br></p><div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + encodeURIComponent(url) + '" data-type="json" contentEditable=false></div><!--endog--><p><br></p>';
 								value = value.replace(url, previewTag);
 								deltaLength -= url.length;
 							}
@@ -158,7 +158,10 @@
 
 		this.updateMarkdown = function () {
 			var html = self.element.html();
-			html = html.replace(/<div class="ogPreview.*?" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"[^>]*>[\s\S]*?<\/div><!--endog-->/g, '<a href="$1"></a>');
+			html = html.replace(/<div class="ogPreview.*?" data-jsclass="OgTagPreview" data-src="\/api\/OgTags\/scrape" data-url="([^"]+)" data-type="json"[^>]*>[\s\S]*?<\/div><!--endog-->/g, function (match, p1) {
+				var url = decodeURIComponent(p1);
+				return '<a href="' + url + '"></a>';
+			});
 			var markdown = self.turndownService.turndown(html);
 			self.element.closest('form').find(self.target).val(markdown);
 		};
