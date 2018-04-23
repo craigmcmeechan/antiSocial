@@ -14,7 +14,7 @@ var debug = require('debug')('scroll');
 var debugVerbose = require('debug')('scroll:verbose');
 
 var ITEMS_PER_PAGE = 10;
-var ITEMS_PER_SELECT = 20;
+var ITEMS_PER_SELECT = 50;
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -249,7 +249,6 @@ module.exports = function (server) {
         }
 
         cb(null, session, items);
-
       },
       function saveScrollSession(session, items, cb) {
         debug('save scroll session %j', session);
