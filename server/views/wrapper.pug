@@ -39,7 +39,7 @@ html(lang="en")
 				img(src="/images/logo.svg" height="200px" style="margin:0 auto;")
 				| myAntiSocial.net
 
-		#news-feed(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets )
+		#news-feed.hidden-logged-out(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets )
 			include components/news-feed
 
 		nav.navbar.navbar-inverse.navbar-fixed-top
@@ -285,7 +285,7 @@ html(lang="en")
 
 		#ajax-status
 
-		#fixed-footer
+		#fixed-footer.hidden-logged-out
 			.footer-button.active.show-feed-button
 				i.fa.fa-fw.fa-list-alt
 			

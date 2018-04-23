@@ -84,7 +84,10 @@
 			self.element.on('click', function (e) {
 				// if video inject player
 				if (self.data && self.data.ogData.data.ogVideo) {
-					self.element.empty().append('<iframe width="100%" height="100%" src="' + self.data.ogData.data.ogVideo.url + '?autoplay=1" frameborder="0" allowfullscreen></iframe>')
+					var video = self.data.ogData.data.ogVideo;
+					var embed = '<video width="100%" height="auto" data-width="' + video.width + '" data-height="' + video.height + '" controls autoplay><source src="' + video.url + '" type="' + video.type + '"></video>';
+					self.element.empty().append(embed);
+					self.element.css('height', 'auto');
 				}
 				else {
 					var ref = window.open(self.url, '_blank');

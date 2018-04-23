@@ -144,6 +144,9 @@
 				li.on('click', function (e) {
 					e.preventDefault();
 					loadPage($(this).data('about'));
+					if ($('body').hasClass('digitopia-xsmall')) {
+						$('.show-feed-button').trigger('click');
+					};
 				});
 
 				self.saveHighwater(event.data.id);
