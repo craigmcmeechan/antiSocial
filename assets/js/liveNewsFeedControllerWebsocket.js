@@ -5,9 +5,12 @@
 		this.socket = null;
 		this.active = false;
 		this.pendingConnection = null;
-		this.endpoint = this.element.data('endpoint');
+		this.endpoint = window.Cordova ? server : this.element.data('endpoint');
 		this.reconnecting = false;
 		this.newItems = 0;
+
+		this.endpoint = this.endpoint.replace(/^https/, 'wss');
+		this.endpoint = this.endpoint.replace(/^http/, 'ws');
 
 		this.start = function () {
 			self.element.on('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged', function () {

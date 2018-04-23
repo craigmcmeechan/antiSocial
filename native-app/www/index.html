@@ -56,6 +56,16 @@
               <div class="modal-body">
                 <div class="row">
                   <div class="col-sm-6 form-group">
+                    <label>Server</label>
+                    <div class="input-relative">
+                      <input class="login-email-address form-control" type="text" name="server" placeholder="https://mr.myantisocial.net" data-validate="required">
+                      <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
+                      <div class="validation-help"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 form-group">
                     <label>Email Address</label>
                     <div class="input-relative">
                       <input class="login-email-address form-control" type="text" name="email" placeholder="Email address" data-validate="required,email">
@@ -207,6 +217,12 @@
         </div>
         <div class="news-feed-footer"><a href="/feed">More</a></div>
       </div>
+      <div id="fixed-footer">
+        <div class="footer-button active show-feed-button"><i class="fa fa-fw fa-list-alt"></i></div>
+        <div class="footer-button show-notifications-button"><i class="fa fa-fw fa-bell"></i>
+        <div class="badge activity-count"></div>
+      </div>
+     </div>
       <script type="text/javascript" src="cordova.js"></script>
       <script type="text/javascript" src="dist/js/jquery.min.js"></script>
       <script type="text/javascript" src="js/index.js"></script>

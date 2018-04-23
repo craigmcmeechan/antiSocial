@@ -2,7 +2,7 @@ extends ../wrapper
 
 block seo
 	- var posts = [data.post]
-	- var og = data.postOgMap ? data.postOgMap[Object.keys(data.postOgMap)[0]] : null
+	- var og = data.ogMap ? data.ogMap[Object.keys(data.ogMap)[0]] : null
 	- var profile = data.profile
 	
 	- var body = posts[0].body ? marked(posts[0].body) : ''

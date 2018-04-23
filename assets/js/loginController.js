@@ -11,6 +11,9 @@
 
 			this.element.on('submit', function (e) {
 				e.preventDefault();
+				if (window.Cordova) {
+					server = self.element.find('[name="server"]').val();
+				}
 				$.post('/api/MyUsers/login', {
 						'email': self.element.find('[name="email"]').val(),
 						'password': self.element.find('[name="password"]').val()
