@@ -34,5 +34,11 @@ networks:
 
 volumes:
   data_uploads:
+    external:
+      name: uploads
   data_mongo:
+    external:
+      name: mongo-data
   data_logs:
+    external:
+      name: mongo-logs

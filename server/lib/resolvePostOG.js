@@ -10,6 +10,10 @@ module.exports = function resolvePostOg(posts, done) {
 	async.map(posts, function (post, cb) {
 		//find all [](xxx) urls in body
 
+		if (!post || !post.body) {
+			return cb();
+		}
+
 		var matches = post.body.match(/\[\]\(([^)]*)\)/g);
 
 		if (!matches) {
