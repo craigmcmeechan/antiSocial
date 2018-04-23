@@ -54,6 +54,10 @@
 						'width': width,
 						'left': left
 					});
+					self.element.show();
+				}
+				else {
+					self.element.hide();
 				}
 			}
 		};

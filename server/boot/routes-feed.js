@@ -251,7 +251,7 @@ module.exports = function (server) {
         cb(null, session, items);
       },
       function saveScrollSession(session, items, cb) {
-        debug('save scroll session %j', session);
+        debug('save scroll session');
         cache.set('scrollSession-' + currentUser.id.toString(), session, 3600, function (err) {
           cb(err, items);
         });
