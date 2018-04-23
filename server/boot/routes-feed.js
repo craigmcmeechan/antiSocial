@@ -14,7 +14,7 @@ var debug = require('debug')('scroll');
 var debugVerbose = require('debug')('scroll:verbose');
 
 var ITEMS_PER_PAGE = 10;
-var ITEMS_PER_SELECT = 15;
+var ITEMS_PER_SELECT = 20;
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -145,6 +145,10 @@ module.exports = function (server) {
               if (!session.uniqueAbout[key]) { // ignore item if already shown in this session
                 session.uniqueAbout[key] = true;
                 session.queue.push(group);
+                debug('pushing queue %s', key);
+              }
+              else {
+                debug('dupe %s', key);
               }
             }
 
@@ -248,7 +252,7 @@ module.exports = function (server) {
 
       },
       function saveScrollSession(session, items, cb) {
-        debug('save scroll session');
+        debug('save scroll session %j', session);
         cache.set('scrollSession-' + currentUser.id.toString(), session, 3600, function (err) {
           cb(err, items);
         });
