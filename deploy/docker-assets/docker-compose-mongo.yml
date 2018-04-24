@@ -16,23 +16,25 @@ services:
       - frontend
 
   "webapp-antisocial":
+    image: 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
     container_name: webapp-antisocial
-    image: webapp-antisocial
-    restart: always
-    build:
-      context: ../../
-      dockerfile: deploy/docker-assets/Dockerfile-webapp
     ports:
       - "3000:3000"
     volumes:
       - data_uploads:/var/app/current/client/uploads
     networks:
       - frontend
-    env_file: ~/antisocial-development.env
+    env_file: ~/antisocial-docker-mongo.env
 networks:
   frontend:
 
 volumes:
   data_uploads:
+    external:
+      name: uploads
   data_mongo:
+    external:
+      name: mongo-data
   data_logs:
+    external:
+      name: mongo-logs

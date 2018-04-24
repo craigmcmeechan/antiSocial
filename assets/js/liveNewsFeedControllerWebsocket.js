@@ -5,18 +5,23 @@
 		this.socket = null;
 		this.active = false;
 		this.pendingConnection = null;
-		this.endpoint = this.element.data('endpoint');
+		this.endpoint = window.Cordova ? server : this.element.data('endpoint');
 		this.reconnecting = false;
+		this.newItems = 0;
+
+		this.endpoint = this.endpoint.replace(/^https/, 'wss');
+		this.endpoint = this.endpoint.replace(/^http/, 'ws');
 
 		this.start = function () {
 			self.element.on('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged', function () {
 				self.checkActive();
 			});
 			self.checkActive();
+			this.updateBadge();
 		};
 
 		this.stop = function () {
-			if (self.active) {
+			if (this.socket) {
 				self.disconnect();
 			}
 			self.element.off('DidLogOut DidLogIn DigitopiaDidLoadNewPage DigitopiaDidResize DigitopiaScaleChanged');
@@ -26,8 +31,10 @@
 		this.checkActive = function () {
 			var state = $('#document-body').hasClass('is-logged-in');
 
-			if (state !== self.active) {
-				if (self.active) {
+			if (state !== self.loggedIn) {
+				self.loggedIn = state;
+
+				if (!state) { //
 					self.disconnect();
 				}
 				else {
@@ -35,14 +42,12 @@
 				}
 			}
 
-			self.active = state;
-
 			self.setTop();
 		};
 
-		// position and maintain visibility
 		this.setTop = function () {
-			if (self.active) {
+			var notMobile = $('#document-body').hasClass('not-digitopia-xsmall');
+			if (self.loggedIn && notMobile) {
 				if ($('#newsfeed-here').length) {
 					var top = $('#newsfeed-here').offset().top;
 					var width = $('#newsfeed-here').width();
@@ -52,25 +57,20 @@
 						'width': width,
 						'left': left
 					});
-
-					if (!$('#document-body').hasClass('digitopia-xsmall')) {
-						self.element.show();
-					}
+					self.element.show();
 				}
 				else {
 					self.element.hide();
 				}
 			}
-			else {
-				self.element.hide();
-			}
 		};
 
 		this.connect = function () {
 			if (self.pendingConnection) {
-				clearTimeout(self.pendingConnection)
+				clearTimeout(self.pendingConnection);
 			}
 			self.pendingConnection = setTimeout(function () {
+				flashAjaxStatus('info', 'connecting');
 				self.pendingConnection = null;
 				self.element.find('ul').empty();
 				self.socket = io.connect(self.endpoint);
@@ -83,25 +83,47 @@
 						}
 					});
 					self.socket.on('authenticated', function () {
-						console.log('authenticated');
+						flashAjaxStatus('info', 'online');
 						self.socket.on('data', self.processNews);
+						$('body').removeClass('offline');
 					});
 				});
 				self.setTop();
-			}, self.reconnecting ? 5000 : 0);
+			}, self.reconnecting ? 1000 : 0);
 		};
 
 		this.disconnect = function () {
+			flashAjaxStatus('info', 'offline');
+			$('body').addClass('offline');
 			self.element.find('.news-feed-items').empty();
 			if (self.socket) {
-				self.socket.close();
+				self.socket.disconnect();
 				self.socket = null;
 			}
-			self.element.hide();
+			self.reconnecting = false;
+			if (self.loggedIn) {
+				self.reconnecting = true;
+				self.connect();
+			}
+		};
+
+		this.clearCounter = function () {
+			self.newItems = 0;
+			self.element.find('.is-new').removeClass('is-new');
+			self.updateBadge();
+		};
+
+		this.updateBadge = function () {
+			$('.activity-count').html(self.newItems);
+			if (self.newItems) {
+				$('.activity-count').show();
+			}
+			else {
+				$('.activity-count').hide();
+			}
 		};
 
 		this.processNews = function (event) {
-			self.element.find('.status').removeClass('offline');
 			if (event.type === 'offline') {
 				self.disconnect();
 				return;
@@ -113,6 +135,21 @@
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);
 				didInjectContent(self.element);
+				if (!event.backfill || self.getHighwater() > event.data.id) {
+					li.addClass('is-new');
+					++self.newItems;
+					self.updateBadge();
+				}
+				li.data('about', event.endpoint);
+				li.on('click', function (e) {
+					e.preventDefault();
+					loadPage($(this).data('about'));
+					if ($('body').hasClass('digitopia-xsmall')) {
+						$('.show-feed-button').trigger('click');
+					};
+				});
+
+				self.saveHighwater(event.data.id);
 			}
 			if (!event.backfill) {
 				if (event.data.type === 'post' && event.type === 'create') {
@@ -144,9 +181,19 @@
 		};
 
 		this.errors = function (e) {
-			self.reconnecting = true;
 			self.disconnect();
-			self.connect();
+		};
+
+		this.getHighwater = function () {
+			return $.cookie('notification-highwater');
+		};
+
+		this.saveHighwater = function (highwater) {
+			var options = {
+				path: '/',
+				expires: 30,
+			};
+			$.cookie('notification-highwater', highwater, options);
 		};
 	}
 

@@ -19,17 +19,24 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 
 		var whoAbout = myNewsFeedItem.about.replace(/\/post\/.*$/, '');
 
-		if (myNewsFeedItem.type === 'pending friend request' || myNewsFeedItem.type === 'friend invite accepted') {
-			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
+		if (myNewsFeedItem.type === 'pending friend request') {
+			debug(myNewsFeedItem.source + ' friend request ' + myNewsFeedItem.about);
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += 'Friend request from <a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + sourceProfile.profile.name + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
+		if (myNewsFeedItem.type === 'pending friend request' || myNewsFeedItem.type === 'friend invite accepted') {
+			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
+			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
+			myNewsFeedItem.humanReadable += '<div>';
+			myNewsFeedItem.humanReadable += 'Friend invite accetped by <a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + sourceProfile.profile.name + '</a>';
+			myNewsFeedItem.humanReadable += '</div>';
+		}
+
 		if (myNewsFeedItem.type === 'friend') {
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
-
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
 			myNewsFeedItem.humanReadable += '<a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + fixNameYou(myEndPoint, myNewsFeedItem.source, sourceProfile.profile.name) + '</a>';

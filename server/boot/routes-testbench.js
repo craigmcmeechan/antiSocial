@@ -70,6 +70,15 @@ module.exports = function (server) {
 		});
 	});
 
+	router.get('/testbench-friends', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+		var ctx = req.myContext;
+
+		res.render('pages/testbench-friends', {
+			'globalSettings': ctx.get('globalSettings'),
+			'currentUser': ctx.get('currentUser')
+		});
+	});
+
 	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 
 		var mailer = require('../lib/mail');
@@ -94,16 +103,36 @@ module.exports = function (server) {
 	// testbench
 	router.get('/requests', getCurrentUser(), function (req, res, next) {
 		var ctx = req.myContext;
-		server.models.Request.find({
-			'where': {},
-			'order': 'createdOn ASC'
-		}, function (err, requests) {
+		async.waterfall([
+			function (cb) {
+				server.models.Request.find({
+					'where': {},
+					'order': 'createdOn ASC'
+				}, function (err, requests) {
+					cb(err, requests);
+				});
+			},
+			function (requests, cb) {
+				server.models.Invitation.find({
+					'where': {},
+					'order': 'createdOn ASC'
+				}, function (err, invites) {
+					cb(err, requests, invites);
+				});
+			}
+		], function (err, requests, invites) {
+			var map = {};
+			for (var i = 0; i < invites.length; i++) {
+				map[invites[i].email] = invites[i].status;
+			}
 			res.render('pages/requests', {
 				'globalSettings': ctx.get('globalSettings'),
 				'currentUser': ctx.get('currentUser'),
-				'requests': requests
+				'requests': requests,
+				'invited': map
 			});
 		});
+
 	});
 
 	router.get('/testbench-notifications', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {

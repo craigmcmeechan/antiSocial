@@ -37,7 +37,32 @@
 
 	$('.navbar-toggle').on('click', function (e) {
 		$('.avatar').toggle();
-	})
+	});
+
+	$('.moreActivityButton').on('click', function (e) {
+		e.preventDefault();
+		$('.news-feed-items').toggleClass('constrained-height');
+	});
+
+	$('.show-feed-button').on('click', function (e) {
+		e.preventDefault();
+		$('.footer-button.active').toggleClass('active');
+		$(this).toggleClass('active');
+		$('.on-screen').toggleClass('on-screen');
+		$('#content').show();
+		$("html, body").scrollTop(0);
+		$('#news-feed').data('liveNewsFeedItemWebsocketController').clearCounter();
+	});
+
+	$('.show-notifications-button').on('click', function (e) {
+		e.preventDefault();
+		$('.footer-button.active').toggleClass('active');
+		$(this).toggleClass('active');
+		$('.on-screen').toggleClass('on-screen');
+		$('#content').hide();
+		$('#news-feed').toggleClass('on-screen');
+		$("html, body").scrollTop(0);
+	});
 
 	$('body').on('click', '.bug-report', function () {
 		open('https://github.com/antiSocialNet/antiSocial/issues/new');

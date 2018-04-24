@@ -13,6 +13,8 @@
 				}
 				else {
 					self.element.html(element.find(self.target).html());
+					var json = element.find('.og-json').html();
+					self.element.append(json);
 				}
 				self.element.removeClass('loading');
 				didInjectContent(self.element);

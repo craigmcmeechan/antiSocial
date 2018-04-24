@@ -494,7 +494,7 @@ module.exports = function (server) {
 						'userId': user.id,
 						'friendId': friend.id,
 						'uuid': uuid(),
-						'type': invitation ? 'frend invite accepted' : 'pending friend request',
+						'type': invitation ? 'friend invite accepted' : 'pending friend request',
 						'source': friend.remoteEndPoint,
 						'about': friend.remoteEndPoint,
 						'originator': false

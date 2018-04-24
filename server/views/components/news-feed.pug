@@ -1,11 +1,11 @@
 .news-feed-header
 	.status.pull-right
-	| Activity Feed
-.news-feed-items
+	i.fa.fa-fw.fa-bell
+.news-feed-items.constrained-height
 	.news-feed-item
 		- var thumb= getUploadForProperty('photo', user ? user.uploads() : {}, 'thumb', headshotFPO).url
 		img(src=thumb)
 		div
 			| listening for events
 .news-feed-footer
-	a(href="/feed") More
+	a.moreActivityButton(href="/feed") More

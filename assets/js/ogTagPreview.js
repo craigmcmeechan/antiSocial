@@ -3,7 +3,7 @@
 		this.element = $(elem);
 		var self = this;
 
-		self.url = this.element.data('url');
+		self.url = decodeURIComponent(this.element.data('url'));
 		self.debug = this.element.data('debug');
 
 		this.start = function () {
@@ -54,18 +54,40 @@
 				didInjectContent(self.element);
 			});
 
-			// set up arguments to ajax call to OgTag endpoint specified in element's data-src
-			self.element.digitopiaAjax({
-				args: {
-					url: self.url
+			// do we have the json in the document?
+			var hash = 0,
+				i, chr;
+			if (self.url.length) {
+				for (i = 0; i < self.url.length; i++) {
+					chr = self.url.charCodeAt(i);
+					hash = ((hash << 5) - hash) + chr;
+					hash |= 0; // Convert to 32bit integer
 				}
-			});
+			}
+			var jsonElement = $('#json-og-' + hash);
+			if (jsonElement && jsonElement.length) {
+				var data = JSON.parse(jsonElement.html());
+				this.element.trigger('data', {
+					'result': data
+				});
+			}
+			else {
+				// set up arguments to ajax call to OgTag endpoint specified in element's data-src
+				self.element.digitopiaAjax({
+					args: {
+						url: self.url
+					}
+				});
+			}
 
 			// open url on click
 			self.element.on('click', function (e) {
 				// if video inject player
 				if (self.data && self.data.ogData.data.ogVideo) {
-					self.element.empty().append('<iframe width="100%" height="100%" src="' + self.data.ogData.data.ogVideo.url + '?autoplay=1" frameborder="0" allowfullscreen></iframe>')
+					var video = self.data.ogData.data.ogVideo;
+					var embed = '<video width="100%" height="auto" data-width="' + video.width + '" data-height="' + video.height + '" controls autoplay><source src="' + video.url + '" type="' + video.type + '"></video>';
+					self.element.empty().append(embed);
+					self.element.css('height', 'auto');
 				}
 				else {
 					var ref = window.open(self.url, '_blank');

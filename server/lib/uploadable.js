@@ -198,12 +198,19 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 						cb(new VError(err, 'error loading %s', params.url));
 					})
 					.on('response', function (response) {
-						if (response.statusCode === 200 && response.headers['content-type'] && response.headers['content-type'].match(/^image\//)) {
+						if (response.statusCode === 200) { //&& response.headers['content-type'] && response.headers['content-type'].match(/^image\//)) {
 
 							// peek at the response to determine the content-type
 
-							meta.type = response.headers['content-type'];
-							var extension = mime.extension(meta.type);
+							var extension;
+							if (response.headers['content-type']) {
+								meta.type = response.headers['content-type'];
+								extension = mime.extension(meta.type);
+							}
+							else {
+								extension = params.url.replace(/.*\.([a-z0-9A-Z]+)$/, '$1');
+							}
+
 							localCopy = 'client/uploads/' + uuid.v4() + '.' + extension;
 
 							// create a write stream to save the file

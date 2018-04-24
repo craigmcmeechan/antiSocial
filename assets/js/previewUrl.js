@@ -22,7 +22,7 @@
 		};
 
 		this.preview = function (url) {
-			var buffer = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + url + '" data-type="json" data-debug="' + self.debug + '"></div><!--endog-->';
+			var buffer = '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + encodeURIComponent(url) + '" data-type="json" data-debug="' + self.debug + '"></div><!--endog-->';
 			$(self.target).find('.ogPreviewHere').empty().append(buffer);
 			didInjectContent(self.target);
 		};

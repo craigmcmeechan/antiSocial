@@ -1,3 +1,17 @@
+# 22-April-2018
+
+# 21-April-2018
+
+UI Speed - embed OG JSON where possible to avoid async download latency
+
+Badge counter & new notification UI enhancements
+
+# 19-April-2018
+
+Shorter negative cache for remote profiles "unknown user."
+
+Mobile notifications view. Static footer nav for mobile.
+
 # 18-April-2018
 
 Activity feed descriptions more... descriptive.

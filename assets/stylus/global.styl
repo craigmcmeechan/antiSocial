@@ -706,16 +706,48 @@ img.avatar
 			border-radius:50%
 			margin-top:5px
 			margin-bottom:5px
+#fixed-footer
+	text-align:center
+	.not-digitopia-xsmall &
+		display:none
+	.digitopia-xsmall &
+		position:fixed
+		height:40px
+		padding:4px
+		width:100%
+		bottom:0px
+		background-color:#333
+	.footer-button
+		position:relative
+		border: thin solid #999
+		border-radius: 4px
+		display:inline-block
+		padding:4px
+		color:#666
+		margin-right:10px
+		&.active
+			color:#999
+	.activity-count
+		position: absolute
+		font-size: 9px
+		top: -10px
+		right: -15px
 #news-feed
-	display:none
 	position:absolute
 	top:calc(100vh + 75px)
 	left:0px
 	overflow: hidden
 	background-color:white
 	border-radius:4px
+	&.on-screen
+		display:block!important
+		top:50px!important
+		left:0px!important
+		margin:0
+		margin-bottom:40px
+		width:100%!important
 	.digitopia-xsmall &
-		display:none!important
+		display: none
 
 	.status
 		width:8px
@@ -724,9 +756,9 @@ img.avatar
 		background-color:green
 		margin-top:11px
 		margin-right:10px
-
-		&.offline
+		.offline &
 			background-color:red
+
 	.news-feed-header
 		height:30px
 		line-height:30px
@@ -742,15 +774,21 @@ img.avatar
 		background-color:#eee
 		text-align:right
 		font-size:.75em
-
+		.digitopia-xsmall &
+			display:none
 	.news-feed-items
 		font-size:.75em
-		overflow: hidden
+		.not-digitopia-xsmall &.constrained-height
+			overflow: hidden
+			max-height:calc(100vh - 75px - 60px)
 		.news-feed-item
 			min-height:50px
 			border-bottom:thin dashed $borderColor
 			padding-right: 10px
 			margin-left:50px
+			cursor:pointer
+			&.is-new
+				background-color:#fee
 			img
 				height:39px
 				border-radius:25px

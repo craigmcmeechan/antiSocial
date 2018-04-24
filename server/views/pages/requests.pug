@@ -9,5 +9,8 @@ block content
 		.row
 			.col-xs-12
 				for request in requests
-					li= request.email + ' ('+request.name+')'
+					li
+						= request.email + ' ('+request.name+') '
+						if invited[request.email]
+							= 'invited: ' + invited[request.email]
 	

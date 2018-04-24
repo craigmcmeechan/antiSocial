@@ -51,12 +51,12 @@ myRenderer.image = function (href, title, text) {
 };
 myRenderer.link = function (href, title, text) {
   if (text && text.match(/^http/i)) {
-    return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div><!--endog-->';
+    return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + encodeURIComponent(href) + '" data-type="json"></div><!--endog-->';
   }
   else {
     if (!text) {
       href = href.replace(/&amp;/g, '&');
-      return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + href + '" data-type="json"></div><!--endog-->';
+      return '<div class="ogPreview" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + encodeURIComponent(href) + '" data-type="json"></div><!--endog-->';
     }
     else {
       if (href.match(/^http/i)) {
@@ -241,6 +241,7 @@ app.use(csp({
     'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
     'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
     'frameSrc': ['\'self\'', '*'],
+    'mediaSrc': ['\'self\'', '*'],
     'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com'],
     'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
     'reportUri': '/csp-violation',

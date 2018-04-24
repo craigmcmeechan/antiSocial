@@ -54,6 +54,10 @@ module.exports = function resolveProfiles(item, done) {
 			var payload = {};
 			if (err || response.statusCode !== 200) {
 				payload.status = 'could not load endpoint profile';
+				payload.status = 503;
+				if (response && response.statusCode) {
+					payload.status = response.statusCode;
+				}
 			}
 			else {
 				payload.status = response.statusCode;
@@ -78,7 +82,7 @@ module.exports = function resolveProfiles(item, done) {
 				payload.profile.photo.url = payload.profile.photo.url;
 				payload.profile.background.url = payload.profile.background.url;
 			}
-			myCache.set('profile-' + whoAbout, payload, 3600);
+			myCache.set('profile-' + whoAbout, payload, payload.status === 200 ? 1800 : 60);
 			profiles[endpoint] = payload;
 			cb();
 		});
