@@ -10,24 +10,28 @@
 
 		this.start = function () {
 			if (self.isMine) {
-				this.element.on('click', '.delete-post', function (e) {
-					e.preventDefault();
-
-					var endpoint = '/post/' + self.postId;
-					$.ajax({
-						'method': 'DELETE',
-						url: endpoint
-					}).done(function (data) {
-						if (_.get(data, 'result.status') === 'ok') {
-							flashAjaxStatus('info', 'deleted');
-							self.element.closest('.newsfeed-item').remove();
-						}
-						else {
-							flashAjaxStatus('danger', _.get(data, 'result.status') ? _.get(data, 'result.status') : 'an error occured');
-						}
-					}).fail(function (jqXHR, textStatus, errorThrown) {
-						flashAjaxStatus('danger', 'could not delete ', textStatus);
-					});
+				this.element.find('.delete-post').confirmation({
+					'container': 'body',
+					'title': null,
+					'placement': 'bottom',
+					'onCancel': function () {},
+					'onConfirm': function () {
+						var endpoint = '/post/' + self.postId;
+						$.ajax({
+							'method': 'DELETE',
+							url: endpoint
+						}).done(function (data) {
+							if (_.get(data, 'result.status') === 'ok') {
+								flashAjaxStatus('info', 'deleted');
+								self.element.closest('.newsfeed-item').remove();
+							}
+							else {
+								flashAjaxStatus('danger', _.get(data, 'result.status') ? _.get(data, 'result.status') : 'an error occured');
+							}
+						}).fail(function (jqXHR, textStatus, errorThrown) {
+							flashAjaxStatus('danger', 'could not delete ', textStatus);
+						});
+					}
 				});
 
 				this.element.on('click', '.edit-post', function (e) {
@@ -44,8 +48,8 @@
 
 		this.stop = function () {
 			if (self.isMine) {
-				this.element.off('click', '.delete-post');
 				this.element.off('click', '.edit-post');
+				this.element.find('.delete-post').confirmation('destroy');
 			}
 		};
 
