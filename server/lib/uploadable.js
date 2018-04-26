@@ -209,9 +209,15 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 							}
 							else {
 								extension = params.url.replace(/.*\.([a-z0-9A-Z]+)$/, '$1');
+								if (extension === params.url) {
+									extension = '';
+								}
 							}
 
-							localCopy = 'client/uploads/' + uuid.v4() + '.' + extension;
+							localCopy = 'client/uploads/' + uuid.v4();
+							if (extension) {
+								localCopy += '.' + extension;
+							}
 
 							// create a write stream to save the file
 							var write = fs.createWriteStream(localCopy)

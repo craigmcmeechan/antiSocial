@@ -2,6 +2,7 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var resolveProfiles = require('../lib/resolveProfiles');
 var proxyEndPoint = require('../lib/proxy-endpoint');
+var getProfile = require('../lib/getProfile');
 
 var VError = require('verror').VError;
 var WError = require('verror').WError;
@@ -264,7 +265,8 @@ module.exports = function (server) {
         'globalSettings': ctx.get('globalSettings'),
         'userSettings': ctx.get('userSettings'),
         'items': items,
-        'more': req.query.more
+        'more': req.query.more,
+        'profile': getProfile(currentUser)
       });
 
     });
