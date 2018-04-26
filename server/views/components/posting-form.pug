@@ -30,7 +30,7 @@
 					
 		.post-tools.hide-until-subject-focus
 			.form-group.input-relative.button-zone
-				button.post-submit-button.btn.btn-sm.btn-primary Post
+				a#post-cancel-button.btn.btn-sm.btn-default(href="#") Cancel
 				if !editing
 					a#post-upload-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom")
 						i.glyphicon.glyphicon-upload
@@ -45,7 +45,8 @@
 				if canEditAutopost
 					a#post-autopost-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Autopost" data-placement="bottom")
 						i.glyphicon.glyphicon-calendar
-				a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
+				.pull-right
+					button.post-submit-button.btn.btn-sm.btn-primary Post
 
 			.geo-zone
 				.form-group.input-relative

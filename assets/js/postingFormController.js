@@ -150,7 +150,7 @@
 
 			this.element.on('click', '.post-submit-button', function (e) {
 				e.preventDefault();
-
+				self.element.find('.post-submit-button').attr('disabled', 'disabled').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading.');
 				// collect id's of files in dropzone
 				var photos = [];
 				if (self.element.find('.upload-zone')) {
@@ -190,6 +190,8 @@
 				}
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {
+					self.element.find('.post-submit-button').removeAttr('disabled').html('Post');
+
 					if (status !== 'success') {
 						flashAjaxStatus('danger', xhr.statusText);
 					}
@@ -204,13 +206,18 @@
 				}, 'json');
 			});
 
-			this.element.on('click', '#post-cancel-button', function (e) {
-				e.preventDefault();
-				self.hideForm();
-				if (self.modal) {
-					$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
-					$(self.modal).find('.modal-body').empty().append('loading...');
-					$(self.modal).modal('hide');
+
+			this.element.find('#post-cancel-button').confirmation({
+				'container': 'body',
+				'title': null,
+				'onCancel': function () {},
+				'onConfirm': function () {
+					self.hideForm();
+					if (self.modal) {
+						$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
+						$(self.modal).find('.modal-body').empty().append('loading...');
+						$(self.modal).modal('hide');
+					}
 				}
 			});
 
@@ -239,10 +246,11 @@
 		this.stop = function () {
 			this.element.off('focusin', this.element.data('focus-target'));
 			this.element.off('click', '#post-submit');
-			this.element.off('click', '#post-cancel');
+			this.element.find('#post-cancel-button').confirmation('destroy');
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
 			this.element.off('click', '#post-autopost-button');
+
 		};
 
 		this.hideForm = function () {
