@@ -11,6 +11,7 @@ var resolveCommentsSummary = require('../lib/resolveCommentsSummary');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var encryption = require('../lib/encryption');
 var resolvePostOg = require('../lib/resolvePostOG');
+var getProfile = require('../lib/getProfile');
 
 var async = require('async');
 var pug = require('pug');
@@ -1843,23 +1844,6 @@ module.exports = function (server) {
       }
       cb(null, settings);
     });
-  }
-
-  function getProfile(user) {
-    return {
-      'name': user.name,
-      'photo': {
-        'url': server.locals.getUploadForProperty('photo', user.uploads(), 'thumb', server.locals.headshotFPO).url
-      },
-      'background': {
-        'url': server.locals.getUploadForProperty('background', user.uploads(), 'large', server.locals.FPO).url
-      },
-      'backgroundSmall': {
-        'url': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO).url
-      },
-      'endpoint': server.locals.config.publicHost + '/' + user.username,
-      'publicHost': server.locals.config.publicHost
-    };
   }
 
   function getPosts(user, friend, highwater, isMe, tags, cb) {

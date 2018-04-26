@@ -19,7 +19,8 @@ services:
     image: 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
     container_name: webapp-antisocial
     ports:
-      - "3000:3000"
+      - "80:80"
+      - "443:443"
     volumes:
       - data_uploads:/var/app/current/client/uploads
     networks:

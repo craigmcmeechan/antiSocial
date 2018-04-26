@@ -32,7 +32,7 @@
 		};
 
 		this.stop = function () {
-			$('#override-styles').empty();
+			//$('#override-styles').empty();
 		};
 
 		this.setColors = function (swatches) {
