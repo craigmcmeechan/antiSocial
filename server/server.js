@@ -155,6 +155,8 @@ app.model(container, {
   'public': true
 });
 
+var cors = require('cors');
+app.use(cors());
 
 // use loopback.token middleware on all routes
 // setup gear for authentication using cookie (access_token)
