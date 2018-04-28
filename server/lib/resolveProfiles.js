@@ -71,10 +71,10 @@ module.exports = function resolveProfiles(item, done) {
 					'endpoint': endpoint,
 					'name': 'unknown',
 					'photo': {
-						'url': '/images/slug.png'
+						'url': app.locals.config.publicHost + '/images/slug.png'
 					},
 					'background': {
-						'url': '/images/fpo.jpg'
+						'url': app.locals.config.publicHost + '/images/fpo.jpg'
 					}
 				};
 			}
