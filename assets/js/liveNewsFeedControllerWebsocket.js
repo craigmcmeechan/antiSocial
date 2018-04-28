@@ -5,7 +5,7 @@
 		this.socket = null;
 		this.active = false;
 		this.pendingConnection = null;
-		this.endpoint = window.Cordova ? server : this.element.data('endpoint');
+		this.endpoint = this.element.data('endpoint');
 		this.reconnecting = false;
 		this.newItems = 0;
 
@@ -73,7 +73,16 @@
 				flashAjaxStatus('info', 'connecting');
 				self.pendingConnection = null;
 				self.element.find('ul').empty();
-				self.socket = io.connect(self.endpoint);
+
+				// if in native app fix endpoint to point to server
+				var endpoint = self.endpoint;
+				if (window.Cordova) {
+					endpoint = server;
+					endpoint = endpoint.replace(/^https/, 'wss');
+					endpoint = endpoint.replace(/^http/, 'ws');
+				}
+
+				self.socket = io.connect(endpoint);
 				self.socket.on('disconnect', self.errors);
 				self.socket.on('error', self.errors);
 				self.socket.on('connect', function () {
