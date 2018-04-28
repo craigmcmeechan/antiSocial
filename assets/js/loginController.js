@@ -6,6 +6,9 @@
 		this.start = function () {
 
 			$('#login-form').on('shown.bs.modal', function () {
+				if (window.Cordova) {
+					self.element.find('.login-server').val($.cookie('server'));
+				}
 				self.element.find('.login-email-address').focus()
 			});
 
@@ -13,6 +16,10 @@
 				e.preventDefault();
 				if (window.Cordova) {
 					server = self.element.find('[name="server"]').val();
+					$.cookie('server', server, {
+						'path': '/',
+						'expires': 999
+					})
 				}
 				$.post('/api/MyUsers/login', {
 						'email': self.element.find('[name="email"]').val(),

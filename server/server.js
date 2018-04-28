@@ -156,7 +156,10 @@ app.model(container, {
 });
 
 var cors = require('cors');
-app.use(cors());
+app.use(cors({
+  'origin': true,
+  'exposedHeaders': 'x-digitopia-hijax-flash-level,x-digitopia-hijax-flash-message,x-digitopia-hijax-location,x-digitopia-hijax-did-login,x-digitopia-hijax-did-logout,x-highwater'
+}));
 
 // use loopback.token middleware on all routes
 // setup gear for authentication using cookie (access_token)
