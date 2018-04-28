@@ -114,7 +114,7 @@ html(lang="en")
 								.col-sm-6.form-group
 									label Email Address
 									.input-relative
-										input.login-email-address.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email")
+										input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
 										.input-ok-indicator
 											span.glyphicon.glyphicon-ok
 										.validation-help
@@ -145,7 +145,7 @@ html(lang="en")
 								.col-sm-6.form-group
 									label Email Address
 									.input-relative
-										input.login-email-address.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email")
+										input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
 										.input-ok-indicator
 											span.glyphicon.glyphicon-ok
 										.validation-help
@@ -167,13 +167,13 @@ html(lang="en")
 								<h4 class="modal-title">Register</h4>
 							.modal-body
 								.form-group.input-relative
-									input.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email")
+									input.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email")
 									.input-ok-indicator
 										span.glyphicon.glyphicon-ok
 									.validation-help
 										
 								.form-group.input-relative
-									input.form-control(type="text" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']")
+									input.form-control(type="email" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']")
 									.input-ok-indicator
 										span.glyphicon.glyphicon-ok
 									.validation-help
@@ -239,7 +239,7 @@ html(lang="en")
 								.col-sm-6.form-group
 									label Your Email Address
 									.input-relative
-										input.login-email-address.form-control(type="text" name="email" placeholder="Email address" data-validate="required,email")
+										input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
 										.input-ok-indicator
 											span.glyphicon.glyphicon-ok
 										.validation-help
