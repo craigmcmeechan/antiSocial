@@ -8,7 +8,7 @@
 		var self = this;
 
 		this.start = function () {
-			$(window).scroll(function () {
+			$(scrollViewport).scroll(function () {
 				if (self.element.is(':in-viewport')) {
 					self.loadMore();
 				}

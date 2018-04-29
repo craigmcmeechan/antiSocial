@@ -60,7 +60,7 @@
 		};
 
 		this.doEffect = function (force) {
-			var top = $(window).scrollTop();
+			var top = $(scrollViewport).scrollTop();
 
 			if (top !== self.lastScroll) {
 				self.lastScroll = top;

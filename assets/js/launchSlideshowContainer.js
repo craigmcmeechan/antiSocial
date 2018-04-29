@@ -9,7 +9,7 @@
 				var index = self.element.data('index');
 				var container = $('#' + self.element.data('uuid'));
 				container.show();
-				$(window).scrollTop(container.offset().top + 7);
+				$(scrollViewport).scrollTop(container.offset().top + 7);
 
 				var slideshow = $('#slideshow-' + self.element.data('uuid'));
 				didInjectContent(slideshow);

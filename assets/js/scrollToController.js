@@ -9,23 +9,27 @@
 			var key = document.location.pathname;
 			key = key.replace(/^\/([^/]+).*/, "/$1");
 
-			if (!$(window).scrollTop()) {
+			if (!$(scrollViewport).scrollTop()) {
 				if (cache[key]) {
 					var vh = $(window).height();
-					$(window).scrollTop(((vh / 3) * 2));
+					$(scrollViewport).scrollTop(((vh / 3) * 2));
 				}
 				else {
 					cache[key] = true;
-					$(window).on('scroll.scrollToController', function () {
+					$(scrollViewport).on('scroll.scrollToController', function () {
 						self.stop();
 					});
 					self.timer = setTimeout(function () {
 						self.timer = null;
 						var vh = $(window).height();
-						var body = $("html, body");
-						body.stop().animate({
-							scrollTop: (vh / 3) * 2
-						}, '1000', 'swing');
+						if (window.Cordova) {
+							window.scrollTo(0, (vh / 3) * 2);
+						}
+						else {
+							$(scrollViewport).stop().animate({
+								scrollTop: (vh / 3) * 2
+							}, '1000', 'swing');
+						}
 					}, 1000);
 				}
 			}
@@ -38,7 +42,7 @@
 				clearTimeout(self.timer);
 				self.timer = null;
 			}
-			$(window).off('scroll.scrollToController');
+			$(scrollViewport).off('scroll.scrollToController');
 		}
 	}
 
