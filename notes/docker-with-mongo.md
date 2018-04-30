@@ -1,7 +1,26 @@
-# Running myAntisocial.net webapp w/mongodb in docker containers
+# Running myAntisocial.net webapp w/mongodb in docker containers on an aws instance
+
+# minimum install to run service in a docker container
+------------------------------------------------------
+Spin up a 't2-medium' instance with running Amazon Linux with a min of 40 gb disk. Default config does not use other AWS services but the antisocial webservice can be configured to store images on S3 and send mail via SES. It is recommended that you use an instance role to allow access to these services if needed.
+
+Install and start docker daemon:
+```
+sudo yum install -y docker
+sudo usermod -a -G docker ec2-user
+sudo service docker start
+```
+
+Install docker-compose:
+```
+sudo curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose
+chmod +x /usr/bin/docker-compose
+```
 
 ### configure the stack
-/root/antisocial-development.env
+
+Docker compose gets it's configuration from: `/root/antisocial-docker-mongo.env`
+
 ```
 KEEP_FEEDS_OPEN=true
 LOG_LEVEL=debug
@@ -14,30 +33,30 @@ LOCAL_UPLOADS=true
 ACCESS_LOG=dev
 ```
 
+### create docker volumes for mongo and images
+
+docker volume create mongo-data
+docker volume create mongo-logs
+docker volume create uploads
+
 ### start the services
-in deploy/docker-assets:
-docker-compose -f docker-compose-mongo.yml build
-docker-compose -f docker-compose-mongo.yml up
+
+`docker-compose-mongo.yml` is found in the repo directory `deploy/docker-assets`
+
+```
+docker-compose -f docker-compose-mongo.yml up -d
+```
 
 Stack now running with data volumes for images, mongo data and mongo logs. All logging to stdout.
 
 Tail logs: `docker logs -f webapp-antisocial`
 
-### backup
-
-use mongodump/mongorestore for mongo data
-
-
-run a container using webapp-antisocial volumes
-- mount current directory in container as /backup
-- run a tar of /var/app/current/client/uploads into /backup/backup.tar
-when done you will have backup.tar in your current directory
-
+### periodic (hourly) backup with cron (antisocial is default db name)
 ```
-docker run --rm --volumes-from webapp-antisocial -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /var/app/current/client/uploads
+0 */1 * * * mongodump --db antisocial --gzip --out /root/mongodumps/antisocial-`date +\%Y\%m\%d\%H\%M\%S` 2>&1
 ```
 
-### restore
+### restore mongo dump
 
 Create a new docker volume:
 ```
