@@ -16,7 +16,7 @@ services:
       - frontend
 
   "webapp-antisocial":
-    image: 980978009426.dkr.ecr.us-east-1.amazonaws.com/anti-social-development:webapp-antisocial
+    image: myantisocialnet/community-server:latest
     container_name: webapp-antisocial
     ports:
       - "80:80"
