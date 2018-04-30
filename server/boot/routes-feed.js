@@ -15,7 +15,7 @@ var jsdom = require('jsdom');
 var debug = require('debug')('scroll');
 var debugVerbose = require('debug')('scroll:verbose');
 
-var ITEMS_PER_PAGE = 10;
+var ITEMS_PER_PAGE = 4;
 var ITEMS_PER_SELECT = 50;
 
 module.exports = function (server) {
