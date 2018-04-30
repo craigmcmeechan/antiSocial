@@ -13,7 +13,11 @@ var app = {
     });
 
     var scrollTimer = undefined;
-    $(scrollViewport).scroll(function () {
+    var element = scrollViewport;
+    if (element === 'html, body') {
+      element = document;
+    }
+    $(element).on('scroll.scrollviewport', function () {
       if (!scrollTimer) {
         scrollTimer = setTimeout(function () {
           scrollTimer = undefined;

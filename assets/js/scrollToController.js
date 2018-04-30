@@ -16,14 +16,18 @@
 				}
 				else {
 					cache[key] = true;
-					$(scrollViewport).on('scroll.scrollToController', function () {
+					var element = scrollViewport;
+					if (element === 'html, body') {
+						element = document;
+					}
+					$(element).on('scroll.scrollToController', function () {
 						self.stop();
 					});
 					self.timer = setTimeout(function () {
 						self.timer = null;
 						var vh = $(window).height();
-						if (window.Cordova) {
-							window.scrollTo(0, (vh / 3) * 2);
+						if (0 && window.Cordova) {
+							$(scrollViewport).scrollTop(0, (vh / 3) * 2);
 						}
 						else {
 							$(scrollViewport).stop().animate({
@@ -42,7 +46,11 @@
 				clearTimeout(self.timer);
 				self.timer = null;
 			}
-			$(scrollViewport).off('scroll.scrollToController');
+			var element = scrollViewport;
+			if (element === 'html, body') {
+				element = document;
+			}
+			$(element).off('scroll.scrollToController');
 		}
 	}
 

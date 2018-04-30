@@ -30,6 +30,7 @@
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#000000" />
     <preference name="StatusBarStyle" value="blackopaque" />
+    <preference name="DisallowOverscroll" value="true" />
     <engine name="ios" spec="^4.5.4" />
     <engine name="browser" spec="^5.0.3" />
 </widget>

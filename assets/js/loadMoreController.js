@@ -8,14 +8,24 @@
 		var self = this;
 
 		this.start = function () {
-			$(scrollViewport).scroll(function () {
+			var element = scrollViewport;
+			if (element === 'html, body') {
+				element = document;
+			}
+			$(element).on('scroll.loadMore', function () {
 				if (self.element.is(':in-viewport')) {
 					self.loadMore();
 				}
 			});
 		};
 
-		this.stop = function () {};
+		this.stop = function () {
+			var element = scrollViewport;
+			if (element === 'html, body') {
+				element = document;
+			}
+			$(element).off('scroll.loadMore');
+		};
 
 		this.loadMore = function () {
 			if (self.loading) {

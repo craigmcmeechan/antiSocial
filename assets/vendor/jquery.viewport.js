@@ -14,35 +14,33 @@
 
   $.belowthefold = function (element, settings) {
     var fold = $(window).height() + $(scrollViewport).scrollTop();
-    //console.log($(element).attr('id') + ' belowthefold ' + (fold <= $(element).offset().top - settings.threshold));
-    return fold <= ($(element).offset().top - $(scrollViewport).offset().top) - settings.threshold;
+    return fold <= $(element).offset().top - settings.threshold;
   };
 
   $.abovethetop = function (element, settings) {
     var top = $(scrollViewport).scrollTop();
-    //console.log($(element).attr('id') + ' abovethetop ' + (top >= $(element).offset().top + $(element).height() - settings.threshold));
-    return top >= ($(element).offset().top - $(scrollViewport).offset().top) + $(element).height() - settings.threshold;
+    return top >= $(element).offset().top + $(element).height() - settings.threshold;
   };
 
   $.rightofscreen = function (element, settings) {
     var fold = $(window).width() + $(scrollViewport).scrollLeft();
-    return fold <= ($(element).offset().left - $(scrollViewport).offset().left) - settings.threshold;
+    return fold <= $(element).offset().left - settings.threshold;
   };
 
   $.leftofscreen = function (element, settings) {
     var left = $(scrollViewport).scrollLeft();
-    return left >= ($(element).offset().left - $(scrollViewport).offset().left) + $(element).width() - settings.threshold;
+    return left >= $(element).offset().left + $(element).width() - settings.threshold;
   };
 
   $.inviewport = function (element, settings) {
-    /*
+    console.log('scroll pos:', $(scrollViewport).scrollTop(), ' offset:', $(element).offset().top);
     if (!$.rightofscreen(element, settings) && !$.leftofscreen(element, settings) && !$.belowthefold(element, settings) && !$.abovethetop(element, settings)) {
-      console.log($(element).attr('id') + ' is in viewport');
+      $(element).removeClass('not-in-viewport').addClass('in-viewport');
     }
     else {
-      console.log($(element).attr('id') + ' is not in viewport');
+      $(element).removeClass('in-viewport').addClass('not-in-viewport');
     }
-    */
+
     return !$.rightofscreen(element, settings) && !$.leftofscreen(element, settings) && !$.belowthefold(element, settings) && !$.abovethetop(element, settings);
   };
 
