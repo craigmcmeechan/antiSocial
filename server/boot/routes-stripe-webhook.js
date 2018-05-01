@@ -32,6 +32,10 @@ module.exports = function (server) {
 				return res.sendStatus(401);
 			}
 
+			if (!theEvent || !theUser) {
+				return res.sendStatus(200); // unable to find user from event so ignore it
+			}
+
 			var status = 'ok';
 			var notify = null;
 			var doit = false;
@@ -64,7 +68,7 @@ module.exports = function (server) {
 				break;
 			}
 
-			if (doit) {
+			if (theUser && doit) {
 				// change status of MyUser
 				theUser.subscriptionStatus = status;
 				theUser.save();

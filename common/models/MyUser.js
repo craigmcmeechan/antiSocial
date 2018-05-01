@@ -652,6 +652,7 @@ module.exports = function (MyUser) {
 					'stripeCustomerId': customer.id,
 					'stripeSubscriptionId': subscription.id
 				};
+				currentUser.stripeCustomerId = customer.id;
 				currentUser.save();
 				cb(null, {
 					'status': 'ok'
