@@ -1,37 +1,8 @@
-var request = require('request');
+var async = require('async');
 var stripe = require('stripe')(process.env.STRIPE_SK);
-
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
-
-	function resolveUserByStripeAccount(req, res, next) {
-		var ctx = req.getCurrentContext();
-
-		if (!req.body.user_id) {
-			return next();
-		}
-
-		var query = {
-			"where": {
-				"stripeCustomerId": req.body.user_id
-			}
-		};
-
-		req.app.models.TendrUser.findOne(query, function (err, user) {
-
-			if (err) {
-				return next(err);
-			}
-
-			if (user) {
-				ctx.set('stripeAccountSecret', user.processors.stripe.secret);
-				ctx.set('tendrUser', user);
-			}
-
-			next();
-		});
-	}
 
 	router.post('/stripe/webhook', function (req, res) {
 		var event = req.body;
