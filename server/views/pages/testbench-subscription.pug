@@ -9,13 +9,12 @@ block content
 		.row
 			.col-sm-12
 				if currentUser.subscriptionStatus
-					p= 'Status:' + currentUser.subscriptionStatus
-					
+					p= 'Status: ' + currentUser.subscriptionStatus
+				
+				- var prompt = '$1.50 a month'
 				if ! _.get(currentUser,'subscription.stripe.stripeSubscriptionId')
-					p $1.50 a month w/trial period 15 days for free, cancel any time.
-				else 
-					p $1.50 a month, cancel any time.
+					- prompt = '$1.50 a month w/free trial period of 15 days.'
 					
 				if environment.STRIPE_PK && environment.SUBSCRIPTION
-					.statement(data-jsclass="paymentStatusController" data-pk= environment.STRIPE_PK data-email= currentUser.email)
+					.statement(data-jsclass="paymentStatusController" data-pk= environment.STRIPE_PK data-email= currentUser.email data-prompt= 'Subscribe: ' + prompt data-terms="Cancel any time.")
 					

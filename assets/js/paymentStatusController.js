@@ -3,6 +3,9 @@
 		this.element = $(elem);
 		var self = this;
 
+		this.prompt = this.element.data('prompt');
+		this.terms = this.element.data('terms');
+
 		this.start = function () {
 			this.element.parent().on('click', '#update-cc', function (e) {
 				self.doStripe();
@@ -87,7 +90,7 @@
 							ended = period_end;
 							++cancelled;
 						}
-						var end = ended ? ' <strong class="text-danger">cancel on ' + ended + '</strong>' : '';
+						var end = ended ? ' <strong class="text-danger">will cancel on ' + ended + '</strong>' : '';
 
 						ul.append(
 							'<li>' +
@@ -97,7 +100,6 @@
 							end +
 							'</li>'
 						);
-
 					}
 					body.append(ul);
 
@@ -191,9 +193,8 @@
 					this.element.append('<div><a id="cancel-subscription">Click Here</a> to stop recurring charges and cancel subscription at end of current billion period.</div>');
 				}
 				else {
-					this.element.append('<div>Your recurring charges are cancelled and your subscription ends at end of last billing period.</div>');
-					this.element.append('<button id="new-subscription" class="btn btn-default btn-xs">Start a New Subscription</div>');
-
+					this.element.append('<p>Your recurring charges are cancelled</p>');
+					this.element.append('<button id="new-subscription" class="btn btn-default btn-xs">' + self.prompt + '</button>' + ' ' + self.terms);
 				}
 
 				didInjectContent(this.element);
