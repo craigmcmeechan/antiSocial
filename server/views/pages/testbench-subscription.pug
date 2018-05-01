@@ -8,6 +8,10 @@ block content
 	.container-fluid.content-padding-top.content
 		.row
 			.col-sm-12
+				if ! _.get(currentUser,'subscription.stripe.stripeSubscriptionId')
+					p $1.50 a month w/trial period 15 days for free, cancel any time.
+				else 
+					p $1.50 a month, cancel any time.
 				if environment.STRIPE_PK && environment.SUBSCRIPTION
 					.statement(data-jsclass="paymentStatusController" data-pk= environment.STRIPE_PK data-email= currentUser.email)
 					
