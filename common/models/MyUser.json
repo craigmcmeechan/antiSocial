@@ -70,6 +70,12 @@
     },
     "online": {
       "type": "boolean"
+    },
+    "stripeCustomerId": {
+      "type": "string"
+    },
+    "stripeSubscriptionId": {
+      "type": "string"
     }
   },
   "validations": [],
@@ -175,6 +181,24 @@
     "principalId": "$owner",
     "permission": "ALLOW",
     "property": "tag"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "subscriptionstatus"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "subscriptioncancel"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "subscriptionupdate"
   }],
   "methods": {}
 }

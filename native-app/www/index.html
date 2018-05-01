@@ -4,7 +4,7 @@
         <meta http-equiv="zContent-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, minimal-ui, viewport-fit=cover">
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" href="dist/css/DigitopiaSocial.css">
     </head>
@@ -15,7 +15,7 @@
         if(cookie){document.body.className = cookie;}
       </script>
       <div id="splash" style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;">
-        <div id="splash-logo"><img src="/images/logo.svg" height="200px" style="margin:0 auto;">myAntiSocial.net</div>
+        <div id="splash-logo"><img src="images/logo.svg" height="200px" style="margin:0 auto;">myAntiSocial.net</div>
       </div>
       <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
@@ -58,7 +58,7 @@
                   <div class="col-sm-6 form-group">
                     <label>Server</label>
                     <div class="input-relative">
-                      <input class="login-email-address form-control" type="text" name="server" placeholder="https://mr.myantisocial.net" data-validate="required">
+                      <input class="login-server form-control" type="url" name="server" placeholder="https://mr.myantisocial.net" data-validate="required" autocomplete="server">
                       <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
                       <div class="validation-help"></div>
                     </div>
@@ -68,7 +68,7 @@
                   <div class="col-sm-6 form-group">
                     <label>Email Address</label>
                     <div class="input-relative">
-                      <input class="login-email-address form-control" type="text" name="email" placeholder="Email address" data-validate="required,email">
+                      <input class="login-email-address form-control" type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email">
                       <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
                       <div class="validation-help"></div>
                     </div>
@@ -76,7 +76,7 @@
                   <div class="col-sm-6 form-group">
                     <label>Password</label>
                     <div class="input-relative">
-                      <input class="form-control" type="password" name="password" placeholder="Password" data-validate="required,password">
+                      <input class="form-control" type="password" name="password" placeholder="Password" data-validate="required,password"  autocomplete="current-password">
                       <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
                       <div class="validation-help"></div>
                     </div>
@@ -104,7 +104,7 @@
                   <div class="col-sm-6 form-group">
                     <label>Email Address</label>
                     <div class="input-relative">
-                      <input class="login-email-address form-control" type="text" name="email" placeholder="Email address" data-validate="required,email">
+                      <input class="login-email-address form-control" type="email" name="email" placeholder="Email address" data-validate="required,email">
                       <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
                       <div class="validation-help"></div>
                     </div>
@@ -160,7 +160,7 @@
                   <div class="col-sm-6 form-group">
                     <label>Your Email Address</label>
                     <div class="input-relative">
-                      <input class="login-email-address form-control" type="text" name="email" placeholder="Email address" data-validate="required,email">
+                      <input class="login-email-address form-control" type="email" name="email" placeholder="Email address" data-validate="required,email">
                       <div class="input-ok-indicator"><span class="glyphicon glyphicon-ok"></span></div>
                       <div class="validation-help"></div>
                     </div>
@@ -211,7 +211,7 @@
           <div class="status pull-right"></div>Activity Feed
         </div>
         <div class="news-feed-items">
-          <div class="news-feed-item"><img src="/images/slug.png">
+          <div class="news-feed-item"><img src="images/slug.png">
             <div>listening for events</div>
           </div>
         </div>
@@ -225,7 +225,9 @@
      </div>
       <script type="text/javascript" src="cordova.js"></script>
       <script type="text/javascript" src="dist/js/jquery.min.js"></script>
+      <script type="text/javascript" src="js/jquery.cookie.js"></script>
       <script type="text/javascript" src="js/index.js"></script>
+      <script type="text/javascript" src="js/socket.io.js"></script>
       <script type="text/javascript" src="dist/js/DigitopiaSocial.js" async defer></script>
     </body>
 </html>

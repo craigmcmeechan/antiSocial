@@ -35,8 +35,8 @@ app.locals.getUploadForProperty = require('./lib/getUploadForProperty');
 app.locals.moment = require('moment');
 app.locals._ = require('lodash');
 app.locals.config = require('./config-' + app.get('env'));
-app.locals.headshotFPO = '/images/slug.png';
-app.locals.FPO = '/images/fpo.jpg';
+app.locals.headshotFPO = app.locals.config.publicHost + '/images/slug.png';
+app.locals.FPO = app.locals.config.publicHost + '/images/fpo.jpg';
 app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
 app.locals.appDir = __dirname;
@@ -155,6 +155,11 @@ app.model(container, {
   'public': true
 });
 
+var cors = require('cors');
+app.use(cors({
+  'origin': true,
+  'exposedHeaders': 'x-digitopia-hijax-flash-level,x-digitopia-hijax-flash-message,x-digitopia-hijax-location,x-digitopia-hijax-did-login,x-digitopia-hijax-did-logout,x-highwater'
+}));
 
 // use loopback.token middleware on all routes
 // setup gear for authentication using cookie (access_token)
@@ -234,15 +239,15 @@ var csp = require('helmet-csp');
 app.use(csp({
   'directives': {
     'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets],
-    'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', '\'unsafe-eval\'', function (req, res) {
+    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets, 'checkout.stripe.com'],
+    'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', '\'unsafe-eval\'', function (req, res) {
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
     'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
     'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
     'frameSrc': ['\'self\'', '*'],
     'mediaSrc': ['\'self\'', '*'],
-    'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com'],
+    'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com', 'q.stripe.com'],
     'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
     'reportUri': '/csp-violation',
     'objectSrc': ['\'none\''],

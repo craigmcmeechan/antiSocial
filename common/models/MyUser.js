@@ -12,6 +12,7 @@ var debug = require('debug')('user');
 var debugVerbose = require('debug')('user:verbose');
 var sh = require('shorthash');
 var request = require('request');
+var stripe = require('stripe')(process.env.STRIPE_SK);
 
 module.exports = function (MyUser) {
 	if (!process.env.ADMIN) {
@@ -23,6 +24,9 @@ module.exports = function (MyUser) {
 				'@login',
 				'@logout',
 				'@confirm',
+				'@subscriptionstatus',
+				'@subscriptioncancel',
+				'@subscriptionupdate',
 				'updateAttributes',
 				'__updateById__friends',
 				'__destroyById__photos',
@@ -500,4 +504,216 @@ module.exports = function (MyUser) {
 			}
 		}
 	);
+
+	MyUser.subscriptionstatus = function (id, ctx, cb) {
+		var myContext = ctx.req.myContext;
+		var currentUser = myContext.get('currentUser');
+
+		if (!currentUser.stripeCustomerId) {
+			return cb(null, {
+				'status': 'no subscription'
+			});
+		}
+
+		async.waterfall([
+			function (cb) {
+				stripe.customers.retrieve(currentUser.stripeCustomerId, function (err, customer) {
+					cb(err, customer);
+				});
+			},
+			function (customer, cb) {
+				stripe.invoices.retrieveUpcoming(currentUser.stripeCustomerId, function (err, upcoming) {
+					if (err && err.code !== 'invoice_upcoming_none') {
+						cb(err);
+					}
+					cb(null, customer, upcoming);
+				});
+			},
+			function (customer, upcoming, cb) {
+				stripe.invoices.list({
+					customer: currentUser.stripeCustomerId,
+					limit: 3
+				}, function (err, invoices) {
+					if (err) {
+						cb(err);
+					}
+					cb(null, customer, upcoming, invoices);
+				});
+			}
+		], function (err, customer, upcoming, invoices) {
+			return cb(null, {
+				'customer': customer,
+				'upcoming': upcoming,
+				'invoices': invoices
+			});
+		});
+	};
+
+	MyUser.remoteMethod(
+		'subscriptionstatus', {
+			http: {
+				path: '/:id/subscriptionstatus',
+				verb: 'get'
+			},
+			accepts: [{
+				arg: 'id',
+				type: 'string',
+				required: true
+			}, {
+				arg: 'options',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				arg: 'subscription',
+				type: 'object'
+			}
+		}
+	);
+
+	MyUser.subscriptionupdate = function (id, body, ctx, cb) {
+		var myContext = ctx.req.myContext;
+		var currentUser = myContext.get('currentUser');
+
+		async.waterfall([
+				function (cb) {
+					if (currentUser.stripeCustomerId) {
+						stripe.customers.retrieve(currentUser.stripeCustomerId, function (err, customer) {
+							cb(err, customer);
+						});
+					}
+					else {
+						var options = {
+							'description': currentUser.name + ' ' + currentUser.id.toString(),
+							'email': currentUser.email
+						};
+						stripe.customers.create(options, function (err, customer) {
+							if (err) {
+								return cb(err);
+							}
+							cb(null, customer);
+						});
+					}
+				},
+				function (customer, cb) {
+					stripe.customers.update(customer.id, {
+						'source': body.token.id
+					}, function (err, customer) {
+						if (err) {
+							return cb(err);
+						}
+						cb(null, customer);
+					});
+				},
+				function (customer, cb) {
+					if (currentUser.stripeSubscriptionId && !body.new) {
+						stripe.subscriptions.retrieve(currentUser.stripeSubscriptionId, function (err, subscription) {
+							cb(err, customer, subscription);
+						});
+					}
+					else {
+						stripe.customers.createSubscription(customer.id, {
+							'plan': 'monthly'
+						}, function (err, subscription) {
+							cb(err, customer, subscription);
+						});
+					}
+				},
+				function (customer, subscription, cb) {
+					if (!subscription.cancel_at_period_end) {
+						return cb(null, customer, subscription);
+					}
+
+					stripe.subscriptions.update(subscription.id, {
+						cancel_at_period_end: false
+					}, function (err, subscription) {
+						cb(err, customer, subscription);
+					});
+				}
+			],
+			function (err, customer, subscription) {
+				if (err) {
+					return cb(err);
+				}
+				currentUser.stripeCustomerId = customer.id;
+				currentUser.stripeSubscriptionId = subscription.id;
+				currentUser.save();
+				cb(null, {
+					'status': 'ok'
+				});
+			});
+	};
+
+	MyUser.remoteMethod(
+		'subscriptionupdate', {
+			http: {
+				path: '/:id/subscriptionupdate',
+				verb: 'post'
+			},
+			accepts: [{
+				arg: 'id',
+				type: 'string',
+				required: true
+			}, {
+				arg: 'body',
+				type: 'object',
+				required: true,
+				http: {
+					source: 'body'
+				}
+			}, {
+				arg: 'options',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				arg: 'result',
+				type: 'object'
+			}
+		}
+	);
+
+	MyUser.subscriptioncancel = function (id, ctx, cb) {
+		var myContext = ctx.req.myContext;
+		var currentUser = myContext.get('currentUser');
+		stripe.customers.cancelSubscription(
+			currentUser.stripeCustomerId,
+			currentUser.stripeSubscriptionId, {
+				at_period_end: true
+			},
+			function (err, confirmation) {
+				cb(err, {
+					'status': err ? err : 'ok'
+				});
+			});
+	};
+
+	MyUser.remoteMethod(
+		'subscriptioncancel', {
+			http: {
+				path: '/:id/subscriptioncancel',
+				verb: 'get'
+			},
+			accepts: [{
+				arg: 'id',
+				type: 'string',
+				required: true
+			}, {
+				arg: 'options',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				arg: 'result',
+				type: 'object'
+			}
+		}
+	);
+
 };

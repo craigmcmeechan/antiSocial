@@ -1,3 +1,5 @@
+extends ../wrapper
+
 block seo
 	title.
 		Testbench
@@ -5,12 +7,20 @@ block seo
 block content
 	.container-fluid.content-padding-top.content
 		.page-header
-			h1 Requests
+			h1 Pending Requests
 		.row
 			.col-xs-12
-				for request in requests
-					li
-						= request.email + ' ('+request.name+') '
-						if invited[request.email]
-							= 'invited: ' + invited[request.email]
+				form.form(action="/batch-invite" method="POST")
+					.form-group
+						textarea.form-control(name="note" placeholder="Note to include with all invites")
+					for request in requests
+						if !invited[request.email]
+							.form-group
+								.checkbox
+									label
+										input(type="checkbox" name= "batch" value= request.email)
+									= request.email + ' ('+request.name+')'
+									
+					.form-group
+						input.btn.btn-primary(type="submit")
 	
