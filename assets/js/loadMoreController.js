@@ -9,7 +9,9 @@
 
 		this.start = function () {
 			$(window).scroll(function () {
-				if (self.element.is(':in-viewport')) {
+				if ($.inviewport(self.element, {
+						'threshold': 1000
+					})) {
 					self.loadMore();
 				}
 			});

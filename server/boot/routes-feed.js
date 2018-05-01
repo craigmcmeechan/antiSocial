@@ -262,7 +262,7 @@ module.exports = function (server) {
         async.map(items, function (item, doneResolve) {
           var post = item.about;
           post = post.replace(/\/(comment|photo)\/.*/, '');
-          var endpoint = res.app.locals.proxyEndPoint(post, ctx.get('currentUser'), true);
+          var endpoint = proxyEndPoint(post, ctx.get('currentUser'), true);
           request.get({
             'url': res.app.locals.config.publicHost + endpoint,
             'headers': {
@@ -271,7 +271,7 @@ module.exports = function (server) {
           }, function (err, response, body) {
             var dom = new jsdom.JSDOM(body);
             item.html = dom.window.document.querySelector('.post').outerHTML;
-            console.log(err, endpoint, item.html);
+            //console.log(err, endpoint, item.html);
             doneResolve();
           })
         }, function (err) {
