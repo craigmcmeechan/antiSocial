@@ -21,25 +21,26 @@ PORT=80
 ```
 
 ### create docker volumes for mongo and images
-
+```
 docker volume create mongo-data
 docker volume create mongo-logs
 docker volume create uploads
+```
 
 ### start the services
+Web service exposes privileged port 80 so you need to use sudo if on a OSX. On linux this if probably not needed. `-d` runs detached from console (daemon mode)
 
 ```
 sudo docker-compose -f ~/docker-compose-mongo.yml up -d
 ```
-Note: service exposes privileged port 80 so you need to use sudo if on a OSX. On linux this if probably not needed. `-d` runs detached from console (daemon mode)
 
 The stack now running with data volumes for images, mongo data and mongo logs. All logging to stdout.
 
-http://localhost/
+Connect to `http://localhost/`
 
 To see logs: `docker logs -f webapp-antisocial`
 
-### periodic (hourly) backup with cron (antisocial is the default db name)
+### Use cron to do periodic backup (hourly) with cron (antisocial is the default db name)
 ```
 0 */1 * * * mongodump --db antisocial --gzip --out /root/mongodumps/antisocial-`date +\%Y\%m\%d\%H\%M\%S` 2>&1
 ```

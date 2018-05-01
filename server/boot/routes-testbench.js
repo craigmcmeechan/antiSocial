@@ -79,6 +79,14 @@ module.exports = function (server) {
 		});
 	});
 
+	router.get('/testbench-subscription', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+		var ctx = req.myContext;
+		res.render('pages/testbench-subscription', {
+			'globalSettings': ctx.get('globalSettings'),
+			'currentUser': ctx.get('currentUser')
+		});
+	});
+
 	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 
 		var mailer = require('../lib/mail');
