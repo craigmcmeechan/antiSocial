@@ -15,7 +15,7 @@ module.exports = function (server) {
 			},
 			function findUser(theEvent, cb) {
 				if (!theEvent.data.customer) {
-					cb(null, theEvent, null);
+					return cb(null, theEvent, null);
 				}
 				var query = {
 					'where': {
