@@ -1,12 +1,12 @@
-# Running myAntisocial.net webapp w/mongodb service in docker
+# Running myAntisocial.net webapp w/mongodb service in docker containers
 
 ### configure the stack
 
 Copy [docker-compose-mongo.yml](https://github.com/antiSocialNet/antiSocial/blob/master/deploy/docker-assets/docker-compose-mongo.yml) to your home directory.
 
-Minimal configuration to run under http (port 80) w/mongodb and local storage of images
-
 Create an environment file: `~/antisocial-docker-mongo.env`
+
+Minimal configuration to run under http (port 80) w/mongodb and local storage of images
 
 ```
 KEEP_FEEDS_OPEN=true
@@ -47,22 +47,16 @@ To see logs: `docker logs -f webapp-antisocial`
 
 ### restore mongo dump
 
-Create a new docker volume:
+Create a new docker volume and run mongodb then perform restore:
 ```
 docker volume create restore-vol
+docker run --rm -v restore-vol:/data/db -p 27017:27017 --name mongodb-restore -d mongo
+run mogorestore --db antisocial --gzip /root/mongodumps/antisocial-yyyymmddhhmmss
 ```
+Change volume name in docker-compose file and start service.
 
-run a container :
-- mount restore-vol as /restore-to
-- mount current directory as /backup
-- extract tar in current directory to /restore-to
-when done the contents of the tar will be in restore-vol
-```
-docker run --rm -v my-vol:/restore-to -v $(pwd):/backup ubuntu bash -c "cd /restore-to && tar -xvf /backup/backup.tar"
-```
+### Minimum install to run on an AWS instance
 
-# Minimum install to run on an AWS instance
--------------------------------------------
 Spin up a 't2-medium' instance with running Amazon Linux with a min of 40 gb disk. The default configuration does not use other AWS services but the antisocial webservice can be configured to store images on S3 and send mail via SES. It is recommended that you use an instance role to allow access to these services if needed.
 
 Install and start docker daemon:
@@ -86,3 +80,9 @@ TODO: document implementing DB authentication
 ### Running with SSL
 
 TODO: instructions for letsencrypt cert installation and configuration
+
+### Storing images on S3
+
+### Setting up email service
+
+### Other configuration options
