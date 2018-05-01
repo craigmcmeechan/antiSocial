@@ -16,13 +16,13 @@ module.exports = function (server) {
 				});
 			},
 			function findUser(theEvent, cb) {
-				if (!theEvent.data.customer) {
+				if (!theEvent.data.object.customer) {
 					return cb(null, theEvent, null);
 				}
 
 				var query = {
 					'where': {
-						'stripeCustomerId': theEvent.data.customer
+						'stripeCustomerId': theEvent.data.object.customer
 					}
 				};
 
