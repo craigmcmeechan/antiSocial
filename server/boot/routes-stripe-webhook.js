@@ -1,5 +1,6 @@
 var async = require('async');
 var stripe = require('stripe')(process.env.STRIPE_SK);
+var debug = require('debug')('stripe');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
@@ -10,6 +11,7 @@ module.exports = function (server) {
 		async.waterfall([
 			function getEvent(cb) {
 				stripe.events.retrieve(event.id, function (err, theEvent) {
+					debug('webhook event %j', theEvent);
 					cb(err, theEvent);
 				});
 			},
@@ -17,6 +19,7 @@ module.exports = function (server) {
 				if (!theEvent.data.customer) {
 					return cb(null, theEvent, null);
 				}
+
 				var query = {
 					'where': {
 						'stripeCustomerId': theEvent.data.customer
@@ -24,6 +27,7 @@ module.exports = function (server) {
 				};
 
 				req.app.models.MyUser.findOne(query, function (err, theUser) {
+					debug('webhook user %j', theUser);
 					cb(null, theEvent, theUser);
 				});
 			}
@@ -69,7 +73,7 @@ module.exports = function (server) {
 			}
 
 			if (theUser && doit) {
-				// change status of MyUser
+				debug('webhook writeback status %s', status);
 				theUser.subscriptionStatus = status;
 				theUser.save();
 			}
