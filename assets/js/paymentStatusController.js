@@ -5,6 +5,8 @@
 
 		this.prompt = this.element.data('prompt');
 		this.terms = this.element.data('terms');
+		this.subscriptionRate = this.element.data('subscription-rate');
+		this.promotionalPeriod = this.element.data('promotional-period');
 
 		this.start = function () {
 			this.element.parent().on('click', '#update-cc', function (e) {
@@ -57,7 +59,7 @@
 			handler.open({
 				'name': 'MyAntiSocial.net',
 				'description': 'Monthly Subscription',
-				'amount': 150,
+				'amount': self.subscriptionRate * 100,
 				'allowRememberMe': false,
 				'image': '/images/logo.png'
 			});
@@ -194,13 +196,13 @@
 				}
 				else {
 					this.element.append('<p>Your recurring charges are cancelled</p>');
-					this.element.append('<button id="new-subscription" class="btn btn-default btn-xs">' + self.prompt + '</button>' + ' ' + self.terms);
+					this.element.append('<button id="new-subscription" class="btn btn-primary btn-xs">' + self.prompt + '</button>' + ' ' + self.terms);
 				}
 
 				didInjectContent(this.element);
 			}
 			else {
-				this.element.append('<button id="new-subscription" class="btn btn-default btn-xs">Start a New Subscription</div>').show();
+				this.element.append('<button id="new-subscription" class="btn btn-primary btn-xs">' + self.prompt + '</button>' + ' ' + self.terms).show();
 			}
 		};
 	}

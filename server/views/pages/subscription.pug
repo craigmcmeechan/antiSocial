@@ -1,0 +1,28 @@
+extends ../wrapper
+
+block seo
+	title.
+		Settings
+
+block content
+	-var SUBSCRIPTION_RATE = 1.50
+	-var SUBSCRIPTION_RATE_DESCRIPTION = "\$1.50 a month"
+	-var SUBSCRIPTION_RATE_DESCRIPTION_PROMOTION = "\$1.50 a month w/free trial period of 15 days."
+	-var SUBSCRIPTION_PROMOTIONAL_PERIOD = 15
+
+	.container-fluid.content-padding-top.content
+		.row
+			.col-sm-12
+				
+				if currentUser.subscriptionStatus
+					p= 'Status: ' + currentUser.subscriptionStatus
+				else
+					p Please help support the operation of this server.
+					
+				- var prompt = SUBSCRIPTION_RATE_DESCRIPTION
+				if ! _.get(currentUser,'subscription.stripe.stripeSubscriptionId')
+					- prompt = SUBSCRIPTION_RATE_DESCRIPTION_PROMOTION
+					
+				if environment.STRIPE_PK && environment.SUBSCRIPTION
+					.statement(data-jsclass="paymentStatusController" data-pk= environment.STRIPE_PK data-email= currentUser.email data-prompt= 'Subscribe: ' + prompt data-terms="Don't worry, it's safe, secure and you can cancel at any time." data-subscription-rate= SUBSCRIPTION_RATE data-promotional-period= SUBSCRIPTION_PROMOTIONAL_PERIOD)
+					

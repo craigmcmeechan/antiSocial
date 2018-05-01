@@ -579,7 +579,7 @@ module.exports = function (MyUser) {
 		var myContext = ctx.req.myContext;
 		var currentUser = myContext.get('currentUser');
 
-		var trialPeriod = 15;
+		var trialPeriod = process.env.SUBSCRIPTION_TRIAL_PERIOD;
 		if (_.get(currentUser, 'subscription.stripe.stripeSubscriptionId') && body.new) {
 			trialPeriod = 0; // only get the trial once
 		}
@@ -622,7 +622,7 @@ module.exports = function (MyUser) {
 					}
 					else {
 						stripe.customers.createSubscription(customer.id, {
-							'plan': 'monthly',
+							'plan': process.env.SUBSCRIPTION_STRIPE_PLAN_ID,
 							'trial_period_days': trialPeriod
 						}, function (err, subscription) {
 							cb(err, customer, subscription);

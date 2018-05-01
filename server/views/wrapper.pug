@@ -275,8 +275,23 @@ html(lang="en")
 						<h4 class="modal-title">Edit comment</h4>
 					.modal-body
 						| edit form here
-						
+				
 		#content(data-hijax="true")
+			if environment.SUBSCRIPTION && user
+				if user.subscriptionStatus && user.subscriptionStatus !== 'ok'
+					.notification-zone
+						.container
+							.alert.alert-danger
+								= 'Hey, your subscription status is "' + user.subscriptionStatus + '", please '
+								a.alert-link(href= '/subscription') click here
+								= ' to update your subscription information.'
+				else 
+					.notification-zone
+						.container-fluid
+							.alert.alert-info
+								= 'Hi. You may have noticed that this space is where the ads aren\'t. As we like to say "be the customer, not the product." Please '
+								a.alert-link(href= '/subscription') Click here
+								= ' to update your subscription information.'
 			block content
 				
 		#tmks.container-fluid.text-center
