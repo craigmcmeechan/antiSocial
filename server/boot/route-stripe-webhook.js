@@ -18,8 +18,8 @@ module.exports = function (server) {
 					cb(null, theEvent, null);
 				}
 				var query = {
-					"where": {
-						"stripeCustomerId": theEvent.data.customer
+					'where': {
+						'stripeCustomerId': theEvent.data.customer
 					}
 				};
 
@@ -37,27 +37,27 @@ module.exports = function (server) {
 			var doit = false;
 
 			switch (theEvent.type) {
-			case "charge.dispute.created":
+			case 'charge.dispute.created':
 				status = 'subscription suspended: chargeback';
 				doit = true;
 				notify = 'chargeback';
 				break;
 
-			case "invoice.payment_failed":
-			case "charge.failed":
+			case 'invoice.payment_failed':
+			case 'charge.failed':
 				status = 'subscription suspended: charge denied';
 				doit = true;
 				notify = 'declined';
 				break;
 
-			case "invoice.payment_succeeded":
-			case "charge.succeeded":
+			case 'invoice.payment_succeeded':
+			case 'charge.succeeded':
 				status = 'ok';
 				doit = true;
 				notify = 'payment';
 				break;
 
-			case "customer.subscription.deleted":
+			case 'customer.subscription.deleted':
 				status = 'subscription expired';
 				doit = true;
 				notify = 'expired';
