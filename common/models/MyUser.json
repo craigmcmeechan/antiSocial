@@ -71,10 +71,10 @@
     "online": {
       "type": "boolean"
     },
-    "stripeCustomerId": {
-      "type": "string"
+    "subscription": {
+      "type": "object"
     },
-    "stripeSubscriptionId": {
+    "subscriptionStatus": {
       "type": "string"
     }
   },

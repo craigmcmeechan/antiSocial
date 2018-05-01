@@ -71,7 +71,7 @@
 					body.append('<div class="alert alert-danger">We had a problem with your card, please update your card information.</div>');
 				}
 
-				var cancelled = false;
+				var cancelled = 0;
 
 				if (data.customer.subscriptions && data.customer.subscriptions.data.length) {
 					body.append('<div><strong>Billing Plan</strong></div>');
@@ -85,7 +85,7 @@
 						var ended = subscription.ended_at ? new moment(subscription.ended_at * 1000).format('MM/DD/YYYY') : '';
 						if (subscription.cancel_at_period_end) {
 							ended = period_end;
-							cancelled = true;
+							++cancelled;
 						}
 						var end = ended ? ' <strong class="text-danger">cancel on ' + ended + '</strong>' : '';
 
@@ -101,7 +101,9 @@
 					}
 					body.append(ul);
 
-					if (!cancelled && data.customer.default_source) {
+					var allCancelled = data.customer.subscriptions.data.length === cancelled;
+
+					if (!allCancelled && data.customer.default_source) {
 						for (var i = 0; i < data.customer.sources.data.length; i++) {
 							if (data.customer.sources.data[i].id == data.customer.default_source) {
 								var card = data.customer.sources.data[i];
@@ -184,7 +186,7 @@
 				}
 				this.element.append(table).show();
 
-				if (!cancelled) {
+				if (!allCancelled) {
 					this.element.append('<div><a id="cancel-subscription">Click Here</a> to stop recurring charges and cancel subscription at end of current billion period.</div>');
 				}
 				else {
