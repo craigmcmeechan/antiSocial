@@ -115,6 +115,7 @@
 
 				}
 				else {
+					allCancelled = true;
 					body.append('<div><strong>No current billing plan</strong></div>');
 				}
 
