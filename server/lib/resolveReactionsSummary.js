@@ -15,24 +15,26 @@ module.exports = function resolveReactionsSummary(item, done) {
 
 		for (var i = 0; i < reactions.length; i++) {
 			var reaction = reactions[i];
-			var key = '<div class="reaction-button-container reaction-button"><span class="em em-' + reaction.details.reaction + '"></span></div>';
+			if (reaction.details.reaction) {
+				var key = '<div class="reaction-button-container reaction-button"><span class="em em-' + reaction.details.reaction + '"></span></div>';
 
-			if (!hash[reaction.source]) {
-				hash[reaction.source] = true;
+				if (!hash[reaction.source]) {
+					hash[reaction.source] = true;
 
-				if (reaction.details.reaction) {
-					if (!icons[key]) {
-						icons[key] = 0;
+					if (reaction.details.reaction) {
+						if (!icons[key]) {
+							icons[key] = 0;
+						}
+						icons[key]++;
+
+						var name = _.get(reaction, 'resolvedProfiles["' + reaction.source + '"].profile.name');
+						if (!name) {
+							name = reaction.source;
+						}
+						var mention = '<a href="' + reaction.source + '">' + name + '</a>';
+
+						mentions.push(mention);
 					}
-					icons[key]++;
-
-					var name = _.get(reaction, 'resolvedProfiles["' + reaction.source + '"].profile.name');
-					if (!name) {
-						name = reaction.source;
-					}
-					var mention = '<a href="' + reaction.source + '">' + name + '</a>';
-
-					mentions.push(mention);
 				}
 			}
 		}
