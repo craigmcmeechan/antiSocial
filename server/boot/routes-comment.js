@@ -264,6 +264,8 @@ module.exports = function (server) {
             'and': [{
               'uuid': commentId
             }, {
+              'type': 'comment'
+            }, {
               'userId': currentUser.id
             }]
           }
@@ -282,6 +284,8 @@ module.exports = function (server) {
           'where': {
             'and': [{
               'uuid': commentId
+            }, {
+              'type': 'comment'
             }, {
               'userId': currentUser.id
             }]

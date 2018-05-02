@@ -31,7 +31,7 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			debug(myNewsFeedItem.source + ' and ' + myNewsFeedItem.about + ' are now friends');
 			myNewsFeedItem.humanReadable = '<img src="' + sourceProfile.profile.photo.url + '">';
 			myNewsFeedItem.humanReadable += '<div>';
-			myNewsFeedItem.humanReadable += 'Friend invite accetped by <a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + sourceProfile.profile.name + '</a>';
+			myNewsFeedItem.humanReadable += 'Friend invite accepted by <a href="' + proxyEndPoint(myNewsFeedItem.source, currentUser) + '">' + sourceProfile.profile.name + '</a>';
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 

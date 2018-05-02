@@ -27,7 +27,7 @@ block content
 								
 					#scope-post-list
 						for item,index in items
-							if item.type === 'post' || item.type === 'interaction' || item.type === 'tag'
+							if item.httpStatus === 200 && (item.type === 'post' || item.type === 'interaction' || item.type === 'tag')
 								- var post = item.about
 								- post = post.replace(/\/(comment|photo)\/.*/,'')
 								.newsfeed-item

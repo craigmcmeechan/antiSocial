@@ -269,9 +269,23 @@ module.exports = function (server) {
               'access_token': req.signedCookies.access_token
             }
           }, function (err, response, body) {
+            if (err) {
+              item.httpStatus = 500;
+              item.html = '<div class="post">Content unavailable. (' + err + ')</div>';
+              return doneResolve();
+            }
+
+            item.httpStatus = response.statusCode;
+
+            if (response.statusCode !== 200) {
+              item.html = '<div class="post">Content unavailable. (' + response.statusCode + ')</div>';
+              return doneResolve();
+            }
+
             var dom = new jsdom.JSDOM(body);
-            item.html = dom.window.document.querySelector('.post').outerHTML;
-            //console.log(err, endpoint, item.html);
+            var element = dom.window.document.querySelector('.post');
+            item.html = element ? element.outerHTML : '<div class="post">Content unavailable.</div>';
+
             doneResolve();
           })
         }, function (err) {
