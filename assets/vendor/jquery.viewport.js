@@ -13,27 +13,27 @@
 (function ($) {
 
   $.belowthefold = function (element, settings) {
-    var fold = $(window).height() + $(scrollViewport).scrollTop();
+    var fold = $(window).height() + $(window).scrollTop();
     return fold <= $(element).offset().top - settings.threshold;
   };
 
   $.abovethetop = function (element, settings) {
-    var top = $(scrollViewport).scrollTop();
-    return top >= $(element).offset().top + $(element).height() - settings.threshold;
+    var top = $(window).scrollTop();
+    return top >= $(element).offset().top + $(element).height() + settings.threshold;
   };
 
   $.rightofscreen = function (element, settings) {
-    var fold = $(window).width() + $(scrollViewport).scrollLeft();
+    var fold = $(window).width() + $(window).scrollLeft();
     return fold <= $(element).offset().left - settings.threshold;
   };
 
   $.leftofscreen = function (element, settings) {
-    var left = $(scrollViewport).scrollLeft();
-    return left >= $(element).offset().left + $(element).width() - settings.threshold;
+    var left = $(window).scrollLeft();
+    return left >= $(element).offset().left + $(element).width() + settings.threshold;
   };
 
   $.inviewport = function (element, settings) {
-    console.log('scroll pos:', $(scrollViewport).scrollTop(), ' offset:', $(element).offset().top);
+
     if (!$.rightofscreen(element, settings) && !$.leftofscreen(element, settings) && !$.belowthefold(element, settings) && !$.abovethetop(element, settings)) {
       $(element).removeClass('not-in-viewport').addClass('in-viewport');
     }

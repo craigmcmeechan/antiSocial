@@ -10,11 +10,12 @@ var async = require('async');
 var request = require('request');
 var _ = require('lodash');
 var url = require('url');
+var jsdom = require('jsdom');
 
 var debug = require('debug')('scroll');
 var debugVerbose = require('debug')('scroll:verbose');
 
-var ITEMS_PER_PAGE = 10;
+var ITEMS_PER_PAGE = 4;
 var ITEMS_PER_SELECT = 50;
 
 module.exports = function (server) {
@@ -254,6 +255,26 @@ module.exports = function (server) {
       function saveScrollSession(session, items, cb) {
         debug('save scroll session');
         cache.set('scrollSession-' + currentUser.id.toString(), session, 3600, function (err) {
+          cb(err, items);
+        });
+      },
+      function resolvePosts(items, cb) {
+        async.map(items, function (item, doneResolve) {
+          var post = item.about;
+          post = post.replace(/\/(comment|photo)\/.*/, '');
+          var endpoint = proxyEndPoint(post, ctx.get('currentUser'), true);
+          request.get({
+            'url': res.app.locals.config.publicHost + endpoint,
+            'headers': {
+              'access_token': req.signedCookies.access_token
+            }
+          }, function (err, response, body) {
+            var dom = new jsdom.JSDOM(body);
+            item.html = dom.window.document.querySelector('.post').outerHTML;
+            //console.log(err, endpoint, item.html);
+            doneResolve();
+          })
+        }, function (err) {
           cb(err, items);
         });
       }
