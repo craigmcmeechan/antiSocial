@@ -39,7 +39,7 @@ if wantSummary
 					span.profile-link
 						= name
 
-			!= marked(comment.details.body)
+			.markdown!= marked(comment.details.body)
 			
 			if comment.details.photo
 				.comment-photo.loading(data-jsclass="loadController" data-target=".comment-photo" data-endpoint= proxyEndPoint(comment.details.photo,user))
