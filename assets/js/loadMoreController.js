@@ -17,7 +17,13 @@
 			});
 		};
 
-		this.stop = function () {};
+		this.stop = function () {
+			var element = scrollViewport;
+			if (element === 'html, body') {
+				element = document;
+			}
+			$(element).off('scroll.loadMore');
+		};
 
 		this.loadMore = function () {
 			if (self.loading) {

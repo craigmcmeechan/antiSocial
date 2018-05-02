@@ -4,6 +4,33 @@ var app = {
   },
   onDeviceReady: function () {
     this.receivedEvent('deviceready');
+    $('body').addClass('cordova');
+    bootMyAntiSocial();
+
+    scrollViewport = $('.scroll-viewport');
+    $('.scroll-viewport').on('touchstart touchmove touchend', function () {
+
+    });
+
+    var scrollTimer = undefined;
+    var element = scrollViewport;
+    if (element === 'html, body') {
+      element = document;
+    }
+    $(element).on('scroll.scrollviewport', function () {
+      if (!scrollTimer) {
+        scrollTimer = setTimeout(function () {
+          scrollTimer = undefined;
+          $('.DigitopiaInstance').trigger('DigitopiaDidScroll');
+        }, 250);
+      }
+    });
+
+    if (getAccessToken()) {
+      setTimeout(function () {
+        loadPage('/feed');
+      }, 500);
+    }
   },
   receivedEvent: function (id) {
     console.log('Received Event: ' + id);
