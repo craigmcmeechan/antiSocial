@@ -91,7 +91,8 @@
 				e.preventDefault();
 
 				scrollToElement('#the-posting-form');
-				$('#the-posting-form').find('.posting-body').html('<p><br></p><p>' + self.url + '</p><p>h/t <a class="in-editor tag-user" href="tag-user-' + self.source + '"><span class="em-usertag"></span>' + self.hatTip + '</a></p>').trigger('click').trigger('keyup');
+				$('#the-posting-form').find('.posting-body').html('<p>' + self.url + '</p><p>h/t <a class="in-editor tag-user" href="tag-user-' + self.source + '"><span class="em-usertag"></span>' + self.hatTip + '</a><br></p>');
+				$('#the-posting-form').find('.posting-body').click().keyup().focus();
 			});
 
 			// open url on click
