@@ -22,13 +22,17 @@ if wantSummary
 					button.btn-xs(data-toggle="dropdown")
 						i.fa.fa-ellipsis-h
 					ul.dropdown-menu
-						if (isMine || postIsMine)
+						if isMine
 							li 
 								a.edit-comment(href="#") Edit Comment
 							li 
 								a.delete-comment(href="#") Delete Comment
-						li
-							a.hide-comment(href="#") Hide Comment
+						else if postIsMine
+							li 
+								a.delete-comment(href="#") Remove Comment
+						else
+							li
+								a.hide-comment(href="#") Hide Comment
 			
 			strong.pull-left
 				a(href= proxyEndPoint(comment.source,user))

@@ -108,6 +108,13 @@ function loadPage(href) {
 	$('body').trigger('DigitopiaLoadPage', href);
 }
 
+function scrollToElement(element) {
+	var top = $(element).offset().top;
+	$(scrollViewport).stop().animate({
+		'scrollTop': top - 75
+	}, '500', 'swing');
+}
+
 function getAccessToken() {
 	return $.cookie('access_token');
 }

@@ -3,6 +3,8 @@ var request = require('request');
 var app = require('../server');
 var debug = require('debug')('resolve');
 
+// TODO: unique ths list before async.each (redundant entries)
+
 module.exports = function resolveProfiles(item, done) {
 	debug('resolveProfiles ' + item.uuid);
 

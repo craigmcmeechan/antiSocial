@@ -16,9 +16,9 @@
 						!= post.commentSummary
 				
 				if post.athoritativeEndpoint
-					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post")
+					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 				else 
-					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post")
+					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 						.post-identity
 							.post-avatar
 								.media
@@ -33,21 +33,22 @@
 										a(href= posterUrl)
 											img.media-object(src= thumb)
 									.media-body
-										if isMine
-											.post-actions.pull-right
-												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
-													button.btn-xs(data-toggle="dropdown")
-														i.fa.fa-ellipsis-h
-													ul.dropdown-menu
-														if isMine
-															li 
-																a.edit-post(href="#") Edit Post
-															li 
-																a.delete-post(href="#") Delete Post
-														//
-															li
-																a.hide-post(href="#") Hide Post
-												
+										.post-actions.pull-right
+											.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
+												button.btn-xs(data-toggle="dropdown")
+													i.fa.fa-ellipsis-h
+												ul.dropdown-menu
+													if !isMine
+														li
+															a.share-post(href="#") Share Post
+														li
+															a.hide-post(href="#") Hide Post
+													else
+														li 
+															a.edit-post(href="#") Edit Post
+														li 
+															a.delete-post(href="#") Delete Post
+															
 										h4.media-heading
 											a(href= posterUrl)= name
 											if post.about

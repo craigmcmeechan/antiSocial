@@ -43,6 +43,10 @@
 						didInjectContent(modal);
 					});
 				});
+
+				this.element.on('click', '.share-post', function (e) {
+					e.preventDefault();
+				});
 			}
 		};
 
