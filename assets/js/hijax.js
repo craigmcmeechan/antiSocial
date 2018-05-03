@@ -199,7 +199,7 @@
 					$(scrollViewport).scrollTop(top);
 				}
 				else {
-					$(scrollViewport).animate({
+					$('html,body').animate({
 						scrollTop: top
 					}, '250');
 				}

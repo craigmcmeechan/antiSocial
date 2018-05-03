@@ -1,4 +1,4 @@
-var scrollViewport = 'html, body';
+var scrollViewport = window;
 
 function bootMyAntiSocial() {
 	var options = {
@@ -110,7 +110,7 @@ function loadPage(href) {
 
 function scrollToElement(element) {
 	var top = $(element).offset().top;
-	$(scrollViewport).stop().animate({
+	$('html,body').stop().animate({
 		'scrollTop': top - 75
 	}, '500', 'swing');
 }

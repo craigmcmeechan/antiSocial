@@ -30,7 +30,7 @@
 							$(scrollViewport).scrollTop(0, (vh / 3) * 2);
 						}
 						else {
-							$(scrollViewport).stop().animate({
+							$('html,body').stop().animate({
 								scrollTop: (vh / 3) * 2
 							}, '1000', 'swing');
 						}
