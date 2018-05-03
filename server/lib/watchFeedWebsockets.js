@@ -126,6 +126,7 @@ var watchFeed = function watchFeed(server, friend) {
 			var endpoint = remoteEndPoint.protocol === 'https:' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
 
+			// TODO: remove this, do it in the authenticate message
 			endpoint += '?friend-access-token=' + friend.remoteAccessToken;
 			if (friend.highWater) {
 				endpoint += '&friend-high-water=' + friend.highWater;
@@ -145,6 +146,8 @@ var watchFeed = function watchFeed(server, friend) {
 			};
 			watchFeedConnections[key] = connection;
 			socket.emit('authentication', {
+				'friendAccessToken': friend.remoteAccessToken,
+				'friendHighWater': friend.highWater,
 				'subscriptions': {
 					'PushNewsFeedItem': ['after save']
 				}

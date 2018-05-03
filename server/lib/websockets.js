@@ -31,8 +31,9 @@ module.exports.mount = function websocketsMount(app) {
 		app.openFriendListeners = {};
 	}
 	require('socketio-auth')(app.io, {
+		'timeout': 60000,
 		'authenticate': function (socket, data, callback) {
-			var friendAccessToken = socket.handshake.query['friend-access-token'];
+			var friendAccessToken = data.friendAccessToken;
 			if (friendAccessToken) {
 				var query = {
 					'where': {

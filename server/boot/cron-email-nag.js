@@ -76,7 +76,7 @@ module.exports = function nag(server, done, username) {
 				};
 
 				server.models.NewsFeedItem.find(query, function (e, items) {
-					async.map(items, resolveProfiles, function (err) {
+					async.mapSeries(items, resolveProfiles, function (err) {
 						items = optimizeNewsFeedItems(items, myEndpoint, user);
 						async.map(items, function (item, done) {
 							newsFeedItemResolve(user, item, function (err, data) {

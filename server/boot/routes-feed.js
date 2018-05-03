@@ -109,7 +109,7 @@ module.exports = function (server) {
             cb(e);
           }
 
-          async.map(items, resolveProfiles, function (err) {
+          async.mapSeries(items, resolveProfiles, function (err) {
 
             if (items && items.length) {
               session.feedHighwater = items[items.length - 1].createdOn;

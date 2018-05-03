@@ -3,8 +3,6 @@ var request = require('request');
 var app = require('../server');
 var debug = require('debug')('resolve');
 
-// TODO: unique ths list before async.each (redundant entries)
-
 module.exports = function resolveProfiles(item, done) {
 	debug('resolveProfiles ' + item.uuid);
 
@@ -13,22 +11,22 @@ module.exports = function resolveProfiles(item, done) {
 	var endpoints = [];
 	var profiles = {};
 
-	if (item.source) {
+	if (item.source && endpoints.indexOf(item.source) === -1) {
 		endpoints.push(item.source);
 		profiles[item.source] = {};
 	}
 
-	if (item.remoteEndPoint) {
+	if (item.remoteEndPoint && endpoints.indexOf(item.remoteEndPoint) === -1) {
 		endpoints.push(item.remoteEndPoint);
 		profiles[item.remoteEndPoint] = {};
 	}
 
-	if (item.about) {
+	if (item.about && endpoints.indexOf(item.about) === -1) {
 		endpoints.push(item.about);
 		profiles[item.about] = {};
 	}
 
-	if (item.target) {
+	if (item.target && endpoints.indexOf(item.target) === -1) {
 		endpoints.push(item.target);
 		profiles[item.target] = {};
 	}

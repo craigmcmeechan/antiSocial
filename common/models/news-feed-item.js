@@ -37,7 +37,7 @@ module.exports = function (NewsFeedItem) {
 			else {
 				debug('backfilling NewsFeedItem %j count', query, items ? items.length : 0);
 
-				async.map(items, resolveProfiles, function (err) {
+				async.mapSeries(items, resolveProfiles, function (err) {
 
 					items = resolveSummary(items, myEndpoint, user);
 
