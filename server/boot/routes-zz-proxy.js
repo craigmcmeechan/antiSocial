@@ -164,7 +164,8 @@ module.exports = function (server) {
 					'wantSummary': template === 'comment',
 					'isPermalink': isPermalink,
 					'friendMap': friendMap,
-					'cache': process.env.NODE_ENV === 'production' ? true : false
+					'cache': process.env.NODE_ENV === 'production' ? true : false,
+					'forShare': req.query.share
 				});
 			}
 		});

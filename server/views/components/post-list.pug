@@ -18,7 +18,7 @@
 				if post.athoritativeEndpoint
 					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 				else 
-					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
+					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= proxyEndPoint(post.source + '/post/' + post.uuid,user))
 						.post-identity
 							.post-avatar
 								.media
@@ -33,22 +33,22 @@
 										a(href= posterUrl)
 											img.media-object(src= thumb)
 									.media-body
-										.post-actions.pull-right
-											.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
-												button.btn-xs(data-toggle="dropdown")
-													i.fa.fa-ellipsis-h
-												ul.dropdown-menu
-													if !isMine
-														li
-															a.share-post(href="#") Share Post
-														li
-															a.hide-post(href="#") Hide Post
-													else
-														li 
-															a.edit-post(href="#") Edit Post
-														li 
-															a.delete-post(href="#") Delete Post
-															
+										if !forShare
+											.post-actions.pull-right
+												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
+													button.btn-xs(data-toggle="dropdown")
+														i.fa.fa-ellipsis-h
+													ul.dropdown-menu
+														if !isMine
+															li
+																a.share-post(href="#") Share Post
+															li
+																a.hide-post(href="#") Hide Post
+														else
+															li 
+																a.edit-post(href="#") Edit Post
+															li 
+																a.delete-post(href="#") Delete Post
 										h4.media-heading
 											a(href= posterUrl)= name
 											if post.about
@@ -88,10 +88,14 @@
 						- var maxHeight = !isPermalink ? '1200' : 50000
 						.post-body.markdown.want-constrained(data-max-height= maxHeight)!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
+						if post.shareEndpoint
+							.shared-post
+								.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= post.shareEndpoint + '?share=1')
+
 						- var photos = post.sortedPhotos
 						include rendered-post-photos
 						
-						if !noComments && user
+						if !noComments && user && !forShare
 							.reactions-and-comments
 								- var about= poster.endpoint + '/post/' + post.uuid
 
