@@ -86,9 +86,9 @@ module.exports.mount = function websocketsMount(app) {
 		'postAuthenticate': function (socket, data) {
 			if (data.friend) {
 				socket.friend = data.friend;
+				socket.highwater = data.friendHighWater || 0;
 				socket.currentUser = socket.friend.user();
 				socket.connectionKey = socket.friend.remoteEndPoint + '<-' + socket.friend.user().username;
-				socket.highwater = socket.handshake.query['friend-high-water'] || 0;
 				app.openFriendListeners[socket.connectionKey] = socket;
 				if (data.subscriptions) {
 					for (var model in data.subscriptions) {

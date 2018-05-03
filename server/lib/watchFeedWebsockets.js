@@ -126,12 +126,6 @@ var watchFeed = function watchFeed(server, friend) {
 			var endpoint = remoteEndPoint.protocol === 'https:' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
 
-			// TODO: remove this, do it in the authenticate message
-			endpoint += '?friend-access-token=' + friend.remoteAccessToken;
-			if (friend.highWater) {
-				endpoint += '&friend-high-water=' + friend.highWater;
-			}
-
 			debugWebsockets('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
 
 			var socket = require('socket.io-client')(endpoint, {});

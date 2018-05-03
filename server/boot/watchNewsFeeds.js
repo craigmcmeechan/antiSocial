@@ -1,5 +1,5 @@
-var watchFeed = require('../lib/watchFeedWebsockets');
 var _ = require('lodash');
+var watchFeed = _.throttle(require('../lib/watchFeedWebsockets').connect, 1000);
 
 module.exports = function (server) {
 
@@ -16,11 +16,10 @@ module.exports = function (server) {
 			return;
 		}
 
-		var throttled = _.throttle(watchFeed.connect, 1000);
 
 		for (var i = 0; i < friends.length; i++) {
 			var friend = friends[i];
-			throttled(server, friend);
+			watchFeed(server, friend);
 		}
 	});
 };

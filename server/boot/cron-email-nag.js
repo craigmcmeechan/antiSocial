@@ -1,10 +1,12 @@
 var cron = require('node-cron');
 var async = require('async');
 var debug = require('debug')('tasks');
-var mailer = require('../lib/mail');
-var newsFeedItemResolve = require('../../server/lib/newsFeedResolve');
-var resolveProfiles = require('../../server/lib/resolveProfiles');
-var optimizeNewsFeedItems = require('../../server/lib/optimizeNewsFeedItems');
+var newsFeedItemResolve = require('../lib/newsFeedResolve');
+var resolveProfiles = require('../lib/resolveProfiles');
+var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
+var _ = require('lodash');
+
+var mailer = _.throttle(require('../lib/mail'), 500);
 
 var tasks = {};
 
