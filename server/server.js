@@ -247,7 +247,7 @@ app.use(csp({
     'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
     'frameSrc': ['\'self\'', '*'],
     'mediaSrc': ['\'self\'', '*'],
-    'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com', 'q.stripe.com'],
+    'imgSrc': ['\'self\'', 'data:', '*'],
     'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
     'reportUri': '/csp-violation',
     'objectSrc': ['\'none\''],
