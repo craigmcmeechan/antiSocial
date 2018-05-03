@@ -271,6 +271,7 @@
 				var post = dom.find('.post');
 				post.find('.reactions-and-comments').remove();
 				self.element.find('.shared-post').html('<div id="scope-post-list">' + post[0].outerHTML + '</div>');
+				didInjectContent(self.element);
 			});
 		};
 	}
