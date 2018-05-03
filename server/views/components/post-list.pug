@@ -16,9 +16,9 @@
 						!= post.commentSummary
 				
 				if post.athoritativeEndpoint
-					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
+					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 				else 
-					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= proxyEndPoint(post.source + '/post/' + post.uuid,user))
+					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.source + '/post/' + post.uuid,user))
 						.post-identity
 							.post-avatar
 								.media
@@ -90,7 +90,7 @@
 
 						if post.shareEndpoint
 							.shared-post
-								.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= post.shareEndpoint + '?share=1')
+								.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= post.shareEndpoint + '&share=1')
 
 						- var photos = post.sortedPhotos
 						include rendered-post-photos

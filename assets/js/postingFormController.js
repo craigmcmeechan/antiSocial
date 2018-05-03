@@ -266,7 +266,7 @@
 
 		this.setShareMode = function (endpoint) {
 			self.share = endpoint;
-			$.get(endpoint + '?share=1', function (data) {
+			$.get(endpoint + '&share=1', function (data) {
 				var dom = $(data);
 				var post = dom.find('.post');
 				post.find('.reactions-and-comments').remove();
