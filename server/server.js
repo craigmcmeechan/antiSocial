@@ -244,7 +244,7 @@ app.use(csp({
       return '\'nonce-' + app.locals.nonce + '\'';
     }],
     'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
-    'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
+    'styleSrc': ['\'self\'', 'fonts.googleapis.com', 'checkout.stripe.com', '\'unsafe-inline\''],
     'frameSrc': ['\'self\'', '*'],
     'mediaSrc': ['\'self\'', '*'],
     'imgSrc': ['\'self\'', 'data:', '*'],

@@ -11,9 +11,6 @@ html(lang="en")
 		meta(name="apple-mobile-web-app-title" content="myAntiSocial.net")
 		meta(name="format-detection" content="telephone=no")
 		link(rel="apple-touch-icon" href="/images/logo.png")
-		// link(rel="apple-touch-startup-image" href="/launch.png")
-
-		link(href='//fonts.googleapis.com/css?family=Titillium+Web:100,300,400,600' rel='stylesheet' type='text/css')
 
 		block seo
 
@@ -67,10 +64,7 @@ html(lang="en")
 
 		block controller
 
-		if env === 'production'
-			script(src="/dist/js/jquery.min.js")
-		else
-			script(src="/dist/js/jquery.js")
+		script(src="/dist/js/jquery.min.js")
 
 		if environment.RAVEN_DSN_PUBLIC
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
@@ -82,19 +76,22 @@ html(lang="en")
 				}
 
 		script(src="/socket.io/socket.io.js")
-		script(src="https://checkout.stripe.com/checkout.js" async defer)
+			
+		if environment.STRIPE_PK
+			script(src="https://checkout.stripe.com/checkout.js")
 
 		if env === 'production'
 			script(src="/dist/js/DigitopiaSocial.min.js")
 		else
 			script(src="/dist/js/DigitopiaSocial.js")
 
-		script(src="/dist/js/vis.min.js" async defer)
+		if needVIS
+			script(src="/dist/js/vis.min.js")
 				
 		if environment.GOOGLE_MAPS_API_KEY
 			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
 
-		script(nonce= nonce).
-			$(document).ready(function() { bootMyAntiSocial(); });
-
-			
+		script(nonce= nonce defer).
+			(function ($) {
+				$(document).ready(function() { bootMyAntiSocial(); });
+			})(jQuery);
