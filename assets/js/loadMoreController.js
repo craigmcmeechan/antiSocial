@@ -44,7 +44,7 @@
 		this.abort = function () {
 			self.aborted = true;
 			if (self.pendingRequest) {
-				console.log('abort load more');
+				//console.log('abort load more');
 				self.pendingRequest.abort();
 			}
 		};
@@ -53,8 +53,6 @@
 			if (self.loading || self.atEnd) {
 				return;
 			}
-
-			console.log('loading more');
 
 			self.loading = true;
 
@@ -67,7 +65,7 @@
 				self.loading = false;
 
 				if (self.aborted) {
-					console.log('load more got content after abort');
+					//console.log('load more got content after abort');
 				}
 				else {
 					self.highwater = jqXHR.getResponseHeader('x-highwater');
@@ -83,10 +81,10 @@
 							'opacity': 0
 						});
 						self.atEnd = true;
-						console.log('load more at end');
+						flashAjaxStatus('info', 'end of posts');
 					}
 					else {
-						console.log('load more done');
+						//console.log('load more done');
 						$('#scope-post-list').append(chunk.html());
 						didInjectContent('#scope-post-list');
 					}

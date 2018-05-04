@@ -1,6 +1,5 @@
 var loopback = require('loopback');
 var boot = require('loopback-boot');
-var i18n = require('i18n');
 var bunyan = require('bunyan');
 var uuid = require('uuid');
 var NodeCache = require('node-cache');
@@ -126,40 +125,48 @@ app.locals.marked = renderMarkdown;
 app.locals.proxyEndPoint = proxyEndPoint;
 
 // localization config
-i18n.configure({
-  locales: ['en', 'es'],
-  cookie: 'locale',
-  defaultLocale: 'en',
-  directory: './locales',
-  fallbacks: {
-    'es': 'en'
-  },
-  autoReload: true,
-  updateFiles: false
-});
-app.use(i18n.init);
-app.set('i18n', i18n);
+if (process.env.i18n) {
+  var i18n = require('i18n');
+
+  i18n.configure({
+    locales: ['en', 'es'],
+    cookie: 'locale',
+    defaultLocale: 'en',
+    directory: './locales',
+    fallbacks: {
+      'es': 'en'
+    },
+    autoReload: true,
+    updateFiles: false
+  });
+  app.use(i18n.init);
+  app.set('i18n', i18n);
+}
 
 // setup component storage for s3
-var ds = loopback.createDataSource({
-  connector: require('loopback-component-storage'),
-  provider: 'amazon',
-  key: process.env.AWS_S3_KEY,
-  keyId: process.env.AWS_S3_KEY_ID,
-});
-var container = ds.createModel('container', {}, {
-  base: 'Model'
-});
-app.model(container, {
-  'dataSource': ds,
-  'public': true
-});
+if (!process.env.LOCAL_UPLOADS) {
+  var ds = loopback.createDataSource({
+    connector: require('loopback-component-storage'),
+    provider: 'amazon',
+    key: process.env.AWS_S3_KEY,
+    keyId: process.env.AWS_S3_KEY_ID,
+  });
+  var container = ds.createModel('container', {}, {
+    base: 'Model'
+  });
+  app.model(container, {
+    'dataSource': ds,
+    'public': true
+  });
+}
 
-var cors = require('cors');
-app.use(cors({
-  'origin': true,
-  'exposedHeaders': 'x-digitopia-hijax-flash-level,x-digitopia-hijax-flash-message,x-digitopia-hijax-location,x-digitopia-hijax-did-login,x-digitopia-hijax-did-logout,x-highwater'
-}));
+if (process.env.CORS) {
+  var cors = require('cors');
+  app.use(cors({
+    'origin': true,
+    'exposedHeaders': 'x-digitopia-hijax-flash-level,x-digitopia-hijax-flash-message,x-digitopia-hijax-location,x-digitopia-hijax-did-login,x-digitopia-hijax-did-logout,x-highwater'
+  }));
+}
 
 // use loopback.token middleware on all routes
 // setup gear for authentication using cookie (access_token)
@@ -172,20 +179,6 @@ app.use(loopback.token({
   headers: ['access_token', 'X-Access-Token'],
   params: ['access_token']
 }));
-
-// set really long timeout on change-stream routes to prevent
-// frequent closing of connections
-
-app.middleware('routes:before', function (req, res, next) {
-  if (req.path.indexOf('change-stream') !== -1) {
-    res.setTimeout(24 * 3600 * 1000);
-    res.set('X-Accel-Buffering', 'no');
-    return next();
-  }
-  else {
-    return next();
-  }
-});
 
 var myContext = require('./middleware/context-myContext')();
 app.use(myContext);
@@ -210,7 +203,6 @@ options.streams = [{
   'stream': process.stdout
 }];
 
-var ravenClient;
 if (process.env.RAVEN_DSN) {
   app.raven = require('raven');
   app.raven.config(process.env.RAVEN_DSN, {
@@ -234,32 +226,33 @@ app.use(function (req, res, next) {
   next();
 });
 
-var csp = require('helmet-csp');
+if (process.env.CSP) {
+  var csp = require('helmet-csp');
 
-app.use(csp({
-  'directives': {
-    'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets, 'checkout.stripe.com'],
-    'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', '\'unsafe-eval\'', function (req, res) {
-      return '\'nonce-' + app.locals.nonce + '\'';
-    }],
-    'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
-    'styleSrc': ['\'self\'', 'fonts.googleapis.com', 'checkout.stripe.com', '\'unsafe-inline\''],
-    'frameSrc': ['\'self\'', '*'],
-    'mediaSrc': ['\'self\'', '*'],
-    'imgSrc': ['\'self\'', 'data:', '*'],
-    'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
-    'reportUri': '/csp-violation',
-    'objectSrc': ['\'none\''],
-    'upgradeInsecureRequests': false
-  },
-  'loose': false,
-  'reportOnly': false,
-  'setAllHeaders': false,
-  'disableAndroid': false,
-  'browserSniff': false
-}));
-
+  app.use(csp({
+    'directives': {
+      'defaultSrc': ['\'self\''],
+      'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets, 'checkout.stripe.com'],
+      'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', '\'unsafe-eval\'', function (req, res) {
+        return '\'nonce-' + app.locals.nonce + '\'';
+      }],
+      'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
+      'styleSrc': ['\'self\'', 'fonts.googleapis.com', 'checkout.stripe.com', '\'unsafe-inline\''],
+      'frameSrc': ['\'self\'', '*'],
+      'mediaSrc': ['\'self\'', '*'],
+      'imgSrc': ['\'self\'', 'data:', '*'],
+      'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
+      'reportUri': '/csp-violation',
+      'objectSrc': ['\'none\''],
+      'upgradeInsecureRequests': false
+    },
+    'loose': false,
+    'reportOnly': false,
+    'setAllHeaders': false,
+    'disableAndroid': false,
+    'browserSniff': false
+  }));
+}
 
 // attach settings to req
 var globalSettings = require('./middleware/context-globalSettings')();
@@ -270,7 +263,7 @@ var getCurrentUserApi = require('./middleware/context-currentUserApi')();
 app.use(getCurrentUserApi);
 
 // use basic-auth for development environment
-if (app.get('env') === 'development') {
+if (process.env.BASIC_AUTH) {
   var basicAuth = require('./middleware/basicAuth')();
   app.use(basicAuth);
 }

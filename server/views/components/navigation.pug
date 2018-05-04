@@ -21,7 +21,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top
 						span.hidden-not-digitopia-xsmall
 							|  Friends Feed
 				li#nav-profile.hidden-logged-out
-					a(href="/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom")
+					a(href= user ? '/' + user.username : "/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom")
 						<i class="fa fa-user fa-fw"></i>
 						span.hidden-not-digitopia-xsmall
 							|  Your Posts
@@ -55,5 +55,5 @@ nav.navbar.navbar-inverse.navbar-fixed-top
 				li.menu-icon-placeholder.hidden-digitopia-xsmall
 					#menu-icon(data-hijax="true")
 						if user
-							a(href='/profile')
+							a(href=user ? '/' + user.username : "/profile")
 								img.menubar-thumb(src= getUploadForProperty('photo', user.uploads(), 'thumb', headshotFPO).url)
