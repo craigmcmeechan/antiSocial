@@ -6,7 +6,7 @@ var resolveProfiles = require('../lib/resolveProfiles');
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
 var _ = require('lodash');
 
-var mailer = _.throttle(require('../lib/mail'), 500);
+var mailer = require('../lib/mail');
 
 var tasks = {};
 
@@ -20,10 +20,20 @@ module.exports = function nag(server, done, username) {
 	}
 
 	server.models.MyUser.find({}, function (err, users) {
-		async.map(users, function (user, cb) {
+		var xPerMin = 2;
+		var count = 0;
+		var minute = 1;
+
+		async.mapSeries(users, function (user, cb) {
+			if (++count > xPerMin) {
+				++minute;
+				count = 0;
+			}
+			var spec = minute + ' 1 * * *';
+			console.log(spec);
 			debug('starting task for user ' + user.username);
 			// daily
-			tasks[user.username] = cron.schedule('15 1 * * *', function () {
+			tasks[user.username] = cron.schedule(spec, function () {
 				debug('task running for %s', user.username);
 				doNotificationEmail(user.username, function (err) {});
 			});

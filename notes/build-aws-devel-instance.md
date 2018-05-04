@@ -63,7 +63,7 @@ docker run --env-file=/root/antisocial-development.env -p 80:80 -p 443:443 webap
 
 | Variable Name   | Required | Default   | Description |
 | -------------   | -------- | --------- | ----------- |
-| KEEP_FEEDS_OPEN | Yes | false | Use 'true' for now |
+| CLOSE_IDLE_FEEDS | No | false | Use 'false' for now |
 | LOG_LEVEL       | No | error | error,warning,info,debug |
 | NODE_ENV        | Yes | | localdev, development, production |
 | PORT            | No | 3000 | port service listens on  |
