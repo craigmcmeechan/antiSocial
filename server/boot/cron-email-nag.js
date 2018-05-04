@@ -24,6 +24,7 @@ module.exports = function nag(server, done, username) {
 		var count = 0;
 		var minute = 1;
 
+
 		async.mapSeries(users, function (user, cb) {
 			if (++count > xPerMin) {
 				++minute;
