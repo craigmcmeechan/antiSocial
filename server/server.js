@@ -20,6 +20,14 @@ if (process.env.XRAY) {
   app.middleware('routes:after', AWSXray.express.closeSegment());
 }
 
+var FPOImages = [
+  '/images/bg1.jpg', '/images/bg2.jpg', '/images/bg3.jpg', '/images/bg4.jpg'
+];
+
+function randomFPO() {
+  return FPOImages[Math.floor(Math.random() * FPOImages.length)];
+}
+
 app.enable('trust proxy');
 
 // use jade templating language
@@ -35,7 +43,7 @@ app.locals.moment = require('moment');
 app.locals._ = require('lodash');
 app.locals.config = require('./config-' + app.get('env'));
 app.locals.headshotFPO = app.locals.config.publicHost + '/images/slug.png';
-app.locals.FPO = app.locals.config.publicHost + '/images/fpo.jpg';
+app.locals.FPO = app.locals.config.publicHost + randomFPO();
 app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
 app.locals.appDir = __dirname;
