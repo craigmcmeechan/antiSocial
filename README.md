@@ -1,13 +1,10 @@
-
-<img src="https://raw.githubusercontent.com/antiSocialNet/antiSocial/master/assets/octocloud/logo.svg" height="200">
-
-
-
-[![CircleCI](https://circleci.com/gh/mediapolis/digitopia-social.svg?style=svg&circle-token=49210d6a4129ef34759580c5288383f49f57528b)](https://circleci.com/gh/mediapolis/digitopia-social)
+<img src="https://github.com/antiSocialNet/antiSocial/raw/master/assets/octocloud/logo.jpg" height="200">
 
 # myAntiSocial.net
 
 > Architecture & Protocols to implement a prototype of a widely distributed social network for sharing content.
+
+[![CircleCI](https://circleci.com/gh/mediapolis/digitopia-social.svg?style=svg&circle-token=49210d6a4129ef34759580c5288383f49f57528b)](https://circleci.com/gh/mediapolis/digitopia-social)
 
 ### Key concepts:
 
