@@ -1,3 +1,5 @@
+![](https://raw.githubusercontent.com/antiSocialNet/antiSocial/master/assets/octocloud/logo.svg)
+
 [![CircleCI](https://circleci.com/gh/mediapolis/digitopia-social.svg?style=svg&circle-token=49210d6a4129ef34759580c5288383f49f57528b)](https://circleci.com/gh/mediapolis/digitopia-social)
 
 # myAntiSocial.net
