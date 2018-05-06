@@ -7,7 +7,7 @@
 [![CircleCI](https://circleci.com/gh/mediapolis/digitopia-social.svg?style=svg&circle-token=49210d6a4129ef34759580c5288383f49f57528b)](https://circleci.com/gh/mediapolis/digitopia-social)
 
 ### Key concepts:
-
+- The design of this system is driven by a code of ethics governing the treatment of user data.
 - Users join an existing server cooperative or operate their own server to host their content in the cloud. There are many economical options for this such as AWS, docker, etc. and a design goal is to make that process as turnkey as possible. These servers are "always on" and act as portals for the user to post content and see their friends activity and content.
 
 ### The antisocial guidelines for the ethical treatment of data:
@@ -33,9 +33,11 @@ Servers should be directly supported by users, not by advertising networks or in
 
 ### Notes
 
-[A Manifesto or sorts](https://github.com/antiSocialNet/antiSocial/blob/master/notes/manifesto.md)
+[A Manifesto of sorts](https://github.com/antiSocialNet/antiSocial/blob/master/notes/manifesto.md)
 
 [Building this repo for Development](https://github.com/antiSocialNet/antiSocial/blob/master/notes/development.md)
+
+[Building this repo for Production](https://github.com/antiSocialNet/antiSocial/blob/master/notes/docker-with-mongo.md)
 
 ### Draft Protocol Descriptions
 * [Friend Protocol ](https://github.com/antiSocialNet/antiSocial/blob/master/notes/friends.md)
