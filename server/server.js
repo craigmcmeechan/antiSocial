@@ -276,12 +276,19 @@ if (process.env.BASIC_AUTH) {
   app.use(basicAuth);
 }
 
+var listener;
+
+app.stop = function () {
+  listener.close();
+  app.io.close();
+};
+
 app.start = function () {
   app.locals.logger.info('app staring');
 
   if (!process.env.HTTPS_LISTENER) {
     var http = require('http');
-    var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
+    listener = http.createServer(app).listen(app.locals.config.port, function (err) {
       if (err) {
         app.locals.logger.error('http could not be started', err);
         return;
@@ -296,6 +303,7 @@ app.start = function () {
   else {
     var setupHTTPS = require('./lib/setupHTTPS');
     setupHTTPS(app, function (err, sslListener) {
+      listener = sslListener;
       if (err) {
         app.locals.logger.info('https could not start', err);
         return;

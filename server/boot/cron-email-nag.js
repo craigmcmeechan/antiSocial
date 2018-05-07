@@ -11,7 +11,11 @@ var mailer = require('../lib/mail');
 var tasks = {};
 
 module.exports = function nag(server, done, username) {
-	debug('tasks starting');
+	if (process.env.NODE_ENV !== 'production') {
+		return done();
+	}
+
+	debug('starting nag daemon');
 
 	if (username) {
 		doNotificationEmail(username, function (err) {

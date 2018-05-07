@@ -291,7 +291,9 @@ img.avatar
 	.comment-photo
 		img
 			.not-digitopia-xsmall &,.not-digitopia-small &
-				max-height:50vh
+				max-height:40vh
+				max-width: 100%
+
 			.digitopia-xsmall &, .digitopia-small &
 				max-width: 100%
 				max-height: auto
@@ -769,6 +771,8 @@ img.avatar
 		font-size: 9px
 		top: -10px
 		right: -15px
+		background-color:red
+		color:white
 #news-feed
 	position:absolute
 	top:calc(100vh + 75px)
@@ -803,6 +807,13 @@ img.avatar
 		padding-right: 10px
 		font-weight:bold
 		background-color:#eee
+		.activity-count
+			position: absolute
+			font-size: 9px
+			top: 7px
+			left: 20px
+			background-color:red
+			color:white
 	.news-feed-footer
 		height:30px
 		line-height:30px
@@ -878,3 +889,5 @@ img.avatar
 		cursor:pointer
 		&:hover
 			background-color:#eee
+.position-relative
+	position:relative
