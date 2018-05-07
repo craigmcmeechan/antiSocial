@@ -1,29 +1,17 @@
 var debug = require('debug')('routes');
-var debugVerbose = require('debug')('routes:verbose');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
 var getCurrentUser = require('../middleware/context-currentUser');
-var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var encryption = require('../lib/encryption');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
-var async = require('async');
 var request = require('request');
 var debug = require('debug')('proxy');
-var debugVerbose = require('debug')('proxy:verbose');
+var utils = require('../lib/endpoint-utils');
+
+var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
-
-
-	var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
-
-	function getPOVEndpoint(currentUser) {
-		if (currentUser) {
-			return server.locals.config.publicHost + '/' + currentUser.username;
-		}
-	}
-
-	// TODO should this require logged in user? probably
 
 	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
 
@@ -160,7 +148,7 @@ module.exports = function (server) {
 					'user': currentUser,
 					'wall': true,
 					'isMe': isMe,
-					'myEndpoint': getPOVEndpoint(currentUser),
+					'myEndpoint': utils.getPOVEndpoint(currentUser),
 					'wantSummary': template === 'comment',
 					'isPermalink': isPermalink,
 					'friendMap': friendMap,
