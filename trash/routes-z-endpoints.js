@@ -14,11 +14,11 @@ var resolvePostOg = require('../lib/resolvePostOG');
 var getProfile = require('../lib/getProfile');
 
 var async = require('async');
-var pug = require('pug');
 var debug = require('debug')('proxy');
-var debugVerbose = require('debug')('proxy:verbose');
 var request = require('request');
 var graphlib = require('graphlib');
+
+var utils = require('../lib/endpoint-utils');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -43,15 +43,6 @@ module.exports = function (server) {
   var postPhotoCommentReactionsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)\/reactions(\.json)?$/;
   var photoRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photo\/([a-f0-9-]+)(\.json)?$/;
 
-  function getPOVEndpoint(friend, currentUser) {
-    if (friend) {
-      return friend.remoteEndPoint;
-    }
-    if (currentUser) {
-      return server.locals.config.publicHost + '/' + currentUser.username;
-    }
-  }
-
   router.get(profileRE, getCurrentUser(), checkNeedProxyRewrite('profile'), getFriendAccess(), function (req, res, next) {
     var ctx = req.myContext;
     var redirectProxy = ctx.get('redirectProxy');
@@ -68,7 +59,7 @@ module.exports = function (server) {
 
     var isMe = false;
 
-    getUser(username, function (err, user) {
+    utils.getUser(username, function (err, user) {
       if (err) {
         if (err.statusCode === 404) {
           return res.sendStatus(404);
@@ -93,12 +84,12 @@ module.exports = function (server) {
       };
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
       else {
         async.waterfall([
           function (cb) {
-            getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
+            utils.getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
               cb(err, user, posts);
             });
           },
@@ -128,7 +119,7 @@ module.exports = function (server) {
 
             'friend': friend,
             'isMe': isMe,
-            'myEndpoint': getPOVEndpoint(friend, currentUser),
+            'myEndpoint': utils.getPOVEndpoint(friend, currentUser),
             'inviteToken': req.signedCookies.invite
           };
 
@@ -136,11 +127,11 @@ module.exports = function (server) {
             res.header('x-highwater', data.highwater);
           }
 
-          renderFile('/components/rendered-profile.pug', options, req, function (err, html) {
+          utils.renderFile('/components/rendered-profile.pug', options, req, function (err, html) {
             if (err) {
               return next(err);
             }
-            return res.send(encryptIfFriend(friend, html));
+            return res.send(utils.encryptIfFriend(friend, html));
           });
         });
       }
@@ -163,7 +154,7 @@ module.exports = function (server) {
     var isMe = false;
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -214,7 +205,7 @@ module.exports = function (server) {
       };
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
@@ -222,14 +213,14 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'isMe': isMe,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
+        'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
       };
 
-      renderFile('/components/rendered-photos.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-photos.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
@@ -255,7 +246,7 @@ module.exports = function (server) {
     var endpoints = [];
     var map = {};
 
-    getUser(username, function (err, user) {
+    utils.getUser(username, function (err, user) {
       if (err) {
         if (err.statusCode === 404) {
           return res.sendStatus(404);
@@ -378,7 +369,7 @@ module.exports = function (server) {
               };
 
               if (view === '.json') {
-                return res.send(encryptIfFriend(friend, data));
+                return res.send(utils.encryptIfFriend(friend, data));
               }
               else {
                 var friendMap = {};
@@ -393,14 +384,14 @@ module.exports = function (server) {
                   'friend': friend,
                   'isMe': isMe,
                   'friendMap': friendMap,
-                  'myEndpoint': getPOVEndpoint(friend, currentUser)
+                  'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
                 };
 
-                renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+                utils.renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
                   if (err) {
                     return next(err);
                   }
-                  return res.send(encryptIfFriend(friend, html));
+                  return res.send(utils.encryptIfFriend(friend, html));
                 });
               }
             });
@@ -422,7 +413,7 @@ module.exports = function (server) {
           }
         };
 
-        getUserSettings(user, function (err, userSettings) {
+        utils.getUserSettings(user, function (err, userSettings) {
 
 
           server.models.Friend.find(query, function (err, friends) {
@@ -460,7 +451,7 @@ module.exports = function (server) {
             };
 
             if (view === '.json') {
-              return res.send(encryptIfFriend(friend, data));
+              return res.send(utils.encryptIfFriend(friend, data));
             }
             else {
               var options = {
@@ -468,14 +459,14 @@ module.exports = function (server) {
                 'user': currentUser,
                 'friend': friend,
                 'isMe': isMe,
-                'myEndpoint': getPOVEndpoint(friend, currentUser)
+                'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
               };
 
-              renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+              utils.renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
                 if (err) {
                   return next(err);
                 }
-                return res.send(encryptIfFriend(friend, html));
+                return res.send(utils.encryptIfFriend(friend, html));
               });
             }
           });
@@ -502,7 +493,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -515,7 +506,7 @@ module.exports = function (server) {
             isMe = true;
           }
         }
-        getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
+        utils.getPosts(user, friend, highwater, isMe, tags, function (err, posts) {
           cb(err, user, posts);
         });
       },
@@ -556,7 +547,7 @@ module.exports = function (server) {
       };
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
@@ -564,14 +555,14 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'isMe': isMe,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
+        'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
       };
 
-      renderFile('/components/rendered-posts.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-posts.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
@@ -593,7 +584,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -606,7 +597,7 @@ module.exports = function (server) {
             isMe = true;
           }
         }
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -649,7 +640,7 @@ module.exports = function (server) {
       };
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
@@ -658,15 +649,15 @@ module.exports = function (server) {
         'friend': friend,
         'isPermalink': req.query.embed ? false : true,
         'isMe': isMe,
-        'myEndpoint': getPOVEndpoint(friend, currentUser),
+        'myEndpoint': utils.getPOVEndpoint(friend, currentUser),
         'source': req.query.source
       };
 
-      renderFile('/components/rendered-post.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-post.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
@@ -689,7 +680,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -702,7 +693,7 @@ module.exports = function (server) {
             isMe = true;
           }
         }
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -757,21 +748,21 @@ module.exports = function (server) {
       delete data.post.reactionSummary;
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
         'data': data,
         'user': currentUser,
         'friend': friend,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
+        'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
       };
 
-      renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
@@ -795,7 +786,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -809,7 +800,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -858,7 +849,7 @@ module.exports = function (server) {
       delete data.post.commentSummary;
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
@@ -867,11 +858,11 @@ module.exports = function (server) {
         'friend': friend
       };
 
-      renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
@@ -896,7 +887,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -910,7 +901,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -972,7 +963,7 @@ module.exports = function (server) {
         };
 
         if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
+          return res.send(utils.encryptIfFriend(friend, data));
         }
 
         var options = {
@@ -982,11 +973,11 @@ module.exports = function (server) {
           'wantSummary': true
         };
 
-        renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
+        utils.renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
-          return res.send(encryptIfFriend(friend, html));
+          return res.send(utils.encryptIfFriend(friend, html));
         });
       });
     });
@@ -1012,7 +1003,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1026,7 +1017,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -1079,7 +1070,7 @@ module.exports = function (server) {
         delete theComment.reactionSummary;
 
         if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
+          return res.send(utils.encryptIfFriend(friend, data));
         }
 
         var options = {
@@ -1088,11 +1079,11 @@ module.exports = function (server) {
           'friend': friend
         };
 
-        renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
+        utils.renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
-          return res.send(encryptIfFriend(friend, html));
+          return res.send(utils.encryptIfFriend(friend, html));
         });
       });
     });
@@ -1117,7 +1108,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1131,7 +1122,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -1165,7 +1156,7 @@ module.exports = function (server) {
       delete data.post.sortedPhotos;
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
@@ -1174,11 +1165,11 @@ module.exports = function (server) {
         'friend': friend
       };
 
-      renderFile('/components/rendered-post-photos.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-post-photos.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
@@ -1203,7 +1194,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1217,7 +1208,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -1261,7 +1252,7 @@ module.exports = function (server) {
       };
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
@@ -1270,11 +1261,11 @@ module.exports = function (server) {
         'friend': friend
       };
 
-      renderFile('/components/rendered-post-photo.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-post-photo.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
@@ -1299,7 +1290,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1313,7 +1304,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -1365,7 +1356,7 @@ module.exports = function (server) {
         };
 
         if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
+          return res.send(utils.encryptIfFriend(friend, data));
         }
 
         var options = {
@@ -1374,11 +1365,11 @@ module.exports = function (server) {
           'friend': friend
         };
 
-        renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
+        utils.renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
-          return res.send(encryptIfFriend(friend, html));
+          return res.send(utils.encryptIfFriend(friend, html));
         });
       });
     });
@@ -1404,7 +1395,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1418,7 +1409,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -1470,7 +1461,7 @@ module.exports = function (server) {
           };
 
           if (view === '.json') {
-            return res.send(encryptIfFriend(friend, data));
+            return res.send(utils.encryptIfFriend(friend, data));
           }
 
           var options = {
@@ -1479,11 +1470,11 @@ module.exports = function (server) {
             'friend': friend
           };
 
-          renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
+          utils.renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
             if (err) {
               return next(err);
             }
-            return res.send(encryptIfFriend(friend, html));
+            return res.send(utils.encryptIfFriend(friend, html));
           });
         });
       });
@@ -1512,7 +1503,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1526,7 +1517,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -1593,7 +1584,7 @@ module.exports = function (server) {
           };
 
           if (view === '.json') {
-            return res.send(encryptIfFriend(friend, data));
+            return res.send(utils.encryptIfFriend(friend, data));
           }
 
           var options = {
@@ -1603,11 +1594,11 @@ module.exports = function (server) {
             'wantSummary': true
           };
 
-          renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
+          utils.renderFile('/components/rendered-comment.pug', options, req, function (err, html) {
             if (err) {
               return next(err);
             }
-            return res.send(encryptIfFriend(friend, html));
+            return res.send(utils.encryptIfFriend(friend, html));
           });
         });
       });
@@ -1635,7 +1626,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1649,7 +1640,7 @@ module.exports = function (server) {
           }
         }
 
-        getPost(postId, user, friend, isMe, function (err, post) {
+        utils.getPost(postId, user, friend, isMe, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -1710,7 +1701,7 @@ module.exports = function (server) {
         };
 
         if (view === '.json') {
-          return res.send(encryptIfFriend(friend, data));
+          return res.send(utils.encryptIfFriend(friend, data));
         }
 
         var options = {
@@ -1719,11 +1710,11 @@ module.exports = function (server) {
           'friend': friend
         };
 
-        renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
+        utils.renderFile('/components/rendered-reactions.pug', options, req, function (err, html) {
           if (err) {
             return next(err);
           }
-          return res.send(encryptIfFriend(friend, html));
+          return res.send(utils.encryptIfFriend(friend, html));
         });
       });
     });
@@ -1745,7 +1736,7 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        getUser(username, function (err, user) {
+        utils.getUser(username, function (err, user) {
           if (err) {
             return cb(err);
           }
@@ -1758,7 +1749,7 @@ module.exports = function (server) {
             isMe = true;
           }
         }
-        getPhoto(photoId, user, friend, function (err, photo) {
+        utils.getPhoto(photoId, user, friend, function (err, photo) {
           if (err) {
             return cb(err);
           }
@@ -1785,7 +1776,7 @@ module.exports = function (server) {
       };
 
       if (view === '.json') {
-        return res.send(encryptIfFriend(friend, data));
+        return res.send(utils.encryptIfFriend(friend, data));
       }
 
       var options = {
@@ -1793,222 +1784,17 @@ module.exports = function (server) {
         'user': currentUser,
         'friend': friend,
         'isMe': isMe,
-        'myEndpoint': getPOVEndpoint(friend, currentUser)
+        'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
       };
 
-      renderFile('/components/rendered-photo.pug', options, req, function (err, html) {
+      utils.renderFile('/components/rendered-photo.pug', options, req, function (err, html) {
         if (err) {
           return next(err);
         }
-        return res.send(encryptIfFriend(friend, html));
+        return res.send(utils.encryptIfFriend(friend, html));
       });
     });
   });
 
-  function getUser(username, cb) {
-    server.models.MyUser.findOne({
-      'where': {
-        'username': username
-      },
-      'include': ['uploads', ]
-    }, function (err, user) {
-      if (err) {
-        return cb(err);
-      }
-      if (!user) {
-        err = new Error('User Not Found');
-        err.statusCode = 404;
-        return cb(err);
-      }
-      cb(null, user);
-    });
-  }
-
-  function getUserSettings(user, cb) {
-    var q = {
-      'where': {
-        'group': user.username
-      }
-    };
-
-    server.models.Settings.findOne(q, function (err, group) {
-      var settings;
-      if (group) {
-        settings = group.settings;
-      }
-      if (!settings) {
-        settings = {
-          'friendListVisibility': 'all', // all, mutual, none
-          'feedSortOrder': 'activity' // post, activity
-        };
-      }
-      cb(null, settings);
-    });
-  }
-
-  function getPosts(user, friend, highwater, isMe, tags, cb) {
-
-    var query = {
-      'where': {
-        'and': [{
-          'userId': user.id
-        }]
-      },
-      'order': 'createdOn DESC',
-      'limit': 10
-    };
-
-    if (!isMe) {
-      query.where.and.push({
-        'posted': true
-      });
-      query.where.and.push({
-        'visibility': {
-          'inq': friend && friend.audiences ? friend.audiences : ['public']
-        }
-      });
-    }
-
-    if (highwater) {
-      query.where.and.push({
-        'createdOn': {
-          'lt': highwater
-        }
-      });
-    }
-
-    if (tags) {
-      try {
-        tags = JSON.parse(tags);
-      }
-      catch (e) {
-        tags = [];
-      }
-      query.where.and.push({
-        'tags': {
-          'inq': tags
-        }
-      });
-    }
-
-    debug('getPosts: %j', query);
-
-    server.models.Post.find(query, function (err, posts) {
-      if (err) {
-        return cb(err);
-      }
-
-      cb(err, posts);
-    });
-  }
-
-  function getPost(postId, user, friend, isMe, cb) {
-    var query = {
-      'where': {
-        'and': [{
-          'uuid': postId
-        }, {
-          'userId': user.id
-        }]
-      }
-    };
-
-    if (!isMe) {
-      query.where.and.push({
-        'visibility': {
-          'inq': friend && friend.audiences ? friend.audiences : ['public']
-        }
-      });
-    }
-
-    debug('getPost: %j', query);
-
-    server.models.Post.findOne(query, function (err, post) {
-      if (err) {
-        return cb(err);
-      }
-
-      if (!post) {
-        err = new Error('Post not found');
-        err.statusCode = 404;
-        return cb(err);
-      }
-
-      cb(null, post);
-    });
-  }
-
-  function getPhoto(photoId, user, friend, cb) {
-    var query = {
-      'where': {
-        'and': [{
-          'uuid': photoId
-        }, {
-          'userId': user.id
-        }]
-      },
-      'include': ['uploads']
-    };
-
-    debug('getPhoto: %j', query);
-
-    server.models.Photo.findOne(query, function (err, photo) {
-      if (err) {
-        return cb(err);
-      }
-
-      if (!photo) {
-        err = new Error('Photo not found');
-        err.statusCode = 404;
-        return cb(err);
-      }
-
-      cb(null, photo);
-    });
-  }
-
-  function renderFile(template, data, req, cb) {
-    var ctx = req.myContext;
-
-    var options = {};
-
-    for (var prop in data) {
-      options[prop] = data[prop];
-    }
-
-    for (var prop in server.locals) {
-      options[prop] = server.locals[prop];
-    }
-
-    if (process.env.NODE_ENV === 'production') {
-      options.cache = true;
-    }
-
-    options.globalSettings = ctx.get('globalSettings');
-
-    pug.renderFile(server.get('views') + template, options, function (err, html) {
-      if (err) {
-        return cb(err);
-      }
-      cb(null, html);
-    });
-  }
-
   server.use(router);
 };
-
-function encryptIfFriend(friend, payload) {
-  if (friend) {
-    var privateKey = friend.keys.private;
-    var publicKey = friend.remotePublicKey;
-    var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(payload));
-
-    payload = {
-      'data': encrypted.data,
-      'sig': encrypted.sig,
-      'pass': encrypted.pass
-    };
-  }
-
-  return payload;
-}
