@@ -147,6 +147,7 @@
 				if (self.getHighwater() < event.data.updatedOn) {
 					li.addClass('is-new');
 					++self.newItems;
+					self.saveHighwater(event.data.updatedOn);
 					self.updateBadge();
 				}
 				li.data('about', event.endpoint);
@@ -157,10 +158,6 @@
 						$('.show-feed-button').trigger('click');
 					};
 				});
-
-				if (self.getHighwater() < event.data.updatedOn) {
-					self.saveHighwater(event.data.updatedOn);
-				}
 			}
 			if (!event.backfill) {
 				if (event.data.type === 'post' && event.type === 'create') {
@@ -196,7 +193,7 @@
 		};
 
 		this.getHighwater = function () {
-			return $.cookie('notification-highwater');
+			return $.cookie('notify-highwater') ? $.cookie('notify-highwater') : '';
 		};
 
 		this.saveHighwater = function (highwater) {
@@ -204,7 +201,7 @@
 				path: '/',
 				expires: 365,
 			};
-			$.cookie('notification-highwater', highwater, options);
+			$.cookie('notify-highwater', highwater, options);
 		};
 	}
 
