@@ -9,7 +9,7 @@
 					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown"  data-in-modal= editing ? 'true' : '' style="font-family:Helvetica,Arial,sans-serif;")
 						if comment
 							!= marked(comment.details.body)
-					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
+					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
 					.input-ok-indicator.hide-until-subject-focus
 						span.glyphicon.glyphicon-ok
 					.validation-help.hide-until-subject-focus

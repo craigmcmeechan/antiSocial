@@ -170,6 +170,13 @@
 							errors.push('Must be a valid cvc code');
 						}
 					}
+
+					// KLUDGE: markdown editor wraps markup in markdown code `<markup>`
+					if (validation === 'noEscapedAngle') {
+						if (val.match('`') || val.match('&lt;') || val.match('&gt;')) {
+							errors.push('Pasted HTML not allowed');
+						}
+					}
 				}
 			}
 

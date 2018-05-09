@@ -19,7 +19,7 @@
 							!= marked(post.body,true)
 							p
 								br
-					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
+					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
 						
 					.input-ok-indicator
 						span.glyphicon.glyphicon-ok
