@@ -77,14 +77,14 @@ module.exports = function (server) {
 				server.models.Friend.find(query, function (err, friends) {
 
 					g.setNode(server.locals.config.publicHost + '/' + currentUser.username, {
-						'name': currentUser.username
+						'name': currentUser.name
 					});
 
 					var hashes = [];
 					for (var i = 0; i < friends.length; i++) {
 						hashes.push(friends[i].hash);
 						g.setNode(friends[i].remoteEndPoint, {
-							'name': friends[i].remoteUsername
+							'name': friends[i].remoteName
 						});
 					}
 
@@ -210,7 +210,7 @@ module.exports = function (server) {
 
 						if (userSettings.friendListVisibility !== 'none') {
 							g.setNode(server.locals.config.publicHost + '/' + user.username, {
-								'name': user.username
+								'name': user.name
 							});
 
 							for (var i = 0; i < friends.length; i++) {
@@ -222,7 +222,7 @@ module.exports = function (server) {
 								}
 								if (allowed) {
 									g.setNode(friends[i].remoteEndPoint, {
-										'name': friends[i].remoteUsername
+										'name': friends[i].remoteName
 									});
 									g.setEdge(server.locals.config.publicHost + '/' + user.username, friends[i].remoteEndPoint);
 								}

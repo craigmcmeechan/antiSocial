@@ -1,0 +1,52 @@
+var request = require('request');
+var app = require('../server');
+var debug = require('debug')('resolve');
+
+module.exports = function resolveProfile(endpoint, done) {
+	debug('resolveProfile ' + endpoint);
+
+	var myCache = app.locals.myCache;
+	var cached = myCache.get('profile-' + endpoint);
+	if (cached) {
+		return done(null, cached);
+	}
+
+	var options = {
+		'url': endpoint + '.json',
+		'json': true
+	};
+
+	request.get(options, function (err, response, body) {
+		var payload = {};
+		if (err || response.statusCode !== 200) {
+			payload.status = 'could not load endpoint profile';
+			payload.status = 503;
+			if (response && response.statusCode) {
+				payload.status = response.statusCode;
+			}
+		}
+		else {
+			payload.status = response.statusCode;
+			payload.profile = body.profile;
+		}
+
+		if (!payload.profile) {
+			payload.profile = {
+				'endpoint': endpoint,
+				'name': 'unknown',
+				'photo': {
+					'url': app.locals.config.publicHost + '/images/slug.png'
+				},
+				'background': {
+					'url': app.locals.config.publicHost + '/images/fpo.jpg'
+				}
+			};
+		}
+		else {
+			payload.profile.photo.url = payload.profile.photo.url;
+			payload.profile.background.url = payload.profile.background.url;
+		}
+		myCache.set('profile-' + endpoint, payload, payload.status === 200 ? 1800 : 60);
+		done(null, payload);
+	});
+};

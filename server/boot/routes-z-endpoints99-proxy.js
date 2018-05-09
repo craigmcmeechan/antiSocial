@@ -7,6 +7,8 @@ var WError = require('verror').WError;
 var request = require('request');
 var debug = require('debug')('proxy');
 var utils = require('../lib/endpoint-utils');
+var async = require('async');
+var resolveProfile = require('../lib/resolveProfile');
 
 var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
 
@@ -133,27 +135,45 @@ module.exports = function (server) {
 				}
 
 				var friendMap = {};
-				if (currentUser && currentUser.friends()) {
-					for (var i = 0; i < currentUser.friends().length; i++) {
-						var f = currentUser.friends()[i];
-						friendMap[f.remoteEndPoint] = f;
+				var profilesToResolve = [];
+				if (template === 'friends') {
+					if (currentUser && currentUser.friends()) {
+						for (var i = 0; i < currentUser.friends().length; i++) {
+							var f = currentUser.friends()[i];
+							friendMap[f.remoteEndPoint] = f;
+						}
+					}
+
+					for (var i = 0; i < data.friends.nodes.length; i++) {
+						if (profilesToResolve.indexOf(data.friends.nodes[i].v) === -1) {
+							profilesToResolve.push(data.friends.nodes[i].v);
+						}
 					}
 				}
 
-				res.render('components/rendered-' + template, {
-					'globalSettings': ctx.get('globalSettings'),
-					'userSettings': ctx.get('userSettings'),
-					'data': data,
-					'friend': friend,
-					'user': currentUser,
-					'wall': true,
-					'isMe': isMe,
-					'myEndpoint': utils.getPOVEndpoint(currentUser),
-					'wantSummary': template === 'comment',
-					'isPermalink': isPermalink,
-					'friendMap': friendMap,
-					'cache': process.env.NODE_ENV === 'production' ? true : false,
-					'forShare': req.query.share
+				var profileMap = {};
+				async.map(profilesToResolve, function (ep, cb) {
+					resolveProfile(ep, function (err, profile) {
+						profileMap[ep] = profile;
+						cb(null);
+					});
+				}, function (err) {
+					res.render('components/rendered-' + template, {
+						'globalSettings': ctx.get('globalSettings'),
+						'userSettings': ctx.get('userSettings'),
+						'data': data,
+						'friend': friend,
+						'user': currentUser,
+						'wall': true,
+						'isMe': isMe,
+						'myEndpoint': utils.getPOVEndpoint(null, currentUser),
+						'wantSummary': template === 'comment',
+						'isPermalink': isPermalink,
+						'friendMap': friendMap,
+						'cache': process.env.NODE_ENV === 'production' ? true : false,
+						'forShare': req.query.share,
+						'profileMap': profileMap
+					});
 				});
 			}
 		});

@@ -8,9 +8,10 @@
 		this.isMine = this.element.data('is-mine');
 		this.postId = this.element.data('post-id');
 		this.postEndPoint = this.element.closest('.post').data('endpoint');
+		this.isOnMyWall = this.element.data('is-on-my-wall');
 
 		this.start = function () {
-			if (self.isMine) {
+			if (self.isMine || this.isOnMyWall) {
 				this.element.find('.delete-post').confirmation({
 					'container': 'body',
 					'title': null,

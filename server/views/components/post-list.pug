@@ -9,7 +9,7 @@
 			- var isMine = '';
 			if user
 				- isMine = post.source === config.publicHost + '/' + user.username ? 'true' : '';
-			
+				- isOnMyWall = post.about === config.publicHost + '/' + user.username ? 'true' : '';
 			.newsfeed-item
 				if post.commentSummary || post.reactionSummary
 					.news-summary
@@ -35,11 +35,14 @@
 									.media-body
 										if !forShare
 											.post-actions.pull-right
-												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
+												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine data-is-on-my-wall= isOnMyWall)
 													button.btn-xs(data-toggle="dropdown")
 														i.fa.fa-ellipsis-h
 													ul.dropdown-menu
-														if !isMine
+														if isOnMyWall
+															li
+																a.delete-post(href="#") Remove from Wall
+														else if !isMine
 															li
 																a.share-post(href="#") Share Post
 															li
