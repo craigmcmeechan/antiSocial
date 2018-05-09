@@ -200,7 +200,7 @@ app.use(function (req, res, next) {
   }
   var now = new Date();
 
-  // if the date the token expires > one week from now do nothing
+  // if the date the token expires (in seconds) > one week from now (in seconds) do nothing
   if ((req.accessToken.created.getTime() / 1000) + req.accessToken.ttl > (now.getTime() / 1000) + oneWeek) {
     return next();
   }
