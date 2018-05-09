@@ -128,6 +128,14 @@ var watchFeed = function watchFeed(server, friend) {
 
 			debugWebsockets('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
 
+			// if connecting to ourself behind a proxy don't use publicHost
+			if (process.env.BEHIND_PROXY) {
+				var rx = new RegExp('^' + server.locals.config.websockets);
+				if (endpoint.match(rx)) {
+					endpoint = endpoint.replace(server.locals.config.websockets, 'ws://localhost:' + server.locals.config.port);
+				}
+			}
+
 			var socket = require('socket.io-client')(endpoint, {});
 
 			var connection = {
