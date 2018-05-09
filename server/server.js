@@ -188,6 +188,32 @@ app.use(loopback.token({
   params: ['access_token']
 }));
 
+// rolling ttl on access token
+// if ttl is within one week add two weeks
+// getTime is in milliseconds. ttl is in seconds
+app.use(function (req, res, next) {
+  var oneDay = 60 * 60 * 24; // seconds
+  var oneWeek = oneDay * 7;
+  var twoWeeks = oneDay * 14;
+  if (!req.accessToken) {
+    return next();
+  }
+  var now = new Date();
+
+  // if the date the token expires > one week from now do nothing
+  if ((req.accessToken.created.getTime() / 1000) + req.accessToken.ttl > (now.getTime() / 1000) + oneWeek) {
+    return next();
+  }
+
+  // otherwise add two weeks
+  req.accessToken.ttl += twoWeeks;
+  res.cookie('access_token', req.accessToken.id, {
+    'signed': req.signedCookies ? true : false,
+    'maxAge': 1000 * req.accessToken.ttl
+  });
+  req.accessToken.save(next);
+});
+
 var myContext = require('./middleware/context-myContext')();
 app.use(myContext);
 

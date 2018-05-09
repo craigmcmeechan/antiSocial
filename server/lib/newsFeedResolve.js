@@ -135,6 +135,9 @@ module.exports = function newsFeedItemResolve(currentUser, myNewsFeedItem, done)
 			myNewsFeedItem.humanReadable += '</div>';
 		}
 
+		myNewsFeedItem.humanReadable = myNewsFeedItem.humanReadable.replace(/<a[^>]+>/g, '');
+		myNewsFeedItem.humanReadable = myNewsFeedItem.humanReadable.replace(/<\/a>/g, '');
+
 		done(null, myNewsFeedItem);
 	});
 
