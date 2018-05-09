@@ -24,20 +24,20 @@ block content
 								
 							if userSettings.feedSortOrder !== 'activity'
 								a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"activity"}' data-endpoint= '/user-settings') Sort By Activity
-								
-					#scope-post-list
-						for item,index in items
-							if item.httpStatus === 200 && (item.type === 'post' || item.type === 'interaction' || item.type === 'tag')
-								- var post = item.about
-								- post = post.replace(/\/(comment|photo)\/.*/,'')
-								.newsfeed-item
-									.news-summary!= item.feedSummary
-									!= item.html
-									//
-										if index === 0
-											.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post")
-										else
-											.post.loading.live-element.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post")
+					#is-feed
+						#scope-post-list
+							for item,index in items
+								if item.httpStatus === 200 && (item.type === 'post' || item.type === 'interaction' || item.type === 'tag')
+									- var post = item.about
+									- post = post.replace(/\/(comment|photo)\/.*/,'')
+									.newsfeed-item
+										.news-summary!= item.feedSummary
+										!= item.html
+										//
+											if index === 0
+												.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post")
+											else
+												.post.loading.live-element.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post")
 
 					.text-center
 						.loader(data-jsclass="loadMoreController")

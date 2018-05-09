@@ -21,7 +21,8 @@ block content
 					if user
 						#the-posting-form
 							include ../components/posting-form
-					include ../components/post-list
+					#is-profile(data-me= profile.endpoint)
+						include ../components/post-list
 					.text-center
 						.loader(data-jsclass="loadMoreController" data-highwater= data.highwater)
 				.col-sm-4
