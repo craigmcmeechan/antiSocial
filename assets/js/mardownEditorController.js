@@ -55,11 +55,12 @@
 						var selection = self.editor.exportSelection();
 						var deltaLength = 0;
 						for (var i = 0; i < urls.length; i++) {
-							var url = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
+							var original = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
+							var url = original.replace(/&amp;/g, '&');
 							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
 								var previewTag = '<p><br></p><div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + encodeURIComponent(url) + '" data-type="json" contentEditable=false></div><!--endog--><p><br></p>';
-								value = value.replace(url, previewTag);
-								deltaLength -= url.length;
+								value = value.replace(original, previewTag);
+								deltaLength -= original.length;
 							}
 						}
 						self.element.html(value);
