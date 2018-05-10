@@ -265,7 +265,7 @@ module.exports = function (server) {
           var endpoint = proxyEndPoint(post, ctx.get('currentUser'), true);
           var proxyHost = res.app.locals.config.publicHost;
 
-          if (process.env.BEHIND_PROXY) {
+          if (process.env.BEHIND_PROXY === "true") {
             var rx = new RegExp('^' + server.locals.config.publicHost);
             if (proxyHost.match(rx)) {
               proxyHost = proxyHost.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);

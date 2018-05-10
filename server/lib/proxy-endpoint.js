@@ -51,7 +51,7 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 		}
 	}
 
-	if (process.env.BEHIND_PROXY) {
+	if (process.env.BEHIND_PROXY === "true") {
 		var rx = new RegExp('^' + config.publicHost);
 		if (endpoint.match(rx)) {
 			endpoint = endpoint.replace(config.publicHost, 'http://localhost:' + config.port);

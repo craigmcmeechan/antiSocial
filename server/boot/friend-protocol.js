@@ -825,7 +825,7 @@ module.exports = function (server) {
 	server.use(router);
 
 	function fixIfBehindProxy(url) {
-		if (process.env.BEHIND_PROXY) {
+		if (process.env.BEHIND_PROXY === "true") {
 			var rx = new RegExp('^' + server.locals.config.publicHost);
 			if (url.match(rx)) {
 				url = url.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);

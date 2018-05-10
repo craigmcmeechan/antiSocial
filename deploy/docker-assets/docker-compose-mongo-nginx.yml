@@ -1,0 +1,51 @@
+version: '2'
+
+services:
+  "mongo":
+    image: mongo:latest
+    container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/data/logs
+    volumes:
+      - data_mongo:/data/db
+      - data_logs:/data/logs
+    ports:
+      - 27017:27017
+    networks:
+      - frontend
+
+  "nginx":
+      container_name: nginx
+      image: nginx
+      ports:
+        - "8080:8080"
+      networks:
+        - frontend
+      volumes:
+        - ./antisocial-nginx.conf.d:/etc/nginx/conf.d:ro
+
+  "webapp-antisocial":
+    image: myantisocialnet/community-server:latest
+    container_name: webapp-antisocial
+    volumes:
+      - data_uploads:/var/app/current/client/uploads
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend
+    env_file: ~/antisocial-docker-mongo.env
+
+networks:
+  frontend:
+
+volumes:
+  data_uploads:
+    external:
+      name: uploads
+  data_mongo:
+    external:
+      name: mongo-data
+  data_logs:
+    external:
+      name: mongo-logs

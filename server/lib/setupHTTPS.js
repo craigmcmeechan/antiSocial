@@ -6,6 +6,19 @@ var sslCert = null;
 module.exports = function setupSSL(app, finished) {
 	async.series([
 		function (cb) {
+			if (!process.env.SSL_KEY_PATH || !process.env.SSL_CERT_PATH) {
+				return cb();
+			}
+			var fs = require('fs');
+			sslKey = fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8');
+			sslCert = fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8');
+			cb();
+		},
+		function (cb) {
+			if (!process.env.S3_SSL_KEY_PATH || !process.env.S3_SSL_CERT_PATH) {
+				return cb();
+			}
+
 			// download the keys from s3
 			var AWS = require('aws-sdk');
 
