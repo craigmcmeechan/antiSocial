@@ -97,6 +97,7 @@
     "grunt-contrib-watch": "*",
     "grunt-mkdir": "*",
     "grunt-postcss": "*",
+    "jsdoc-route-plugin": "^0.1.0",
     "jshint": "^2.5.6",
     "superagent": "^3.8.2"
   },

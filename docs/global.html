@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Global</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Global</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="Get a list of comments to an individual photo"><span class="type-signature">(route) </span>Get a list of comments to an individual photo<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/comments(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a list of comments to an individual photo
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID, photo ID;  use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints13-post-photo-comments.js.html">routes-z-endpoints13-post-photo-comments.js</a>, <a href="routes-z-endpoints13-post-photo-comments.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get a list of reactions to a posts's comment"><span class="type-signature">(route) </span>Get a list of reactions to a posts's comment<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)\/reactions(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a list of reactions to a posts's comment
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID; comment ID; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints09-post-comment-reactions.js.html">routes-z-endpoints09-post-comment-reactions.js</a>, <a href="routes-z-endpoints09-post-comment-reactions.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get a list of reactions to a posts's comment"><span class="type-signature">(route) </span>Get a list of reactions to a posts's comment<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photos(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a list photos in a post
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints10-post-photos.js.html">routes-z-endpoints10-post-photos.js</a>, <a href="routes-z-endpoints10-post-photos.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get a list of reactions to an individual photo"><span class="type-signature">(route) </span>Get a list of reactions to an individual photo<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/reactions(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a list of reactions to an individual photo
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID, photo ID;  use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints12-post-photo-reactions.js.html">routes-z-endpoints12-post-photo-reactions.js</a>, <a href="routes-z-endpoints12-post-photo-reactions.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get a photo"><span class="type-signature">(route) </span>Get a photo<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/photo\/([a-f0-9-]+)(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a photo
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, photo ID;  use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints16-photo.js.html">routes-z-endpoints16-photo.js</a>, <a href="routes-z-endpoints16-photo.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get a reactio to an individual comments to an individual photo"><span class="type-signature">(route) </span>Get a reactio to an individual comments to an individual photo<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)\/reactions(\.json)?$/;</td>
+                            </tr>
+                            </table>
+                            Retrieve a reactio to an individual comments to an individual photo
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID, photo ID, comment ID;  use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints15-post-photo-comment-reactions.js.html">routes-z-endpoints15-post-photo-comment-reactions.js</a>, <a href="routes-z-endpoints15-post-photo-comment-reactions.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get an individual comments to an individual photo"><span class="type-signature">(route) </span>Get an individual comments to an individual photo<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve an individual comments to an individual photo
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID, photo ID, comment ID;  use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints14-post-photo-comment.js.html">routes-z-endpoints14-post-photo-comment.js</a>, <a href="routes-z-endpoints14-post-photo-comment.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get an individual photos in a post"><span class="type-signature">(route) </span>Get an individual photos in a post<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/photo\/([a-f0-9-]+)(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve an individual photos in a post
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID, photo ID;  use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints11-post-photo.js.html">routes-z-endpoints11-post-photo.js</a>, <a href="routes-z-endpoints11-post-photo.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get individual post"><span class="type-signature">(route) </span>Get individual post<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed</td>
+                            </tr>
+                            </table>
+                            Retrieve an individual post
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Query Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                <th>Default</th>
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">embed</td>
+            <td class="type">String</td>
+            
+            <td class="default">1</td>
+            <td class="description last">returns result wrapped in <embed> tag; source=facebook; share=1 when post has been shared</td>
+          </tr>
+          </table>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints05-post.js.html">routes-z-endpoints05-post.js</a>, <a href="routes-z-endpoints05-post.js.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get list of comments to a post"><span class="type-signature">(route) </span>Get list of comments to a post<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comments(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a list of comments
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints07-post-comments.js.html">routes-z-endpoints07-post-comments.js</a>, <a href="routes-z-endpoints07-post-comments.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get list of comments to a post"><span class="type-signature">(route) </span>Get list of comments to a post<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comment\/([a-f0-9-]+)(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve an individual comment from a post
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID; comment ID; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints08-post-comment.js.html">routes-z-endpoints08-post-comment.js</a>, <a href="routes-z-endpoints08-post-comment.js.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get list of friends"><span class="type-signature">(route) </span>Get list of friends<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)?(\?.*)?$/</td>
+                            </tr>
+                            </table>
+                            Get list of friends of user
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Query Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Endpoint</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">When in proxy mode, the endpoint being requested of the proxy.</td>
+          </tr>
+          </table>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints03-friends.js.html">routes-z-endpoints03-friends.js</a>, <a href="routes-z-endpoints03-friends.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get list of posts"><span class="type-signature">(route) </span>Get list of posts<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/posts(\.json)?(\?.*)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a list of posts
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Query Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Endpoint</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">When in proxy mode, the endpoint being requested of the proxy.</td>
+          </tr>
+          </table>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints04-posts.js.html">routes-z-endpoints04-posts.js</a>, <a href="routes-z-endpoints04-posts.js.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get list of reactions to a post"><span class="type-signature">(route) </span>Get list of reactions to a post<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/reactions(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve list of reactions to a post
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle, post ID; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints06-post-reactions.js.html">routes-z-endpoints06-post-reactions.js</a>, <a href="routes-z-endpoints06-post-reactions.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get user photos"><span class="type-signature">(route) </span>Get user photos<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)\/photos(\.json)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve user photos
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints02-photos.js.html">routes-z-endpoints02-photos.js</a>, <a href="routes-z-endpoints02-photos.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="Get user profile"><span class="type-signature">(route) </span>Get user profile<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <h5>Route:</h5>
+                            <table class="params">
+                            <thead><tr><th>Method</th><th class="last">Path</th></tr></thead>
+                            <tr>
+                            <td class="type">GET</td>
+                            <td class="name last">/^\/((?!proxy-)[a-zA-Z0-9-]+)(\.json)?(\?.*)?$/</td>
+                            </tr>
+                            </table>
+                            Retrieve a profile
+                          <h5>Authentication</h5>
+                          <p>Valid user credentials, optionally valid friend credentials if required</p>
+                            <h5>Query Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Endpoint</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">When in proxy mode, the endpoint being requested of the proxy</td>
+          </tr>
+          </table>
+                            <h5>Route Parameters:</h5>
+          <table class="params">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                
+                
+                <th class="last">Description</th>
+              </tr>
+            </thead>
+            <tr>
+            <td class="name">Handle</td>
+            <td class="type">String</td>
+            
+            
+            <td class="description last">User handle; use .json to retrieve in JSON format</td>
+          </tr>
+          </table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes-z-endpoints01-profile.js.html">routes-z-endpoints01-profile.js</a>, <a href="routes-z-endpoints01-profile.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html">Get a list of comments to an individual photo</a></li><li><a href="global.html">Get a list of reactions to a posts's comment</a></li><li><a href="global.html">Get a list of reactions to an individual photo</a></li><li><a href="global.html">Get a photo</a></li><li><a href="global.html">Get a reactio to an individual comments to an individual photo</a></li><li><a href="global.html">Get an individual comments to an individual photo</a></li><li><a href="global.html">Get an individual photos in a post</a></li><li><a href="global.html">Get individual post</a></li><li><a href="global.html">Get list of comments to a post</a></li><li><a href="global.html">Get list of friends</a></li><li><a href="global.html">Get list of posts</a></li><li><a href="global.html">Get list of reactions to a post</a></li><li><a href="global.html">Get user photos</a></li><li><a href="global.html">Get user profile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu May 10 2018 17:28:01 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
