@@ -26,28 +26,34 @@ block content
 					if !friends 
 						- friends = data.friends
 					.page-heading
-						h2 Mutual Friends
-					ul
-						- var count =0
-						each friend in friends.nodes
-							if friendMap[friend.v] && friend.v !== data.profile.endpoint
-								- count++
-								li
+						h3 Mutual
+					- var count =0
+					each friend in friends.nodes
+						if friendMap[friend.v] && friend.v !== myEndpoint
+							- count++
+							.media.friend-card
+								.media-left
+									if profileMap[friend.v]
+										img(src = profileMap[friend.v].profile.photo.url)
+								.media-body
 									a(href="/proxy-profile?endpoint=" + encodeURIComponent(friend.v))= friend.value.name
-						if !count
-							| none
+					if !count
+						| none
 							
 					.page-heading
-						h2 More Friends
-					ul
-						- var count =0
-						each friend in friends.nodes
-							if !friendMap[friend.v] && friend.v !== data.profile.endpoint
-								- count++
-								li
+						h3 Other Friends
+					- var count =0
+					each friend in friends.nodes
+						if !friendMap[friend.v] && friend.v !== myEndpoint
+							- count++
+							.media.friend-card
+								.media-left
+									if profileMap[friend.v]
+										img(src = profileMap[friend.v].profile.photo.url)
+								.media-body
 									a(href="/proxy-profile?endpoint=" + encodeURIComponent(friend.v))= friend.value.name
-						if !count
-							| none
+					if !count
+						| none
 				.col-sm-4
 					if user
 						#newsfeed-here

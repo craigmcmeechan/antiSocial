@@ -7,9 +7,11 @@
 
 		this.isMine = this.element.data('is-mine');
 		this.postId = this.element.data('post-id');
+		this.postEndPoint = this.element.closest('.post').data('endpoint');
+		this.isOnMyWall = this.element.data('is-on-my-wall');
 
 		this.start = function () {
-			if (self.isMine) {
+			if (self.isMine || this.isOnMyWall) {
 				this.element.find('.delete-post').confirmation({
 					'container': 'body',
 					'title': null,
@@ -44,11 +46,19 @@
 					});
 				});
 			}
+			this.element.on('click', '.share-post', function (e) {
+				e.stopPropagation();
+				e.preventDefault();
+				scrollToElement('#the-posting-form');
+				$('#the-posting-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
+				$('#the-posting-form').find('.posting-body').click().keyup().focus();
+			});
 		};
 
 		this.stop = function () {
 			if (self.isMine) {
 				this.element.off('click', '.edit-post');
+				this.element.off('click', '.share-post');
 				this.element.find('.delete-post').confirmation('destroy');
 			}
 		};

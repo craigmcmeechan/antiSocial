@@ -55,11 +55,12 @@
 						var selection = self.editor.exportSelection();
 						var deltaLength = 0;
 						for (var i = 0; i < urls.length; i++) {
-							var url = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
+							var original = urls[i].replace(/^<p>/, '').replace(/\s*<[/b]$/, '');
+							var url = original.replace(/&amp;/g, '&');
 							if (url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi)) {
 								var previewTag = '<p><br></p><div class="ogPreview in-editor" data-jsclass="OgTagPreview" data-src="/api/OgTags/scrape" data-url="' + encodeURIComponent(url) + '" data-type="json" contentEditable=false></div><!--endog--><p><br></p>';
-								value = value.replace(url, previewTag);
-								deltaLength -= url.length;
+								value = value.replace(original, previewTag);
+								deltaLength -= original.length;
 							}
 						}
 						self.element.html(value);
@@ -162,6 +163,12 @@
 				var url = decodeURIComponent(p1);
 				return '<a href="' + url + '"></a>';
 			});
+
+			// turndownService converts html escaped angle brackets which seems odd
+			// wrap any escaped markup in markdown code tag so form validator has a signal
+			// that there is pasted escaped markup
+			html = html.replace(/(&lt;.*?&gt;)/g, '`$1`');
+
 			var markdown = self.turndownService.turndown(html);
 			self.element.closest('form').find(self.target).val(markdown);
 		};

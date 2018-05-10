@@ -128,7 +128,7 @@ module.exports = function (server) {
 				debug('requestFriend ' + myEndPoint + '->' + friend.remoteEndPoint + '/friend-request', payload);
 
 				var options = {
-					'url': friend.remoteEndPoint + '/friend-request',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-request'),
 					'form': payload,
 					'json': true
 				};
@@ -168,7 +168,7 @@ module.exports = function (server) {
 				debug('exchangeToken ' + myEndPoint + '->' + friend.remoteEndPoint + '/friend-exchange %j', payload);
 
 				request.post({
-					'url': friend.remoteEndPoint + '/friend-exchange',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-exchange'),
 					'form': payload,
 					'json': true
 				}, function (err, response, body) {
@@ -422,7 +422,7 @@ module.exports = function (server) {
 				debug('/friend-request exchangeToken ' + myEndPoint + '->' + friend.remoteEndPoint + '/friend-exchange', payload);
 
 				request.post({
-					'url': friend.remoteEndPoint + '/friend-exchange',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-exchange'),
 					'form': payload,
 					'json': true
 				}, function (err, response, body) {
@@ -587,7 +587,7 @@ module.exports = function (server) {
 				var endpoint = url.parse(friend.remoteEndPoint);
 
 				var options = {
-					'url': friend.remoteEndPoint + '/friend-webhook/friend-request-accepted',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-webhook/friend-request-accepted'),
 					'form': payload,
 					'json': true
 				};
@@ -823,4 +823,15 @@ module.exports = function (server) {
 	});
 
 	server.use(router);
+
+	function fixIfBehindProxy(url) {
+		if (process.env.BEHIND_PROXY === "true") {
+			var rx = new RegExp('^' + server.locals.config.publicHost);
+			if (url.match(rx)) {
+				url = url.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+				debug('bypass proxy ' + url);
+			}
+		}
+		return url;
+	}
 };

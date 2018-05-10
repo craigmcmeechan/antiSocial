@@ -19,8 +19,10 @@ block content
 			.row
 				.col-sm-8.left-column
 					if user
-						include ../components/posting-form
-					include ../components/post-list
+						#the-posting-form
+							include ../components/posting-form
+					#is-profile(data-me= profile.endpoint)
+						include ../components/post-list
 					.text-center
 						.loader(data-jsclass="loadMoreController" data-highwater= data.highwater)
 				.col-sm-4

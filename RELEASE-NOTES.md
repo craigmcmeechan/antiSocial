@@ -1,4 +1,16 @@
-# 22-April-2018
+# 2-May-2018
+
+Quick Link share w/hat tip
+
+# 1-May-2018
+
+Cordova experimentation & scrolling issues
+
+Less lazy loading in feed (cordova issues & perceived speed)
+
+Frontend controlled boot bottleneck
+
+Stripe integration for subscriptions
 
 # 21-April-2018
 

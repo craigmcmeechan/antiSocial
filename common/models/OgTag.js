@@ -202,7 +202,8 @@ module.exports = function (OgTag) {
 					'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
 				},
 				'jar': request.jar(),
-				'onlyGetOpenGraphInfo': true
+				'onlyGetOpenGraphInfo': true,
+				'timeout': 15000
 			};
 
 			// call open-graph-scraper

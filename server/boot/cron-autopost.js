@@ -4,6 +4,9 @@ var debug = require('debug')('tasks');
 var doPostNotifications = require('../lib/doPostNotifications');
 
 module.exports = function autopost(server) {
+	if (process.env.NODE_ENV !== 'production') {
+		return;
+	}
 	debug('starting autopost daemon');
 	cron.schedule('*/1 * * * *', function () {
 		debug('autopost task running');

@@ -144,9 +144,10 @@
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);
 				didInjectContent(self.element);
-				if (!event.backfill || self.getHighwater() > event.data.id) {
+				if (self.getHighwater() < event.data.updatedOn) {
 					li.addClass('is-new');
 					++self.newItems;
+					self.saveHighwater(event.data.updatedOn);
 					self.updateBadge();
 				}
 				li.data('about', event.endpoint);
@@ -157,18 +158,21 @@
 						$('.show-feed-button').trigger('click');
 					};
 				});
-
-				self.saveHighwater(event.data.id);
 			}
 			if (!event.backfill) {
 				if (event.data.type === 'post' && event.type === 'create') {
-					var item = $('<div>');
-					var endpoint = event.data.about;
-					item.load(endpoint, function () {
-						var post = item.find('.newsfeed-item');
-						$('#scope-post-list').prepend(post);
-						didInjectContent($('#scope-post-list').find('.newsfeed-item')[0]);
-					});
+					var isFeed = $('#is-feed').length;
+					var isProfile = $('#is-profile').length;
+					var me = $('#is-profile').data('me');
+					if (isFeed || (isProfile && me === event.data.source)) {
+						var item = $('<div>');
+						var endpoint = event.data.about;
+						item.load(endpoint, function () {
+							var post = item.find('.newsfeed-item');
+							$('#scope-post-list').prepend(post);
+							didInjectContent($('#scope-post-list').find('.newsfeed-item')[0]);
+						});
+					}
 				}
 				else if (event.data.type === 'post' && event.type === 'update') {
 					if (event.data.deleted) {
@@ -194,15 +198,15 @@
 		};
 
 		this.getHighwater = function () {
-			return $.cookie('notification-highwater');
+			return $.cookie('notify-highwater') ? $.cookie('notify-highwater') : '';
 		};
 
 		this.saveHighwater = function (highwater) {
 			var options = {
 				path: '/',
-				expires: 30,
+				expires: 365,
 			};
-			$.cookie('notification-highwater', highwater, options);
+			$.cookie('notify-highwater', highwater, options);
 		};
 	}
 

@@ -13,6 +13,7 @@ var debugVerbose = require('debug')('user:verbose');
 var sh = require('shorthash');
 var request = require('request');
 var stripe = require('stripe')(process.env.STRIPE_SK);
+var _ = require('lodash');
 
 module.exports = function (MyUser) {
 	if (!process.env.ADMIN) {
@@ -509,7 +510,7 @@ module.exports = function (MyUser) {
 		var myContext = ctx.req.myContext;
 		var currentUser = myContext.get('currentUser');
 
-		if (!currentUser.stripeCustomerId) {
+		if (!_.get(currentUser, 'subscription.stripe.stripeCustomerId')) {
 			return cb(null, {
 				'status': 'no subscription'
 			});
@@ -517,12 +518,12 @@ module.exports = function (MyUser) {
 
 		async.waterfall([
 			function (cb) {
-				stripe.customers.retrieve(currentUser.stripeCustomerId, function (err, customer) {
+				stripe.customers.retrieve(currentUser.subscription.stripe.stripeCustomerId, function (err, customer) {
 					cb(err, customer);
 				});
 			},
 			function (customer, cb) {
-				stripe.invoices.retrieveUpcoming(currentUser.stripeCustomerId, function (err, upcoming) {
+				stripe.invoices.retrieveUpcoming(currentUser.subscription.stripe.stripeCustomerId, function (err, upcoming) {
 					if (err && err.code !== 'invoice_upcoming_none') {
 						cb(err);
 					}
@@ -531,7 +532,8 @@ module.exports = function (MyUser) {
 			},
 			function (customer, upcoming, cb) {
 				stripe.invoices.list({
-					customer: currentUser.stripeCustomerId,
+					customer: currentUser.subscription.stripe.stripeCustomerId,
+					subscription: currentUser.subscription.stripe.stripeSubscriptionId,
 					limit: 3
 				}, function (err, invoices) {
 					if (err) {
@@ -577,10 +579,15 @@ module.exports = function (MyUser) {
 		var myContext = ctx.req.myContext;
 		var currentUser = myContext.get('currentUser');
 
+		var trialPeriod = process.env.SUBSCRIPTION_TRIAL_PERIOD;
+		if (_.get(currentUser, 'subscription.stripe.stripeSubscriptionId') && body.new) {
+			trialPeriod = 0; // only get the trial once
+		}
+
 		async.waterfall([
 				function (cb) {
-					if (currentUser.stripeCustomerId) {
-						stripe.customers.retrieve(currentUser.stripeCustomerId, function (err, customer) {
+					if (_.get(currentUser, 'subscription.stripe.stripeCustomerId')) {
+						stripe.customers.retrieve(currentUser.subscription.stripe.stripeCustomerId, function (err, customer) {
 							cb(err, customer);
 						});
 					}
@@ -608,14 +615,15 @@ module.exports = function (MyUser) {
 					});
 				},
 				function (customer, cb) {
-					if (currentUser.stripeSubscriptionId && !body.new) {
-						stripe.subscriptions.retrieve(currentUser.stripeSubscriptionId, function (err, subscription) {
+					if (_.get(currentUser, 'subscription.stripe.stripeSubscriptionId') && !body.new) {
+						stripe.subscriptions.retrieve(currentUser.subscription.stripe.stripeSubscriptionId, function (err, subscription) {
 							cb(err, customer, subscription);
 						});
 					}
 					else {
 						stripe.customers.createSubscription(customer.id, {
-							'plan': 'monthly'
+							'plan': process.env.SUBSCRIPTION_STRIPE_PLAN_ID,
+							'trial_period_days': trialPeriod
 						}, function (err, subscription) {
 							cb(err, customer, subscription);
 						});
@@ -637,8 +645,14 @@ module.exports = function (MyUser) {
 				if (err) {
 					return cb(err);
 				}
+				if (!currentUser.subscription) {
+					currentUser.subscription = {};
+				}
+				currentUser.subscription.stripe = {
+					'stripeCustomerId': customer.id,
+					'stripeSubscriptionId': subscription.id
+				};
 				currentUser.stripeCustomerId = customer.id;
-				currentUser.stripeSubscriptionId = subscription.id;
 				currentUser.save();
 				cb(null, {
 					'status': 'ok'
@@ -681,8 +695,8 @@ module.exports = function (MyUser) {
 		var myContext = ctx.req.myContext;
 		var currentUser = myContext.get('currentUser');
 		stripe.customers.cancelSubscription(
-			currentUser.stripeCustomerId,
-			currentUser.stripeSubscriptionId, {
+			currentUser.subscription.stripe.stripeCustomerId,
+			currentUser.subscription.stripe.stripeSubscriptionId, {
 				at_period_end: true
 			},
 			function (err, confirmation) {

@@ -31,8 +31,9 @@ module.exports.mount = function websocketsMount(app) {
 		app.openFriendListeners = {};
 	}
 	require('socketio-auth')(app.io, {
+		'timeout': 60000,
 		'authenticate': function (socket, data, callback) {
-			var friendAccessToken = socket.handshake.query['friend-access-token'];
+			var friendAccessToken = data.friendAccessToken;
 			if (friendAccessToken) {
 				var query = {
 					'where': {
@@ -85,9 +86,9 @@ module.exports.mount = function websocketsMount(app) {
 		'postAuthenticate': function (socket, data) {
 			if (data.friend) {
 				socket.friend = data.friend;
+				socket.highwater = data.friendHighWater || 0;
 				socket.currentUser = socket.friend.user();
 				socket.connectionKey = socket.friend.remoteEndPoint + '<-' + socket.friend.user().username;
-				socket.highwater = socket.handshake.query['friend-high-water'] || 0;
 				app.openFriendListeners[socket.connectionKey] = socket;
 				if (data.subscriptions) {
 					for (var model in data.subscriptions) {
@@ -145,14 +146,14 @@ module.exports.mount = function websocketsMount(app) {
 						if (socket.friend) {
 							delete app.openFriendListeners[socket.connectionKey];
 							socket.friend.updateAttribute('online', false);
-							if (!process.env.KEEP_FEEDS_OPEN) {
+							if (process.env.CLOSE_IDLE_FEEDS) {
 								watchFeed.disConnect(app, socket.friend);
 							}
 						}
 						else {
 							delete app.openClientListeners[socket.connectionKey];
 							socket.currentUser.updateAttribute('online', false);
-							if (!process.env.KEEP_FEEDS_OPEN) {
+							if (process.env.CLOSE_IDLE_FEEDS) {
 								watchFeed.disconnectAll(app, socket.currentUser);
 							}
 						}

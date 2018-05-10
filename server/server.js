@@ -1,6 +1,5 @@
 var loopback = require('loopback');
 var boot = require('loopback-boot');
-var i18n = require('i18n');
 var bunyan = require('bunyan');
 var uuid = require('uuid');
 var NodeCache = require('node-cache');
@@ -21,6 +20,14 @@ if (process.env.XRAY) {
   app.middleware('routes:after', AWSXray.express.closeSegment());
 }
 
+var FPOImages = [
+  '/images/bg1.jpg', '/images/bg2.jpg', '/images/bg3.jpg', '/images/bg4.jpg'
+];
+
+function randomFPO() {
+  return FPOImages[Math.floor(Math.random() * FPOImages.length)];
+}
+
 app.enable('trust proxy');
 
 // use jade templating language
@@ -36,7 +43,7 @@ app.locals.moment = require('moment');
 app.locals._ = require('lodash');
 app.locals.config = require('./config-' + app.get('env'));
 app.locals.headshotFPO = app.locals.config.publicHost + '/images/slug.png';
-app.locals.FPO = app.locals.config.publicHost + '/images/fpo.jpg';
+app.locals.FPO = app.locals.config.publicHost + randomFPO();
 app.locals.nonce = uuid.v4();
 app.locals.myCache = new NodeCache();
 app.locals.appDir = __dirname;
@@ -126,40 +133,48 @@ app.locals.marked = renderMarkdown;
 app.locals.proxyEndPoint = proxyEndPoint;
 
 // localization config
-i18n.configure({
-  locales: ['en', 'es'],
-  cookie: 'locale',
-  defaultLocale: 'en',
-  directory: './locales',
-  fallbacks: {
-    'es': 'en'
-  },
-  autoReload: true,
-  updateFiles: false
-});
-app.use(i18n.init);
-app.set('i18n', i18n);
+if (process.env.i18n) {
+  var i18n = require('i18n');
+
+  i18n.configure({
+    locales: ['en', 'es'],
+    cookie: 'locale',
+    defaultLocale: 'en',
+    directory: './locales',
+    fallbacks: {
+      'es': 'en'
+    },
+    autoReload: true,
+    updateFiles: false
+  });
+  app.use(i18n.init);
+  app.set('i18n', i18n);
+}
 
 // setup component storage for s3
-var ds = loopback.createDataSource({
-  connector: require('loopback-component-storage'),
-  provider: 'amazon',
-  key: process.env.AWS_S3_KEY,
-  keyId: process.env.AWS_S3_KEY_ID,
-});
-var container = ds.createModel('container', {}, {
-  base: 'Model'
-});
-app.model(container, {
-  'dataSource': ds,
-  'public': true
-});
+if (!process.env.LOCAL_UPLOADS) {
+  var ds = loopback.createDataSource({
+    connector: require('loopback-component-storage'),
+    provider: 'amazon',
+    key: process.env.AWS_S3_KEY,
+    keyId: process.env.AWS_S3_KEY_ID,
+  });
+  var container = ds.createModel('container', {}, {
+    base: 'Model'
+  });
+  app.model(container, {
+    'dataSource': ds,
+    'public': true
+  });
+}
 
-var cors = require('cors');
-app.use(cors({
-  'origin': true,
-  'exposedHeaders': 'x-digitopia-hijax-flash-level,x-digitopia-hijax-flash-message,x-digitopia-hijax-location,x-digitopia-hijax-did-login,x-digitopia-hijax-did-logout,x-highwater'
-}));
+if (process.env.CORS) {
+  var cors = require('cors');
+  app.use(cors({
+    'origin': true,
+    'exposedHeaders': 'x-digitopia-hijax-flash-level,x-digitopia-hijax-flash-message,x-digitopia-hijax-location,x-digitopia-hijax-did-login,x-digitopia-hijax-did-logout,x-highwater'
+  }));
+}
 
 // use loopback.token middleware on all routes
 // setup gear for authentication using cookie (access_token)
@@ -173,18 +188,30 @@ app.use(loopback.token({
   params: ['access_token']
 }));
 
-// set really long timeout on change-stream routes to prevent
-// frequent closing of connections
+// rolling ttl on access token
+// if ttl is within one week add two weeks
+// getTime is in milliseconds. ttl is in seconds
+app.use(function (req, res, next) {
+  var oneDay = 60 * 60 * 24; // seconds
+  var oneWeek = oneDay * 7;
+  var twoWeeks = oneDay * 14;
+  if (!req.accessToken) {
+    return next();
+  }
+  var now = new Date();
 
-app.middleware('routes:before', function (req, res, next) {
-  if (req.path.indexOf('change-stream') !== -1) {
-    res.setTimeout(24 * 3600 * 1000);
-    res.set('X-Accel-Buffering', 'no');
+  // if the date the token expires (in seconds) > one week from now (in seconds) do nothing
+  if ((req.accessToken.created.getTime() / 1000) + req.accessToken.ttl > (now.getTime() / 1000) + oneWeek) {
     return next();
   }
-  else {
-    return next();
-  }
+
+  // otherwise add two weeks
+  req.accessToken.ttl += twoWeeks;
+  res.cookie('access_token', req.accessToken.id, {
+    'signed': req.signedCookies ? true : false,
+    'maxAge': 1000 * req.accessToken.ttl
+  });
+  req.accessToken.save(next);
 });
 
 var myContext = require('./middleware/context-myContext')();
@@ -210,7 +237,6 @@ options.streams = [{
   'stream': process.stdout
 }];
 
-var ravenClient;
 if (process.env.RAVEN_DSN) {
   app.raven = require('raven');
   app.raven.config(process.env.RAVEN_DSN, {
@@ -234,32 +260,33 @@ app.use(function (req, res, next) {
   next();
 });
 
-var csp = require('helmet-csp');
+if (process.env.CSP) {
+  var csp = require('helmet-csp');
 
-app.use(csp({
-  'directives': {
-    'defaultSrc': ['\'self\''],
-    'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets, 'checkout.stripe.com'],
-    'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', '\'unsafe-eval\'', function (req, res) {
-      return '\'nonce-' + app.locals.nonce + '\'';
-    }],
-    'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
-    'styleSrc': ['\'self\'', 'fonts.googleapis.com', '\'unsafe-inline\''],
-    'frameSrc': ['\'self\'', '*'],
-    'mediaSrc': ['\'self\'', '*'],
-    'imgSrc': ['\'self\'', 'data:', 'csi.gstatic.com', 's3.amazonaws.com', 'maps.googleapis.com', 'q.stripe.com'],
-    'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
-    'reportUri': '/csp-violation',
-    'objectSrc': ['\'none\''],
-    'upgradeInsecureRequests': false
-  },
-  'loose': false,
-  'reportOnly': false,
-  'setAllHeaders': false,
-  'disableAndroid': false,
-  'browserSniff': false
-}));
-
+  app.use(csp({
+    'directives': {
+      'defaultSrc': ['\'self\''],
+      'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets, 'checkout.stripe.com'],
+      'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', '\'unsafe-eval\'', function (req, res) {
+        return '\'nonce-' + app.locals.nonce + '\'';
+      }],
+      'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
+      'styleSrc': ['\'self\'', 'fonts.googleapis.com', 'checkout.stripe.com', '\'unsafe-inline\''],
+      'frameSrc': ['\'self\'', '*'],
+      'mediaSrc': ['\'self\'', '*'],
+      'imgSrc': ['\'self\'', 'data:', '*'],
+      'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
+      'reportUri': '/csp-violation',
+      'objectSrc': ['\'none\''],
+      'upgradeInsecureRequests': false
+    },
+    'loose': false,
+    'reportOnly': false,
+    'setAllHeaders': false,
+    'disableAndroid': false,
+    'browserSniff': false
+  }));
+}
 
 // attach settings to req
 var globalSettings = require('./middleware/context-globalSettings')();
@@ -270,17 +297,24 @@ var getCurrentUserApi = require('./middleware/context-currentUserApi')();
 app.use(getCurrentUserApi);
 
 // use basic-auth for development environment
-if (app.get('env') === 'development') {
+if (process.env.BASIC_AUTH) {
   var basicAuth = require('./middleware/basicAuth')();
   app.use(basicAuth);
 }
+
+var listener;
+
+app.stop = function () {
+  listener.close();
+  app.io.close();
+};
 
 app.start = function () {
   app.locals.logger.info('app staring');
 
   if (!process.env.HTTPS_LISTENER) {
     var http = require('http');
-    var listener = http.createServer(app).listen(app.locals.config.port, function (err) {
+    listener = http.createServer(app).listen(app.locals.config.port, function (err) {
       if (err) {
         app.locals.logger.error('http could not be started', err);
         return;
@@ -295,6 +329,7 @@ app.start = function () {
   else {
     var setupHTTPS = require('./lib/setupHTTPS');
     setupHTTPS(app, function (err, sslListener) {
+      listener = sslListener;
       if (err) {
         app.locals.logger.info('https could not start', err);
         return;

@@ -126,12 +126,16 @@ var watchFeed = function watchFeed(server, friend) {
 			var endpoint = remoteEndPoint.protocol === 'https:' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
 
-			endpoint += '?friend-access-token=' + friend.remoteAccessToken;
-			if (friend.highWater) {
-				endpoint += '&friend-high-water=' + friend.highWater;
-			}
-
 			debugWebsockets('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
+
+			// if connecting to ourself behind a proxy don't use publicHost
+			if (process.env.BEHIND_PROXY === "true") {
+				var rx = new RegExp('^' + server.locals.config.websockets);
+				if (endpoint.match(rx)) {
+					endpoint = endpoint.replace(server.locals.config.websockets, 'ws://localhost:' + server.locals.config.port);
+					debug('bypass proxy ' + endpoint);
+				}
+			}
 
 			var socket = require('socket.io-client')(endpoint, {});
 
@@ -145,6 +149,8 @@ var watchFeed = function watchFeed(server, friend) {
 			};
 			watchFeedConnections[key] = connection;
 			socket.emit('authentication', {
+				'friendAccessToken': friend.remoteAccessToken,
+				'friendHighWater': friend.highWater,
 				'subscriptions': {
 					'PushNewsFeedItem': ['after save']
 				}
@@ -234,6 +240,8 @@ function getListener(server, connection) {
 				'and': [{
 					'uuid': myNewsFeedItem.uuid
 				}, {
+					'type': myNewsFeedItem.type
+				}, {
 					'userId': currentUser.id
 				}]
 			}
@@ -277,17 +285,30 @@ function getListener(server, connection) {
 						// so if the post is deleted we should cleanup all the things we did to that post
 						// we cand find them all with a regex
 
+						var match = new RegExp('^' + myNewsFeedItem.about + '/');
+
+						if (myNewsFeedItem.type === 'post') {
+							match = new RegExp('^' + myNewsFeedItem.about);
+						}
+
 						async.series([
 							function updateNewsFeedItem(cb) {
-								server.models.NewsFeedItem.destroyAll({
-									'and': [{
-										'userId': currentUser.id
-									}, {
-										'about': {
-											'like': new RegExp('^' + myNewsFeedItem.about)
-										}
-									}]
-								}, function (err, data) {
+								var q = {
+									'where': {
+										'and': [{
+											'userId': currentUser.id
+										}, {
+											'about': {
+												'like': match
+											}
+										}]
+									}
+								};
+								server.models.NewsFeedItem.find(q, function (err, items) {
+									for (var i = 0; i < items.length; i++) {
+										items[i].deleted = true;
+										items[i].save();
+									}
 									cb(err);
 								});
 							},
@@ -296,7 +317,7 @@ function getListener(server, connection) {
 									'where': {
 										'and': [{
 											'about': {
-												'like': new RegExp('^' + myNewsFeedItem.about)
+												'like': match
 											}
 										}, {
 											'userId': currentUser.id

@@ -6,6 +6,9 @@
 		self.url = decodeURIComponent(this.element.data('url'));
 		self.debug = this.element.data('debug');
 
+		self.source = this.element.closest('.post').data('source');
+		self.hatTip = this.element.closest('.post').data('hat-tip');
+
 		this.start = function () {
 			if (self.debug) {
 				$(self.debug).empty().text('Loading...').show();
@@ -35,6 +38,7 @@
 					img = '';
 				}
 
+				caption.append('<div class="share-link"><i class="fa fa-share-square"></i></div>');
 				caption.append('<h3>' + title + '<i class="glyphicon glyphicon-chevron-right"></i></h3>');
 				if (description) {
 					caption.append('<h4>' + description + '</h4>');
@@ -80,24 +84,43 @@
 				});
 			}
 
+			self.element.on('click', '.share-link', function (e) {
+				// scroll to top of window, open posting form, put link in form
+				// add h/t of poster
+				e.stopPropagation();
+				e.preventDefault();
+
+				scrollToElement('#the-posting-form');
+				$('#the-posting-form').find('.posting-body').html('<p>' + self.url + '</p><p>h/t <a class="in-editor tag-user" href="tag-user-' + self.source + '"><span class="em-usertag"></span>' + self.hatTip + '</a><br></p>');
+				$('#the-posting-form').find('.posting-body').click().keyup().focus();
+			});
+
 			// open url on click
 			self.element.on('click', function (e) {
 				// if video inject player
 				if (self.data && self.data.ogData.data.ogVideo) {
-					var video = self.data.ogData.data.ogVideo;
-					var embed = '<video width="100%" height="auto" data-width="' + video.width + '" data-height="' + video.height + '" controls autoplay><source src="' + video.url + '" type="' + video.type + '"></video>';
-					self.element.empty().append(embed);
-					self.element.css('height', 'auto');
+					if (self.data.ogData.data.ogVideo.type = 'text/html') {
+						self.element.empty().append('<iframe width="100%" height="100%" src="' + self.data.ogData.data.ogVideo.url + '?autoplay=1" frameborder="0" allowfullscreen></iframe>')
+					}
+					else {
+						var video = self.data.ogData.data.ogVideo;
+						var embed = '<video width="100%" height="auto" data-width="' + video.width + '" data-height="' + video.height + '" controls autoplay><source src="' + video.url + '" type="' + video.type + '"></video>';
+						self.element.empty().append(embed);
+						self.element.css('height', 'auto');
+					}
 				}
 				else {
 					var ref = window.open(self.url, '_blank');
 				}
 			});
 
+
+
 			// do hover behavior by adding 'hovering' class to the element
 			self.element.on('mouseenter focus', function () {
 				self.element.addClass('hovering');
 			});
+
 			self.element.on('mouseleave', function () {
 				self.element.removeClass('hovering');
 			});

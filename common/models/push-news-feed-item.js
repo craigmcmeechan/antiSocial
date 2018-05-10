@@ -110,7 +110,7 @@ module.exports = function (PushNewsFeedItem) {
 				}
 
 				// let watcher know if user is online
-				if (!process.env.KEEP_FEEDS_OPEN) {
+				if (process.env.CLOSE_IDLE_FEEDS) {
 					socket.emit('data', {
 						'type': user.online ? 'online' : 'offline'
 					});

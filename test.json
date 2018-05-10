@@ -1,98 +1,51 @@
-[{
-	"uuid": "c5a3ddc3-7e3b-4f61-9600-0f8aa6f1ecb6",
-	"type": "react",
-	"source": "http://127.0.0.1:3000/usertwo",
-	"about": "http://127.0.0.1:3000/usertwo/post/d884a1c8-5797-429e-bf36-ea84a11c72b7",
-	"details": {
-		"reaction": "vomit"
-	},
-	"createdOn": "2018-03-09T18:25:22.274Z",
-	"updatedOn": "2018-03-09T18:25:22.274Z",
-	"id": 38,
-	"userId": 2,
-	"resolvedProfiles": {
-		"http://127.0.0.1:3000/usertwo": {
-			"status": 200,
-			"profile": {
-				"name": "user two",
-				"photo": {
-					"url": "/images/slug.png"
-				},
-				"background": {
-					"url": "/images/fpo.jpg"
-				},
-				"backgroundSmall": {
-					"url": "/images/fpo.jpg"
-				},
-				"endpoint": "http://127.0.0.1:3000/usertwo",
-				"publicHost": "http://127.0.0.1:3000"
-			}
-		},
-		"http://127.0.0.1:3000/usertwo/post/d884a1c8-5797-429e-bf36-ea84a11c72b7": {
-			"status": 200,
-			"profile": {
-				"name": "user two",
-				"photo": {
-					"url": "/images/slug.png"
-				},
-				"background": {
-					"url": "/images/fpo.jpg"
-				},
-				"backgroundSmall": {
-					"url": "/images/fpo.jpg"
-				},
-				"endpoint": "http://127.0.0.1:3000/usertwo",
-				"publicHost": "http://127.0.0.1:3000"
-			}
-		}
-	}
-}, {
-	"uuid": "9b64e586-0fcb-4617-a9f0-e7caa1de8bfe",
-	"type": "react",
+{
+	"uuid": "5e9b0703-47dd-49db-ac81-446df913080e",
+	"type": "comment",
 	"source": "http://127.0.0.1:3000/useronewithmanyspaces",
-	"about": "http://127.0.0.1:3000/usertwo/post/d884a1c8-5797-429e-bf36-ea84a11c72b7",
+	"about": "http://127.0.0.1:3000/usertwo/post/a836e781-40d7-47d1-8cfb-06268222598e",
 	"details": {
-		"reaction": "thumbsup"
+		"body": "I'm user 1",
+		"photo": ""
 	},
-	"createdOn": "2018-03-08T17:35:11.001Z",
-	"updatedOn": "2018-03-08T17:35:11.001Z",
-	"id": 14,
-	"userId": 2,
-	"friendId": 2,
+	"createdOn": "2018-05-02T17:59:26.632Z",
+	"updatedOn": "2018-05-02T17:59:26.632Z",
+	"description": "Hello world ",
+	"id": 50,
+	"userId": 1,
 	"resolvedProfiles": {
 		"http://127.0.0.1:3000/useronewithmanyspaces": {
 			"status": 200,
 			"profile": {
 				"name": "user one with many spaces",
 				"photo": {
-					"url": "/images/slug.png"
+					"url": "http://127.0.0.1:3000/images/slug.png"
 				},
 				"background": {
-					"url": "/images/fpo.jpg"
+					"url": "http://127.0.0.1:3000/images/fpo.jpg"
 				},
 				"backgroundSmall": {
-					"url": "/images/fpo.jpg"
+					"url": "http://127.0.0.1:3000/images/fpo.jpg"
 				},
 				"endpoint": "http://127.0.0.1:3000/useronewithmanyspaces",
 				"publicHost": "http://127.0.0.1:3000"
 			}
 		},
-		"http://127.0.0.1:3000/usertwo/post/d884a1c8-5797-429e-bf36-ea84a11c72b7": {
+		"http://127.0.0.1:3000/usertwo/post/a836e781-40d7-47d1-8cfb-06268222598e": {
 			"status": 200,
 			"profile": {
 				"name": "user two",
 				"photo": {
-					"url": "/images/slug.png"
+					"url": "http://127.0.0.1:3000/images/slug.png"
 				},
 				"background": {
-					"url": "/images/fpo.jpg"
+					"url": "http://127.0.0.1:3000/images/fpo.jpg"
 				},
 				"backgroundSmall": {
-					"url": "/images/fpo.jpg"
+					"url": "http://127.0.0.1:3000/images/fpo.jpg"
 				},
 				"endpoint": "http://127.0.0.1:3000/usertwo",
 				"publicHost": "http://127.0.0.1:3000"
 			}
 		}
 	}
-}]
+}

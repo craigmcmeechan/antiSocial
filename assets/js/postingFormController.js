@@ -15,6 +15,7 @@
 		this.singleUpload = this.element.data('single-upload');
 		this.modal = this.element.data('modal');
 		this.description = this.element.data('description');
+		this.share = null;
 
 		this.start = function () {
 			if (self.element.find('.upload-zone')) {
@@ -182,7 +183,8 @@
 					'about': self.about,
 					'photos': photos,
 					'photoId': photoId,
-					'description': self.description
+					'description': self.description,
+					'shareEndpoint': self.share
 				};
 
 				if (self.element.find('[name="autopost"]').val()) {
@@ -260,6 +262,17 @@
 			self.element.find('.posting-body').css('height', 'auto').empty();
 			self.element.find('[name="autopost"]').val('');
 			self.element.data('formValidator').initInput(self.element);
+		};
+
+		this.setShareMode = function (endpoint) {
+			self.share = endpoint;
+			$.get(endpoint + '&share=1', function (data) {
+				var dom = $(data);
+				var post = dom.find('.post');
+				post.find('.reactions-and-comments').remove();
+				self.element.find('.shared-post').html('<div id="scope-post-list">' + post[0].outerHTML + '</div>');
+				didInjectContent(self.element);
+			});
 		};
 	}
 

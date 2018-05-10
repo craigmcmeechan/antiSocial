@@ -69,6 +69,8 @@ module.exports = function (server) {
             var query = {
               'where': {
                 'and': [{
+                  'type': 'react'
+                }, {
                   'uuid': pushNewsFeedItem.uuid
                 }, {
                   'userId': currentUser.id

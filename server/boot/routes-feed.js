@@ -109,7 +109,7 @@ module.exports = function (server) {
             cb(e);
           }
 
-          async.map(items, resolveProfiles, function (err) {
+          async.mapSeries(items, resolveProfiles, function (err) {
 
             if (items && items.length) {
               session.feedHighwater = items[items.length - 1].createdOn;
@@ -263,15 +263,39 @@ module.exports = function (server) {
           var post = item.about;
           post = post.replace(/\/(comment|photo)\/.*/, '');
           var endpoint = proxyEndPoint(post, ctx.get('currentUser'), true);
+          var proxyHost = res.app.locals.config.publicHost;
+
+          if (process.env.BEHIND_PROXY === "true") {
+            var rx = new RegExp('^' + server.locals.config.publicHost);
+            if (proxyHost.match(rx)) {
+              proxyHost = proxyHost.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+              debug('bypass proxy ' + proxyHost);
+            }
+          }
+
           request.get({
-            'url': res.app.locals.config.publicHost + endpoint,
+            'url': proxyHost + endpoint,
             'headers': {
               'access_token': req.signedCookies.access_token
             }
           }, function (err, response, body) {
+            if (err) {
+              item.httpStatus = 500;
+              item.html = '<div class="post">Content unavailable. (' + err + ')</div>';
+              return doneResolve();
+            }
+
+            item.httpStatus = response.statusCode;
+
+            if (response.statusCode !== 200) {
+              item.html = '<div class="post">Content unavailable. (' + response.statusCode + ')</div>';
+              return doneResolve();
+            }
+
             var dom = new jsdom.JSDOM(body);
-            item.html = dom.window.document.querySelector('.post').outerHTML;
-            //console.log(err, endpoint, item.html);
+            var element = dom.window.document.querySelector('.post');
+            item.html = element ? element.outerHTML : '<div class="post">Content unavailable.</div>';
+
             doneResolve();
           })
         }, function (err) {

@@ -33,6 +33,14 @@
   };
 
   $.inviewport = function (element, settings) {
+
+    if (!$.rightofscreen(element, settings) && !$.leftofscreen(element, settings) && !$.belowthefold(element, settings) && !$.abovethetop(element, settings)) {
+      $(element).removeClass('not-in-viewport').addClass('in-viewport');
+    }
+    else {
+      $(element).removeClass('in-viewport').addClass('not-in-viewport');
+    }
+
     return !$.rightofscreen(element, settings) && !$.leftofscreen(element, settings) && !$.belowthefold(element, settings) && !$.abovethetop(element, settings);
   };
 

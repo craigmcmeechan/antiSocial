@@ -75,7 +75,8 @@ module.exports = function (server) {
 
 		res.render('pages/testbench-friends', {
 			'globalSettings': ctx.get('globalSettings'),
-			'currentUser': ctx.get('currentUser')
+			'currentUser': ctx.get('currentUser'),
+			'needVIS': true
 		});
 	});
 

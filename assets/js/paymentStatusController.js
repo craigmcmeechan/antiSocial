@@ -3,6 +3,11 @@
 		this.element = $(elem);
 		var self = this;
 
+		this.prompt = this.element.data('prompt');
+		this.terms = this.element.data('terms');
+		this.subscriptionRate = this.element.data('subscription-rate');
+		this.promotionalPeriod = this.element.data('promotional-period');
+
 		this.start = function () {
 			this.element.parent().on('click', '#update-cc', function (e) {
 				self.doStripe();
@@ -54,7 +59,7 @@
 			handler.open({
 				'name': 'MyAntiSocial.net',
 				'description': 'Monthly Subscription',
-				'amount': 150,
+				'amount': self.subscriptionRate * 100,
 				'allowRememberMe': false,
 				'image': '/images/logo.png'
 			});
@@ -71,7 +76,7 @@
 					body.append('<div class="alert alert-danger">We had a problem with your card, please update your card information.</div>');
 				}
 
-				var cancelled = false;
+				var cancelled = 0;
 
 				if (data.customer.subscriptions && data.customer.subscriptions.data.length) {
 					body.append('<div><strong>Billing Plan</strong></div>');
@@ -85,9 +90,9 @@
 						var ended = subscription.ended_at ? new moment(subscription.ended_at * 1000).format('MM/DD/YYYY') : '';
 						if (subscription.cancel_at_period_end) {
 							ended = period_end;
-							cancelled = true;
+							++cancelled;
 						}
-						var end = ended ? ' <strong class="text-danger">cancel on ' + ended + '</strong>' : '';
+						var end = ended ? ' <strong class="text-danger">will cancel on ' + ended + '</strong>' : '';
 
 						ul.append(
 							'<li>' +
@@ -97,11 +102,12 @@
 							end +
 							'</li>'
 						);
-
 					}
 					body.append(ul);
 
-					if (!cancelled && data.customer.default_source) {
+					var allCancelled = data.customer.subscriptions.data.length === cancelled;
+
+					if (!allCancelled && data.customer.default_source) {
 						for (var i = 0; i < data.customer.sources.data.length; i++) {
 							if (data.customer.sources.data[i].id == data.customer.default_source) {
 								var card = data.customer.sources.data[i];
@@ -113,6 +119,7 @@
 
 				}
 				else {
+					allCancelled = true;
 					body.append('<div><strong>No current billing plan</strong></div>');
 				}
 
@@ -184,19 +191,18 @@
 				}
 				this.element.append(table).show();
 
-				if (!cancelled) {
+				if (!allCancelled) {
 					this.element.append('<div><a id="cancel-subscription">Click Here</a> to stop recurring charges and cancel subscription at end of current billion period.</div>');
 				}
 				else {
-					this.element.append('<div>Your recurring charges are cancelled and your subscription ends at end of last billing period.</div>');
-					this.element.append('<button id="new-subscription" class="btn btn-default btn-xs">Start a New Subscription</div>');
-
+					this.element.append('<p>Your recurring charges are cancelled</p>');
+					this.element.append('<button id="new-subscription" class="btn btn-primary btn-xs">' + self.prompt + '</button>' + ' ' + self.terms);
 				}
 
 				didInjectContent(this.element);
 			}
 			else {
-				this.element.append('<button id="new-subscription" class="btn btn-default btn-xs">Start a New Subscription</div>').show();
+				this.element.append('<button id="new-subscription" class="btn btn-primary btn-xs">' + self.prompt + '</button>' + ' ' + self.terms).show();
 			}
 		};
 	}

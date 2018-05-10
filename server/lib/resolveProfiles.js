@@ -11,22 +11,22 @@ module.exports = function resolveProfiles(item, done) {
 	var endpoints = [];
 	var profiles = {};
 
-	if (item.source) {
+	if (item.source && endpoints.indexOf(item.source) === -1) {
 		endpoints.push(item.source);
 		profiles[item.source] = {};
 	}
 
-	if (item.remoteEndPoint) {
+	if (item.remoteEndPoint && endpoints.indexOf(item.remoteEndPoint) === -1) {
 		endpoints.push(item.remoteEndPoint);
 		profiles[item.remoteEndPoint] = {};
 	}
 
-	if (item.about) {
+	if (item.about && endpoints.indexOf(item.about) === -1) {
 		endpoints.push(item.about);
 		profiles[item.about] = {};
 	}
 
-	if (item.target) {
+	if (item.target && endpoints.indexOf(item.target) === -1) {
 		endpoints.push(item.target);
 		profiles[item.target] = {};
 	}
@@ -49,6 +49,15 @@ module.exports = function resolveProfiles(item, done) {
 			'url': whoAbout + '.json',
 			'json': true
 		};
+
+		// if connecting to ourself behind a proxy don't use publicHost
+		if (process.env.BEHIND_PROXY === "true") {
+			var rx = new RegExp('^' + app.locals.config.publicHost);
+			if (options.url.match(rx)) {
+				options.url = options.url.replace(app.locals.config.publicHost, 'http://localhost:' + app.locals.config.port);
+				debug('bypass proxy ' + options.url);
+			}
+		}
 
 		request.get(options, function (err, response, body) {
 			var payload = {};

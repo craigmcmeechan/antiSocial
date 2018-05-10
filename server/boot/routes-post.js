@@ -329,20 +329,6 @@ module.exports = function (server) {
       delete req.body.about;
     }
 
-    var fbIdentity;
-    var twIdentity;
-    if (currentUser.identities()) {
-      for (var i = 0; i < currentUser.identities().length; i++) {
-        var identity = currentUser.identities()[i];
-        if (identity.provider === 'facebook') {
-          fbIdentity = identity;
-        }
-        if (identity.provider === 'twitter') {
-          twIdentity = identity;
-        }
-      }
-    }
-
     async.waterfall([
       function (cb) { // create the post
         if (req.body.autopost) {

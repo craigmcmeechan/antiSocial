@@ -66,6 +66,9 @@
     },
     "description": {
       "type": "string"
+    },
+    "shareEndpoint": {
+      "type": "string"
     }
   },
   "validations": [],

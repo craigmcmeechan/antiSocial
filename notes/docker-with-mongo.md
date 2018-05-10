@@ -2,14 +2,13 @@
 
 ### configure the stack
 
-Copy [docker-compose-mongo.yml](https://github.com/antiSocialNet/antiSocial/blob/master/deploy/docker-assets/docker-compose-mongo.yml) to your home directory.
-
-Create an environment file: `~/antisocial-docker-mongo.env`
+Copy [docker-compose-mongo.yml](https://raw.githubusercontent.com/antiSocialNet/antiSocial/master/deploy/docker-assets/docker-compose-mongo.yml) to your home directory.
 
 Minimal configuration to run under http (port 80) w/mongodb and local storage of images
 
+Create an environment file: `~/antisocial-docker-mongo.env`
+
 ```
-KEEP_FEEDS_OPEN=true
 LOG_LEVEL=debug
 NODE_ENV=localdev
 PUBLIC_HOST=localhost
@@ -45,7 +44,7 @@ To see logs: `docker logs -f webapp-antisocial`
 0 */1 * * * mongodump --db antisocial --gzip --out /root/mongodumps/antisocial-`date +\%Y\%m\%d\%H\%M\%S` 2>&1
 ```
 
-### restore mongo dump
+### restore a mongo dump (danger)
 
 Create a new docker volume and run mongodb then perform restore:
 ```

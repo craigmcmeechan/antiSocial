@@ -22,20 +22,24 @@ if wantSummary
 					button.btn-xs(data-toggle="dropdown")
 						i.fa.fa-ellipsis-h
 					ul.dropdown-menu
-						if (isMine || postIsMine)
+						if isMine
 							li 
 								a.edit-comment(href="#") Edit Comment
 							li 
 								a.delete-comment(href="#") Delete Comment
-						li
-							a.hide-comment(href="#") Hide Comment
+						else if postIsMine
+							li 
+								a.delete-comment(href="#") Remove Comment
+						else
+							li
+								a.hide-comment(href="#") Hide Comment
 			
 			strong.pull-left
 				a(href= proxyEndPoint(comment.source,user))
 					span.profile-link
 						= name
 
-			!= marked(comment.details.body)
+			.markdown!= marked(comment.details.body)
 			
 			if comment.details.photo
 				.comment-photo.loading(data-jsclass="loadController" data-target=".comment-photo" data-endpoint= proxyEndPoint(comment.details.photo,user))

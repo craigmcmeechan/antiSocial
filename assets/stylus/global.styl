@@ -10,6 +10,20 @@ quick()
 body
 	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
 
+body.cordova
+	height: 100vh
+	width: 100vw
+
+.cordova
+	.scroll-viewport
+		-webkit-overflow-scrolling: touch
+		height: 100vh
+		width: 100vw
+		position: absolute
+		overflow: scroll
+		overflow-x: hidden
+		overflow-y: scroll
+
 a
 	&:focus
 		outline:none
@@ -25,6 +39,13 @@ a
 
 .container-fluid
 	max-width:1024px
+
+.notification-zone
+	margin-top:50px
+	padding:10px
+	background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,.8) 100%)
+	.alert
+		margin:0
 
 .content
 	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
@@ -270,7 +291,9 @@ img.avatar
 	.comment-photo
 		img
 			.not-digitopia-xsmall &,.not-digitopia-small &
-				max-height:50vh
+				max-height:40vh
+				max-width: 100%
+
 			.digitopia-xsmall &, .digitopia-small &
 				max-width: 100%
 				max-height: auto
@@ -283,7 +306,6 @@ img.avatar
 
 	.reaction-summary-icons
 		padding-right: 4px
-
 
 #scope-posting-form
 	.scope-posting-form
@@ -302,6 +324,13 @@ img.avatar
 	.form-control
 		box-shadow: none
 		-webkit-box-shadow: none
+	.shared-post
+		background-color:white
+		#scope-post-list
+			min-height:auto
+			padding: 15px
+			.post
+				box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 
 	.form-control:focus
 		box-shadow: none
@@ -422,6 +451,7 @@ img.avatar
 	h1,h2,h3,h4
 		margin-top:0px
 		margin-bottom:7px
+		clear: both
 	h1
 		font-size: 26px
 		line-height: 32px
@@ -437,6 +467,9 @@ img.avatar
 	blockquote
 		font-size:18px
 		border-color: #666
+		clear: both
+	div
+		clear: both
 	ul
 		li
 			p
@@ -477,6 +510,12 @@ img.avatar
 
 	.pending
 		border: thin dashed yellow
+
+	.shared-post
+		background-color:white
+		padding: 15px
+		.post
+			box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 
 	.post
 		background-color:white
@@ -732,6 +771,8 @@ img.avatar
 		font-size: 9px
 		top: -10px
 		right: -15px
+		background-color:red
+		color:white
 #news-feed
 	position:absolute
 	top:calc(100vh + 75px)
@@ -766,6 +807,13 @@ img.avatar
 		padding-right: 10px
 		font-weight:bold
 		background-color:#eee
+		.activity-count
+			position: absolute
+			font-size: 9px
+			top: 7px
+			left: 20px
+			background-color:red
+			color:white
 	.news-feed-footer
 		height:30px
 		line-height:30px
@@ -841,3 +889,5 @@ img.avatar
 		cursor:pointer
 		&:hover
 			background-color:#eee
+.position-relative
+	position:relative
