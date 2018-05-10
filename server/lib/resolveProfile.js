@@ -21,6 +21,7 @@ module.exports = function resolveProfile(endpoint, done) {
 		var rx = new RegExp('^' + app.locals.config.publicHost);
 		if (options.url.match(rx)) {
 			options.url = options.url.replace(app.locals.config.publicHost, 'http://localhost:' + app.locals.config.port);
+			debug('bypass proxy ' + options.url);
 		}
 	}
 

@@ -94,6 +94,7 @@ module.exports = function (server) {
 			var rx = new RegExp('^' + server.locals.config.publicHost);
 			if (options.url.match(rx)) {
 				options.url = options.url.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+				debug('bypass proxy ' + options.url);
 			}
 		}
 

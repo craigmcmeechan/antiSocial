@@ -2,6 +2,7 @@ var url = require('url');
 var checkProxyRE = /^\/([a-zA-Z0-9-]+)(\/[^/]+)?/;
 var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
+var config = require('../config-' + process.env.NODE_ENV);
 
 module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 	if (!endpoint) {
@@ -47,6 +48,14 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 		}
 		else {
 			debug('proxyEndPoint not logged in ' + endpoint);
+		}
+	}
+
+	if (process.env.BEHIND_PROXY) {
+		var rx = new RegExp('^' + config.publicHost);
+		if (endpoint.match(rx)) {
+			endpoint = endpoint.replace(config.publicHost, 'http://localhost:' + config.port);
+			debug('bypass proxy ' + endpoint);
 		}
 	}
 

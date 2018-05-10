@@ -50,6 +50,15 @@ module.exports = function resolveProfiles(item, done) {
 			'json': true
 		};
 
+		// if connecting to ourself behind a proxy don't use publicHost
+		if (process.env.BEHIND_PROXY) {
+			var rx = new RegExp('^' + app.locals.config.publicHost);
+			if (options.url.match(rx)) {
+				options.url = options.url.replace(app.locals.config.publicHost, 'http://localhost:' + app.locals.config.port);
+				debug('bypass proxy ' + options.url);
+			}
+		}
+
 		request.get(options, function (err, response, body) {
 			var payload = {};
 			if (err || response.statusCode !== 200) {

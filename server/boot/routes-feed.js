@@ -263,8 +263,18 @@ module.exports = function (server) {
           var post = item.about;
           post = post.replace(/\/(comment|photo)\/.*/, '');
           var endpoint = proxyEndPoint(post, ctx.get('currentUser'), true);
+          var proxyHost = res.app.locals.config.publicHost;
+
+          if (process.env.BEHIND_PROXY) {
+            var rx = new RegExp('^' + server.locals.config.publicHost);
+            if (proxyHost.match(rx)) {
+              proxyHost = proxyHost.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+              debug('bypass proxy ' + proxyHost);
+            }
+          }
+
           request.get({
-            'url': res.app.locals.config.publicHost + endpoint,
+            'url': proxyHost + endpoint,
             'headers': {
               'access_token': req.signedCookies.access_token
             }

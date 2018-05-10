@@ -133,6 +133,7 @@ var watchFeed = function watchFeed(server, friend) {
 				var rx = new RegExp('^' + server.locals.config.websockets);
 				if (endpoint.match(rx)) {
 					endpoint = endpoint.replace(server.locals.config.websockets, 'ws://localhost:' + server.locals.config.port);
+					debug('bypass proxy ' + endpoint);
 				}
 			}
 
