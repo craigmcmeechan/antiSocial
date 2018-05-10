@@ -16,13 +16,21 @@ module.exports = function (server) {
 	var router = server.loopback.Router();
 
 	/**
-	 * Retrieve a profile
+	 * Retrieve a user profile
 	 *
-	 * @name Get user profile
-	 * @route {GET} /^\/((?!proxy-)[a-zA-Z0-9-]+)(\.json)?(\?.*)?$/
-	 * @routeparam {String} Handle User handle; use .json to retrieve in JSON format
-	 * @queryparam {String} Endpoint When in proxy mode, the endpoint being requested of the proxy
-	 * @authentication Valid user credentials, optionally valid friend credentials if required
+	 * @name Get user profile as JSON object or as an HTML page including posts
+	 * @route {GET} /:username[.json]
+	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
+	 * @routeparam {String} .json Append .json suffix for JSON response otherwise HTML is returned
+	 * @queryparam {String} highwater Used in infinite scrolling. createdOn timestamp of last post seen. (HTML mode only)
+	 * @queryparam {String} tags Filter posts by post tags. eg. ?tags=["%23randompic"] (HTML mode only)
+	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
+	 * @header {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @header {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @header {Cookie} invite Requestor has an invite token from user
+	 * @returns {JSON Object} If .json requested return a user profile object
+	 * @returns {HTML} If .json not requested return user profile page (which includes several posts)
+	 * @returns {Date} header x-highwater
 	 */
 
 	router.get(profileRE, getCurrentUser(), checkNeedProxyRewrite('profile'), getFriendAccess(), function (req, res, next) {
