@@ -95,6 +95,7 @@
     "grunt-contrib-stylus": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*",
+    "grunt-jsdoc": "^2.2.1",
     "grunt-mkdir": "*",
     "grunt-postcss": "*",
     "jsdoc-route-plugin": "^0.1.0",
