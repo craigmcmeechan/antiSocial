@@ -521,16 +521,16 @@ function getListener(server, connection) {
 										});
 									},
 									function (profile, doneResolve) {
-										getEndpoint(options.post, currentUser, friend, function (err, data) {
+										utils.getEndpoint(options.post, currentUser, friend, function (err, data) {
 											doneResolve(err, data);
 										});
 									},
 									function (profile, post, doneResolve) {
-										getEndpoint(options.post, currentUser, friend, function (err, data) {
+										utils.getEndpoint(options.post, currentUser, friend, function (err, data) {
 											doneResolve(err, profile, post, data);
 										});
 									}
-								], function (err, profile, post, details) {
+								], function (err, profile, post) {
 									options.profile = profile;
 									options.post = post;
 									mailer(server, template, options, function (err) {
