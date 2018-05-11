@@ -35,7 +35,7 @@ module.exports = function (grunt) {
 		'assets/vendor/*.css',
 		'working/css/*.css',
 		'assets/css/*.css',
-		'assets/vendor/fa/*.css',
+		'assets/vendor/fa/*.css'
 	];
 
 	var copyCommand = [{
