@@ -12,12 +12,23 @@ module.exports = function (server) {
 	var router = server.loopback.Router();
 
 	/**
-	 * Retrieve a photo
+	 * Retrieve an individual photo for a user as HTML or JSON
+	 * The photo being requested could be of a user's on the server or a
+	 * friend of a user on the server. If the request is anonymous, only
+	 * public information is returned. If the request is for HTML the
+	 * response will include the user's photo either public or, if the
+	 * requestor is a friend, the photo based on the visibility allowed for the
+	 * requestor. Otherwise a 404 error is returned
 	 *
-	 * @name Get a photo
-	 * @route {GET} /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photo\/([a-f0-9-]+)(\.json)?$/
-	 * @routeparam {String} Handle User handle, photo ID;  use .json to retrieve in JSON format
-	 * @authentication Valid user credentials, optionally valid friend credentials if required
+	 * @name Get user's individual photo as JSON object or as an HTML page
+	 * @route {GET} /:username/photo/:photoId[.json]
+	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
+	 * @routeparam {String} :photoId Id of photo
+	 * @routeparam {String} .json Append the .json suffix for JSON response otherwise HTML is returned
+	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
+	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @returns {JSON|HTML} If .json is requested the photo JSON object, otherwise HTML
 	 */
 
 	router.get(photoRE, getCurrentUser(), checkNeedProxyRewrite('photo'), getFriendAccess(), function (req, res, next) {

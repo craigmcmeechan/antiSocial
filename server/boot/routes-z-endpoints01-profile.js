@@ -18,7 +18,7 @@ module.exports = function (server) {
 	/**
 	 * Retrieve a user profile as HTML or JSON
 	 * The profile being requested could be a user on the server or a
-	 * friend of a user on the server. If the request is anonymous only
+	 * friend of a user on the server. If the request is anonymous, only
 	 * public information is returned. If the request is for HTML the
 	 * response may include posts the user has made, either public or, if the
 	 * requestor is a friend, posts based on the visibility allowed for the
@@ -31,11 +31,9 @@ module.exports = function (server) {
 	 * @queryparam {String} highwater Used for pagination or infinite scrolling of user posts. highwater is the createdOn timestamp of last post seen. (HTML mode only)
 	 * @queryparam {String} tags Filter posts by tags. eg. ?tags=["%23randompic"] returns only posts hashtagged with #randompic (HTML mode only)
 	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
-	 * @header {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
-	 * @header {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
-	 * @returns {JSON Object} If .json is requested returns a user profile object
-	 * @returns {HTML} If .json not requested return user profile page (which includes several posts)
-	 * @returns {Date} header x-highwater
+	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @returns {JSON|HTML} If .json is requested returns JSON profile object, otherwise HTML
 	 */
 
 	router.get(profileRE, getCurrentUser(), checkNeedProxyRewrite('profile'), getFriendAccess(), function (req, res, next) {

@@ -15,13 +15,23 @@ module.exports = function (server) {
 	var router = server.loopback.Router();
 
 	/**
-	 * Retrieve an individual post
+	 * Retrieve an individual post for a user as HTML or JSON
+	 * The post being requested could be of a user's on the server or a
+	 * friend of a user on the server. If the request is anonymous, only
+	 * public information is returned. If the request is for HTML the
+	 * response will include the user's post either public or, if the
+	 * requestor is a friend, the post based on the visibility allowed for the
+	 * requestor. Otherwise a 404 error is returned
 	 *
-	 * @name Get individual post
-	 * @route {GET} /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?(\?source=facebook)?(\?share=1)?$/
-	 * @routeparam {String} Handle User handle, post ID; use .json to retrieve in JSON format
-	 * @queryparam {String} embed=1 returns result wrapped in <embed> tag; source=facebook; share=1 when post has been shared
-	 * @authentication Valid user credentials, optionally valid friend credentials if required
+	 * @name Get user's individual post as JSON object or as an HTML page
+	 * @route {GET} /:username/post/:postId[.json]
+	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
+	 * @routeparam {String} :postId Id of post
+	 * @routeparam {String} .json Append the .json suffix for JSON response otherwise HTML is returned
+	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
+	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @returns {JSON|HTML} If .json is requested the post JSON object, otherwise HTML
 	 */
 
 	router.get(postRE, getCurrentUser(), checkNeedProxyRewrite('post'), getFriendAccess(), function (req, res, next) {

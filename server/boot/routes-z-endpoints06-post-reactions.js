@@ -14,12 +14,23 @@ module.exports = function (server) {
 	var router = server.loopback.Router();
 
 	/**
-	 * Retrieve list of reactions to a post
+	 * Retrieve the reactions (likes, etc) to a user's post as HTML or JSON
+	 * The reactions being requested could be of a user's post on the server or a
+	 * friend of a user on the server. If the request is anonymous, only
+	 * public information is returned. If the request is for HTML the
+	 * response may include the user's post's reactions either public or, if the
+	 * requestor is a friend, reactions based on the visibility allowed for the
+	 * requestor.
 	 *
-	 * @name Get list of reactions to a post
-	 * @route {GET} /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/reactions(\.json)?$/
-	 * @routeparam {String} Handle User handle, post ID; use .json to retrieve in JSON format
-	 * @authentication Valid user credentials, optionally valid friend credentials if required
+	 * @name Get reactions to a user's posts as JSON object or as an HTML page
+	 * @route {GET} /:username/post/:postId/reactions[.json]
+	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
+	 * @routeparam {String} :postId Id of wanted post
+	 * @routeparam {String} .json Append the .json suffix for JSON response otherwise HTML is returned
+	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
+	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @returns {JSON|HTML} If .json is requested returns an array of reaction objects, otherwise HTML
 	 */
 
 	router.get(postReactionsRE, getCurrentUser(), checkNeedProxyRewrite('reactions'), getFriendAccess(), function (req, res, next) {
