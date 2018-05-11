@@ -3,6 +3,9 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
 var watchFeed = require('../lib/watchFeedWebsockets');
+var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
+var resolveProfiles = require('../lib/resolveProfiles');
+
 var clientWebsockets = require('../lib/websockets');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
@@ -142,6 +145,29 @@ module.exports = function (server) {
 			});
 		});
 
+	});
+
+	router.get('/testbench-byuser', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+		var ctx = req.myContext;
+		var currentUser = ctx.get('currentUser');
+		var myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
+
+		var query = {
+			'where': {
+				'userId': currentUser.id
+			},
+			'order': 'createdOn DESC',
+			'limit': 60
+		};
+		server.models.NewsFeedItem.find(query, function (err, items) {
+			async.mapSeries(items, resolveProfiles, function (err) {
+				items = optimizeNewsFeedItems(items, myEndpoint, currentUser, true);
+				res.render('pages/testbench-byuser', {
+					'currentUser': currentUser,
+					'items': items
+				});
+			});
+		});
 	});
 
 	router.get('/testbench-notifications', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
