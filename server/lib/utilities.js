@@ -2,7 +2,6 @@ var proxyEndPoint = require('./proxy-endpoint');
 var encryption = require('./encryption');
 var request = require('request');
 var async = require('async');
-var server = require('../server');
 
 var defaultSettings = {
 	'friendListVisibility': 'all', // all, mutual, none
@@ -42,8 +41,7 @@ module.exports.whatAbout = function (endpoint, user) {
 	return (endpoint);
 };
 
-module.exports.getUserSettings = function (user, cb) {
-
+module.exports.getUserSettings = function (server, user, cb) {
 	server.models.Settings.findOne({
 		'where': {
 			'group': user.username
@@ -53,7 +51,7 @@ module.exports.getUserSettings = function (user, cb) {
 	});
 };
 
-module.exports.friendEndPoint = function (endpoint, currentUser, friend, done) {
+module.exports.friendEndPoint = function (server, endpoint, currentUser, friend, done) {
 
 	var myEndPoint = server.locals.config.publicHost.PUBLIC_HOST + '/' + currentUser.username;
 	var isMine = false;

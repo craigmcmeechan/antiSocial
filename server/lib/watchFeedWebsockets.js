@@ -50,7 +50,6 @@ var VError = require('verror').VError;
 var encryption = require('./encryption');
 var utils = require('./utilities');
 var mailer = require('./mail');
-var resolveProfile = require('./resolveProfile');
 var debug = require('debug')('feeds');
 var debugWebsockets = require('debug')('websockets');
 
@@ -475,7 +474,7 @@ function getListener(server, connection) {
 								});
 							},
 							function getUserSettings(cb) {
-								utils.getUserSettings(currentUser, function (err, settings) {
+								utils.getUserSettings(server, currentUser, function (err, settings) {
 									cb(err, settings);
 								});
 							},
@@ -514,19 +513,21 @@ function getListener(server, connection) {
 									return cb();
 								}
 
+								var resolveProfile = require('./resolveProfile');
+
 								async.waterfall([
 									function (doneResolve) {
-										resolveProfile(message.data.source, function (err, profile) {
+										resolveProfile(server, message.data.source, function (err, profile) {
 											doneResolve(err, profile);
 										});
 									},
 									function (profile, doneResolve) {
-										utils.getEndpoint(options.post, currentUser, friend, function (err, data) {
+										utils.friendEndPoint(server, options.post, currentUser, friend, function (err, data) {
 											doneResolve(err, data);
 										});
 									},
 									function (profile, post, doneResolve) {
-										utils.getEndpoint(options.post, currentUser, friend, function (err, data) {
+										utils.friendEndPoint(server, options.post, currentUser, friend, function (err, data) {
 											doneResolve(err, profile, post, data);
 										});
 									}
