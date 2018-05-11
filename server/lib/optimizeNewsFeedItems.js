@@ -1,5 +1,6 @@
 var url = require('url');
-var proxyEndPoint = require('../../server/lib/proxy-endpoint');
+var proxyEndPoint = require('./proxy-endpoint');
+var utils = require('./utilities');
 
 module.exports = function optimizeNewsFeedItems(items, myEndpoint, user) {
 
@@ -36,7 +37,7 @@ module.exports = function optimizeNewsFeedItems(items, myEndpoint, user) {
 			if (groupItem.type === 'comment' || groupItem.type === 'react') {
 				if (!hash[groupItem.source]) {
 					hash[groupItem.source] = true;
-					var mention = '<a href="' + proxyEndPoint(groupItem.source, user) + '">' + fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
+					var mention = '<a href="' + proxyEndPoint(groupItem.source, user) + '">' + utils.fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
 					mentions.push(mention);
 				}
 			}
@@ -61,10 +62,3 @@ module.exports = function optimizeNewsFeedItems(items, myEndpoint, user) {
 
 	return newsFeedItems;
 };
-
-function fixNameYou(endpoint, myEndpoint, name) {
-	if (endpoint === myEndpoint) {
-		return 'you';
-	}
-	return name;
-}
