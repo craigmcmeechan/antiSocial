@@ -1,0 +1,30 @@
+head
+	style.
+		.news-feed-items {
+			font-size: 14px;
+			overflow: hidden;
+		}
+		.news-feed-items .news-feed-item {
+			min-height:50px;
+			border-bottom:thin dashed #eee;
+			padding-right: 10px;
+			margin-left:50px;
+		}
+		.news-feed-items .news-feed-item img {
+			height:39px;
+			border-radius:25px;
+			margin-top:5px;
+			margin-bottom:5px;
+			margin-left:-40px;
+			vertical-align:middle;
+		}
+		.news-feed-items .news-feed-item div {
+			padding-left:10px;
+			display:inline-block;
+			vertical-align:middle;
+		}
+body
+	.wrapper(style="border: thin solid #333;border-radius:7px;margin:30px;")
+		.header(style="background-color:#333;text-align:center")
+			img(src= config.publicHost + "/images/logo.svg" style="margin:0 auto;width:75;padding:14px;")
+		.content(style="padding:14px;")

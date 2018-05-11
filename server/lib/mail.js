@@ -47,11 +47,13 @@ module.exports = function (server, template, options, cb) {
 		transporter = nodemailer.createTransport({
 			host: process.env.OUTBOUND_MAIL_SMTP_HOST,
 			port: process.env.OUTBOUND_MAIL_SMTP_PORT || 25,
-			secure: false,
+			secure: process.env.OUTBOUND_MAIL_SMTP_SSL === 'true' ? true : false,
 			auth: {
 				user: process.env.OUTBOUND_MAIL_SMTP_USER,
 				pass: process.env.OUTBOUND_MAIL_SMTP_PASSWORD
-			}
+			},
+			'logger': true,
+			'debug': true
 		});
 	}
 	else {

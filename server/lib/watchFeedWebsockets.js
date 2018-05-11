@@ -48,7 +48,9 @@ var url = require('url');
 var async = require('async');
 var VError = require('verror').VError;
 var encryption = require('./encryption');
-
+var utils = require('./utilities');
+var mailer = require('./mail');
+var resolveProfile = require('./resolveProfile');
 var debug = require('debug')('feeds');
 var debugWebsockets = require('debug')('websockets');
 
@@ -387,7 +389,7 @@ function getListener(server, connection) {
 						return;
 					}
 
-					async.series([
+					async.waterfall([
 							function createNewFeedItem(cb) {
 
 								delete myNewsFeedItem.id;
@@ -470,6 +472,70 @@ function getListener(server, connection) {
 										return cb(err);
 									}
 									cb();
+								});
+							},
+							function getUserSettings(cb) {
+								utils.getUserSettings(currentUser, function (err, settings) {
+									cb(err, settings);
+								});
+							},
+							function doEmailNotifications(settings, cb) {
+								var wantNotification = false;
+								var template = '';
+								var options = {
+									'to': currentUser.email,
+									'from': process.env.OUTBOUND_MAIL_SENDER,
+									'config': server.locals.config,
+									'item': message.data
+								};
+
+								if (message.data.type === 'post' && settings.notifications_posts) {
+									wantNotification = true;
+									template = 'notify-post';
+									options.subject = 'post notification';
+									options.post = utils.whatAbout(message.data.about, currentUser);
+								}
+								else if (message.data.type === 'comment' && settings.notifications_comments) {
+									wantNotification = true;
+									template = 'notify-comment';
+									options.subject = 'comment notification';
+									options.post = utils.whatAbout(message.data.about, currentUser);
+									options.details = message.data.about + '/comment/' + message.data.uuid;
+								}
+								else if (message.data.type === 'react' && settings.notifications_reactions) {
+									wantNotification = true;
+									template = 'notify-react';
+									options.subject = 'reaction notification';
+									options.post = utils.whatAbout(message.data.about, currentUser);
+									options.details = message.data.about + '/reactions';
+								}
+
+								if (!wantNotification) {
+									return cb();
+								}
+
+								async.waterfall([
+									function (doneResolve) {
+										resolveProfile(message.data.source, function (err, profile) {
+											doneResolve(err, profile);
+										});
+									},
+									function (profile, doneResolve) {
+										getEndpoint(options.post, currentUser, friend, function (err, data) {
+											doneResolve(err, data);
+										});
+									},
+									function (profile, post, doneResolve) {
+										getEndpoint(options.post, currentUser, friend, function (err, data) {
+											doneResolve(err, profile, post, data);
+										});
+									}
+								], function (err, profile, post, details) {
+									options.profile = profile;
+									options.post = post;
+									mailer(server, template, options, function (err) {
+										cb();
+									});
 								});
 							}
 						],

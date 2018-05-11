@@ -3,6 +3,8 @@ var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
 var watchFeed = require('../lib/watchFeedWebsockets');
+var utils = require('../lib/utilities');
+
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
 var resolveProfiles = require('../lib/resolveProfiles');
 
@@ -13,6 +15,14 @@ var async = require('async');
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
+
+	router.get('/bla', getCurrentUser(), function (req, res, next) {
+		var ctx = req.myContext;
+		var currentUser = ctx.get('currentUser');
+		utils.getUserSettings(currentUser, function (err, settings) {
+			res.send(settings);
+		});
+	});
 
 	router.get('/invalidate-cache', function (req, res, next) {
 		server.locals.myCache.flushAll();
@@ -91,12 +101,13 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
-
+	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+		var ctx = req.myContext;
+		var currentUser = ctx.get('currentUser');
 		var mailer = require('../lib/mail');
 		var options = {
-			'to': 'mrhodes@myantisocial.net',
-			'from': 'noreply@myantisocial.net',
+			'to': currentUser.email,
+			'from': process.env.OUTBOUND_MAIL_SENDER,
 			'subject': 'Testing email transport',
 			'config': server.locals.config
 		};

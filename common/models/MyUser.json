@@ -79,6 +79,9 @@
     },
     "stripeCustomerId": {
       "type": "string"
+    },
+    "selfAccessToken": {
+      "type": "string"
     }
   },
   "validations": [],
