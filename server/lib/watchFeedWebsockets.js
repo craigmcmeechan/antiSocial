@@ -488,26 +488,30 @@ function getListener(server, connection) {
 									'item': message.data
 								};
 
+								console.log('settings:', settings);
+
 								if (message.data.type === 'post' && settings.notifications_posts) {
 									wantNotification = true;
-									template = 'notify-post';
+									template = 'emails/notify-post';
 									options.subject = 'post notification';
-									options.post = utils.whatAbout(message.data.about, currentUser);
+									options.post = utils.whatAbout(message.data.about, currentUser, true);
 								}
 								else if (message.data.type === 'comment' && settings.notifications_comments) {
 									wantNotification = true;
-									template = 'notify-comment';
+									template = 'emails/notify-comment';
 									options.subject = 'comment notification';
-									options.post = utils.whatAbout(message.data.about, currentUser);
+									options.post = utils.whatAbout(message.data.about, currentUser, true);
 									options.details = message.data.about + '/comment/' + message.data.uuid;
 								}
 								else if (message.data.type === 'react' && settings.notifications_reactions) {
 									wantNotification = true;
-									template = 'notify-react';
+									template = 'emails/notify-react';
 									options.subject = 'reaction notification';
-									options.post = utils.whatAbout(message.data.about, currentUser);
+									options.post = utils.whatAbout(message.data.about, currentUser, true);
 									options.details = message.data.about + '/reactions';
 								}
+
+								//console.log(wantNotification, options);
 
 								if (!wantNotification) {
 									return cb();
@@ -523,18 +527,15 @@ function getListener(server, connection) {
 									},
 									function (profile, doneResolve) {
 										utils.friendEndPoint(server, options.post, currentUser, friend, function (err, data) {
-											doneResolve(err, data);
-										});
-									},
-									function (profile, post, doneResolve) {
-										utils.friendEndPoint(server, options.post, currentUser, friend, function (err, data) {
-											doneResolve(err, profile, post, data);
+											doneResolve(err, profile, data);
 										});
 									}
 								], function (err, profile, post) {
 									options.profile = profile;
 									options.post = post;
-									mailer(server, template, options, function (err) {
+									console.log(template, options);
+									mailer(server, template, options, function (err, info) {
+										debug('mail status %j %j', err, info);
 										cb();
 									});
 								});

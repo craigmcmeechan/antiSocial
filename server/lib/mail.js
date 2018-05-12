@@ -69,11 +69,12 @@ module.exports = function (server, template, options, cb) {
 		}
 		options.html = html;
 		transporter.sendMail(options, function (err, info) {
+			debug('email result %j %j', err, info);
 			if (err) {
 				var e = new VError(err, 'could not send email');
 				return cb(e);
 			}
-			cb();
+			cb(null, info);
 		});
 	});
 };

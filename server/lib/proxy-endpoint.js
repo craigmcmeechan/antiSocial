@@ -29,22 +29,25 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 				}
 				return unproxied;
 			}
-			for (var i = 0; i < currentUser.friends().length; i++) {
-				var friend = currentUser.friends()[i];
-				if (friend.remoteEndPoint === userEndpoint) {
-					var unproxied = parsed.pathname;
 
-					// use uniqued username for local request url form
-					unproxied = unproxied.replace(/^\/[a-zA-Z0-9-]+/, '/' + friend.uniqueRemoteUsername);
+			if (currentUser.friends && currentUser.friends()) {
+				for (var i = 0; i < currentUser.friends().length; i++) {
+					var friend = currentUser.friends()[i];
+					if (friend.remoteEndPoint === userEndpoint) {
+						var unproxied = parsed.pathname;
 
-					debug('proxyEndPoint friend found ' + unproxied);
-					if (embed) {
-						unproxied += '?embed=1';
+						// use uniqued username for local request url form
+						unproxied = unproxied.replace(/^\/[a-zA-Z0-9-]+/, '/' + friend.uniqueRemoteUsername);
+
+						debug('proxyEndPoint friend found ' + unproxied);
+						if (embed) {
+							unproxied += '?embed=1';
+						}
+						return unproxied;
 					}
-					return unproxied;
 				}
+				debug('proxyEndPoint friend not found ' + endpoint);
 			}
-			debug('proxyEndPoint friend not found ' + endpoint);
 		}
 		else {
 			debug('proxyEndPoint not logged in ' + endpoint);

@@ -122,7 +122,7 @@ module.exports = function (MyUser) {
 		uploadable(MyUser, 'MyUser', versions);
 	});
 
-	MyUser.getSelfToken = function (done) {
+	MyUser.prototype.getSelfToken = function (done) {
 		var self = this;
 
 		async.waterfall([
@@ -147,7 +147,7 @@ module.exports = function (MyUser) {
 						var e = new VError(err, 'create access token');
 						return cb(e);
 					}
-					self.selfAccessToken.id;
+					self.selfAccessToken = accessToken.id;
 					self.save();
 					cb(null, accessToken.id);
 				});
