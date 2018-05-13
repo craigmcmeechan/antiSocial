@@ -4,9 +4,12 @@ var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
 var config = require('../config-' + process.env.NODE_ENV);
 
-module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
+module.exports = function proxyEndPoint(endpoint, currentUser, options) {
 	if (!endpoint) {
 		return;
+	}
+	if (!options) {
+		options = {};
 	}
 
 	var parsed = url.parse(endpoint);
@@ -15,39 +18,54 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 
 	var matches = path.match(checkProxyRE);
 
-	if (matches && matches.length > 1) {
+	if (!options.forceProxy) {
+		if (matches && matches.length > 1) {
 
-		var friendUsername = matches[1];
-		var userEndpoint = parsed.protocol + '//' + parsed.host + '/' + friendUsername;
+			var friendUsername = matches[1];
+			var userEndpoint = parsed.protocol + '//' + parsed.host + '/' + friendUsername;
 
-		if (currentUser) {
-			if (currentUser.username === friendUsername) {
-				var unproxied = parsed.pathname;
-				debug('proxyEndPoint me ' + unproxied);
-				if (embed) {
-					unproxied += '?embed=1';
-				}
-				return unproxied;
-			}
-			for (var i = 0; i < currentUser.friends().length; i++) {
-				var friend = currentUser.friends()[i];
-				if (friend.remoteEndPoint === userEndpoint) {
+			if (currentUser) {
+				if (currentUser.username === friendUsername) {
 					var unproxied = parsed.pathname;
-
-					// use uniqued username for local request url form
-					unproxied = unproxied.replace(/^\/[a-zA-Z0-9-]+/, '/' + friend.uniqueRemoteUsername);
-
-					debug('proxyEndPoint friend found ' + unproxied);
-					if (embed) {
+					if (options.json) {
+						unproxied += '.json';
+					}
+					if (options.embed) {
 						unproxied += '?embed=1';
 					}
+
+					debug('proxyEndPoint me ' + unproxied);
+
 					return unproxied;
 				}
+
+				if (currentUser.friends && currentUser.friends()) {
+					for (var i = 0; i < currentUser.friends().length; i++) {
+						var friend = currentUser.friends()[i];
+						if (friend.remoteEndPoint === userEndpoint) {
+							var unproxied = parsed.pathname;
+
+							// use uniqued username for local request url form
+							unproxied = unproxied.replace(/^\/[a-zA-Z0-9-]+/, '/' + friend.uniqueRemoteUsername);
+
+							if (options.json) {
+								unproxied += '.json';
+							}
+							if (options.embed) {
+								unproxied += '?embed=1';
+							}
+
+							debug('proxyEndPoint friend found ' + unproxied);
+
+							return unproxied;
+						}
+					}
+					debug('proxyEndPoint friend not found ' + endpoint);
+				}
 			}
-			debug('proxyEndPoint friend not found ' + endpoint);
-		}
-		else {
-			debug('proxyEndPoint not logged in ' + endpoint);
+			else {
+				debug('proxyEndPoint not logged in ' + endpoint);
+			}
 		}
 	}
 
@@ -59,15 +77,30 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 		}
 	}
 
-	var proxied = getProxyForm(endpoint, matches);
+	var proxied = getProxyForm(endpoint, matches, options);
 	debug('proxyEndPoint default to proxy form: ' + proxied);
-	if (embed) {
-		proxied += '&embed=1';
+	var query = getParams(options);
+	if (query) {
+		proxied += '&' + query;
 	}
 	return proxied;
 };
 
-function getProxyForm(endpoint, matches) {
+function getParams(options) {
+	var params = [];
+	if (options.embed) {
+		params.push('embed=1');
+	}
+	if (options.json) {
+		params.push('format=json');
+	}
+	return params.join('&');
+}
+
+function getProxyForm(endpoint, matches, options) {
 	var view = matches.length > 2 && matches[2] ? matches[2].substr(1) : 'profile';
+	if (options.view) {
+		view = options.view;
+	}
 	return '/proxy-' + view + '?endpoint=' + encodeURIComponent(endpoint);
 }

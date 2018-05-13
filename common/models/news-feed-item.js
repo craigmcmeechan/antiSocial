@@ -9,6 +9,8 @@ var async = require('async');
 var url = require('url');
 var server = require('../../server/server');
 var RemoteRouting = require('loopback-remote-routing');
+var optimizeNewsFeedItems = require('../../server/lib/optimizeNewsFeedItems');
+var utils = require('../../server/lib/utilities');
 
 module.exports = function (NewsFeedItem) {
 
@@ -39,7 +41,7 @@ module.exports = function (NewsFeedItem) {
 
 				async.mapSeries(items, resolveProfiles, function (err) {
 
-					items = resolveSummary(items, myEndpoint, user);
+					items = optimizeNewsFeedItems(items, myEndpoint, user);
 
 					for (var i = items.length - 1; i >= 0; i--) {
 						newsFeedItemResolve(user, items[i], function (err, data) {
@@ -50,7 +52,7 @@ module.exports = function (NewsFeedItem) {
 								'data': data,
 								'backfill': true,
 								'isMe': data.source === myEndpoint,
-								'endpoint': whatAbout(data.about, user)
+								'endpoint': utils.whatAbout(data.about, user)
 							};
 
 							debugVerbose('backfilling NewsFeedItem %j', data);
@@ -107,7 +109,7 @@ module.exports = function (NewsFeedItem) {
 			}
 
 			resolveProfiles(data, function (err) {
-				var items = resolveSummary([data], myEndpoint, user);
+				var items = optimizeNewsFeedItems([data], myEndpoint, user);
 				data = items[0];
 				newsFeedItemResolve(user, data, function (err, data) {
 					var change = {
@@ -116,7 +118,7 @@ module.exports = function (NewsFeedItem) {
 						'eventType': eventType,
 						'data': data,
 						'isMe': data.source === myEndpoint,
-						'endpoint': whatAbout(data.about, user)
+						'endpoint': utils.whatAbout(data.about, user)
 					};
 					try {
 						socket.emit('data', change);
@@ -130,87 +132,4 @@ module.exports = function (NewsFeedItem) {
 			next();
 		};
 	};
-
-	function fixNameYou(endpoint, myEndpoint, name) {
-		if (endpoint === myEndpoint) {
-			return 'you';
-		}
-		return name;
-	}
-
-	function resolveSummary(items, myEndpoint, user) {
-
-		var map = {};
-		var grouped = {};
-
-		// group news feed items by 'about' and 'type'
-		for (var i = 0; i < items.length; i++) {
-			var about = items[i].about;
-			about = about.replace(/\/comment.*$/, '');
-			var key = about + ':' + items[i].type;
-			if (!map[key]) {
-				map[key] = 0;
-				grouped[key] = [];
-			}
-			++map[key];
-			grouped[key].push(items[i]);
-		}
-
-		var newsFeedItems = []
-
-		for (var groupAbout in grouped) {
-			var group = grouped[groupAbout];
-
-			var about = group[0].about;
-			var endpoint = url.parse(group[0].about).pathname;
-
-			var hash = {};
-			var mentions = [];
-			var theItem = group[0];
-
-			for (var j = 0; j < group.length; j++) {
-				var groupItem = group[j];
-				if (groupItem.type === 'comment' || groupItem.type === 'react') {
-					if (!hash[groupItem.source]) {
-						hash[groupItem.source] = true;
-						var mention = '<a href="' + proxyEndPoint(groupItem.source, user) + '">' + fixNameYou(groupItem.source, myEndpoint, groupItem.resolvedProfiles[groupItem.source].profile.name) + '</a>';
-						mentions.push(mention);
-					}
-				}
-			}
-
-			if (mentions.length) {
-				var summary = mentions.slice(0, 3).join(', ');
-
-				if (mentions.length > 2) {
-					var remainder = mentions.length - 2;
-					summary += ' and ' + remainder + ' other';
-					if (mentions.length > 2) {
-						summary += 's';
-					}
-				}
-
-				theItem.summary = summary;
-				/*
-				if (theItem.type === 'comment') {
-					theItem.summary += ' commented';
-				}
-				if (theItem.type === 'react') {
-					theItem.summary += ' reacted';
-				}
-				*/
-			}
-
-			newsFeedItems.push(theItem);
-		}
-
-		return newsFeedItems;
-	}
-
-	function whatAbout(endpoint, user) {
-		endpoint = endpoint.replace(/\/photo\/.*/, '');
-		endpoint = endpoint.replace(/\/comment\/.*/, '');
-		endpoint = proxyEndPoint(endpoint, user);
-		return (endpoint);
-	}
 };

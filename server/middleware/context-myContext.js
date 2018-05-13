@@ -1,8 +1,6 @@
-var server = require('../server');
-
 module.exports = function () {
 
-	function ReqContext() {
+	function ReqContext(server) {
 		this.data = {};
 
 		this.get = function (key) {
@@ -31,7 +29,7 @@ module.exports = function () {
 		res.once('finish', function () {
 			req.myContext.cleanup();
 		});
-		req.myContext = new ReqContext();
+		req.myContext = new ReqContext(req.app);
 		req.myContext.set('originalUrl', req.originalUrl);
 		req.myContext.set('ip', req.ip);
 		req.getCurrentContext = function () {

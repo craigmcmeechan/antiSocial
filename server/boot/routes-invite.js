@@ -54,7 +54,7 @@ module.exports = function (server) {
 
 				var options = {
 					'to': invitation.email,
-					'from': 'mrhodes@myantisocial.net',
+					'from': process.env.OUTBOUND_MAIL_SENDER,
 					'subject': 'Friend request from ' + invitation.user().name,
 					'user': invitation.user().name,
 					'email': invitation.user().email,

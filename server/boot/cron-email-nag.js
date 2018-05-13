@@ -113,7 +113,7 @@ module.exports = function nag(server, done, username) {
 
 			var options = {
 				'to': user.email,
-				'from': 'notifications@myantisocial.net',
+				'from': process.env.OUTBOUND_MAIL_SENDER,
 				'subject': 'While you\'ve been away...',
 				'user': user,
 				'config': server.locals.config,

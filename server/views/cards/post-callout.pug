@@ -1,0 +1,50 @@
+if testbench
+	link(rel='stylesheet' href="/dist/css/DigitopiaSocial.css")
+
+-var posterProfile = post? post.resolvedProfiles[post.source].profile : null
+-var commenterProfile = profile
+
+.post-callout-scope
+	.post-callout-wrapper
+		.post-callout
+			.source
+				.name= posterProfile.name
+
+				if _.get(posterProfile,'photo.url')
+					.poster-avatar
+						img(src= posterProfile.photo.url)
+			
+			.body= post.description
+			
+			if post.sortedPhotos.length
+				-var image = _.get(post,'sortedPhotos[0].uploads[0].imageSet.thumb')
+				if !image
+					- image = _.get(post,'sortedPhotos[0].uploads[0].imageSet.original')
+				.photo
+					img.img-responsive(src= image.url width= image.width height= image.height)
+					
+			else if ogMap && Object.keys(ogMap).length
+				-var link = ogMap[Object.keys(ogMap)[0]]
+				-var title = _.get(link,'ogData.data.ogTitle')
+				-var description = _.get(link,'ogData.data.ogDescription')
+				-var image = _.get(link,'uploads[0].imageSet.thumb')
+				if !image
+					- image = _.get(link,'uploads[0].imageSet.original')
+				.link
+					img.img-responsive(src= image.url width= image.width height= image.height)
+					.title= title
+		if type !== 'post'
+			.reaction-callout
+				.triangle-border.left
+					.commenter-avatar
+						if _.get(commenterProfile,'photo.url')
+							.poster-avatar
+								img(src= commenterProfile.photo.url)
+					if type === 'comment'
+						.comment-body
+							.markdown
+								span.comment-source!= commenterProfile.name + '&nbsp;'
+								!= marked(comment.details.body)
+					if type === 'react'
+						span.comment-source!= commenterProfile.name + '&nbsp;'
+						!= reactionDetails

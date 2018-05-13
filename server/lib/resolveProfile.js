@@ -1,8 +1,7 @@
 var request = require('request');
-var app = require('../server');
 var debug = require('debug')('resolve');
 
-module.exports = function resolveProfile(endpoint, done) {
+module.exports = function resolveProfile(app, endpoint, done) {
 	debug('resolveProfile ' + endpoint);
 
 	var myCache = app.locals.myCache;

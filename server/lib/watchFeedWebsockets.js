@@ -48,7 +48,8 @@ var url = require('url');
 var async = require('async');
 var VError = require('verror').VError;
 var encryption = require('./encryption');
-
+var utils = require('./utilities');
+var mailer = require('./mail');
 var debug = require('debug')('feeds');
 var debugWebsockets = require('debug')('websockets');
 
@@ -387,7 +388,7 @@ function getListener(server, connection) {
 						return;
 					}
 
-					async.series([
+					async.waterfall([
 							function createNewFeedItem(cb) {
 
 								delete myNewsFeedItem.id;
@@ -470,6 +471,112 @@ function getListener(server, connection) {
 										return cb(err);
 									}
 									cb();
+								});
+							},
+							function getUserSettings(cb) {
+								utils.getUserSettings(server, currentUser, function (err, settings) {
+									cb(err, settings);
+								});
+							},
+							function doEmailNotifications(settings, cb) {
+								var wantNotification = false;
+								var template = '';
+								var options = {
+									'to': currentUser.email,
+									'from': process.env.OUTBOUND_MAIL_SENDER,
+									'config': server.locals.config,
+									'item': message.data
+								};
+
+								if (message.data.type === 'post' && settings.notifications_posts) {
+									wantNotification = true;
+									template = 'emails/notify-post-activity';
+									options.subject = 'posted';
+									options.endpoint = message.data.about;
+								}
+								else if (message.data.type === 'comment' && settings.notifications_comments) {
+									wantNotification = true;
+									template = 'emails/notify-post-activity';
+									options.subject = 'commented';
+									options.endpoint = message.data.about + '/comment/' + message.data.uuid;
+								}
+								else if (message.data.type === 'react' && settings.notifications_reactions) {
+									wantNotification = true;
+									template = 'emails/notify-post-activity';
+									options.subject = 'reacted';
+									options.endpoint = message.data.about;
+									var reactions = {
+										'thumbs-up': '👍🏼',
+										'thumbs-down': '👎',
+										'love': '❤️',
+										'laugh': '😆',
+										'smirk': '😏',
+										'wow': '😮',
+										'cry': '😢',
+										'mad': '😡',
+										'vomit': '🤮'
+									};
+									options.reactionDetails = reactions[message.data.details.reaction];
+								}
+
+								//console.log(wantNotification, options);
+
+								if (!wantNotification) {
+									return cb();
+								}
+
+								var resolveProfile = require('./resolveProfile');
+
+								async.waterfall([
+									function (doneResolve) {
+										resolveProfile(server, message.data.source, function (err, profile) {
+											doneResolve(err, profile);
+										});
+									},
+									function (profile, doneResolve) {
+										if (message.data.type !== 'comment') {
+											return doneResolve(err, profile, null);
+										}
+										utils.getEndPoint(server, options.endpoint, currentUser, friend, {
+											'json': 1
+										}, function (err, data) {
+											doneResolve(err, profile, data);
+										});
+									},
+									function (profile, details, doneResolve) {
+										var endpoint = options.endpoint;
+										if (message.data.type === 'comment') {
+											endpoint = details.comment.about
+										}
+										utils.getEndPoint(server, endpoint, currentUser, null, {
+											'json': true,
+											'postonly': true
+										}, function (err, data) {
+											if (err) {
+												return doneResolve(err);
+											}
+											doneResolve(null, profile, details, data);
+										});
+									}
+								], function (err, profile, details, post) {
+									options.profile = profile ? profile.profile : null;
+									options.comment = details ? details.comment : null;
+									options.post = post ? post.post : null;
+									options.ogMap = post ? post.ogMap : null;
+									options.config = server.locals.config;
+									options._ = require('lodash');
+									options.marked = server.locals.marked;
+									options.type = message.data.type;
+									options.subject = options.profile.name + ' ' + options.subject + ' ';
+									if (message.data.type !== 'post') {
+										options.subject += 'on the post ';
+									}
+									options.subject += '"' + options.post.description + '"';
+
+									mailer(server, template, options, function (err, info) {
+										debug('mail status %j %j', err, info);
+										cb();
+									});
 								});
 							}
 						],

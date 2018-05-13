@@ -80,6 +80,47 @@ block content
 									option(value="all" selected) All friends
 								else
 									option(value="all") All friends
+					h2 Email Notifications
+					.form-group
+						.checkbox
+							label
+								if userSettings.notifications_digest
+									input(type="checkbox" name="notifications_digest" checked)
+								else
+									input(type="checkbox" name="notifications_digest")
+								| Daily Activity Recap
+					.form-group
+						.checkbox
+							label
+								if userSettings.notifications_friend_request
+									input(type="checkbox" name="notifications_friend_request" checked)
+								else
+									input(type="checkbox" name="notifications_friend_request")
+								| Friend Request
+					.form-group
+						.checkbox
+							label
+								if userSettings.notifications_posts
+									input(type="checkbox" name="notifications_posts" checked)
+								else
+									input(type="checkbox" name="notifications_posts")
+								| Friend Posts
+					.form-group
+						.checkbox
+							label
+								if userSettings.notifications_reactions
+									input(type="checkbox" name="notifications_reactions" checked)
+								else
+									input(type="checkbox" name="notifications_reactions")
+								| Reactions to my Posts
+					.form-group
+						.checkbox
+							label
+								if userSettings.notifications_comments
+									input(type="checkbox" name="notifications_comments" checked)
+								else
+									input(type="checkbox" name="notifications_comments")
+								| Comments on my Posts
 									
 				- var fb,tw
 				if user.identities()
