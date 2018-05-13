@@ -3,6 +3,7 @@ var request = require('request');
 var async = require('async');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
+var url = require('url');
 
 var defaultSettings = {
 	'friendListVisibility': 'all', // all, mutual, none
@@ -56,7 +57,9 @@ module.exports.getUserSettings = function (server, user, cb) {
 
 module.exports.getEndPoint = function (server, endpoint, currentUser, friend, options, done) {
 
-	endpoint = proxyEndPoint(endpoint, currentUser, options);
+	var parsed = url.parse(endpoint);
+	var path = parsed.pathname;
+
 	var proxyHost = server.locals.config.publicHost;
 
 	if (process.env.BEHIND_PROXY === 'true') {
@@ -66,6 +69,17 @@ module.exports.getEndPoint = function (server, endpoint, currentUser, friend, op
 		}
 	}
 
+	endpoint = proxyHost + path;
+
+	var params = [];
+	if (options.embed) {
+		params.push('embed=1');
+	}
+	if (options.json) {
+		params.push('format=json');
+	}
+	endpoint += '?' + params.join('&');
+
 	async.waterfall([
 		function (cb) { // need to get self access token
 			currentUser.getSelfToken(function (err, token) {
@@ -74,13 +88,11 @@ module.exports.getEndPoint = function (server, endpoint, currentUser, friend, op
 		},
 		function (token, cb) { // make the request
 			var requestOptions = {
-				'url': proxyHost + endpoint,
+				'url': endpoint,
 				'headers': {
 					'access_token': token
 				}
 			};
-
-			console.log('getEndPoint', requestOptions);
 
 			request.get(requestOptions, function (err, response, body) {
 				if (err) {

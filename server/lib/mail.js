@@ -64,6 +64,7 @@ module.exports = function (server, template, options, cb) {
 
 	pug.renderFile(server.get('views') + '/' + template + '.pug', options, function (err, html) {
 		if (err) {
+			debug('render errors %j', e);
 			var e = new VError(err, 'could not render email');
 			return cb(e);
 		}

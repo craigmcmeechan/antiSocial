@@ -20,15 +20,39 @@ module.exports = function (server) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
 		var endpoint = req.query.endpoint;
-		utils.getEndPoint(server, endpoint, currentUser, null, {
-			'json': true
-		}, function (err, data) {
-			if (err) {
-				return next(err);
+		async.waterfall([
+			function getComment(cb) {
+				utils.getEndPoint(server, endpoint, currentUser, null, {
+					'json': true
+				}, function (err, data) {
+					if (err) {
+						return next(err);
+					}
+					cb(null, data);
+				});
+			},
+			function getPost(comment, cb) {
+				utils.getEndPoint(server, comment.comment.about, currentUser, null, {
+					'json': true,
+					'postonly': true
+				}, function (err, data) {
+					if (err) {
+						return next(err);
+					}
+					cb(null, comment, data);
+				});
 			}
-			res.render('cards/post-callout.pug', {
-				'data': data
-			});
+		], function (err, comment, post) {
+			var data = {
+				'comment': comment.comment,
+				'post': post.post,
+				'ogMap': post.ogMap,
+				'profile': post.post.resolvedProfiles[post.post.source].profile,
+				'type': 'react',
+				'testbench': true,
+				'reactionDetails': 'vomit'
+			};
+			res.render('cards/post-callout.pug', data);
 		});
 	});
 

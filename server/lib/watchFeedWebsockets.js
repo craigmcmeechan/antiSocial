@@ -488,27 +488,35 @@ function getListener(server, connection) {
 									'item': message.data
 								};
 
-								console.log('settings:', settings);
-
 								if (message.data.type === 'post' && settings.notifications_posts) {
 									wantNotification = true;
-									template = 'emails/notify-post';
-									options.subject = 'post notification';
-									options.post = utils.whatAbout(message.data.about, currentUser, true);
+									template = 'emails/notify-post-activity';
+									options.subject = 'posted';
+									options.endpoint = message.data.about;
 								}
 								else if (message.data.type === 'comment' && settings.notifications_comments) {
 									wantNotification = true;
-									template = 'emails/notify-comment';
-									options.subject = 'comment notification';
-									options.post = utils.whatAbout(message.data.about, currentUser, true);
-									options.details = message.data.about + '/comment/' + message.data.uuid;
+									template = 'emails/notify-post-activity';
+									options.subject = 'commented';
+									options.endpoint = message.data.about + '/comment/' + message.data.uuid;
 								}
 								else if (message.data.type === 'react' && settings.notifications_reactions) {
 									wantNotification = true;
-									template = 'emails/notify-react';
-									options.subject = 'reaction notification';
-									options.post = utils.whatAbout(message.data.about, currentUser, true);
-									options.details = message.data.about + '/reactions';
+									template = 'emails/notify-post-activity';
+									options.subject = 'reacted';
+									options.endpoint = message.data.about;
+									var reactions = {
+										'thumbs-up': '👍🏼',
+										'thumbs-down': '👎',
+										'love': '❤️',
+										'laugh': '😆',
+										'smirk': '😏',
+										'wow': '😮',
+										'cry': '😢',
+										'mad': '😡',
+										'vomit': '🤮'
+									};
+									options.reactionDetails = reactions[message.data.details.reaction];
 								}
 
 								//console.log(wantNotification, options);
@@ -526,16 +534,45 @@ function getListener(server, connection) {
 										});
 									},
 									function (profile, doneResolve) {
-										utils.getEndPoint(server, options.post, currentUser, friend, {
+										if (message.data.type !== 'comment') {
+											return doneResolve(err, profile, null);
+										}
+										utils.getEndPoint(server, options.endpoint, currentUser, friend, {
 											'json': 1
 										}, function (err, data) {
 											doneResolve(err, profile, data);
 										});
+									},
+									function (profile, details, doneResolve) {
+										var endpoint = options.endpoint;
+										if (message.data.type === 'comment') {
+											endpoint = details.comment.about
+										}
+										utils.getEndPoint(server, endpoint, currentUser, null, {
+											'json': true,
+											'postonly': true
+										}, function (err, data) {
+											if (err) {
+												return doneResolve(err);
+											}
+											doneResolve(null, profile, details, data);
+										});
 									}
-								], function (err, profile, post) {
-									options.profile = profile;
-									options.post = post;
-									console.log(template, options);
+								], function (err, profile, details, post) {
+									options.profile = profile ? profile.profile : null;
+									options.comment = details ? details.comment : null;
+									options.post = post ? post.post : null;
+									options.ogMap = post ? post.ogMap : null;
+									options.config = server.locals.config;
+									options._ = require('lodash');
+									options.marked = server.locals.marked;
+									options.type = message.data.type;
+									options.subject = options.profile.name + ' ' + options.subject + ' ';
+									if (message.data.type !== 'post') {
+										options.subject += 'on the post ';
+									}
+									options.subject += '"' + options.post.description + '"';
+
 									mailer(server, template, options, function (err, info) {
 										debug('mail status %j %j', err, info);
 										cb();
