@@ -134,7 +134,7 @@ module.exports = function (MyUser) {
 					if (err) {
 						return cb(null, null);
 					}
-					cb(err, tokenInstance);
+					cb(err, tokenInstance.id);
 				});
 			},
 			function (tokenId, cb) { // if we don't have a token create it

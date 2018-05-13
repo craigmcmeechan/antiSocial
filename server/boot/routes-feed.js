@@ -262,7 +262,9 @@ module.exports = function (server) {
         async.map(items, function (item, doneResolve) {
           var post = item.about;
           post = post.replace(/\/(comment|photo)\/.*/, '');
-          var endpoint = proxyEndPoint(post, ctx.get('currentUser'), true);
+          var endpoint = proxyEndPoint(post, ctx.get('currentUser'), {
+            'embed': true
+          });
           var proxyHost = res.app.locals.config.publicHost;
 
           if (process.env.BEHIND_PROXY === "true") {

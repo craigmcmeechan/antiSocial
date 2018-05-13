@@ -526,7 +526,9 @@ function getListener(server, connection) {
 										});
 									},
 									function (profile, doneResolve) {
-										utils.friendEndPoint(server, options.post, currentUser, friend, function (err, data) {
+										utils.getEndPoint(server, options.post, currentUser, friend, {
+											'json': 1
+										}, function (err, data) {
 											doneResolve(err, profile, data);
 										});
 									}

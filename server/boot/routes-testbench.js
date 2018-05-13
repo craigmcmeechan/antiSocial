@@ -16,11 +16,19 @@ var async = require('async');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	router.get('/bla', getCurrentUser(), function (req, res, next) {
+	router.get('/testbench-callout', getCurrentUser(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
-		utils.getUserSettings(currentUser, function (err, settings) {
-			res.send(settings);
+		var endpoint = req.query.endpoint;
+		utils.getEndPoint(server, endpoint, currentUser, null, {
+			'json': true
+		}, function (err, data) {
+			if (err) {
+				return next(err);
+			}
+			res.render('cards/post-callout.pug', {
+				'data': data
+			});
 		});
 	});
 

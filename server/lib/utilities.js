@@ -1,6 +1,8 @@
 var proxyEndPoint = require('./proxy-endpoint');
 var request = require('request');
 var async = require('async');
+var VError = require('verror').VError;
+var WError = require('verror').WError;
 
 var defaultSettings = {
 	'friendListVisibility': 'all', // all, mutual, none
@@ -52,9 +54,9 @@ module.exports.getUserSettings = function (server, user, cb) {
 	});
 };
 
-module.exports.friendEndPoint = function (server, endpoint, currentUser, friend, done) {
+module.exports.getEndPoint = function (server, endpoint, currentUser, friend, options, done) {
 
-	endpoint = proxyEndPoint(endpoint, currentUser, true);
+	endpoint = proxyEndPoint(endpoint, currentUser, options);
 	var proxyHost = server.locals.config.publicHost;
 
 	if (process.env.BEHIND_PROXY === 'true') {
@@ -71,12 +73,29 @@ module.exports.friendEndPoint = function (server, endpoint, currentUser, friend,
 			});
 		},
 		function (token, cb) { // make the request
-			request.get({
+			var requestOptions = {
 				'url': proxyHost + endpoint,
 				'headers': {
 					'access_token': token
 				}
-			}, function (err, response, body) {
+			};
+
+			console.log('getEndPoint', requestOptions);
+
+			request.get(requestOptions, function (err, response, body) {
+				if (err) {
+					var e = new VError(err, 'could not load endpoint ' + endpoint);
+					return cb(e.message);
+				}
+				if (response.statusCode !== 200) {
+					err = new Error('error ' + response.statusCode);
+					err.statusCode = 404;
+					return cb(err);
+				}
+
+				if (options.json) {
+					body = JSON.parse(body);
+				}
 				cb(null, body);
 			});
 		}

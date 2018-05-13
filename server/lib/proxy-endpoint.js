@@ -4,9 +4,12 @@ var debug = require('debug')('proxy');
 var debugVerbose = require('debug')('proxy:verbose');
 var config = require('../config-' + process.env.NODE_ENV);
 
-module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
+module.exports = function proxyEndPoint(endpoint, currentUser, options) {
 	if (!endpoint) {
 		return;
+	}
+	if (!options) {
+		options = {};
 	}
 
 	var parsed = url.parse(endpoint);
@@ -23,10 +26,15 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 		if (currentUser) {
 			if (currentUser.username === friendUsername) {
 				var unproxied = parsed.pathname;
-				debug('proxyEndPoint me ' + unproxied);
-				if (embed) {
+				if (options.json) {
+					unproxied += '.json';
+				}
+				if (options.embed) {
 					unproxied += '?embed=1';
 				}
+
+				debug('proxyEndPoint me ' + unproxied);
+
 				return unproxied;
 			}
 
@@ -39,10 +47,15 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 						// use uniqued username for local request url form
 						unproxied = unproxied.replace(/^\/[a-zA-Z0-9-]+/, '/' + friend.uniqueRemoteUsername);
 
-						debug('proxyEndPoint friend found ' + unproxied);
-						if (embed) {
+						if (options.json) {
+							unproxied += '.json';
+						}
+						if (options.embed) {
 							unproxied += '?embed=1';
 						}
+
+						debug('proxyEndPoint friend found ' + unproxied);
+
 						return unproxied;
 					}
 				}
@@ -64,11 +77,23 @@ module.exports = function proxyEndPoint(endpoint, currentUser, embed) {
 
 	var proxied = getProxyForm(endpoint, matches);
 	debug('proxyEndPoint default to proxy form: ' + proxied);
-	if (embed) {
-		proxied += '&embed=1';
+	var query = getParams(options);
+	if (query) {
+		proxied += '&' + query;
 	}
 	return proxied;
 };
+
+function getParams(options) {
+	var params = [];
+	if (options.embed) {
+		params.push('embed=1');
+	}
+	if (options.json) {
+		params.push('format=json');
+	}
+	return params.join('&');
+}
 
 function getProxyForm(endpoint, matches) {
 	var view = matches.length > 2 && matches[2] ? matches[2].substr(1) : 'profile';
