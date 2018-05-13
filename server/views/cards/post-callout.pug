@@ -5,34 +5,38 @@ else
 
 -var posterProfile = data.profile
 
-.post-callout
-	.source
-		.name= posterProfile.name
+.post-callout-scope
+	.position-relative
+	.post-callout
+		.source
+			.name= posterProfile.name
 
-		if _.get(posterProfile,'photo.url')
-			.poster-avatar
+			if _.get(posterProfile,'photo.url')
+				.poster-avatar
+					img(src= posterProfile.photo.url)
+		
+		.body= data.post.description
+		
+		if data.post.sortedPhotos.length
+			-var image = _.get(data.post,'sortedPhotos[0].uploads[0].imageSet.thumb')
+			if !image
+				- image = _.get(data.post,'sortedPhotos[0].uploads[0].imageSet.original')
+			.photo
+				img.img-responsive(src= image.url width= image.width height= image.height)
+				
+		else if data.ogMap && Object.keys(data.ogMap).length
+			-var link = data.ogMap[Object.keys(data.ogMap)[0]]
+			-var title = _.get(link,'ogData.data.ogTitle')
+			-var description = _.get(link,'ogData.data.ogDescription')
+			-var image = _.get(link,'uploads[0].imageSet.thumb')
+			if !image
+				- image = _.get(link,'uploads[0].imageSet.original')
+			.link
+				img.img-responsive(src= image.url width= image.width height= image.height)
+				.title= title
+	.comment-callout
+		.triangle-border.left
+			.commenter-avatar
 				img(src= posterProfile.photo.url)
-	
-	.body= data.post.description
-	
-	if data.post.sortedPhotos.length
-		-var image = _.get(data.post,'sortedPhotos[0].uploads[0].imageSet.thumb')
-		if !image
-			- image = _.get(data.post,'sortedPhotos[0].uploads[0].imageSet.original')
-		.photo
-			img.img-responsive(src= image.url width= image.width height= image.height)
-			
-	else if data.ogMap && Object.keys(data.ogMap).length
-		-var link = data.ogMap[Object.keys(data.ogMap)[0]]
-		-var title = _.get(link,'ogData.data.ogTitle')
-		-var description = _.get(link,'ogData.data.ogDescription')
-		-var image = _.get(link,'uploads[0].imageSet.thumb')
-		if !image
-			- image = _.get(link,'uploads[0].imageSet.original')
-		.link
-			img.img-responsive(src= image.url width= image.width height= image.height)
-			.title= title
-.comment-callout
-	p.triangle-border.top
-		| This is the comment
+			| This is the comment
 		
