@@ -479,7 +479,12 @@ function getListener(server, connection) {
 								});
 							},
 							function doEmailNotifications(settings, cb) {
-								if (!isMe && message.data.type !== 'post') {
+								if (message.type === 'backfill') {
+									return async.setImmediate(function () {
+										return cb();
+									});
+								}
+								if (!isMe && (message.data.type !== 'post' && message.data.type !== 'friend')) {
 									return async.setImmediate(function () {
 										return cb();
 									});
@@ -495,8 +500,8 @@ function getListener(server, connection) {
 
 								if (message.data.type === 'friend' && settings.notifications_friend_request) {
 									wantNotification = true;
-									template = 'emails/notify-friend-request';
-									options.subject = ' friend request';
+									template = 'emails/notify-friend-accepted';
+									options.subject = 'is now friends with';
 								}
 								else if (message.data.type === 'post' && settings.notifications_posts) {
 									wantNotification = true;
@@ -546,22 +551,28 @@ function getListener(server, connection) {
 										});
 									},
 									function (profile, doneResolve) {
+										var who = utils.whoAbout(message.data.about, null, true);
+										resolveProfile(server, who, function (err, aboutProfile) {
+											doneResolve(err, profile, aboutProfile);
+										});
+									},
+									function (profile, aboutProfile, doneResolve) {
 										if (message.data.type !== 'comment') {
-											return doneResolve(err, profile, null);
+											return doneResolve(err, profile, aboutProfile, null);
 										}
 										utils.getEndPointJSON(server, options.endpoint, currentUser, friend, {
 											'json': 1
 										}, function (err, data) {
-											doneResolve(err, profile, data);
+											doneResolve(err, profile, aboutProfile, data);
 										});
 									},
-									function (profile, details, doneResolve) {
+									function (profile, aboutProfile, details, doneResolve) {
 										var endpoint = options.endpoint;
 										if (message.data.type === 'comment') {
 											endpoint = details.comment.about;
 										}
 										if (!endpoint) {
-											doneResolve(null, profile, details, null);
+											return doneResolve(null, profile, aboutProfile, details, null);
 										}
 										utils.getEndPointJSON(server, endpoint, currentUser, null, {
 											'json': true,
@@ -570,11 +581,12 @@ function getListener(server, connection) {
 											if (err) {
 												return doneResolve(err);
 											}
-											doneResolve(null, profile, details, data);
+											doneResolve(null, profile, aboutProfile, details, data);
 										});
 									}
-								], function (err, profile, details, post) {
+								], function (err, profile, aboutProfile, details, post) {
 									options.profile = profile ? profile.profile : null;
+									options.aboutProfile = aboutProfile ? aboutProfile.profile : null;
 									options.comment = details ? details.comment : null;
 									options.post = post ? post.post : null;
 									options.ogMap = post ? post.ogMap : null;
@@ -584,11 +596,14 @@ function getListener(server, connection) {
 									options.type = message.data.type;
 									options.subject = options.profile.name + ' ' + options.subject + ' ';
 
-									if (message.data.type === 'comment' || message.data.type === 'react') {
-										options.subject += 'on the post ';
-									}
-									if (message.data.type !== 'friend') {
+									if (options.post) {
+										if (message.data.type === 'comment' || message.data.type === 'react') {
+											options.subject += 'on the post ';
+										}
 										options.subject += '"' + options.post.description + '"';
+									}
+									if (message.data.type === 'friend') {
+										options.subject += options.aboutProfile.name;
 									}
 
 									mailer(server, template, options, function (err, info) {

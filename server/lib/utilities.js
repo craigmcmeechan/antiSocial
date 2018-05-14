@@ -50,6 +50,14 @@ module.exports.whatAbout = function (endpoint, user, noproxy) {
 	return (endpoint);
 };
 
+module.exports.whoAbout = function (endpoint, user, noproxy) {
+	endpoint = endpoint.replace(/\/post\/.*/, '');
+	if (!noproxy) {
+		endpoint = proxyEndPoint(endpoint, user);
+	}
+	return (endpoint);
+};
+
 module.exports.getUserSettings = function (server, user, cb) {
 	server.models.Settings.findOne({
 		'where': {

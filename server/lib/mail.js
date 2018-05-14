@@ -53,8 +53,8 @@ function mail(server, template, options, cb) {
 				user: process.env.OUTBOUND_MAIL_SMTP_USER,
 				pass: process.env.OUTBOUND_MAIL_SMTP_PASSWORD
 			},
-			'logger': true,
-			'debug': true
+			'logger': false,
+			'debug': false
 		});
 	}
 	else {
@@ -65,7 +65,7 @@ function mail(server, template, options, cb) {
 
 	pug.renderFile(server.get('views') + '/' + template + '.pug', options, function (err, html) {
 		if (err) {
-			debug('render errors %j', e);
+			debug('render errors %j', err);
 			var e = new VError(err, 'could not render email');
 			return cb(e);
 		}

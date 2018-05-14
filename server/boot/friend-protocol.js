@@ -507,11 +507,11 @@ module.exports = function (server) {
 							var e = new VError(err, 'error creating newsfeed item');
 							return cb(e);
 						}
-						cb(null, user, friend, invitation, sourceProfile);
+						cb(null, user, friend, invitation, sourceProfile, item);
 					});
 				});
 			},
-			function notifyEmail(user, friend, invitation, profile, cb) {
+			function notifyEmail(user, friend, invitation, profile, item, cb) {
 				utils.getUserSettings(server, user, function (err, settings) {
 					if (!settings.notifications_friend_request) {
 						return cb(null, user, friend, invitation);
@@ -522,10 +522,10 @@ module.exports = function (server) {
 						'from': process.env.OUTBOUND_MAIL_SENDER,
 						'config': server.locals.config,
 						'subject': 'Friend request from ' + friend.remoteUsername,
-						'profile': profile,
-						'config': server.locals.config,
+						'profile': profile ? profile.profile : null,
 						'_': require('lodash'),
-						'marked': server.locals.marked
+						'marked': server.locals.marked,
+						'item': item
 					};
 					mailer(server, template, options, function (err, info) {
 						debug('mail status %j %j', err, info);
