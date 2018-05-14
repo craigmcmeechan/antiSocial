@@ -26,6 +26,7 @@
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "express-session": "^1.15.4",
     "fb": "^2.0.0",
+    "function-rate-limit": "^1.1.0",
     "graphlib": "^2.1.5",
     "helmet-csp": "^2.7.0",
     "i18n": "^0.8.2",

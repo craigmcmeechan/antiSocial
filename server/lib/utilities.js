@@ -55,7 +55,7 @@ module.exports.getUserSettings = function (server, user, cb) {
 	});
 };
 
-module.exports.getEndPoint = function (server, endpoint, currentUser, friend, options, done) {
+module.exports.getEndPointJSON = function getEndPointJSON(server, endpoint, currentUser, friend, options, done) {
 
 	var parsed = url.parse(endpoint);
 	var path = parsed.pathname;
@@ -69,8 +69,9 @@ module.exports.getEndPoint = function (server, endpoint, currentUser, friend, op
 		}
 	}
 
-	endpoint = proxyHost + path;
+	endpoint = proxyHost + path + '.json';
 
+	/*
 	var params = [];
 	if (options.embed) {
 		params.push('embed=1');
@@ -79,6 +80,7 @@ module.exports.getEndPoint = function (server, endpoint, currentUser, friend, op
 		params.push('format=json');
 	}
 	endpoint += '?' + params.join('&');
+	*/
 
 	async.waterfall([
 		function (cb) { // need to get self access token

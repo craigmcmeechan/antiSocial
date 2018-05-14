@@ -5,8 +5,9 @@ var async = require('async');
 var pug = require('pug');
 var debug = require('debug')('mail');
 var debugVerbose = require('debug')('mail:verbose');
+var rateLimit = require('function-rate-limit');
 
-module.exports = function (server, template, options, cb) {
+function mail(server, template, options, cb) {
 	var transporter;
 	if (process.env.OUTBOUND_MAIL === 'SES') {
 		var config;
@@ -78,4 +79,8 @@ module.exports = function (server, template, options, cb) {
 			cb(null, info);
 		});
 	});
-};
+}
+
+var rateLimited = rateLimit(2, 1000, mail);
+
+module.exports = rateLimited;

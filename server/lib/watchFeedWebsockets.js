@@ -537,7 +537,7 @@ function getListener(server, connection) {
 										if (message.data.type !== 'comment') {
 											return doneResolve(err, profile, null);
 										}
-										utils.getEndPoint(server, options.endpoint, currentUser, friend, {
+										utils.getEndPointJSON(server, options.endpoint, currentUser, friend, {
 											'json': 1
 										}, function (err, data) {
 											doneResolve(err, profile, data);
@@ -546,9 +546,9 @@ function getListener(server, connection) {
 									function (profile, details, doneResolve) {
 										var endpoint = options.endpoint;
 										if (message.data.type === 'comment') {
-											endpoint = details.comment.about
+											endpoint = details.comment.about;
 										}
-										utils.getEndPoint(server, endpoint, currentUser, null, {
+										utils.getEndPointJSON(server, endpoint, currentUser, null, {
 											'json': true,
 											'postonly': true
 										}, function (err, data) {

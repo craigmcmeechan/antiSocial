@@ -22,7 +22,7 @@ module.exports = function (server) {
 		var endpoint = req.query.endpoint;
 		async.waterfall([
 			function getComment(cb) {
-				utils.getEndPoint(server, endpoint, currentUser, null, {
+				utils.getEndPointJSON(server, endpoint, currentUser, null, {
 					'json': true
 				}, function (err, data) {
 					if (err) {
@@ -32,7 +32,7 @@ module.exports = function (server) {
 				});
 			},
 			function getPost(comment, cb) {
-				utils.getEndPoint(server, comment.comment.about, currentUser, null, {
+				utils.getEndPointJSON(server, comment.comment.about, currentUser, null, {
 					'json': true,
 					'postonly': true
 				}, function (err, data) {
@@ -137,22 +137,24 @@ module.exports = function (server) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
 		var mailer = require('../lib/mail');
-		var options = {
-			'to': currentUser.email,
-			'from': process.env.OUTBOUND_MAIL_SENDER,
-			'subject': 'Testing email transport',
-			'config': server.locals.config
-		};
 
-		mailer(server, 'emails/test', options, function (err) {
-			if (err) {
-				var e = new WError(err, 'could not send test email');
-				console.log(e.toString());
-				console.log(e.stack);
-				return res.send(e);
-			}
-			res.send('ok');
-		});
+		for (var i = 1; i <= 5; i++) {
+			var options = {
+				'to': currentUser.email,
+				'from': process.env.OUTBOUND_MAIL_SENDER,
+				'subject': 'Testing email transport: ' + i,
+				'config': server.locals.config
+			};
+			mailer(server, 'emails/test', options, function (err) {
+				if (err) {
+					var e = new WError(err, 'could not send test email');
+					console.log(e.toString());
+					console.log(e.stack);
+				}
+			});
+		}
+		res.send('ok');
+
 	});
 
 	// testbench
