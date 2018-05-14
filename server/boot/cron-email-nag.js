@@ -134,10 +134,11 @@ module.exports = function nag(server, done, username) {
 			mailer(server, 'emails/nag', options, function (err) {
 				if (err) {
 					debug('tasks could not send notifications email %j', err);
-					return done();
 				}
-				done();
 			});
+
+			done();
+
 		});
 	}
 };

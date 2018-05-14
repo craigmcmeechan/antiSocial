@@ -216,10 +216,12 @@ module.exports = function (MyUser) {
 				mailer(server, 'emails/verify', options, function (err) {
 					if (err) {
 						var e = new VError(err, 'could not send verification email');
-						return cb(e);
+						debug(e.toString());
+						debug(e.stack);
 					}
-					cb(null, user);
 				});
+
+				cb(null, user);
 			},
 			function (user, cb) { // log in
 				debugVerbose('create access token');

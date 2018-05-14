@@ -1,6 +1,5 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
-
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
 

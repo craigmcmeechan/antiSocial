@@ -67,11 +67,12 @@ module.exports = function (server) {
 				mailer(server, 'emails/invite-friend', options, function (err) {
 					if (err) {
 						var e = new VError(err, 'could not send invite email');
-						return cb(e);
+						debug(e.toString());
+						debug(e.stack);
 					}
-					cb();
 				});
 
+				cb();
 			}
 		], function (err) {
 			if (err) {

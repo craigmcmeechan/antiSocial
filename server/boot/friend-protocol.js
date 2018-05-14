@@ -2,6 +2,8 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var watchFeed = require('../lib/watchFeedWebsockets');
 var resolveProfiles = require('../lib/resolveProfiles');
+var utils = require('../lib/utilities');
+var mailer = require('../lib/mail');
 var forge = require('node-forge');
 var crc = require('crc');
 
@@ -499,13 +501,36 @@ module.exports = function (server) {
 						'about': friend.remoteEndPoint,
 						'originator': false
 					};
+
 					req.app.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 						if (err) {
 							var e = new VError(err, 'error creating newsfeed item');
 							return cb(e);
 						}
-						cb(null, user, friend, invitation);
+						cb(null, user, friend, invitation, sourceProfile);
 					});
+				});
+			},
+			function notifyEmail(user, friend, invitation, profile, cb) {
+				utils.getUserSettings(server, user, function (err, settings) {
+					if (!settings.notifications_friend_request) {
+						return cb(null, user, friend, invitation);
+					}
+					var template = 'emails/notify-friend-request';
+					var options = {
+						'to': user.email,
+						'from': process.env.OUTBOUND_MAIL_SENDER,
+						'config': server.locals.config,
+						'subject': 'Friend request from ' + friend.remoteUsername,
+						'profile': profile,
+						'config': server.locals.config,
+						'_': require('lodash'),
+						'marked': server.locals.marked
+					};
+					mailer(server, template, options, function (err, info) {
+						debug('mail status %j %j', err, info);
+					});
+					cb(null, user, friend, invitation);
 				});
 			}
 		], function (err, user, friend, invitation) {

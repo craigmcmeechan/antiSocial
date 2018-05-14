@@ -479,6 +479,11 @@ function getListener(server, connection) {
 								});
 							},
 							function doEmailNotifications(settings, cb) {
+								if (!isMe && message.data.type !== 'post') {
+									return async.setImmediate(function () {
+										return cb();
+									});
+								}
 								var wantNotification = false;
 								var template = '';
 								var options = {
@@ -488,7 +493,12 @@ function getListener(server, connection) {
 									'item': message.data
 								};
 
-								if (message.data.type === 'post' && settings.notifications_posts) {
+								if (message.data.type === 'friend' && settings.notifications_friend_request) {
+									wantNotification = true;
+									template = 'emails/notify-friend-request';
+									options.subject = ' friend request';
+								}
+								else if (message.data.type === 'post' && settings.notifications_posts) {
 									wantNotification = true;
 									template = 'emails/notify-post-activity';
 									options.subject = 'posted';
@@ -522,7 +532,9 @@ function getListener(server, connection) {
 								//console.log(wantNotification, options);
 
 								if (!wantNotification) {
-									return cb();
+									return async.setImmediate(function () {
+										return cb();
+									});
 								}
 
 								var resolveProfile = require('./resolveProfile');
@@ -548,6 +560,9 @@ function getListener(server, connection) {
 										if (message.data.type === 'comment') {
 											endpoint = details.comment.about;
 										}
+										if (!endpoint) {
+											doneResolve(null, profile, details, null);
+										}
 										utils.getEndPointJSON(server, endpoint, currentUser, null, {
 											'json': true,
 											'postonly': true
@@ -568,15 +583,19 @@ function getListener(server, connection) {
 									options.marked = server.locals.marked;
 									options.type = message.data.type;
 									options.subject = options.profile.name + ' ' + options.subject + ' ';
-									if (message.data.type !== 'post') {
+
+									if (message.data.type === 'comment' || message.data.type === 'react') {
 										options.subject += 'on the post ';
 									}
-									options.subject += '"' + options.post.description + '"';
+									if (message.data.type !== 'friend') {
+										options.subject += '"' + options.post.description + '"';
+									}
 
 									mailer(server, template, options, function (err, info) {
 										debug('mail status %j %j', err, info);
-										cb();
 									});
+
+									cb();
 								});
 							}
 						],

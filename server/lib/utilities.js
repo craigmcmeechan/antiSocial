@@ -7,7 +7,12 @@ var url = require('url');
 
 var defaultSettings = {
 	'friendListVisibility': 'all', // all, mutual, none
-	'feedSortOrder': 'activity' // post, activity
+	'feedSortOrder': 'activity', // post, activity
+	'notifications_posts': 'on',
+	'notifications_comments': 'on',
+	'notifications_reactions': 'on',
+	'notifications_digest': false,
+	'notifications_friend_request': true
 };
 
 module.exports.fixNameYou = function fixNameYou(endpoint, myendpoint, name, your) {
@@ -56,6 +61,9 @@ module.exports.getUserSettings = function (server, user, cb) {
 };
 
 module.exports.getEndPointJSON = function getEndPointJSON(server, endpoint, currentUser, friend, options, done) {
+	if (!endpoint) {
+		return done(new Error('getEndPointJSON: endpoint not defined'));
+	}
 
 	var parsed = url.parse(endpoint);
 	var path = parsed.pathname;
