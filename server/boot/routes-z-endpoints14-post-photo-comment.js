@@ -12,6 +12,29 @@ var postPhotoCommentRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/phot
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
+
+	/**
+	 * Retrieve an individual comment on a user's photo as HTML or JSON
+	 * The comments being requested could be of a user's post on the server or a
+	 * friend of a user on the server. If the request is anonymous, only
+	 * public information is returned. If the request is for HTML the
+	 * response may include the user's photo's comments either public or, if the
+	 * requestor is a friend, comments based on the visibility allowed for the
+	 * requestor.
+	 *
+	 * @name Get a comment for a user's post's photo as JSON object or as an HTML page
+	 * @route {GET} /:username/post/:postId/photo/:photoId/comment/:commentId[.json]
+	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
+	 * @routeparam {String} :postId Id of wanted post
+	 * @routeparam {String} :photoId Id of wanted post
+	 * @routeparam {String} :commentId Id of wanted comment
+	 * @routeparam {String} .json Append the .json suffix for JSON response otherwise HTML is returned
+	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
+	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @returns {JSON|HTML} If .json is requested returns a JSON comment object, otherwise HTML
+	 */
+
 	router.get(postPhotoCommentRE, getCurrentUser(), checkNeedProxyRewrite('comment'), getFriendAccess(), function (req, res, next) {
 		var ctx = req.myContext;
 		var redirectProxy = ctx.get('redirectProxy');

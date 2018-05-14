@@ -2,7 +2,7 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdminUser = require('../middleware/context-ensureAdminUser');
 
-module.exports = function serverSettings(server) {
+module.exports = function userSettings(server) {
 	var router = server.loopback.Router();
 
 	router.patch('/user-settings', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
