@@ -32,6 +32,10 @@ module.exports = function (server) {
 				});
 			},
 			function getPost(comment, cb) {
+
+				if (!comment.comment) {
+					return cb(null, null, comment);
+				}
 				utils.getEndPointJSON(server, comment.comment.about, currentUser, null, {
 					'json': true,
 					'postonly': true
@@ -44,13 +48,13 @@ module.exports = function (server) {
 			}
 		], function (err, comment, post) {
 			var data = {
-				'comment': comment.comment,
+				'comment': comment ? comment.comment : null,
 				'post': post.post,
 				'ogMap': post.ogMap,
 				'profile': post.post.resolvedProfiles[post.post.source].profile,
-				'type': 'react',
+				'type': 'post',
 				'testbench': true,
-				'reactionDetails': 'vomit'
+				'reactionDetails': ''
 			};
 			res.render('cards/post-callout.pug', data);
 		});

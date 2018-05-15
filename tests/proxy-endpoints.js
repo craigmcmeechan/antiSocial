@@ -48,7 +48,6 @@ describe('proxy endpoints', function () {
 			app.stop();
 			done();
 		}, 5000);
-
 	});
 
 	it('http should be up', function (done) {

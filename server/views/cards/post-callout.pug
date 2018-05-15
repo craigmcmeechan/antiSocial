@@ -3,7 +3,7 @@ if testbench
 
 -var posterProfile = post? post.resolvedProfiles[post.source].profile : null
 -var commenterProfile = profile
-
+-var target = config.publicHost + '/proxy-post?endpoint=' + encodeURIComponent(post.source + '/post/' + post.uuid)
 .post-callout-scope
 	.post-callout-wrapper
 		.post-callout
@@ -14,14 +14,18 @@ if testbench
 					.poster-avatar
 						img(src= posterProfile.photo.url)
 			
-			.body= post.description
+			.body
+				= post.description + ' '
+				a(href= target)
+					| Click Here
 			
 			if post.sortedPhotos.length
 				-var image = _.get(post,'sortedPhotos[0].uploads[0].imageSet.thumb')
 				if !image
 					- image = _.get(post,'sortedPhotos[0].uploads[0].imageSet.original')
 				.photo
-					img.img-responsive(src= image.url width= image.width height= image.height)
+					a(href= target)
+						img.img-responsive(src= image.url width= image.width height= image.height)
 					
 			else if ogMap && Object.keys(ogMap).length
 				-var link = ogMap[Object.keys(ogMap)[0]]
@@ -31,8 +35,10 @@ if testbench
 				if !image
 					- image = _.get(link,'uploads[0].imageSet.original')
 				.link
-					img.img-responsive(src= image.url width= image.width height= image.height)
+					a(href= target)
+						img.img-responsive(src= image.url width= image.width height= image.height)
 					.title= title
+					
 		if type !== 'post'
 			.reaction-callout
 				.triangle-border.left
