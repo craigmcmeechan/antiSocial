@@ -673,10 +673,15 @@ img.avatar
 			border:thin solid rgba(0,0,0,0)
 			border-radius:2px
 			cursor:pointer
+			div
+				padding-top: 2px;
+				padding-left: 2px;
 			&:hover
-				border-color:red
+				div
+					box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 			&.selected
-				border-color:orange
+				div
+					box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 		.more-reactions
 			animation-duration: .35s
 			position:absolute
@@ -732,8 +737,7 @@ img.avatar
 			.profile-link
 				margin-right:7px
 	.reaction-details
-		z-index:-1
-		animation-duration: .15s
+		animation-duration: .1s
 		display:none
 		table
 			width:100%
@@ -741,10 +745,12 @@ img.avatar
 			td
 				padding-right: 7px
 		img
-			height:20px
-			border-radius:50%
-			margin-top:5px
-			margin-bottom:5px
+			height: 24px
+			border-radius: 50%
+			margin-top: 5px
+			margin-bottom: 5px
+			margin-left: 2px
+			margin-right: 4px
 #fixed-footer
 	text-align:center
 	.not-digitopia-xsmall &

@@ -162,7 +162,7 @@ module.exports = function (server) {
 
 				var profileMap = {};
 				async.map(profilesToResolve, function (ep, cb) {
-					resolveProfile(ep, function (err, profile) {
+					resolveProfile(server, ep, function (err, profile) {
 						profileMap[ep] = profile;
 						cb(null);
 					});

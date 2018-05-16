@@ -152,7 +152,7 @@ if (process.env.i18n) {
 }
 
 // setup component storage for s3
-if (!process.env.LOCAL_UPLOADS) {
+if (process.env.LOCAL_UPLOADS !== 'true' && process.env.AWS_S3_KEY) {
   var ds = loopback.createDataSource({
     connector: require('loopback-component-storage'),
     provider: 'amazon',

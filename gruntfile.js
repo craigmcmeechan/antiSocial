@@ -35,7 +35,7 @@ module.exports = function (grunt) {
 		'assets/vendor/*.css',
 		'working/css/*.css',
 		'assets/css/*.css',
-		'assets/vendor/fa/*.css',
+		'assets/vendor/fa/*.css'
 	];
 
 	var copyCommand = [{
@@ -152,6 +152,15 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		jsdoc: {
+			dist: {
+				src: ['server/boot/*.js'],
+				options: {
+					destination: 'docs',
+					configure: 'jsdoc.conf'
+				}
+			}
+		},
 		watch: {
 			files: allFiles,
 			tasks: ['less', 'stylus', 'concat']
@@ -166,6 +175,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-jsdoc');
 
 	grunt.registerTask('default', [
 		'mkdir',
@@ -174,7 +184,8 @@ module.exports = function (grunt) {
 		'stylus',
 		'concat',
 		'uglify',
-		'cssmin'
+		'cssmin',
+		'jsdoc'
 	]);
 
 	grunt.registerTask('devel', [

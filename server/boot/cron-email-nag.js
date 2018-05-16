@@ -4,6 +4,8 @@ var debug = require('debug')('tasks');
 var newsFeedItemResolve = require('../lib/newsFeedResolve');
 var resolveProfiles = require('../lib/resolveProfiles');
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
+var utils = require('../lib/utilities');
+
 var _ = require('lodash');
 
 var mailer = require('../lib/mail');
@@ -81,7 +83,11 @@ module.exports = function nag(server, done, username) {
 				});
 			},
 			function (user, cb) {
-				// get recent notifications somehow...
+				utils.getUserSettings(server, user, function (err, settings) {
+					cb(err, user, settings);
+				});
+			},
+			function (user, settings, cb) {
 				var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
 				var query = {
@@ -100,20 +106,24 @@ module.exports = function nag(server, done, username) {
 								done(err, data);
 							});
 						}, function (err, notifications) {
-							cb(null, user, notifications);
+							cb(null, user, settings, notifications);
 						});
 					});
 				});
 
 			}
-		], function (err, user, notifications) {
+		], function (err, user, settings, notifications) {
+			if (!settings.notifications_digest) {
+				return done;
+			}
+
 			if (!user.friends().length && !notifications.length) {
 				return done();
 			}
 
 			var options = {
 				'to': user.email,
-				'from': 'notifications@myantisocial.net',
+				'from': process.env.OUTBOUND_MAIL_SENDER,
 				'subject': 'While you\'ve been away...',
 				'user': user,
 				'config': server.locals.config,
@@ -124,10 +134,11 @@ module.exports = function nag(server, done, username) {
 			mailer(server, 'emails/nag', options, function (err) {
 				if (err) {
 					debug('tasks could not send notifications email %j', err);
-					return done();
 				}
-				done();
 			});
+
+			done();
+
 		});
 	}
 };

@@ -1,0 +1,17 @@
+.post-callout-scope
+	.post-callout-wrapper
+		.post-callout
+			.source
+				.name
+					a(href= config.publicHost + '/proxy-profile?endpoint=' + encodeURIComponent(profile.endpoint))= profile.name
+				if _.get(profile,'photo.url')
+					.poster-avatar
+						a(href= config.publicHost + '/proxy-profile?endpoint=' + encodeURIComponent(profile.endpoint))
+							img(src= profile.photo.url)
+			.body
+				if _.get(aboutProfile,'photo.url')
+					.poster-avatar
+						img(src= aboutProfile.photo.url)
+				p
+					= 'Hey, I\'m now friends with '
+					a(href= config.publicHost + '/proxy-profile?endpoint=' + encodeURIComponent(aboutProfile.endpoint))= aboutProfile.name

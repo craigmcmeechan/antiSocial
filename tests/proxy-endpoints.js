@@ -44,9 +44,11 @@ describe('proxy endpoints', function () {
 	});
 
 	after(function (done) {
-		app.stop();
-		done();
-	})
+		setTimeout(function () {
+			app.stop();
+			done();
+		}, 5000);
+	});
 
 	it('http should be up', function (done) {
 		client1
