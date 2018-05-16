@@ -23,6 +23,7 @@ services:
       - "443:443"
     volumes:
       - data_uploads:/var/app/current/client/uploads
+      - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - frontend
     env_file: ~/antisocial-docker-mongo.env
