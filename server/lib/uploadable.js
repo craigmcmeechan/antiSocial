@@ -337,7 +337,7 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 		if (meta.isAnimatedGif) {
 			//console.log('animated');
 
-			if (!process.env.LOCAL_UPLOADS) {
+			if (process.env.LOCAL_UPLOADS !== 'true') {
 
 				var extension = mime.extension(meta.type);
 				var key = folder + uuid.v4() + '-animated.' + extension;
@@ -414,7 +414,7 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 			// console.log(options);
 
 			try {
-				if (!process.env.LOCAL_UPLOADS) {
+				if (process.env.LOCAL_UPLOADS !== 'true') {
 					var client = new Uploader(bucket, options);
 					client.upload(localCopy, {}, function (err, images, uploadmeta) {
 						if (err) {
