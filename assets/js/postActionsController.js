@@ -49,9 +49,9 @@
 			this.element.on('click', '.share-post', function (e) {
 				e.stopPropagation();
 				e.preventDefault();
-				scrollToElement('#the-posting-form');
-				$('#the-posting-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
-				$('#the-posting-form').find('.posting-body').click().keyup().focus();
+				$('#post-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
+				$('#post-form').find('.posting-body').click().keyup().focus();
+				$('#post-form').modal();
 			});
 		};
 
