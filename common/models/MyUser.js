@@ -24,6 +24,7 @@ module.exports = function (MyUser) {
 				'@register',
 				'@login',
 				'@logout',
+				'@resetPassword',
 				'@confirm',
 				'@subscriptionstatus',
 				'@subscriptioncancel',
