@@ -186,7 +186,7 @@
 						'loc': self.position,
 						'name': address
 					});
-					loc.html(address + ' <span class="distance">(gps loc)</span>');
+					loc.html('<i class="fa fa-location-arrow"></i> ' + address + ' <span class="distance">(gps loc)</span>');
 					self.pulldown.append(loc);
 
 					if (status == google.maps.places.PlacesServiceStatus.OK) {
