@@ -19,15 +19,26 @@ build_images() {
 	echo "docker-compose"
 	cd ~/repo/deploy/docker-assets
 	docker-compose build
-	docker tag webapp-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
-	#docker tag xray-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:xray-antisocial
-	#docker tag nginx-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:nginx-antisocial
 
-	echo "docker login"
-	eval $(aws ecr get-login --region us-east-1)
+	#docker tag webapp-antisocial:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
+	#echo "docker login"
+	#eval $(aws ecr get-login --region us-east-1)
+	#echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial"
+	#docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
 
-	echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial"
-	docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:webapp-antisocial
+	if [ "$CIRCLE_BRANCH" == "development" ]; then
+		echo "pushing myantisocialnet/community-server:edge"
+		docker login -u $DOCKER_USER -p $DOCKER_PASS
+		docker tag webapp-antisocial  myantisocialnet/community-server:edge
+		docker push myantisocialnet/community-server:edge
+	fi
+
+	if [ "$CIRCLE_BRANCH" == "production" ]; then
+		echo "pushing myantisocialnet/community-server:latest"
+		docker login -u $DOCKER_USER -p $DOCKER_PASS
+		docker tag webapp-antisocial  myantisocialnet/community-server:latest
+		docker push myantisocialnet/community-server:latest
+	fi
 
 	#echo "docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:xray-antisocial"
 	#docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/anti-social-$CIRCLE_BRANCH:xray-antisocial
