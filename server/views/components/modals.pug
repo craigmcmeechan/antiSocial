@@ -13,14 +13,14 @@
 							.input-relative
 								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 						.col-sm-6.form-group
 							label Password
 							.input-relative
 								input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="current-password")
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 				.modal-footer
 					.pull-left
@@ -44,7 +44,7 @@
 							.input-relative
 								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 				.modal-footer
 					.pull-left
@@ -66,31 +66,31 @@ if globalSettings.multiUser === 'open' || inviteToken
 						.form-group.input-relative
 							input.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email" autocomplete="email")
 							.input-ok-indicator
-								span.glyphicon.glyphicon-ok
+								span.fa.fa-check
 							.validation-help
 								
 						.form-group.input-relative
 							input.form-control(type="email" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']" autocomplete="email")
 							.input-ok-indicator
-								span.glyphicon.glyphicon-ok
+								span.fa.fa-check
 							.validation-help
 
 						.form-group.input-relative
 							input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="new-password")
 							.input-ok-indicator
-								span.glyphicon.glyphicon-ok
+								span.fa.fa-check
 							.validation-help
 								
 						.form-group.input-relative
 							input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']"  autocomplete="off")
 							.input-ok-indicator
-								span.glyphicon.glyphicon-ok
+								span.fa.fa-check
 							.validation-help
 						
 						.form-group.input-relative
 							input.form-control(type="text" name="name" placeholder="Name" data-validate="required" autocomplete="name")
 							.input-ok-indicator
-								span.glyphicon.glyphicon-ok
+								span.fa.fa-check
 							.validation-help
 										
 					.modal-footer
@@ -110,13 +110,13 @@ if globalSettings.multiUser === 'open' || inviteToken
 					.form-group.input-relative
 						input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
 						.input-ok-indicator
-							span.glyphicon.glyphicon-ok
+							span.fa.fa-check
 						.validation-help
 							
 					.form-group.input-relative
 						input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
 						.input-ok-indicator
-							span.glyphicon.glyphicon-ok
+							span.fa.fa-check
 						.validation-help
 				.modal-footer
 					.pull-left
@@ -138,7 +138,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 							.input-relative
 								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 					.row
 						.col-sm-6.form-group
@@ -146,7 +146,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 								.input-relative
 									input.form-control(type="text" name="name" placeholder="Your Name" data-validate="required")
 									.input-ok-indicator
-										span.glyphicon.glyphicon-ok
+										span.fa.fa-check
 									.validation-help
 					.row
 						.col-sm-12

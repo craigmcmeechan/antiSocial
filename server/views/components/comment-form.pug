@@ -11,12 +11,12 @@
 							!= marked(comment.details.body)
 					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
 					.input-ok-indicator.hide-until-subject-focus
-						span.glyphicon.glyphicon-ok
+						span.fa.fa-check
 					.validation-help.hide-until-subject-focus
 		.hide-until-subject-focus
 			.upload-zone
 		.form-group.input-relative.hide-until-subject-focus.comment-button-zone
 			a#post-cancel-button.btn.btn-sm.btn-default(href="#") Cancel
-			a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
-			.pull-right
+			a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="fa fa-images"></i>
+			.float-right
 				button.post-submit-button.btn.btn-sm.btn-primary Post

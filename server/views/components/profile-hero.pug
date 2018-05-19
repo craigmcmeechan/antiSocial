@@ -1,4 +1,4 @@
-img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-effect-start="0.5" data-effect-end="0.6" data-effect-units="viewport" data-effect-transform-units="" data-effect-start-css="border-radius:10px;width:150px;top:150px;right:calc(10% - 0px);" data-effect-end-css="border-radius:75px;width:42px;top:4px;right:calc(50% - 25px);" data-effect-ease="linear")
+img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-effect-start="0.5" data-effect-end="0.6" data-effect-units="viewport" data-effect-transform-units="" data-effect-start-css="border-radius:10px;width:150px;top:150px;right:calc(10% - 0px);" data-effect-end-css="border-radius:75px;width:42px;top:6px;right:calc(50% - 25px);" data-effect-ease="linear")
 
 .profile-hero(data-jsclass="scrollToController,scrollEffectsController" data-bg= profile.background.url data-effect-start="0.3" data-effect-end="0.6" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
 	.text-gradient
@@ -17,7 +17,7 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 						= ' ' + audience
 
 					span.revealer(data-target="#edit-friend-audience" data-toggle="collapse")
-						i.glyphicon.glyphicon-chevron-down
+						i.fa.fa-chevron-down
 
 					#edit-friend-audience.collapse
 						form#form.form-validation(data-jsclass="postingFormController,formValidator,saveOnChange" data-method="PUT" data-endpoint="/api/MyUsers/me/friends/"+ friend.id)

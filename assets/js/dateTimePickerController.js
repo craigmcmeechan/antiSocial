@@ -6,17 +6,21 @@
 
 		this.start = function () {
 			var local;
-			if (self.element.find('input').val()) {
-				local = moment(self.element.find('input').val()).tz(tz);
+			if (self.element.datetimepicker) {
+				if (self.element.find('input').val()) {
+					local = moment(self.element.find('input').val()).tz(tz);
+				}
+				self.element.datetimepicker({
+					'date': local ? local : '',
+					'widgetParent': self.element.closest('.autopost-zone')
+				});
 			}
-			self.element.datetimepicker({
-				'date': local ? local : '',
-				'widgetParent': self.element.closest('.autopost-zone')
-			});
 		};
 
 		this.stop = function () {
-			self.element.data('DateTimePicker').destroy();
+			if (self.element.data('DateTimePicker')) {
+				self.element.data('DateTimePicker').destroy();
+			}
 		};
 	}
 	$.fn.dateTimePickerController = GetJQueryPlugin('dateTimePickerController', dateTimePickerController);

@@ -43,3 +43,5 @@ native-app/node_modules
 native-app/platforms
 native-app/plugins
 native-app/www/dist
+
+.sass-cache/

@@ -80,11 +80,11 @@
 			var isFullScreen = self.element.closest('.carousel-container').hasClass('full-screen');
 			if (isFullScreen) {
 				this.element.carousel('pause');
-				$(this).html('<span class="glyphicon glyphicon-resize-full"></span>');
+				$(this).html('<span class="fa fa-expand"></span>');
 				self.element.closest('.carousel-container').hide();
 			}
 			else {
-				$(this).html('<span class="glyphicon glyphicon-resize-small"></span>');
+				$(this).html('<span class="fa fa-compress"></span>');
 				this.element.carousel('cycle');
 			}
 			self.element.closest('.carousel-container').toggleClass('full-screen');
@@ -182,7 +182,7 @@
 
 				if (self.settings.wantReactions) {
 					var commentsTab = $('<div class="comments-tab" data-endpoint="' + self.settings.endpoint + '/photo/' + this.json[i].uuid + '">');
-					var commentsTabHeader = $('<div class="comments-tab-header"><i class="glyphicon glyphicon-comment"></i></div>');
+					var commentsTabHeader = $('<div class="comments-tab-header"><i class="fa fa-comments"></i></div>');
 					commentsTab.append(commentsTabHeader);
 					commentsTab.append('<div class="reactions-and-comments photo-reactions">');
 					slide.append(commentsTab)

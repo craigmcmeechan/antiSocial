@@ -15,12 +15,12 @@ if photos && photos.length
 			ol.carousel-indicators
 			div.inner.carousel-inner
 			a.full-screen(href="#" data-no-hijax="true")
-				<span class="glyphicon glyphicon-resize-full"></span>
+				<span class="fa fa-expand"></span>
 			if photos.length > 1
 				a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
-					<span class="glyphicon glyphicon-chevron-left"></span>
+					<span class="fa fa-chevron-left"></span>
 				a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
-					<span class="glyphicon glyphicon-chevron-right"></span>
+					<span class="fa fa-chevron-right"></span>
 	.post-photos
 		.row
 			- var limit = photos.length
@@ -58,9 +58,9 @@ if photos && photos.length
 											|  more
 								.caption(data-jsclass="launchSlideshowController" data-uuid= post.uuid data-index= index)
 									
-									i.enlarge.glyphicon.glyphicon-zoom-in.pull-right
+									i.enlarge.fa.fa-search-plus.float-right
 									if user
-										i.comments.glyphicon.glyphicon-comment
+										i.comments.fa.fa-comments
 									.caption-text.hidden-digitopia-xsmall
 										h3= photo.title
 										p= photo.description

@@ -214,7 +214,7 @@
 
 			this.element.find('#post-cancel-button').confirmation({
 				'container': 'body',
-				'title': null,
+				'title': 'Confirm',
 				'onCancel': function () {},
 				'onConfirm': function () {
 					self.hideForm();
@@ -251,7 +251,7 @@
 		this.stop = function () {
 			this.element.off('focusin', this.element.data('focus-target'));
 			this.element.off('click', '#post-submit');
-			this.element.find('#post-cancel-button').confirmation('destroy');
+			this.element.find('#post-cancel-button').confirmation('dispose');
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
 			this.element.off('click', '#post-autopost-button');

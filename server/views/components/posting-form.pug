@@ -22,7 +22,7 @@
 					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
 						
 					.input-ok-indicator
-						span.glyphicon.glyphicon-ok
+						span.fa.fa-check
 					.validation-help
 						
 			
@@ -37,10 +37,10 @@
 				a#post-cancel-button.btn.btn-sm.btn-default(href="#") Cancel
 				if !editing
 					a#post-upload-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom")
-						i.glyphicon.glyphicon-upload
+						i.fa.fa-images
 				if environment.GOOGLE_MAPS_API_KEY
 					a#post-geo-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom")
-						i.glyphicon.glyphicon-map-marker
+						i.fa.fa-map-marker
 							
 				-var canEditAutopost = true
 				if editing && post.posted
@@ -48,8 +48,8 @@
 					
 				if canEditAutopost
 					a#post-autopost-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Autopost" data-placement="bottom")
-						i.glyphicon.glyphicon-calendar
-				.pull-right
+						i.fa.fa-calendar
+				.float-right
 					button.post-submit-button.btn.btn-sm.btn-primary Post
 
 			.geo-zone
@@ -93,4 +93,4 @@
 					.input-group.date(data-jsclass="dateTimePickerController")
 						input.form-control(type='text' name="autopost" value= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
 						span.input-group-addon
-							span.glyphicon.glyphicon-calendar
+							span.fa.fa-calendar

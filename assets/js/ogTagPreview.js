@@ -39,17 +39,17 @@
 				}
 
 				caption.append('<div class="share-link"><i class="fa fa-share-square"></i></div>');
-				caption.append('<h3>' + title + '<i class="glyphicon glyphicon-chevron-right"></i></h3>');
+				caption.append('<h3>' + title + '<i class="fa fa-chevron-right"></i></h3>');
 				if (description) {
 					caption.append('<h4>' + description + '</h4>');
 				}
-				caption.append('<h4>go to ' + parseUri(self.url).host + ' <i class="glyphicon glyphicon-chevron-right"></i></h4>');
+				caption.append('<h4>go to ' + parseUri(self.url).host + ' <i class="fa fa-chevron-right"></i></h4>');
 				caption.append('<small><em>' + site + '</em></small>');
 				caption.append('</div>');
 				self.element.append(img);
 				self.element.append(caption);
 				if (data.result.ogData.data.ogVideo) {
-					self.element.append('<div class="play"><i class="glyphicon glyphicon-play-circle"></i></div>');
+					self.element.append('<div class="play"><i class="fa fa-play-circle"></i></div>');
 				}
 				self.element.digitopiaViewport({
 					'crop': true,

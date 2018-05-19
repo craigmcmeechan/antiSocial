@@ -4,11 +4,16 @@ module.exports = function (grunt) {
 		'assets/less/*.less'
 	];
 
+	var scssFiles = [
+		'assets/scss/*.scss'
+	];
+
 	var stylusFiles = [
 		'assets/stylus/*.styl'
 	];
 
 	var jsFiles = [
+		'node_modules/popper.js/dist/umd/popper.js',
 		'node_modules/bootstrap/dist/js/bootstrap.js',
 		'node_modules/digitopia/dist/js/digitopia.js',
 		'node_modules/moment/moment.js',
@@ -22,6 +27,7 @@ module.exports = function (grunt) {
 		'node_modules/turndown/dist/turndown.js',
 		'node_modules/base-64/base64.js',
 		'node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
+		'node_modules/bootstrap-confirmation2/dist/bootstrap-confirmation.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];
@@ -34,8 +40,7 @@ module.exports = function (grunt) {
 		'node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
 		'assets/vendor/*.css',
 		'working/css/*.css',
-		'assets/css/*.css',
-		'assets/vendor/fa/*.css'
+		'assets/css/*.css'
 	];
 
 	var copyCommand = [{
@@ -70,7 +75,7 @@ module.exports = function (grunt) {
 		filter: 'isFile'
 	}, {
 		expand: true,
-		cwd: 'assets/vendor/fa/fonts',
+		cwd: 'assets/vendor/fa/web-fonts-with-css/webfonts',
 		src: ['*'],
 		dest: 'client/dist/fonts/',
 		filter: 'isFile'
@@ -81,7 +86,8 @@ module.exports = function (grunt) {
 		jsFiles,
 		stylusFiles,
 		cssFiles,
-		lessFiles
+		lessFiles,
+		scssFiles
 	);
 	grunt.initConfig({
 		jsDistDir: 'client/dist/js/',
@@ -103,6 +109,13 @@ module.exports = function (grunt) {
 			boostrap: {
 				files: {
 					'./working/css/base.css': './assets/less/base.less'
+				}
+			}
+		},
+		sass: {
+			boostrap: {
+				files: {
+					'./working/css/custom-bootstrap.css': './assets/scss/custom-bootstrap.scss'
 				}
 			}
 		},
@@ -163,13 +176,14 @@ module.exports = function (grunt) {
 		},
 		watch: {
 			files: allFiles,
-			tasks: ['less', 'stylus', 'concat']
+			tasks: ['less', 'sass', 'stylus', 'concat']
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-stylus');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -181,6 +195,7 @@ module.exports = function (grunt) {
 		'mkdir',
 		'copy',
 		'less',
+		'sass',
 		'stylus',
 		'concat',
 		'uglify',
@@ -192,6 +207,7 @@ module.exports = function (grunt) {
 		'mkdir',
 		'copy',
 		'less',
+		'sass',
 		'stylus',
 		'concat',
 		'watch'
