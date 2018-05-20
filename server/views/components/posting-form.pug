@@ -68,29 +68,36 @@
 				.checkbox-group(data-jsclass="checkboxGroupController" data-target=".posting-visibility")
 					input.posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= editing ?  JSON.stringify(post.visibility)  : '["friends"]')
 
-					label.checkbox-inline Audience:
-					label.checkbox-inline
-						input(type="checkbox" data-value="public")
-						| public
-					label.checkbox-inline
-						input(type="checkbox" data-value="community")
-						| community
+					.form-check.form-check-inline
+						label.form-check-label Audience:
+						
+					.form-check.form-check-inline
+						input.form-check-input(type="checkbox" data-value="public")
+						label.form-check-label public
+						
+					.form-check.form-check-inline
+						input.form-check-input(type="checkbox" data-value="community")
+						label.form-check-label community
+						
 					if fb
-						label.checkbox-inline
-							input(type="checkbox" data-value="facebook")
-							| facebook
-					label.checkbox-inline
-						input(type="checkbox" data-value="friends")
-						| friends
+						.form-check.form-check-inline
+							input.form-check-input(type="checkbox" data-value="facebook")
+							label.form-check-label facebook
+							
+					.form-check.form-check-inline
+						input.form-check-input(type="checkbox" data-value="friends")
+						label.form-check-label friends
+						
 					if user && user.audiences
 						for audience in user.audiences
-							label.checkbox-inline
-								input(type="checkbox" data-value= audience)
-								= audience
+							.form-check.form-check-inline
+								input.form-check-input(type="checkbox" data-value= audience)
+								label.form-check-label audience
 			
 			.autopost-zone
 				.form-group.input-relative
-					.input-group.date(data-jsclass="dateTimePickerController")
-						input.form-control(type='text' name="autopost" value= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
-						span.input-group-addon
-							span.fa.fa-calendar
+					.input-group.date
+						input.form-control(type='datetime-local' name="autopost" value= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
+						.input-group-append
+							span.input-group-text
+								span.fa.fa-calendar

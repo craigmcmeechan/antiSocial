@@ -4,8 +4,8 @@
 		form.form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button" data-modal="#login-form")
 			.modal-content
 				.modal-header
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title">Login</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				.modal-body
 					.row
 						.col-sm-6.form-group
@@ -23,7 +23,7 @@
 									span.fa.fa-check
 								.validation-help
 				.modal-footer
-					.pull-left
+					.float-left
 						a(href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal") Forgot Password
 						if globalSettings.multiUser === 'open'
 							| &nbsp;|&nbsp;
@@ -35,8 +35,8 @@
 		form.form.form-validation(action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.")
 			.modal-content
 				.modal-header
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title">Recover Password</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				.modal-body
 					.row
 						.col-sm-6.form-group
@@ -47,7 +47,7 @@
 									span.fa.fa-check
 								.validation-help
 				.modal-footer
-					.pull-left
+					.float-left
 						a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Login
 						if globalSettings.multiUser === 'open'
 							a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
@@ -60,8 +60,8 @@ if globalSettings.multiUser === 'open' || inviteToken
 			form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
 				.modal-content
 					.modal-header
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title">Register</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					.modal-body
 						.form-group.input-relative
 							input.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email" autocomplete="email")
@@ -94,7 +94,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 							.validation-help
 										
 					.modal-footer
-						.pull-left
+						.float-left
 							a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Already Have Account
 						button#register-button.btn.btn-primary Sign Up
 						
@@ -104,8 +104,8 @@ if globalSettings.multiUser === 'open' || inviteToken
 			input(type="hidden" name="access_token" value= passwordResetToken)
 			.modal-content
 				.modal-header
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title">Reset Password</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				.modal-body
 					.form-group.input-relative
 						input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
@@ -119,7 +119,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 							span.fa.fa-check
 						.validation-help
 				.modal-footer
-					.pull-left
+					.float-left
 						a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Login
 
 					button#reset-button.btn.btn-primary Reset Password
@@ -129,8 +129,8 @@ if globalSettings.multiUser === 'open' || inviteToken
 		form.form.form-validation(action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.")
 			.modal-content
 				.modal-header
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title">Request an Account on This Server</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				.modal-body
 					.row
 						.col-sm-6.form-group
@@ -159,8 +159,8 @@ if globalSettings.multiUser === 'open' || inviteToken
 	.modal-dialog(role="document")
 		.modal-content
 			.modal-header
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title">Edit post</h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			.modal-body
 				| edit form here
 
@@ -168,8 +168,8 @@ if globalSettings.multiUser === 'open' || inviteToken
 	.modal-dialog(role="document")
 		.modal-content
 			.modal-header
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title">Edit comment</h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			.modal-body
 				| edit form here
 
@@ -177,7 +177,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 	.modal-dialog(role="document")
 		.modal-content
 			.modal-header
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title">Share Post</h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			.modal-body
 				include posting-form

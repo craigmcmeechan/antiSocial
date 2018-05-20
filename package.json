@@ -14,7 +14,6 @@
     "body-parser": "^1.17.2",
     "bootstrap": "^4.1.1",
     "bootstrap-confirmation2": "^4.0.0",
-    "bootstrap-material-design": "^4.1.1",
     "bunyan": "^1.8.9",
     "bunyan-sentry-stream": "^1.2.1",
     "compression": "^1.0.3",

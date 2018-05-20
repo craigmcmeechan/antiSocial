@@ -29,14 +29,14 @@
 			$(self.element).find('.active').removeClass('active');
 
 			if (!root[2]) {
-				$('#subnav-posts').addClass('active');
+				$('#subnav-posts a').addClass('active');
 			}
 			else {
 				if (root[2] === 'photos') {
-					$('#subnav-photos').addClass('active');
+					$('#subnav-photos a').addClass('active');
 				}
 				if (root[2] === 'friends') {
-					$('#subnav-friends').addClass('active');
+					$('#subnav-friends a').addClass('active');
 				}
 			}
 			// deselect last nav item

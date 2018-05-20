@@ -17,14 +17,12 @@ block content
 
 				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/api/MyUsers/me")
 					.form-group
-							.checkbox
-								label
-									if user.discoverable
-										input(type="checkbox" name="discoverable" checked)
-									else
-										input(type="checkbox" name="discoverable")
-
-									| Discoverable (Public posts and profile visible to search engines)
+						.form-check
+							if user.discoverable
+								input.form-check-input(type="checkbox" name="discoverable" checked)
+							else
+								input.form-check-input(type="checkbox" name="discoverable")
+							label.form-check-label Discoverable (Public posts and profile visible to search engines)
 
 					if !user.username
 						.form-group
@@ -82,45 +80,40 @@ block content
 									option(value="all") All friends
 					h2 Email Notifications
 					.form-group
-						.checkbox
-							label
-								if userSettings.notifications_digest
-									input(type="checkbox" name="notifications_digest" checked)
-								else
-									input(type="checkbox" name="notifications_digest")
-								| Daily Activity Recap
+						.form-check
+							if userSettings.notifications_digest
+								input.form-check-input(type="checkbox" name="notifications_digest" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_digest")
+							label.form-check-label Daily Activity Recap
 					.form-group
-						.checkbox
-							label
-								if userSettings.notifications_friend_request
-									input(type="checkbox" name="notifications_friend_request" checked)
-								else
-									input(type="checkbox" name="notifications_friend_request")
-								| Friend Request
+						.form-check
+							if userSettings.notifications_friend_request
+								input.form-check-input(type="checkbox" name="notifications_friend_request" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_friend_request")
+							label.form-check-label Friend Request
 					.form-group
-						.checkbox
-							label
-								if userSettings.notifications_posts
-									input(type="checkbox" name="notifications_posts" checked)
-								else
-									input(type="checkbox" name="notifications_posts")
-								| Friend Posts
+						.form-check
+							if userSettings.notifications_posts
+								input.form-check-input(type="checkbox" name="notifications_posts" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_posts")
+							label.form-check-label Friend Posts
 					.form-group
-						.checkbox
-							label
-								if userSettings.notifications_reactions
-									input(type="checkbox" name="notifications_reactions" checked)
-								else
-									input(type="checkbox" name="notifications_reactions")
-								| Reactions to my Posts
+						.form-check
+							if userSettings.notifications_reactions
+								input.form-check-input(type="checkbox" name="notifications_reactions" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_reactions")
+							label.form-check-label Reactions to my Posts
 					.form-group
-						.checkbox
-							label
-								if userSettings.notifications_comments
-									input(type="checkbox" name="notifications_comments" checked)
-								else
-									input(type="checkbox" name="notifications_comments")
-								| Comments on my Posts
+						.form-check
+							if userSettings.notifications_comments
+								input.form-check-input(type="checkbox" name="notifications_comments" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_comments")
+							label.form-check-label Comments on my Posts
 									
 				- var fb,tw
 				if user.identities()
@@ -213,13 +206,12 @@ block content
 									span.fa.fa-check
 								.validation-help
 						.form-group
-							.checkbox
-								label
-									if globalSettings.communityChannel
-										input(type="checkbox" name="communityChannel" checked)
-									else
-										input(type="checkbox" name="communityChannel")
-									| Community Channel
+							.form-check
+								if globalSettings.communityChannel
+									input.form-check-input(type="checkbox" name="communityChannel" checked)
+								else
+									input.form-check-input(type="checkbox" name="communityChannel")
+								label.form-check-label Community Channel
 						
 						if globalSettings.instance
 							.form-group
