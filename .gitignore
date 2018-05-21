@@ -45,3 +45,4 @@ native-app/plugins
 native-app/www/dist
 
 .sass-cache/
+docs/
