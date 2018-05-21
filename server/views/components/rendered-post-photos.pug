@@ -17,9 +17,9 @@ if photos && photos.length
 			a.full-screen(href="#" data-no-hijax="true")
 				<span class="fa fa-expand"></span>
 			if photos.length > 1
-				a.left.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
+				a.carousel-control.carousel-control-prev(href= "#" + post.uuid data-no-hijax="true" data-slide="prev")
 					<span class="fa fa-chevron-left"></span>
-				a.right.carousel-control(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
+				a.carousel-control.carousel-control-next(href= "#" + post.uuid data-no-hijax="true" data-slide="next")
 					<span class="fa fa-chevron-right"></span>
 	.post-photos
 		.row

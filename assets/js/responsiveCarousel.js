@@ -27,12 +27,12 @@
 				self.doLazy();
 			});
 
-			this.element.on('click', '.carousel-control.left', function (e) {
+			this.element.on('click', '.carousel-control-prev', function (e) {
 				e.preventDefault();
 				self.element.carousel('prev');
 			});
 
-			this.element.on('click', '.carousel-control.right', function (e) {
+			this.element.on('click', '.carousel-control-next', function (e) {
 				e.preventDefault();
 				self.element.carousel('next');
 			});
@@ -71,8 +71,8 @@
 			this.element.carousel('pause');
 			this.element.off('slide.bs.carousel');
 			this.element.off('slid.bs.carousel');
-			this.element.off('click', '.carousel-control.left');
-			this.element.off('click', '.carousel-control.right');
+			this.element.off('click', '.carousel-control-prev');
+			this.element.off('click', '.carousel-control-next');
 			this.element.off('click', '.comments-tab-header');
 		};
 
@@ -135,7 +135,7 @@
 			// iterate over the json objects
 			for (var i = 0; i < this.json.length; i++) {
 				// create a slide with the class .item which boostrap carousel will manage
-				var slide = $('<div class="item" data-sequence="' + i + '">');
+				var slide = $('<div class="item carousel-item" data-sequence="' + i + '">');
 
 				// if it's the first one mark it a active
 				if (i === 0) {
