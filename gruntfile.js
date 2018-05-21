@@ -210,6 +210,7 @@ module.exports = function (grunt) {
 		'sass',
 		'stylus',
 		'concat',
+		'jsdoc',
 		'watch'
 	]);
 };

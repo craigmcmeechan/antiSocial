@@ -24,14 +24,14 @@ module.exports = function (server) {
 	 * requestor. Otherwise a 404 error is returned
 	 *
 	 * @name Get user's individual post as JSON object or as an HTML page
-	 * @route {GET} /:username/post/:postId[.json]
-	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
-	 * @routeparam {String} :postId Id of post
-	 * @routeparam {String} .json Append the .json suffix for JSON response otherwise HTML is returned
-	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
-	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
-	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
-	 * @returns {JSON|HTML} If .json is requested the post JSON object, otherwise HTML
+	 * @path {GET} /:username/post/:postId[.json]
+	 * @params {String} :username Username of user on this server or a friend of the logged in user
+	 * @params {String} :postId Id of post
+	 * @params {String} .json Append the .json suffix for JSON response otherwise HTML is returned
+	 * @auth Anonymous, with valid user credentials or with valid friend credentials
+	 * @header {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @header {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @response {JSON|HTML} If .json is requested the post JSON object, otherwise HTML
 	 */
 
 	router.get(postRE, getCurrentUser(), checkNeedProxyRewrite('post'), getFriendAccess(), function (req, res, next) {
