@@ -165,12 +165,14 @@ module.exports = function (grunt) {
 				}
 			}
 		},
-		jsdoc: {
-			dist: {
-				src: ['server/boot/*.js'],
+		jsdoc2md: {
+			oneOutputFile: {
+				src: 'server/boot/*.js',
+				dest: 'docs/api.md'
+			},
+			withOptions: {
 				options: {
-					destination: 'docs',
-					configure: 'jsdoc.conf'
+					'no-gfm': false
 				}
 			}
 		},
@@ -189,7 +191,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-jsdoc');
+	grunt.loadNpmTasks('grunt-jsdoc-to-markdown');
 
 	grunt.registerTask('default', [
 		'mkdir',
@@ -200,7 +202,7 @@ module.exports = function (grunt) {
 		'concat',
 		'uglify',
 		'cssmin',
-		'jsdoc'
+		'jsdoc2md'
 	]);
 
 	grunt.registerTask('devel', [
@@ -210,7 +212,7 @@ module.exports = function (grunt) {
 		'sass',
 		'stylus',
 		'concat',
-		'jsdoc',
+		'jsdoc2md',
 		'watch'
 	]);
 };
