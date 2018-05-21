@@ -60,9 +60,9 @@
 						
 					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
 					input#geo-location(type="hidden" value= editing ? loc : '')
-				.dropdown
-					ul#geo-pulldown.dropdown-menu
-					#geo-attributions
+				
+				#geo-pulldown.dropdown-menu.dropdown
+				#geo-attributions
 
 			.form-group.input-relative.text-center.audience-select
 				.checkbox-group(data-jsclass="checkboxGroupController" data-target=".posting-visibility")

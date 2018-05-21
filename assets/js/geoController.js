@@ -87,7 +87,7 @@
 					};
 				}
 				self.target.val(JSON.stringify(geo));
-				self.pulldown.parent().removeClass("open");
+				self.pulldown.hide();
 			});
 		};
 
@@ -139,10 +139,10 @@
 				type: []
 			}, function (results, status) {
 				if (status == google.maps.places.PlacesServiceStatus.OK) {
-					self.pulldown.empty().parent().addClass("open");
+					self.pulldown.empty().show();
 
 					for (var i = 0; i < results.length; i++) {
-						var loc = $('<li class="address">');
+						var loc = $('<a class="address dropdown-item">');
 						loc.data('location', results[i]);
 						var desc = self.getDescription(results[i]);
 						loc.html(desc);
@@ -178,7 +178,7 @@
 				};
 
 				self.placesService.textSearch(request, function (results, status) {
-					self.pulldown.empty().parent().addClass("open");
+					self.pulldown.empty().show();
 
 					var loc = $('<li class="address freeform">');
 					loc.data('location', {

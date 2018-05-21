@@ -38,20 +38,15 @@
 												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine data-is-on-my-wall= isOnMyWall)
 													button.btn-xs(data-toggle="dropdown")
 														i.fa.fa-ellipsis-h
-													ul.dropdown-menu
+													.dropdown-menu
 														if isOnMyWall
-															li
-																a.delete-post(href="#") Remove from Wall
+															a.dropdown-item.delete-post(href="#") Remove from Wall
 														else if !isMine
-															li
-																a.share-post(href="#") Share Post
-															li
-																a.hide-post(href="#") Hide Post
+															a.dropdown-item.share-post(href="#") Share Post
+															a.dropdown-item.hide-post(href="#") Hide Post
 														else
-															li 
-																a.edit-post(href="#") Edit Post
-															li 
-																a.delete-post(href="#") Delete Post
+															a.dropdown-item.edit-post(href="#") Edit Post
+															a.dropdown-item.delete-post(href="#") Delete Post
 										h4.media-heading.mt-0
 											a(href= posterUrl)= name
 											if post.about
