@@ -7,6 +7,12 @@
 <dt><a href="#POST Edit a post">POST Edit a post</a></dt>
 <dd><p>Edit a post</p>
 </dd>
+<dt><a href="#Get Edit a post">Get Edit a post</a></dt>
+<dd><p>Delete a post</p>
+</dd>
+<dt><a href="#POST Edit a post">POST Edit a post</a></dt>
+<dd><p>Create a post</p>
+</dd>
 <dt><a href="#Get user profile as JSON object or as an HTML page including posts">Get user profile as JSON object or as an HTML page including posts</a></dt>
 <dd><p>Retrieve a user profile as HTML or JSON
 The profile being requested could be a user on the server or a
@@ -160,10 +166,13 @@ get a post for edit
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /post/:postid  
+**Params**: <code>String</code> :postid is a valid post id owned by the logged in user  
+**Auth**: With valid user credentials  
+**Header**: <code>Cookie</code> access_token Request made by a logged in user on this server  
 **Code**: <code>200</code> success  
 **Code**: <code>404</code> post not found  
 **Code**: <code>401</code> unauthorized  
-**Response**: <code>JSON\|HTML</code> If .json is requested returns JSON profile object, otherwise HTML  
+**Response**: <code>HTML</code> html form for editing post  
 <a name="POST Edit a post"></a>
 
 ## POST Edit a post
@@ -171,10 +180,49 @@ Edit a post
 
 **Kind**: global variable  
 **Path**: <code>POST</code> /post/:postid  
+**Auth**: With valid user credentials  
+**Params**: <code>String</code> :postid is a valid post id owned by the logged in user  
 **Code**: <code>200</code> success  
 **Code**: <code>404</code> post not found  
 **Code**: <code>401</code> unauthorized  
-**Response**: <code>JSON\|HTML</code> If .json is requested returns JSON profile object, otherwise HTML  
+**Body**: <code>String</code> body Body of the post in valid markdown  
+**Body**: <code>String</code> geoDescription  
+**Body**: <code>Object</code> geoLocation eg. {'type':'point','coordinates':[lng,lat]}  
+**Body**: <code>Array</code> visibility Array of strings eg. ['public','friends']  
+**Body**: <code>String</code> autopost date in gmt  
+**Response**: <code>Object</code> result.status 'ok' or if error result.status has a human readable error message. eg. 'result': {'status': 'ok','flashLevel': 'success','flashMessage': 'saved'}  
+<a name="Get Edit a post"></a>
+
+## Get Edit a post
+Delete a post
+
+**Kind**: global variable  
+**Path**: <code>DELETE</code> /post/:postid  
+**Params**: <code>String</code> :postid is a valid post id owned by the logged in user  
+**Auth**: With valid user credentials  
+**Header**: <code>Cookie</code> access_token Request made by a logged in user on this server  
+**Code**: <code>200</code> success  
+**Code**: <code>404</code> post not found  
+**Code**: <code>401</code> unauthorized  
+**Response**: <code>Object</code> result.status: 'ok' or if error result.status has a human readable error message.  
+<a name="POST Edit a post"></a>
+
+## POST Edit a post
+Create a post
+
+**Kind**: global variable  
+**Path**: <code>POST</code> /post/  
+**Auth**: With valid user credentials  
+**Code**: <code>200</code> success  
+**Code**: <code>404</code> post not found  
+**Code**: <code>401</code> unauthorized  
+**Body**: <code>String</code> body Body of the post in valid markdown  
+**Body**: <code>String</code> geoDescription  
+**Body**: <code>Object</code> geoLocation eg. {'type':'point','coordinates':[lng,lat]}  
+**Body**: <code>Array</code> visibility Array of strings eg. ['public','friends']  
+**Body**: <code>String</code> autopost date in gmt  
+**Response**: <code>Object</code> result.status: 'ok' 'result.uuid': post.uuid
+   }  
 <a name="Get user profile as JSON object or as an HTML page including posts"></a>
 
 ## Get user profile as JSON object or as an HTML page including posts

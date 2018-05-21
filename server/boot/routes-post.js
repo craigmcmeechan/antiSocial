@@ -14,10 +14,13 @@ module.exports = function (server) {
    *
    * @name Get Edit a post
    * @path {GET} /post/:postid
+   * @params {String} :postid is a valid post id owned by the logged in user
+   * @auth With valid user credentials
+   * @header {Cookie} access_token Request made by a logged in user on this server
    * @code {200} success
    * @code {404} post not found
    * @code {401} unauthorized
-   * @response {JSON|HTML} If .json is requested returns JSON profile object, otherwise HTML
+   * @response {HTML} html form for editing post
    */
 
   router.get('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
@@ -65,11 +68,19 @@ module.exports = function (server) {
    *
    * @name POST Edit a post
    * @path {POST} /post/:postid
+   * @auth With valid user credentials
+   * @params {String} :postid is a valid post id owned by the logged in user
    * @code {200} success
    * @code {404} post not found
    * @code {401} unauthorized
-   * @response {JSON|HTML} If .json is requested returns JSON profile object, otherwise HTML
+   * @body {String} body Body of the post in valid markdown
+   * @body {String} geoDescription
+   * @body {Object} geoLocation eg. {'type':'point','coordinates':[lng,lat]}
+   * @body {Array} visibility Array of strings eg. ['public','friends']
+   * @body {String} autopost date in gmt
+   * @response {Object} result.status 'ok' or if error result.status has a human readable error message. eg. 'result': {'status': 'ok','flashLevel': 'success','flashMessage': 'saved'}
    */
+
   router.post('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
@@ -239,7 +250,21 @@ module.exports = function (server) {
     });
   });
 
-  // delete a post
+
+  /**
+   * Delete a post
+   *
+   * @name Get Edit a post
+   * @path {DELETE} /post/:postid
+   * @params {String} :postid is a valid post id owned by the logged in user
+   * @auth With valid user credentials
+   * @header {Cookie} access_token Request made by a logged in user on this server
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @response {Object} result.status: 'ok' or if error result.status has a human readable error message.
+   */
+
   // TODO improve error handling
   router.delete('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
@@ -338,7 +363,23 @@ module.exports = function (server) {
       });
   });
 
-  // create a new post
+  /**
+   * Create a post
+   *
+   * @name POST Edit a post
+   * @path {POST} /post/
+   * @auth With valid user credentials
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @body {String} body Body of the post in valid markdown
+   * @body {String} geoDescription
+   * @body {Object} geoLocation eg. {'type':'point','coordinates':[lng,lat]}
+   * @body {Array} visibility Array of strings eg. ['public','friends']
+   * @body {String} autopost date in gmt
+   * @response {Object} result.status: 'ok' 'result.uuid': post.uuid
+   }
+   */
   router.post('/post', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
@@ -484,9 +525,10 @@ module.exports = function (server) {
         });
       }
       res.send({
-        'status': 'ok',
-        'uuid': post.uuid,
-        'post': post
+        'result': {
+          'status': 'ok',
+          'uuid': post.uuid
+        }
       });
     });
   });
