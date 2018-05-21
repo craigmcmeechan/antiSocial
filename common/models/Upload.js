@@ -22,7 +22,7 @@ module.exports = function (Upload) {
 				// delete the files from s3
 				async.map(file.imageSet, function (image, doneDeleting) {
 
-					if (!process.env.LOCAL_UPLOADS) {
+					if (process.env.LOCAL_UPLOADS !== 'true') {
 
 						Upload.app.models.Container.removeFile(file.bucket, image.key, function (err) {
 							doneDeleting(err);

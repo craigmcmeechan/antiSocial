@@ -36,6 +36,12 @@ services:
       - frontend
     env_file: ~/antisocial-docker-mongo.env
 
+  watchtower:
+    image: v2tec/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 1
+
 networks:
   frontend:
 

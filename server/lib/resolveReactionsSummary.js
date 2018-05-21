@@ -31,7 +31,7 @@ module.exports = function resolveReactionsSummary(item, done) {
 						if (!name) {
 							name = reaction.source;
 						}
-						var mention = '<a href="' + reaction.source + '">' + name + '</a>';
+						var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(reaction.source) + '">' + name + '</a>';
 
 						mentions.push(mention);
 					}

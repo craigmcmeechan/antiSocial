@@ -60,23 +60,31 @@
 				var geo = {};
 				if (loc.freeform) {
 					geo = {
-						'description': loc.description,
-						'loc': [
-							self.position.lng(),
-							self.position.lat()
-						]
-					}
+						'source': 'user',
+						'description': loc.name,
+						'loc': {
+							'type': 'point',
+							'coordinates': [
+								self.position.lng(),
+								self.position.lat()
+							]
+						}
+					};
 				}
 				else {
-					var desc = self.getDescription(loc);
+					var desc = loc.name;
 					self.element.val(desc);
 					geo = {
+						'source': 'google',
 						'description': desc,
-						'loc': [
-							loc.geometry.location.lng(),
-							loc.geometry.location.lat()
-						]
-					}
+						'loc': {
+							'type': 'point',
+							'coordinates': [
+								loc.geometry.location.lng(),
+								loc.geometry.location.lat()
+							]
+						}
+					};
 				}
 				self.target.val(JSON.stringify(geo));
 				self.pulldown.parent().removeClass("open");
@@ -93,18 +101,30 @@
 			//console.log('formatted address:', place.formatted_address);
 			//console.log('vicinity:', place.vicinity);
 			//console.log('types:', place.types);
+			var desc = '';
+			if (place.icon) {
+				desc += '<img src="' + place.icon + '" style="height:.8em;padding-bottom:2px;"> ';
+			}
 
-			var desc = place.name ? place.name + ', ' : '';
-			if (place.formatted_address) {
-				if (place.types.indexOf('political') !== -1) {
-					desc = place.formatted_address;
+			desc += place.name;
+
+			if (_.has(place, 'geometry.location')) {
+				var distance = getDistance(self.position, place.geometry.location);
+				desc += ' <span class="distance">(' + (Math.ceil(distance / 100) / 10) + 'km)</span>';
+			}
+
+			if (0) {
+				if (place.formatted_address) {
+					if (place.types.indexOf('political') !== -1) {
+						desc = place.formatted_address;
+					}
+					else {
+						desc += place.formatted_address;
+					}
 				}
 				else {
-					desc += place.formatted_address;
+					desc += place.vicinity;
 				}
-			}
-			else {
-				desc += place.vicinity;
 			}
 			return desc;
 		}
@@ -148,27 +168,28 @@
 				var address = $(self.element).val();
 
 				var spherical = google.maps.geometry.spherical;
-				var southWest = spherical.computeOffset(self.position, 300, -135);
-				var northEast = spherical.computeOffset(self.position, 300, 45);
+				var southWest = spherical.computeOffset(self.position, 1000, -135);
+				var northEast = spherical.computeOffset(self.position, 1000, 45);
 
 				var request = {
 					bounds: new google.maps.LatLngBounds(southWest, northEast),
-					radius: '500',
+					radius: '1000',
 					query: address
 				};
 
 				self.placesService.textSearch(request, function (results, status) {
-					if (status == google.maps.places.PlacesServiceStatus.OK) {
-						self.pulldown.empty().parent().addClass("open");
+					self.pulldown.empty().parent().addClass("open");
 
-						var loc = $('<li class="address">');
-						loc.data('location', {
-							'freeform': true,
-							'loc': self.location,
-							'description': address
-						});
-						loc.html(address);
-						self.pulldown.append(loc);
+					var loc = $('<li class="address freeform">');
+					loc.data('location', {
+						'freeform': true,
+						'loc': self.position,
+						'name': address
+					});
+					loc.html('<i class="fa fa-location-arrow"></i> ' + address + ' <span class="distance">(gps loc)</span>');
+					self.pulldown.append(loc);
+
+					if (status == google.maps.places.PlacesServiceStatus.OK) {
 
 						for (var i = 0; i < results.length; i++) {
 							var loc = $('<li class="address">');
@@ -200,6 +221,22 @@
 			}, 500);
 		};
 	}
+
+	var rad = function (x) {
+		return x * Math.PI / 180;
+	};
+
+	var getDistance = function (p1, p2) {
+		var R = 6378137; // Earth’s mean radius in meter
+		var dLat = rad(p2.lat() - p1.lat());
+		var dLong = rad(p2.lng() - p1.lng());
+		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) *
+			Math.sin(dLong / 2) * Math.sin(dLong / 2);
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		var d = R * c;
+		return d; // returns the distance in meter
+	};
 
 	$.fn.geoController = GetJQueryPlugin('geoController', geoController);
 })(jQuery);

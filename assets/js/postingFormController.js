@@ -199,6 +199,9 @@
 					}
 					else {
 						self.hideForm();
+						if (self.share) {
+							$('#post-form').modal('hide');
+						}
 						if (self.modal) {
 							$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
 							$(self.modal).find('.modal-body').empty().append('loading...');
@@ -266,6 +269,7 @@
 
 		this.setShareMode = function (endpoint) {
 			self.share = endpoint;
+			self.about = null;
 			$.get(endpoint + '&share=1', function (data) {
 				var dom = $(data);
 				var post = dom.find('.post');
