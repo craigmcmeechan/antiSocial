@@ -9,7 +9,17 @@ var async = require('async');
 module.exports = function (server) {
   var router = server.loopback.Router();
 
-  // edit a post
+  /**
+   * get a post for edit
+   *
+   * @name Get Edit a post
+   * @path {GET} /post/:postid
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @response {JSON|HTML} If .json is requested returns JSON profile object, otherwise HTML
+   */
+
   router.get('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
@@ -49,6 +59,17 @@ module.exports = function (server) {
     });
   });
 
+
+  /**
+   * Edit a post
+   *
+   * @name POST Edit a post
+   * @path {POST} /post/:postid
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @response {JSON|HTML} If .json is requested returns JSON profile object, otherwise HTML
+   */
   router.post('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');

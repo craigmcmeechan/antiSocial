@@ -178,7 +178,7 @@ module.exports = function (grunt) {
 		},
 		watch: {
 			files: allFiles,
-			tasks: ['less', 'sass', 'stylus', 'concat']
+			tasks: ['less', 'sass', 'stylus', 'concat', 'jsdoc2md']
 		}
 	});
 
