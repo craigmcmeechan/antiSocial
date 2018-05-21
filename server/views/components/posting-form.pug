@@ -97,7 +97,7 @@
 			.autopost-zone
 				.form-group.input-relative
 					.input-group.date
-						input.form-control(type='datetime-local' name="autopost" value= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
+						input.form-control(type='datetime-local' name="autopost" data-val-gmt= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
 						.input-group-append
 							span.input-group-text
 								span.fa.fa-calendar

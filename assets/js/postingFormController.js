@@ -18,6 +18,12 @@
 		this.share = null;
 
 		this.start = function () {
+			var timestamp = self.element.find('[name=autopost]').data('val-gmt');
+			if (timestamp) {
+				var mytz = moment.tz.guess();
+				self.element.find('[name=autopost]').val(moment(timestamp).tz(mytz).format('YYYY-MM-DDTHH:mm:ss'));
+			}
+
 			if (self.element.find('.upload-zone')) {
 				var previewTemplate =
 					'\
