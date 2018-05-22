@@ -20,7 +20,7 @@ block content
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 		include profile-tabs
 					
-		.container-fluid.content-padding-top.content.no-gutters
+		.container-fluid.content-padding-top.content
 			.row
 				.col-sm-8.left-column(style="background-color:white;padding:15px")
 					if !friends 
@@ -32,9 +32,8 @@ block content
 						if friendMap[friend.v] && friend.v !== myEndpoint
 							- count++
 							.media.friend-card
-								.media-left
-									if profileMap[friend.v]
-										img(src = profileMap[friend.v].profile.photo.url)
+								if profileMap[friend.v]
+									img(src = profileMap[friend.v].profile.photo.url)
 								.media-body
 									a(href="/proxy-profile?endpoint=" + encodeURIComponent(friend.v))= friend.value.name
 					if !count
@@ -47,9 +46,8 @@ block content
 						if !friendMap[friend.v] && friend.v !== myEndpoint
 							- count++
 							.media.friend-card
-								.media-left
-									if profileMap[friend.v]
-										img(src = profileMap[friend.v].profile.photo.url)
+								if profileMap[friend.v]
+									img(src = profileMap[friend.v].profile.photo.url)
 								.media-body
 									a(href="/proxy-profile?endpoint=" + encodeURIComponent(friend.v))= friend.value.name
 					if !count

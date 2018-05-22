@@ -29,6 +29,14 @@ a
 		outline:none
 		text-decoration:none
 
+button:focus
+	outline: none !important
+	box-shadow: none !important
+
+.btn:focus
+	outline: none !important
+	box-shadow: none !important
+
 .header-logo
 	height:30px
 	width:30px
@@ -36,6 +44,7 @@ a
 	background-size: cover
 	background-repeat:no-repeat
 	background-position: center center
+	margin-right:20px
 
 .container-fluid
 	max-width:1024px
@@ -88,23 +97,10 @@ a
 		font-size: 3em
 
 #content
-	margin-top:50px
+	margin-top: 56px
 	.content-padding-top
 		padding-top:15px
 		padding-bottom:15px
-
-	.mobile-no-gutters
-		.digitopia-xsmall &
-			padding-right: 0
-			padding-left: 0
-			.newsfeed-item
-				border-radius: 0px
-			.row
-				margin-right: 0
-				margin-left: 0
-				& > [class^="col-"], & > [class*=" col-"]
-					padding-right: 0
-					padding-left: 0
 
 .feed-controls
 	margin-bottom:7px
@@ -191,7 +187,7 @@ img.avatar
 	z-index:1030
 	border-radius: 75px
 	width: 42px
-	top: 4px
+	top: 6px
 	right: calc(50% - 25px)
 	.modal-open &
 		display:none
@@ -209,7 +205,7 @@ img.avatar
 		background: linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)
 		padding-bottom:50px
 	.text-overlay
-		margin-top: 50px;
+		margin-top: 56px;
 		color:white
 		a
 			color:white
@@ -220,13 +216,7 @@ img.avatar
 	background-color:white
 
 .subnav-tabs
-	margin-top:-38px
 	border-bottom: none
-	li
-		a
-			background-color:rgba(255,255,255,.6)
-			padding:7px
-			color:#333
 
 #ajax-status
 	position:fixed
@@ -468,6 +458,8 @@ img.avatar
 		font-size:18px
 		border-color: #666
 		clear: both
+		border-left: thick solid
+		padding-left: 1rem
 	div
 		clear: both
 	ul
@@ -543,7 +535,8 @@ img.avatar
 				border:none
 				background-color:rgba(0,0,0,0)
 				&:focus
-					outline: none
+					outline: none !important;
+					box-shadow: none !important;
 			.dropdown-menu
 				font-size: .75em
 				text-align:left
@@ -601,6 +594,7 @@ img.avatar
 			background: linear-gradient(to right bottom, rgba(0,0,0,.9), rgba(0,0,0,.6))
 			&.full-width
 				min-height:50vh
+				min-width:100%
 			.more-photos
 				background-color:rgba(0,0,0,.5)
 				color:white
@@ -717,13 +711,14 @@ img.avatar
 			.indicator
 				padding-left:7px
 				&:after
-					font-family: 'Glyphicons Halflings'
-					content: "\e114"
+					font-family: 'Font Awesome 5 Free'
+					font-weight: 900;
+					content: "\F078"
 					color: #FF8166
 			&.collapsed
 				.indicator
 					&:after
-						content: "\e080";
+						content: "\F054";
 
 		.comment
 			.thumb-container
@@ -856,6 +851,7 @@ img.avatar
 .menu-icon-placeholder
 	width:75px
 	position:relative
+	margin-top:-6px
 .menubar-thumb
 	position:absolute
 	right:16px
@@ -892,8 +888,15 @@ img.avatar
 	.address
 		padding-left:.5em
 		padding-right:.5em
+		padding-bottom:.2em
+		padding-top:.2em
 		cursor:pointer
 		&:hover
 			background-color:#eee
+	.freeform
+		font-style: italic
+	.distance
+		color:#ccc
+
 .position-relative
 	position:relative

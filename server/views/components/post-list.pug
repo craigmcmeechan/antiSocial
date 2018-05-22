@@ -29,33 +29,28 @@
 									if !user
 										- posterUrl = endpoint
 
-									.media-left
-										a(href= posterUrl)
-											img.media-object(src= thumb)
+									a(href= posterUrl)
+										img.media-object.mr-2(src= thumb)
+											
 									.media-body
 										if !forShare
-											.post-actions.pull-right
+											.post-actions.float-right
 												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine data-is-on-my-wall= isOnMyWall)
 													button.btn-xs(data-toggle="dropdown")
 														i.fa.fa-ellipsis-h
-													ul.dropdown-menu
+													.dropdown-menu
 														if isOnMyWall
-															li
-																a.delete-post(href="#") Remove from Wall
+															a.dropdown-item.delete-post(href="#") Remove from Wall
 														else if !isMine
-															li
-																a.share-post(href="#") Share Post
-															li
-																a.hide-post(href="#") Hide Post
+															a.dropdown-item.share-post(href="#") Share Post
+															a.dropdown-item.hide-post(href="#") Hide Post
 														else
-															li 
-																a.edit-post(href="#") Edit Post
-															li 
-																a.delete-post(href="#") Delete Post
-										h4.media-heading
+															a.dropdown-item.edit-post(href="#") Edit Post
+															a.dropdown-item.delete-post(href="#") Delete Post
+										h4.media-heading.mt-0
 											a(href= posterUrl)= name
 											if post.about
-												span.glyphicon.glyphicon-arrow-right.target-arrow
+												span.fa.fa-arrow-right.target-arrow
 												a(href= proxyEndPoint(post.about,user))= about.name
 										div.secondary
 											
@@ -68,14 +63,14 @@
 											div
 												.visibility
 													if post.visibility.indexOf('public') !== -1
-														i.glyphicon.glyphicon-globe
+														i.fa.fa-globe
 													else
-														i.glyphicon.glyphicon-eye-open
+														i.fa.fa-eye
 													= ' ' + post.visibility.join(', ')
 												if isPublic && !isPermalink
 													.permalink
 														a(href= postEndpoint)
-															i.glyphicon.glyphicon-link
+															i.fa.fa-link
 												if !post.posted
 													= ' (pending '
 													span.timestamp(data-timestamp= moment(post.autopost).toISOString() data-format="absolute")
@@ -83,7 +78,7 @@
 												
 											if post.geoDescription
 												.post-geo
-													<i class="glyphicon glyphicon-map-marker"></i>
+													<i class="fa fa-map-marker"></i>
 													= ' ' + post.geoDescription 
 													
 

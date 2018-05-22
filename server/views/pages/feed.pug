@@ -6,7 +6,7 @@ block seo
 
 block content
 	div(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
-		.container-fluid.content-padding-top.content.no-gutters
+		.container-fluid.content-padding-top.content
 			.row
 				.col-sm-8.left-column
 					#the-posting-form
@@ -18,7 +18,7 @@ block content
 						if userSettings.feedSortOrder === 'activity'
 							| Sorted by Activity 
 						
-						.pull-right
+						.float-right
 							if userSettings.feedSortOrder !== 'post'
 								a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"post"}' data-endpoint= '/user-settings') Sort By Posting
 								

@@ -56,11 +56,12 @@
 
 			self.loading = true;
 
+			var endpoint = self.endpoint;
 			if (self.highwater) {
-				self.endpoint += '&highwater=' + self.highwater;
+				endpoint += '&highwater=' + self.highwater;
 			}
 
-			self.pendingRequest = $.get(self.endpoint).done(function (html, textStatus, jqXHR) {
+			self.pendingRequest = $.get(endpoint).done(function (html, textStatus, jqXHR) {
 				self.pendingRequest = null;
 				self.loading = false;
 

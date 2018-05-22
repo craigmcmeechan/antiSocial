@@ -14,7 +14,7 @@
 			if (self.isMine || this.isOnMyWall) {
 				this.element.find('.delete-post').confirmation({
 					'container': 'body',
-					'title': null,
+					'title': 'Confirm',
 					'placement': 'bottom',
 					'onCancel': function () {},
 					'onConfirm': function () {
@@ -49,9 +49,9 @@
 			this.element.on('click', '.share-post', function (e) {
 				e.stopPropagation();
 				e.preventDefault();
-				scrollToElement('#the-posting-form');
-				$('#the-posting-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
-				$('#the-posting-form').find('.posting-body').click().keyup().focus();
+				$('#post-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
+				$('#post-form').find('.posting-body').click().keyup().focus();
+				$('#post-form').modal();
 			});
 		};
 
@@ -59,7 +59,7 @@
 			if (self.isMine) {
 				this.element.off('click', '.edit-post');
 				this.element.off('click', '.share-post');
-				this.element.find('.delete-post').confirmation('destroy');
+				this.element.find('.delete-post').confirmation('dispose');
 			}
 		};
 

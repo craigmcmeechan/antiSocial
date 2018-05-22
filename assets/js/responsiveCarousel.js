@@ -27,12 +27,12 @@
 				self.doLazy();
 			});
 
-			this.element.on('click', '.carousel-control.left', function (e) {
+			this.element.on('click', '.carousel-control-prev', function (e) {
 				e.preventDefault();
 				self.element.carousel('prev');
 			});
 
-			this.element.on('click', '.carousel-control.right', function (e) {
+			this.element.on('click', '.carousel-control-next', function (e) {
 				e.preventDefault();
 				self.element.carousel('next');
 			});
@@ -71,8 +71,8 @@
 			this.element.carousel('pause');
 			this.element.off('slide.bs.carousel');
 			this.element.off('slid.bs.carousel');
-			this.element.off('click', '.carousel-control.left');
-			this.element.off('click', '.carousel-control.right');
+			this.element.off('click', '.carousel-control-prev');
+			this.element.off('click', '.carousel-control-next');
 			this.element.off('click', '.comments-tab-header');
 		};
 
@@ -80,11 +80,11 @@
 			var isFullScreen = self.element.closest('.carousel-container').hasClass('full-screen');
 			if (isFullScreen) {
 				this.element.carousel('pause');
-				$(this).html('<span class="glyphicon glyphicon-resize-full"></span>');
+				$(this).html('<span class="fa fa-expand"></span>');
 				self.element.closest('.carousel-container').hide();
 			}
 			else {
-				$(this).html('<span class="glyphicon glyphicon-resize-small"></span>');
+				$(this).html('<span class="fa fa-compress"></span>');
 				this.element.carousel('cycle');
 			}
 			self.element.closest('.carousel-container').toggleClass('full-screen');
@@ -135,7 +135,7 @@
 			// iterate over the json objects
 			for (var i = 0; i < this.json.length; i++) {
 				// create a slide with the class .item which boostrap carousel will manage
-				var slide = $('<div class="item" data-sequence="' + i + '">');
+				var slide = $('<div class="item carousel-item" data-sequence="' + i + '">');
 
 				// if it's the first one mark it a active
 				if (i === 0) {
@@ -182,7 +182,7 @@
 
 				if (self.settings.wantReactions) {
 					var commentsTab = $('<div class="comments-tab" data-endpoint="' + self.settings.endpoint + '/photo/' + this.json[i].uuid + '">');
-					var commentsTabHeader = $('<div class="comments-tab-header"><i class="glyphicon glyphicon-comment"></i></div>');
+					var commentsTabHeader = $('<div class="comments-tab-header"><i class="fa fa-comments"></i></div>');
 					commentsTab.append(commentsTabHeader);
 					commentsTab.append('<div class="reactions-and-comments photo-reactions">');
 					slide.append(commentsTab)

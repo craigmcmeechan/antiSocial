@@ -589,7 +589,7 @@ function getListener(server, connection) {
 										var e = new VError(err, 'Error building notification email');
 										console.log(e.message);
 										console.log(e.stack);
-										console.log(message)
+										console.log(message);
 										return cb();
 									}
 									options.profile = profile ? profile.profile : null;

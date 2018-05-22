@@ -25,15 +25,15 @@ module.exports = function (server) {
 	 * requestor.
 	 *
 	 * @name Get user's photos as JSON object or as an HTML page
-	 * @route {GET} /:username[.json]
-	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
-	 * @routeparam {String} .json Append the .json suffix for JSON response otherwise HTML is returned
-	 	 * @queryparam {String} tags Filter photos by tags. eg. ?tags=["%23randompic"] returns only photos hashtagged with #randompic (HTML mode only)
-	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
-	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
-	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
-	 * @returns {JSON} If .json is requested returns a user profile object
-	 * @returns {HTML} If .json not requested return user profile page (which includes several posts)
+	 * @path {GET} /:username[.json]
+	 * @params {String} :username Username of user on this server or a friend of the logged in user
+	 * @params {String} .json Append the .json suffix for JSON response otherwise HTML is returned
+	 	 * @query {String} tags Filter photos by tags. eg. ?tags=["%23randompic"] returns only photos hashtagged with #randompic (HTML mode only)
+	 * @auth Anonymous, with valid user credentials or with valid friend credentials
+	 * @header {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @header {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @response {JSON} If .json is requested returns a user profile object
+	 * @response {HTML} If .json not requested return user profile page (which includes several posts)
 	 	 */
 
 	router.get(friendsRE, getCurrentUser(), checkNeedProxyRewrite('friends'), getFriendAccess(), function (req, res, next) {

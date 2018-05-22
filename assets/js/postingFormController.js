@@ -18,6 +18,12 @@
 		this.share = null;
 
 		this.start = function () {
+			var timestamp = self.element.find('[name=autopost]').data('val-gmt');
+			if (timestamp) {
+				var mytz = moment.tz.guess();
+				self.element.find('[name=autopost]').val(moment(timestamp).tz(mytz).format('YYYY-MM-DDTHH:mm:ss'));
+			}
+
 			if (self.element.find('.upload-zone')) {
 				var previewTemplate =
 					'\
@@ -199,6 +205,9 @@
 					}
 					else {
 						self.hideForm();
+						if (self.share) {
+							$('#post-form').modal('hide');
+						}
 						if (self.modal) {
 							$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
 							$(self.modal).find('.modal-body').empty().append('loading...');
@@ -211,7 +220,7 @@
 
 			this.element.find('#post-cancel-button').confirmation({
 				'container': 'body',
-				'title': null,
+				'title': 'Confirm',
 				'onCancel': function () {},
 				'onConfirm': function () {
 					self.hideForm();
@@ -248,7 +257,7 @@
 		this.stop = function () {
 			this.element.off('focusin', this.element.data('focus-target'));
 			this.element.off('click', '#post-submit');
-			this.element.find('#post-cancel-button').confirmation('destroy');
+			this.element.find('#post-cancel-button').confirmation('dispose');
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
 			this.element.off('click', '#post-autopost-button');
@@ -266,6 +275,7 @@
 
 		this.setShareMode = function (endpoint) {
 			self.share = endpoint;
+			self.about = null;
 			$.get(endpoint + '&share=1', function (data) {
 				var dom = $(data);
 				var post = dom.find('.post');

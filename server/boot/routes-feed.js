@@ -223,19 +223,19 @@ module.exports = function (server) {
             if (groupItem.type === 'comment' || groupItem.type === 'react') {
               if (!hash[groupItem.source]) {
                 hash[groupItem.source] = true;
-                var mention = '<a href="' + groupItem.source + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
+                var mention = '<a href="' + proxyEndPoint(groupItem.source, currentUser) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
                 mentions.push(mention);
               }
             }
           }
 
           if (mentions.length) {
-            var summary = mentions.slice(0, 3).join(', ');
+            var summary = mentions.slice(0, 2).join(', ');
 
             if (mentions.length > 2) {
               var remainder = mentions.length - 2;
               summary += ' and ' + remainder + ' other';
-              if (mentions.length > 2) {
+              if (remainder > 1) {
                 summary += 's';
               }
             }

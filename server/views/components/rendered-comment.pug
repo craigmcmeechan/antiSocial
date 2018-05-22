@@ -15,7 +15,7 @@ if wantSummary
 				img.profile-thumb(src= thumb)
 		.comment-container
 			
-			.post-actions.pull-right
+			.post-actions.float-right
 				- var isMine = (comment.source === config.publicHost + '/' + user.username) ? 'true' : ''
 				- var postIsMine = (comment.about.replace(/\/post.*/,'') === config.publicHost + '/' + user.username) ? 'true' : ''
 				.dropdown(data-jsclass="commentActionsController" data-comment-id= comment.uuid data-is-mine= (isMine || postIsMine))
@@ -34,7 +34,7 @@ if wantSummary
 							li
 								a.hide-comment(href="#") Hide Comment
 			
-			strong.pull-left
+			strong.float-left
 				a(href= proxyEndPoint(comment.source,user))
 					span.profile-link
 						= name

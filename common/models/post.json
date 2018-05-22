@@ -47,7 +47,7 @@
       "type": "string"
     },
     "geoLocation": {
-      "type": ["number"]
+      "type": "object"
     },
     "athoritativeEndpoint": {
       "type": "string"

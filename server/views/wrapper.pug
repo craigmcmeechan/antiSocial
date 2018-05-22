@@ -5,7 +5,7 @@ html(lang="en")
 		meta(http-equiv="X-UA-Compatible" content="IE=edge")
 		meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
 		link(rel="shortcut icon" href="/favicon.ico")
-		meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui, viewport-fit=cover")
+		meta(name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no, minimal-ui, viewport-fit=cover")
 		meta(name="apple-mobile-web-app-capable" content="yes")
 		meta(name="apple-mobile-web-app-status-bar-style" content="black")
 		meta(name="apple-mobile-web-app-title" content="myAntiSocial.net")
@@ -13,6 +13,9 @@ html(lang="en")
 		link(rel="apple-touch-icon" href="/images/logo.png")
 
 		block seo
+			
+		//link(rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous")
+
 
 		if env === 'production'
 			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.min.css")
@@ -65,7 +68,7 @@ html(lang="en")
 		block controller
 
 		script(src="/dist/js/jquery.min.js")
-
+		
 		if environment.RAVEN_DSN_PUBLIC
 			script(src="https://cdn.ravenjs.com/3.13.1/raven.min.js" crossorigin="anonymous")
 			script(nonce= nonce).
