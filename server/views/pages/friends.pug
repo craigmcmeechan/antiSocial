@@ -6,8 +6,8 @@ block seo
 
 block content
 	.container-fluid.content-padding-top.content
-		.page-header
-			.pull-right
+		.page-header.mb-5
+			.float-right
 				- var myendpoint = config.publicHost + '/' + user.username;
 				- myendpoint = base64.encode(myendpoint)
 				input#myendpoint(type="text" value= myendpoint style="opacity:0;width:10px;")
@@ -35,13 +35,13 @@ block content
 						.input-relative
 							input.form-control(type="text" name="email" placeholder="Email Address" data-validate="required,email")
 							.input-ok-indicator
-								span.glyphicon.glyphicon-ok
+								span.fa.fa-check
 							.validation-help
 					.form-group
 						.input-relative
 							textarea.form-control(type="text" name="note" placeholder="Note" data-validate="required")
 							.input-ok-indicator
-								span.glyphicon.glyphicon-ok
+								span.fa.fa-check
 							.validation-help
 					button#send-invite.btn.btn-primary.btn-sm Send
 
@@ -54,10 +54,9 @@ block content
 							if friend.status === 'pending' || friend.status === 'accepted'
 								.col-4.col-sm-6
 									.media.friend-card
-										.media-left.media-top
-											img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
+										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
 										.media-body
-											.friend-controls.pull-right
+											.friend-controls.float-right
 												if friend.status === 'pending'
 													if !friend.originator
 														div

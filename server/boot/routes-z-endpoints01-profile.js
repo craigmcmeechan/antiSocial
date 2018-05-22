@@ -25,15 +25,17 @@ module.exports = function (server) {
 	 * requestor.
 	 *
 	 * @name Get user profile as JSON object or as an HTML page including posts
-	 * @route {GET} /:username[.json]
-	 * @routeparam {String} :username Username of user on this server or a friend of the logged in user
-	 * @routeparam {String} .json Append the .json suffix for JSON response otherwise HTML is returned
-	 * @queryparam {String} highwater Used for pagination or infinite scrolling of user posts. highwater is the createdOn timestamp of last post seen. (HTML mode only)
-	 * @queryparam {String} tags Filter posts by tags. eg. ?tags=["%23randompic"] returns only posts hashtagged with #randompic (HTML mode only)
-	 * @authentication Anonymous, with valid user credentials or with valid friend credentials
-	 * @headerparam {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
-	 * @headerparam {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
-	 * @returns {JSON|HTML} If .json is requested returns JSON profile object, otherwise HTML
+	 * @path {GET} /:username[.json]
+	 * @params {String} :username Username of user on this server or a friend of the logged in user
+	 * @params {String} .json Append the .json suffix for JSON response otherwise HTML is returned
+	 * @query {String} highwater Used for pagination or infinite scrolling of user posts. highwater is the createdOn timestamp of last post seen. (HTML mode only)
+	 * @query {String} tags Filter posts by tags. eg. ?tags=["%23randompic"] returns only posts hashtagged with #randompic (HTML mode only)
+	 * @auth Anonymous, with valid user credentials or with valid friend credentials
+	 * @header {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
+	 * @header {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
+	 * @code {200} success
+	 * @code {404} user not found
+	 * @response {JSON|HTML} If .json is requested returns JSON profile object, otherwise HTML
 	 */
 
 	router.get(profileRE, getCurrentUser(), checkNeedProxyRewrite('profile'), getFriendAccess(), function (req, res, next) {

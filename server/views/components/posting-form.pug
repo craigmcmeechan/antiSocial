@@ -22,7 +22,7 @@
 					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
 						
 					.input-ok-indicator
-						span.glyphicon.glyphicon-ok
+						span.fa.fa-check
 					.validation-help
 						
 			
@@ -37,10 +37,10 @@
 				a#post-cancel-button.btn.btn-sm.btn-default(href="#") Cancel
 				if !editing
 					a#post-upload-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom")
-						i.glyphicon.glyphicon-upload
+						i.fa.fa-images
 				if environment.GOOGLE_MAPS_API_KEY
 					a#post-geo-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom")
-						i.glyphicon.glyphicon-map-marker
+						i.fa.fa-map-marker
 							
 				-var canEditAutopost = true
 				if editing && post.posted
@@ -48,8 +48,8 @@
 					
 				if canEditAutopost
 					a#post-autopost-button.btn.btn-sm.btn-default(href="#" data-toggle="tooltip" title="Autopost" data-placement="bottom")
-						i.glyphicon.glyphicon-calendar
-				.pull-right
+						i.fa.fa-calendar
+				.float-right
 					button.post-submit-button.btn.btn-sm.btn-primary Post
 
 			.geo-zone
@@ -60,37 +60,44 @@
 						
 					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
 					input#geo-location(type="hidden" value= editing ? loc : '')
-				.dropdown
-					ul#geo-pulldown.dropdown-menu
-					#geo-attributions
+				
+				#geo-pulldown.dropdown-menu.dropdown
+				#geo-attributions
 
 			.form-group.input-relative.text-center.audience-select
 				.checkbox-group(data-jsclass="checkboxGroupController" data-target=".posting-visibility")
 					input.posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= editing ?  JSON.stringify(post.visibility)  : '["friends"]')
 
-					label.checkbox-inline Audience:
-					label.checkbox-inline
-						input(type="checkbox" data-value="public")
-						| public
-					label.checkbox-inline
-						input(type="checkbox" data-value="community")
-						| community
+					.form-check.form-check-inline
+						label.form-check-label Audience:
+						
+					.form-check.form-check-inline
+						input.form-check-input(type="checkbox" data-value="public")
+						label.form-check-label public
+						
+					.form-check.form-check-inline
+						input.form-check-input(type="checkbox" data-value="community")
+						label.form-check-label community
+						
 					if fb
-						label.checkbox-inline
-							input(type="checkbox" data-value="facebook")
-							| facebook
-					label.checkbox-inline
-						input(type="checkbox" data-value="friends")
-						| friends
+						.form-check.form-check-inline
+							input.form-check-input(type="checkbox" data-value="facebook")
+							label.form-check-label facebook
+							
+					.form-check.form-check-inline
+						input.form-check-input(type="checkbox" data-value="friends")
+						label.form-check-label friends
+						
 					if user && user.audiences
 						for audience in user.audiences
-							label.checkbox-inline
-								input(type="checkbox" data-value= audience)
-								= audience
+							.form-check.form-check-inline
+								input.form-check-input(type="checkbox" data-value= audience)
+								label.form-check-label audience
 			
 			.autopost-zone
 				.form-group.input-relative
-					.input-group.date(data-jsclass="dateTimePickerController")
-						input.form-control(type='text' name="autopost" value= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
-						span.input-group-addon
-							span.glyphicon.glyphicon-calendar
+					.input-group.date
+						input.form-control(type='datetime-local' name="autopost" data-val-gmt= editing && post.autopost ? post.autopost.toISOString() : '' placeholder="Autopost time")
+						.input-group-append
+							span.input-group-text
+								span.fa.fa-calendar

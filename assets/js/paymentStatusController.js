@@ -143,7 +143,7 @@
 						var line = data.upcoming.lines.data[i];
 
 						var date = new moment(data.upcoming.date * 1000).format('MM/DD/YYYY');
-						var prorate = line.proration ? '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' : '';
+						var prorate = line.proration ? '<span class="fa fa-check" aria-hidden="true"></span>' : '';
 						var startdate = new moment(line.period.start * 1000).format('MM/DD/YYYY');
 						var enddate = new moment(line.period.end * 1000).format('MM/DD/YYYY');
 						var amount = line.amount / 100;
@@ -170,12 +170,12 @@
 							line = invoice.lines.data[j];
 
 							var date = new moment(invoice.date * 1000).format('MM/DD/YYYY');
-							var prorate = line.proration ? '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' : '';
+							var prorate = line.proration ? '<span class="fa fa-check" aria-hidden="true"></span>' : '';
 							var startdate = new moment(line.period.start * 1000).format('MM/DD/YYYY');
 							var enddate = new moment(line.period.end * 1000).format('MM/DD/YYYY');
 							var amount = line.amount / 100;
 							var description = line.description;
-							var paid = invoice.paid ? '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' : '';
+							var paid = invoice.paid ? '<span class="fa fa-check" aria-hidden="true"></span>' : '';
 
 							table.append('<tr>' +
 								'<td>' + date + '</td>' +

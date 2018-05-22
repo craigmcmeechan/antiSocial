@@ -14,7 +14,7 @@
 			if (self.isMine || this.isOnMyWall) {
 				this.element.find('.delete-post').confirmation({
 					'container': 'body',
-					'title': null,
+					'title': 'Confirm',
 					'placement': 'bottom',
 					'onCancel': function () {},
 					'onConfirm': function () {
@@ -59,7 +59,7 @@
 			if (self.isMine) {
 				this.element.off('click', '.edit-post');
 				this.element.off('click', '.share-post');
-				this.element.find('.delete-post').confirmation('destroy');
+				this.element.find('.delete-post').confirmation('dispose');
 			}
 		};
 

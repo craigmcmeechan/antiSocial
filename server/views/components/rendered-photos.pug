@@ -18,7 +18,7 @@ block content
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 		include profile-tabs
 						
-		.container-fluid.content-padding-top.content.no-gutters
+		.container-fluid.content-padding-top.content
 			.row
 				.col-sm-8.left-column
 					p TODO photo organizer - create and edit albums
@@ -41,7 +41,7 @@ block content
 								if count++ === itemsPerColumn
 									- count = 1;
 									</div><div class="grid-column">
-								img.img-responsive(src = url)
+								img.img-thumbnail(src = url)
 							</div>
 				.col-sm-4
 					if user
