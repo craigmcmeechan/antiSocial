@@ -12,7 +12,7 @@ var utils = require('../lib/endpoint-utils');
 
 var friendsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/friends(\.json)?(\?.*)?$/;
 
-module.exports = function (server) {
+module.exports = function(server) {
 	var router = server.loopback.Router();
 
 	/**
@@ -26,17 +26,17 @@ module.exports = function (server) {
 	 *
 	 * @name Get user's photos as JSON object or as an HTML page
 	 * @path {GET} /:username[.json]
-	 * @params {String} :username Username of user on this server or a friend of the logged in user
+	 * @params {String} username Username of user on this server or a friend of the logged in user
 	 * @params {String} .json Append the .json suffix for JSON response otherwise HTML is returned
-	 	 * @query {String} tags Filter photos by tags. eg. ?tags=["%23randompic"] returns only photos hashtagged with #randompic (HTML mode only)
+	 * @query {String} tags Filter photos by tags. eg. ?tags=["%23randompic"] returns only photos hashtagged with #randompic (HTML mode only)
 	 * @auth Anonymous, with valid user credentials or with valid friend credentials
 	 * @header {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
 	 * @header {Cookie} access_token Request made by a logged in user on this server (set when user logges in.)
 	 * @response {JSON} If .json is requested returns a user profile object
 	 * @response {HTML} If .json not requested return user profile page (which includes several posts)
-	 	 */
+	 */
 
-	router.get(friendsRE, getCurrentUser(), checkNeedProxyRewrite('friends'), getFriendAccess(), function (req, res, next) {
+	router.get(friendsRE, getCurrentUser(), checkNeedProxyRewrite('friends'), getFriendAccess(), function(req, res, next) {
 		var ctx = req.myContext;
 		var redirectProxy = ctx.get('redirectProxy');
 		if (redirectProxy) {
@@ -57,7 +57,7 @@ module.exports = function (server) {
 		var endpoints = [];
 		var map = {};
 
-		utils.getUser(username, function (err, user) {
+		utils.getUser(username, function(err, user) {
 			if (err) {
 				if (err.statusCode === 404) {
 					return res.sendStatus(404);
@@ -95,7 +95,7 @@ module.exports = function (server) {
 					}
 				};
 
-				server.models.Friend.find(query, function (err, friends) {
+				server.models.Friend.find(query, function(err, friends) {
 
 					g.setNode(server.locals.config.publicHost + '/' + currentUser.username, {
 						'name': currentUser.name
@@ -109,7 +109,7 @@ module.exports = function (server) {
 						});
 					}
 
-					async.map(friends, function (friend, cb) {
+					async.map(friends, function(friend, cb) {
 
 						var options = {
 							'url': friend.remoteEndPoint + '/friends.json?hashes=' + hashes.join(','),
@@ -119,7 +119,7 @@ module.exports = function (server) {
 							'json': true
 						};
 
-						request.get(options, function (err, response, body) {
+						request.get(options, function(err, response, body) {
 
 							if (err || response.statusCode !== 200) {
 								return cb(); // ignore error?
@@ -160,12 +160,12 @@ module.exports = function (server) {
 							cb();
 
 						});
-					}, function (err) {
+					}, function(err) {
 						var results = graphlib.json.write(g);
-						async.map(results.nodes, function (node, cb) {
+						async.map(results.nodes, function(node, cb) {
 							node.about = node.v;
 							resolveProfiles(node, cb);
-						}, function (err) {
+						}, function(err) {
 
 							var data = {
 								'pov': {
@@ -181,8 +181,7 @@ module.exports = function (server) {
 
 							if (view === '.json') {
 								return res.send(utils.encryptIfFriend(friend, data));
-							}
-							else {
+							} else {
 								var friendMap = {};
 								for (var i = 0; i < currentUser.friends().length; i++) {
 									var f = currentUser.friends()[i];
@@ -198,7 +197,7 @@ module.exports = function (server) {
 									'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
 								};
 
-								utils.renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+								utils.renderFile('/components/rendered-friends.pug', options, req, function(err, html) {
 									if (err) {
 										return next(err);
 									}
@@ -208,8 +207,7 @@ module.exports = function (server) {
 						});
 					});
 				});
-			}
-			else { // get friends
+			} else { // get friends
 				var g = new graphlib.Graph({
 					directed: false
 				});
@@ -224,10 +222,10 @@ module.exports = function (server) {
 					}
 				};
 
-				utils.getUserSettings(user, function (err, userSettings) {
+				utils.getUserSettings(user, function(err, userSettings) {
 
 
-					server.models.Friend.find(query, function (err, friends) {
+					server.models.Friend.find(query, function(err, friends) {
 
 						if (userSettings.friendListVisibility !== 'none') {
 							g.setNode(server.locals.config.publicHost + '/' + user.username, {
@@ -263,8 +261,7 @@ module.exports = function (server) {
 
 						if (view === '.json') {
 							return res.send(utils.encryptIfFriend(friend, data));
-						}
-						else {
+						} else {
 							var options = {
 								'data': data,
 								'user': currentUser,
@@ -273,7 +270,7 @@ module.exports = function (server) {
 								'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
 							};
 
-							utils.renderFile('/components/rendered-friends.pug', options, req, function (err, html) {
+							utils.renderFile('/components/rendered-friends.pug', options, req, function(err, html) {
 								if (err) {
 									return next(err);
 								}

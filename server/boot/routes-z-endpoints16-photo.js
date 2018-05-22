@@ -22,8 +22,8 @@ module.exports = function (server) {
 	 *
 	 * @name Get user's individual photo as JSON object or as an HTML page
 	 * @path {GET} /:username/photo/:photoId[.json]
-	 * @params {String} :username Username of user on this server or a friend of the logged in user
-	 * @params {String} :photoId Id of photo
+	 * @params {String} username Username of user on this server or a friend of the logged in user
+	 * @params {String} photoId Id of photo
 	 * @params {String} .json Append the .json suffix for JSON response otherwise HTML is returned
 	 * @auth Anonymous, with valid user credentials or with valid friend credentials
 	 * @header {String} friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records
