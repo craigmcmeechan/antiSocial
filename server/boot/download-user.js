@@ -486,6 +486,7 @@ function processArchive(app, currentUser, directory, done) {
 				parser.on('data', function (data) {
 					// copy image to new location
 					// adjust data.new to point to new location (href)
+					// TODO: deal with s3 images
 					var newLocation = app.locals.config.publicHost + '/uploads/' + data.new;
 					fs.rename(directory + '/images/' + data.new, 'client/uploads/' + data.new, function (err) {
 						newImages[data.old] = newLocation;
