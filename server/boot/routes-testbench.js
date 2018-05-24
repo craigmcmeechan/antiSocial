@@ -137,14 +137,14 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+	router.get('/testbench-email', getCurrentUser(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
 		var mailer = require('../lib/mail');
 
 		for (var i = 1; i <= 5; i++) {
 			var options = {
-				'to': currentUser.email,
+				'to': currentUser ? currentUser.email : 'mrhodes@myantisocial.net',
 				'from': process.env.OUTBOUND_MAIL_SENDER,
 				'subject': 'Testing email transport: ' + i,
 				'config': server.locals.config
