@@ -132,7 +132,7 @@ module.exports = function (MyUser) {
 					return cb(null, null);
 				}
 				server.models.AccessToken.resolve(self.selfAccessToken, function (err, tokenInstance) {
-					if (err) {
+					if (err || !tokenInstance) {
 						return cb(null, null);
 					}
 					cb(err, tokenInstance.id);

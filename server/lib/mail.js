@@ -45,17 +45,22 @@ function mail(server, template, options, cb) {
 		});
 	}
 	else if (process.env.OUTBOUND_MAIL === 'SMTP') {
-		transporter = nodemailer.createTransport({
+		var config = {
 			host: process.env.OUTBOUND_MAIL_SMTP_HOST,
 			port: process.env.OUTBOUND_MAIL_SMTP_PORT || 25,
 			secure: process.env.OUTBOUND_MAIL_SMTP_SSL === 'true' ? true : false,
-			auth: {
+			'logger': true,
+			'debug': true
+		};
+
+		if (process.env.OUTBOUND_MAIL_SMTP_USER && process.env.OUTBOUND_MAIL_SMTP_PASSWORD) {
+			config.auth = {
 				user: process.env.OUTBOUND_MAIL_SMTP_USER,
 				pass: process.env.OUTBOUND_MAIL_SMTP_PASSWORD
-			},
-			'logger': false,
-			'debug': false
-		});
+			};
+		}
+
+		transporter = nodemailer.createTransport(config);
 	}
 	else {
 		return cb();
