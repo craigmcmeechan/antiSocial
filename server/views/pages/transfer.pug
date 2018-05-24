@@ -1,0 +1,50 @@
+extends ../wrapper
+
+block seo
+	title.
+		Transfer account from another server
+
+block content
+	.container-fluid.content-padding-top.content
+		.row
+			.col-sm-6
+				h2.mb-3 Account Transfer
+
+				if errors
+					.alert.alert-danger= errors
+					
+				if token
+					p= token.endpoint + ' ' + token.token
+					
+					button.btn.btn-primary Continue
+					
+				else if importing
+					
+					p Import in progress. You will recieve an email when the process is complete.
+					
+				else
+					
+					form.form.form-validation(action="/transfer" method="POST" data-jsclass="formValidator" data-submitter="#submitter")
+						.form-group
+							label Old server url
+							.input-relative
+								input.login-server.form-control(type="url" name="server" placeholder="https://mr.myantisocial.net" data-validate="required")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label Email Address of account on old server
+							.input-relative
+								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label Password of account on old server
+							.input-relative
+								input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="current-password")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							button#submitter.btn.btn-primary(type="submit") Validate
