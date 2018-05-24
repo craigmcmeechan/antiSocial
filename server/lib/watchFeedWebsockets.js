@@ -1,34 +1,81 @@
+/*
+
+Notifications happen through updates to 2 tables
+	PushNewsFeedItem: announcements that propagate through the friend network
+		Updated when things are created or changed.
+		Eg: I posted something, I commented on something, I reacted to something.
+
+	NewsFeedItem: user cache of applicable events from their POV
+		Used to build "news feed" for user
+		Eg: I posted something, My friend xxx posted something, Someone reacted to someone elses post
+
+Users watch all their friends PushNewsFeedItem feeds for changes. When a friend
+starts listenting they are sent all PushNewsFeedItems that have been modified
+since they last connected. While they are listenting they are sent changes in real time.
+
+When you creates a post, reaction or a comment
+	Make an entry in PushNewsFeedItems
+When you modify a post, reaction or a comment
+	Update the entry in PushNewsFeedItem
+When you delete a post or a comment
+	Mark then entry in PushNewsFeedItem as deleted=true
+
+PushNewsFeedItems events are filtered based on friend visibility permisions.
+	if the PushNewsFeedItem is being created and it is visible to the listenting friend
+		Send a 'create' event
+	if the PushNewsFeedItem is being updated
+		if is not visible to the listenting friend
+			Send a 'remove' event (allow them to remove it from their cache
+			it was formally visible)
+		else
+			Send an update event
+
+The listening friend updates their local NewsFeedItem database when events in their
+friends PushNewsFeedItems are receieved
+	If it's a create event, create a NewsFeedItem
+	If it's a remove, destroy the NewsFeedItem
+	If it's an update
+		if it exists, update the existing NewsFeedItem
+		else create it again (edge case - was visible to me, then not, then was again)
+
+Notes:
+	PushNewsFeedItems are never deleted - they are marked as deleted so backfilling
+	can occur to offline friends.
+
+*/
+
 var url = require('url');
 var async = require('async');
 var VError = require('verror').VError;
 var encryption = require('./encryption');
-
+var utils = require('./utilities');
+var mailer = require('./mail');
 var debug = require('debug')('feeds');
 var debugWebsockets = require('debug')('websockets');
 
-var connections = {};
-module.exports.connections = connections;
+var watchFeedConnections = {};
+module.exports.watchFeedConnections = watchFeedConnections;
 
 module.exports.disconnectAll = function disconnectAll(server, user) {
-	for (var key in connections) {
-		var connection = connections[key];
+	for (var key in watchFeedConnections) {
+		var connection = watchFeedConnections[key];
 		if (connection.currentUser.id.toString() === user.id.toString()) {
 			connection.socket.close();
-			connection.status = 'closed';
+			//connection.status = 'closed';
 			debugWebsockets('watchFeed closed %s', connection.key);
-			delete connections[key];
+			//delete watchFeedConnections[key];
 		}
 	}
 };
 
 var disConnect = function disConnect(server, friend) {
-	for (var key in connections) {
-		var connection = connections[key];
+	for (var key in watchFeedConnections) {
+		var connection = watchFeedConnections[key];
 		if (connection.friend.id.toString() === friend.id.toString()) {
 			connection.socket.close();
-			connection.status = 'closed';
 			debugWebsockets('watchFeed disConnect %s closed', connection.key);
-			delete connections[key];
+			//connection.status = 'closed';
+			//delete watchFeedConnections[key];
 		}
 	}
 };
@@ -69,7 +116,7 @@ var watchFeed = function watchFeed(server, friend) {
 
 		var key = currentUser.username + '<-' + friend.remoteEndPoint;
 
-		if (connections[key] && connections[key].status === 'open') {
+		if (watchFeedConnections[key] && watchFeedConnections[key].status === 'open') {
 			debugWebsockets('watchFeed %s already listening ', key);
 		}
 		else {
@@ -77,17 +124,21 @@ var watchFeed = function watchFeed(server, friend) {
 			var remoteEndPoint = url.parse(friend.remoteEndPoint);
 			var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host;
 
-			var endpoint = remoteEndPoint.protocol === 'https' ? 'wss' : 'ws';
+			var endpoint = remoteEndPoint.protocol === 'https:' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
 
-			endpoint += '?friend-access-token=' + friend.remoteAccessToken;
-			if (friend.highWater) {
-				endpoint += '&friend-high-water=' + friend.highWater;
+			debugWebsockets('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
+
+			// if connecting to ourself behind a proxy don't use publicHost
+			if (process.env.BEHIND_PROXY === "true") {
+				var rx = new RegExp('^' + server.locals.config.websockets);
+				if (endpoint.match(rx)) {
+					endpoint = endpoint.replace(server.locals.config.websockets, 'ws://localhost:' + server.locals.config.port);
+					debug('bypass proxy ' + endpoint);
+				}
 			}
 
-			debugWebsockets('watchFeed %s connecting %s', key, endpoint);
-
-			var socket = require('socket.io-client')(endpoint);
+			var socket = require('socket.io-client')(endpoint, {});
 
 			var connection = {
 				'key': key,
@@ -97,42 +148,48 @@ var watchFeed = function watchFeed(server, friend) {
 				'friend': friend,
 				'status': 'closed'
 			};
-			connections[key] = connection;
+			watchFeedConnections[key] = connection;
 			socket.emit('authentication', {
+				'friendAccessToken': friend.remoteAccessToken,
+				'friendHighWater': friend.highWater,
 				'subscriptions': {
 					'PushNewsFeedItem': ['after save']
 				}
 			});
 			socket.on('authenticated', function () {
-				debugWebsockets('watchFeed %s listening', key);
+				debugWebsockets('watchFeed %s authenticated', key);
 				socket.on('data', getListener(server, connection));
 			});
 			socket.on('connect', getOpenHandler(server, connection));
 			socket.on('disconnect', getCloseHandler(server, connection));
+			socket.on('error', getErrorHandler(server, connection));
 		}
 	});
 };
 
 function getOpenHandler(server, connection) {
-	return function (e) {
+	return function openHandler(e) {
 		connection.status = 'open';
-		debugWebsockets('watchFeed getOpenHandler %s %j ', connection.key, e);
+		debugWebsockets('watchFeed openHandler %s', connection.key);
 	};
 }
 
 function getCloseHandler(server, connection) {
-	return function (e) {
+	return function closeHandler(e) {
 		connection.status = 'closed';
-		debugWebsockets('watchFeed getCloseHandler %s %j', connection.key, e);
-		delete connections[connection.key];
+		debugWebsockets('watchFeed closeHandler %s because %j', connection.key, e);
+		//delete watchFeedConnections[connection.key];
+		setTimeout(function () {
+			watchFeed(server, connection.friend);
+		}, 5000);
 	};
 }
 
 function getErrorHandler(server, connection) {
-	return function (e) {
+	return function errorHandler(e) {
 		connection.status = 'error';
-		debugWebsockets('watchFeed getErrorHandler %s %j', connection.key, e);
-		delete connections[connection.key];
+		debugWebsockets('watchFeed errorHandler %s %j', connection.key, e);
+		//delete watchFeedConnections[connection.key];
 	};
 }
 
@@ -140,7 +197,7 @@ function getListener(server, connection) {
 	var friend = connection.friend;
 	var currentUser = friend.user();
 
-	return function (data) {
+	return function listener(data) {
 
 		var logger = server.locals.logger;
 
@@ -149,18 +206,13 @@ function getListener(server, connection) {
 		if (message.type === 'offline') {
 			debugWebsockets('watchFeed listener %s received offline message', connection.key);
 			connection.socket.close();
-			connection.status = 'closed';
-			delete connections[connection.key];
+			//connection.status = 'closed';
+			//delete watchFeedConnections[connection.key];
 			return;
 		}
 
 		if (message.type === 'online') {
 			debugWebsockets('watchFeed listener %s received online message', connection.key);
-			return;
-		}
-
-		if (message.type === 'heartbeat') {
-			debugWebsockets('watchFeed listener %s received heartbeat', connection.key);
 			return;
 		}
 
@@ -189,6 +241,8 @@ function getListener(server, connection) {
 				'and': [{
 					'uuid': myNewsFeedItem.uuid
 				}, {
+					'type': myNewsFeedItem.type
+				}, {
 					'userId': currentUser.id
 				}]
 			}
@@ -208,6 +262,10 @@ function getListener(server, connection) {
 					debug('watchFeed listener ' + currentUser.username + ' skipping old news %j %j', oldNews);
 					return;
 				}
+				else if (message.type === 'remove') {
+					oldNews.destroy();
+					return;
+				}
 				else if (message.type === 'update' || message.type === 'backfill') {
 					debug('watchFeed listener ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
 					oldNews.details = myNewsFeedItem.details;
@@ -216,19 +274,42 @@ function getListener(server, connection) {
 					oldNews.tags = myNewsFeedItem.tags;
 					oldNews.save();
 
-					// cleanup all my interations with this item
 					if (myNewsFeedItem.deleted) {
+
+						// cleanup all my interactions with this item
+						// the 'about' field has an implied hierarchy
+						// endpoint/post/xxx
+						// endpoint/post/xxx/comment/xxx
+						// endpoint/post/xxx/reaction/xxx
+						// endpoint/post/xxx/photo/xxx/comment/xxx
+						// etc.
+						// so if the post is deleted we should cleanup all the things we did to that post
+						// we cand find them all with a regex
+
+						var match = new RegExp('^' + myNewsFeedItem.about + '/');
+
+						if (myNewsFeedItem.type === 'post') {
+							match = new RegExp('^' + myNewsFeedItem.about);
+						}
+
 						async.series([
 							function updateNewsFeedItem(cb) {
-								server.models.NewsFeedItem.destroyAll({
-									'and': [{
-										'userId': currentUser.id
-									}, {
-										'about': {
-											'like': new RegExp('^' + myNewsFeedItem.about)
-										}
-									}]
-								}, function (err, data) {
+								var q = {
+									'where': {
+										'and': [{
+											'userId': currentUser.id
+										}, {
+											'about': {
+												'like': match
+											}
+										}]
+									}
+								};
+								server.models.NewsFeedItem.find(q, function (err, items) {
+									for (var i = 0; i < items.length; i++) {
+										items[i].deleted = true;
+										items[i].save();
+									}
 									cb(err);
 								});
 							},
@@ -237,7 +318,7 @@ function getListener(server, connection) {
 									'where': {
 										'and': [{
 											'about': {
-												'like': new RegExp('^' + myNewsFeedItem.about)
+												'like': match
 											}
 										}, {
 											'userId': currentUser.id
@@ -263,8 +344,13 @@ function getListener(server, connection) {
 				}
 			}
 			else { // not old news
-				if (message.type === 'update') {
-					debug('watchFeed listener ' + currentUser.username + ' received update but NewsFeedItem not found %j', message);
+				if (message.type !== 'create' && message.type !== 'update' && message.type !== 'backfill') {
+					debug('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' but NewsFeedItem not found %j', myNewsFeedItem);
+					return;
+				}
+
+				if (myNewsFeedItem.deleted) {
+					debug('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' marked as deleted but NewsFeedItem not found %j', myNewsFeedItem);
 					return;
 				}
 
@@ -302,7 +388,7 @@ function getListener(server, connection) {
 						return;
 					}
 
-					async.series([
+					async.waterfall([
 							function createNewFeedItem(cb) {
 
 								delete myNewsFeedItem.id;
@@ -384,6 +470,153 @@ function getListener(server, connection) {
 										}, 'error saving highwater');
 										return cb(err);
 									}
+									cb();
+								});
+							},
+							function getUserSettings(cb) {
+								utils.getUserSettings(server, currentUser, function (err, settings) {
+									cb(err, settings);
+								});
+							},
+							function doEmailNotifications(settings, cb) {
+								if (message.type === 'backfill') {
+									return async.setImmediate(function () {
+										return cb();
+									});
+								}
+								if (!isMe && (message.data.type !== 'post' && message.data.type !== 'friend')) {
+									return async.setImmediate(function () {
+										return cb();
+									});
+								}
+								var wantNotification = false;
+								var template = '';
+								var options = {
+									'to': currentUser.email,
+									'from': process.env.OUTBOUND_MAIL_SENDER,
+									'config': server.locals.config,
+									'item': message.data
+								};
+
+								if (message.data.type === 'friend' && settings.notifications_friend_request) {
+									wantNotification = true;
+									template = 'emails/notify-friend-accepted';
+									options.subject = 'is now friends with';
+								}
+								else if (message.data.type === 'post' && settings.notifications_posts) {
+									wantNotification = true;
+									template = 'emails/notify-post-activity';
+									options.subject = 'posted';
+									options.endpoint = message.data.about;
+								}
+								else if (message.data.type === 'comment' && settings.notifications_comments) {
+									wantNotification = true;
+									template = 'emails/notify-post-activity';
+									options.subject = 'commented';
+									options.endpoint = message.data.about + '/comment/' + message.data.uuid;
+								}
+								else if (message.data.type === 'react' && settings.notifications_reactions) {
+									wantNotification = true;
+									template = 'emails/notify-post-activity';
+									options.subject = 'reacted';
+									options.endpoint = message.data.about;
+									var reactions = {
+										'thumbs-up': '👍🏼',
+										'thumbs-down': '👎',
+										'love': '❤️',
+										'laugh': '😆',
+										'smirk': '😏',
+										'wow': '😮',
+										'cry': '😢',
+										'mad': '😡',
+										'vomit': '🤮'
+									};
+									options.reactionDetails = reactions[message.data.details.reaction];
+								}
+
+								//console.log(wantNotification, options);
+
+								if (!wantNotification) {
+									return async.setImmediate(function () {
+										return cb();
+									});
+								}
+
+								var resolveProfile = require('./resolveProfile');
+
+								async.waterfall([
+									function (doneResolve) {
+										resolveProfile(server, message.data.source, function (err, profile) {
+											doneResolve(err, profile);
+										});
+									},
+									function (profile, doneResolve) {
+										var who = utils.whoAbout(message.data.about, null, true);
+										resolveProfile(server, who, function (err, aboutProfile) {
+											doneResolve(err, profile, aboutProfile);
+										});
+									},
+									function (profile, aboutProfile, doneResolve) {
+										if (message.data.type !== 'comment') {
+											return doneResolve(err, profile, aboutProfile, null);
+										}
+										utils.getEndPointJSON(server, options.endpoint, currentUser, friend, {
+											'json': 1
+										}, function (err, data) {
+											doneResolve(err, profile, aboutProfile, data);
+										});
+									},
+									function (profile, aboutProfile, details, doneResolve) {
+										var endpoint = options.endpoint;
+										if (message.data.type === 'comment') {
+											endpoint = details.comment.about;
+										}
+										if (!endpoint) {
+											return doneResolve(null, profile, aboutProfile, details, null);
+										}
+										utils.getEndPointJSON(server, endpoint, currentUser, null, {
+											'json': true,
+											'postonly': true
+										}, function (err, data) {
+											if (err) {
+												return doneResolve(err);
+											}
+											doneResolve(null, profile, aboutProfile, details, data);
+										});
+									}
+								], function (err, profile, aboutProfile, details, post) {
+									if (err) {
+										var e = new VError(err, 'Error building notification email');
+										console.log(e.message);
+										console.log(e.stack);
+										console.log(message);
+										return cb();
+									}
+									options.profile = profile ? profile.profile : null;
+									options.aboutProfile = aboutProfile ? aboutProfile.profile : null;
+									options.comment = details ? details.comment : null;
+									options.post = post ? post.post : null;
+									options.ogMap = post ? post.ogMap : null;
+									options.config = server.locals.config;
+									options._ = require('lodash');
+									options.marked = server.locals.marked;
+									options.type = message.data.type;
+									options.subject = options.profile.name + ' ' + options.subject + ' ';
+
+									if (options.post) {
+										if (message.data.type === 'comment' || message.data.type === 'react') {
+											options.subject += 'on the post ';
+										}
+										options.subject += '"' + options.post.description + '"';
+									}
+									if (message.data.type === 'friend') {
+										options.subject += options.aboutProfile.name;
+									}
+
+									mailer(server, template, options, function (err, info) {
+										debug('mail status %j %j', err, info);
+									});
+
 									cb();
 								});
 							}

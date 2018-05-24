@@ -1,5 +1,3 @@
-// TODO: render tags as links, implement hashtag filter
-
 #scope-post-list
 	if posts && posts.length
 		for post in posts
@@ -11,16 +9,16 @@
 			- var isMine = '';
 			if user
 				- isMine = post.source === config.publicHost + '/' + user.username ? 'true' : '';
-			
+				- isOnMyWall = post.about === config.publicHost + '/' + user.username ? 'true' : '';
 			.newsfeed-item
 				if post.commentSummary || post.reactionSummary
 					.news-summary
 						!= post.commentSummary
 				
 				if post.athoritativeEndpoint
-					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post")
+					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 				else 
-					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post")
+					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.source + '/post/' + post.uuid,user))
 						.post-identity
 							.post-avatar
 								.media
@@ -31,29 +29,28 @@
 									if !user
 										- posterUrl = endpoint
 
-									.media-left
-										a(href= posterUrl)
-											img.media-object(src= thumb)
+									a(href= posterUrl)
+										img.media-object.mr-2(src= thumb)
+											
 									.media-body
-										if isMine
-											.post-actions.pull-right
-												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine)
+										if !forShare
+											.post-actions.float-right
+												.dropdown(data-jsclass="postActionsController" data-post-id= post.uuid data-is-mine= isMine data-is-on-my-wall= isOnMyWall)
 													button.btn-xs(data-toggle="dropdown")
 														i.fa.fa-ellipsis-h
-													ul.dropdown-menu
-														if isMine
-															li 
-																a.edit-post(href="#") Edit Post
-															li 
-																a.delete-post(href="#") Delete Post
-														//
-															li
-																a.hide-post(href="#") Hide Post
-												
-										h4.media-heading
+													.dropdown-menu
+														if isOnMyWall
+															a.dropdown-item.delete-post(href="#") Remove from Wall
+														else if !isMine
+															a.dropdown-item.share-post(href="#") Share Post
+															a.dropdown-item.hide-post(href="#") Hide Post
+														else
+															a.dropdown-item.edit-post(href="#") Edit Post
+															a.dropdown-item.delete-post(href="#") Delete Post
+										h4.media-heading.mt-0
 											a(href= posterUrl)= name
 											if post.about
-												span.glyphicon.glyphicon-arrow-right.target-arrow
+												span.fa.fa-arrow-right.target-arrow
 												a(href= proxyEndPoint(post.about,user))= about.name
 										div.secondary
 											
@@ -66,14 +63,14 @@
 											div
 												.visibility
 													if post.visibility.indexOf('public') !== -1
-														i.glyphicon.glyphicon-globe
+														i.fa.fa-globe
 													else
-														i.glyphicon.glyphicon-eye-open
+														i.fa.fa-eye
 													= ' ' + post.visibility.join(', ')
 												if isPublic && !isPermalink
 													.permalink
 														a(href= postEndpoint)
-															i.glyphicon.glyphicon-link
+															i.fa.fa-link
 												if !post.posted
 													= ' (pending '
 													span.timestamp(data-timestamp= moment(post.autopost).toISOString() data-format="absolute")
@@ -81,7 +78,7 @@
 												
 											if post.geoDescription
 												.post-geo
-													<i class="glyphicon glyphicon-map-marker"></i>
+													<i class="fa fa-map-marker"></i>
 													= ' ' + post.geoDescription 
 													
 
@@ -89,10 +86,14 @@
 						- var maxHeight = !isPermalink ? '1200' : 50000
 						.post-body.markdown.want-constrained(data-max-height= maxHeight)!= marked(body).replace(/\<table\>/g,'<table class="table table-condensed">')
 
+						if post.shareEndpoint
+							.shared-post
+								.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= post.shareEndpoint + '&share=1')
+
 						- var photos = post.sortedPhotos
 						include rendered-post-photos
 						
-						if !noComments && user
+						if !noComments && user && !forShare
 							.reactions-and-comments
 								- var about= poster.endpoint + '/post/' + post.uuid
 
@@ -105,3 +106,9 @@
 								- var commentSummary = post.commentSummary
 								- var commentCount = post.commentCount
 								include rendered-comments
+
+	if data.ogMap
+		for og in data.ogMap
+			.og-json
+				script(id= 'json-og-' + og.hash type="application/json")
+					!= JSON.stringify(og)

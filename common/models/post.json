@@ -47,7 +47,7 @@
       "type": "string"
     },
     "geoLocation": {
-      "type": ["number"]
+      "type": "object"
     },
     "athoritativeEndpoint": {
       "type": "string"
@@ -63,6 +63,12 @@
     },
     "autopost": {
       "type": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "shareEndpoint": {
+      "type": "string"
     }
   },
   "validations": [],

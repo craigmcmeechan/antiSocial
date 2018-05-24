@@ -40,7 +40,7 @@ jobs:
       - run: node_modules/.bin/mocha --exit tests/friends.js
 
       - deploy:
-          name: Deploy to ecs if tests pass and branch is Master
+          name: Deploy to docker
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
               bash ~/repo/deploy/deploy.sh

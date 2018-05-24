@@ -9,7 +9,6 @@
 *.swo
 *.swp
 *.tgz
-*.xml
 .DS_Store
 .idea
 .project
@@ -20,6 +19,7 @@ npm-debug.log
 working
 localdev.env
 docker.env
+development.env
 
 
 # Elastic Beanstalk Files
@@ -43,3 +43,5 @@ native-app/node_modules
 native-app/platforms
 native-app/plugins
 native-app/www/dist
+
+.sass-cache/

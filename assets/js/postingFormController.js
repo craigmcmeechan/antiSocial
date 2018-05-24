@@ -14,8 +14,16 @@
 		this.lookupDebounce = null;
 		this.singleUpload = this.element.data('single-upload');
 		this.modal = this.element.data('modal');
+		this.description = this.element.data('description');
+		this.share = null;
 
 		this.start = function () {
+			var timestamp = self.element.find('[name=autopost]').data('val-gmt');
+			if (timestamp) {
+				var mytz = moment.tz.guess();
+				self.element.find('[name=autopost]').val(moment(timestamp).tz(mytz).format('YYYY-MM-DDTHH:mm:ss'));
+			}
+
 			if (self.element.find('.upload-zone')) {
 				var previewTemplate =
 					'\
@@ -149,7 +157,7 @@
 
 			this.element.on('click', '.post-submit-button', function (e) {
 				e.preventDefault();
-
+				self.element.find('.post-submit-button').attr('disabled', 'disabled').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading.');
 				// collect id's of files in dropzone
 				var photos = [];
 				if (self.element.find('.upload-zone')) {
@@ -180,7 +188,9 @@
 					'categories': JSON.stringify(self.categories),
 					'about': self.about,
 					'photos': photos,
-					'photoId': photoId
+					'photoId': photoId,
+					'description': self.description,
+					'shareEndpoint': self.share
 				};
 
 				if (self.element.find('[name="autopost"]').val()) {
@@ -188,11 +198,16 @@
 				}
 
 				$.post(self.endpoint, payload, function (data, status, xhr) {
+					self.element.find('.post-submit-button').removeAttr('disabled').html('Post');
+
 					if (status !== 'success') {
 						flashAjaxStatus('danger', xhr.statusText);
 					}
 					else {
 						self.hideForm();
+						if (self.share) {
+							$('#post-form').modal('hide');
+						}
 						if (self.modal) {
 							$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
 							$(self.modal).find('.modal-body').empty().append('loading...');
@@ -202,13 +217,18 @@
 				}, 'json');
 			});
 
-			this.element.on('click', '#post-cancel-button', function (e) {
-				e.preventDefault();
-				self.hideForm();
-				if (self.modal) {
-					$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
-					$(self.modal).find('.modal-body').empty().append('loading...');
-					$(self.modal).modal('hide');
+
+			this.element.find('#post-cancel-button').confirmation({
+				'container': 'body',
+				'title': 'Confirm',
+				'onCancel': function () {},
+				'onConfirm': function () {
+					self.hideForm();
+					if (self.modal) {
+						$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
+						$(self.modal).find('.modal-body').empty().append('loading...');
+						$(self.modal).modal('hide');
+					}
 				}
 			});
 
@@ -237,10 +257,11 @@
 		this.stop = function () {
 			this.element.off('focusin', this.element.data('focus-target'));
 			this.element.off('click', '#post-submit');
-			this.element.off('click', '#post-cancel');
+			this.element.find('#post-cancel-button').confirmation('dispose');
 			this.element.off('click', '#post-upload-button');
 			this.element.off('click', '#post-geo-button');
 			this.element.off('click', '#post-autopost-button');
+
 		};
 
 		this.hideForm = function () {
@@ -250,6 +271,18 @@
 			self.element.find('.posting-body').css('height', 'auto').empty();
 			self.element.find('[name="autopost"]').val('');
 			self.element.data('formValidator').initInput(self.element);
+		};
+
+		this.setShareMode = function (endpoint) {
+			self.share = endpoint;
+			self.about = null;
+			$.get(endpoint + '&share=1', function (data) {
+				var dom = $(data);
+				var post = dom.find('.post');
+				post.find('.reactions-and-comments').remove();
+				self.element.find('.shared-post').html('<div id="scope-post-list">' + post[0].outerHTML + '</div>');
+				didInjectContent(self.element);
+			});
 		};
 	}
 

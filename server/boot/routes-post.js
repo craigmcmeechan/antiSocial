@@ -1,33 +1,29 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
-var isInitialized = require('../middleware/context-initialized');
-var publicUsers = require('../middleware/context-publicUsers');
-var resolveProfiles = require('../lib/resolveProfiles');
-var resolvePostPhotos = require('../lib/resolvePostPhotos');
-var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
-var encryption = require('../lib/encryption');
 var doPostNotifications = require('../lib/doPostNotifications');
-
-var url = require('url');
 var uuid = require('uuid');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');
-var request = require('request');
-var _ = require('lodash');
-var multer = require('multer');
-var path = require('path');
-var pug = require('pug');
-var FB = require('fb');
 
-var debug = require('debug')('routes');
-var debugVerbose = require('debug')('routes:verbose');
-
-module.exports = function (server) {
+module.exports = function(server) {
   var router = server.loopback.Router();
 
-  // edit a post
-  router.get('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+  /**
+   * get a post for edit
+   *
+   * @name Get Edit a post
+   * @path {GET} /post/:postid
+   * @params {String} postid is a valid post id owned by the logged in user
+   * @auth With valid user credentials
+   * @header {Cookie} access_token Request made by a logged in user on this server
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @response {HTML} html form for editing post
+   */
+
+  router.get('/post/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var postId = req.params.id;
@@ -43,7 +39,7 @@ module.exports = function (server) {
           }
         };
 
-        server.models.Post.findOne(query, function (err, post) {
+        server.models.Post.findOne(query, function(err, post) {
           if (err) {
             return cb(err);
           }
@@ -57,7 +53,7 @@ module.exports = function (server) {
           cb(null, post);
         });
       }
-    ], function (err, post) {
+    ], function(err, post) {
       res.render('components/posting-form', {
         'editing': true,
         'post': post,
@@ -66,7 +62,26 @@ module.exports = function (server) {
     });
   });
 
-  router.post('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+
+  /**
+   * Edit a post
+   *
+   * @name POST Edit a post
+   * @path {POST} /post/:postid
+   * @auth With valid user credentials
+   * @params {String} postid is a valid post id owned by the logged in user
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @body {String} body Body of the post in valid markdown
+   * @body {String} geoDescription
+   * @body {Object} geoLocation eg. {'type':'point','coordinates':[lng,lat]}
+   * @body {Array} visibility Array of strings eg. ['public','friends']
+   * @body {String} autopost date in gmt
+   * @response {Object} result.status 'ok' or if error result.status has a human readable error message. eg. 'result': {'status': 'ok','flashLevel': 'success','flashMessage': 'saved'}
+   */
+
+  router.post('/post/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var postId = req.params.id;
@@ -82,7 +97,7 @@ module.exports = function (server) {
           }
         };
 
-        server.models.Post.findOne(query, function (err, post) {
+        server.models.Post.findOne(query, function(err, post) {
           if (err) {
             return cb(err);
           }
@@ -115,7 +130,19 @@ module.exports = function (server) {
         post.geoDescription = req.body.geoDescription;
         post.geoLocation = req.body.geoLocation;
         post.autopost = req.body.autopost;
-        post.save(function (err) {
+
+        var postDescription = server.locals.marked(post.body);
+        if (postDescription.match(/^<h\d[^>]*>([^<]*)/)) {
+          postDescription = postDescription.match(/^<h\d[^>]*>([^<]*)/)[0];
+        }
+        postDescription = postDescription.replace(/<.*?>/g, '').replace(/\n/g, ' ');
+        if (postDescription.length > 30) {
+          postDescription = postDescription.substring(0, 30) + '...';
+        }
+
+        post.description = postDescription;
+
+        post.save(function(err) {
           if (err) {
             cb(err);
           }
@@ -137,13 +164,13 @@ module.exports = function (server) {
 
         re = /\(tag-user-([^)]+)\)/g;
         tags = post.body.match(re);
-        async.map(tags, function (tag, doneTag) {
+        async.map(tags, function(tag, doneTag) {
           var friendEndPoint = tag;
           friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           post.tags.push('@' + friendEndPoint);
           doneTag();
-        }, function (err) {
+        }, function(err) {
           if (post.tags.length) {
             post.save();
           }
@@ -152,7 +179,7 @@ module.exports = function (server) {
       },
       function updatePushNewsFeedItem(post, cb) {
         if (!post.posted) {
-          return async.setImmediate(function () {
+          return async.setImmediate(function() {
             cb(null, post);
           });
         }
@@ -163,13 +190,16 @@ module.exports = function (server) {
             'about': post.source + '/post/' + post.uuid,
             'userId': currentUser.id
           }
-        }, function (err, news) {
+        }, function(err, news) {
           if (err) {
             var e = new VError(err, 'could not update PushNewsFeedItem');
             return cb(e);
           }
+
           if (news) {
             news.tags = post.tags;
+            news.visibility = post.visibility;
+            news.description = post.description;
             news.save();
           }
           cb(null, post);
@@ -177,7 +207,7 @@ module.exports = function (server) {
       },
       function updateNewsFeedItem(post, cb) { // notify self
         if (!post.posted) {
-          return async.setImmediate(function () {
+          return async.setImmediate(function() {
             cb(null, post);
           });
         }
@@ -188,19 +218,20 @@ module.exports = function (server) {
             'about': post.source + '/post/' + post.uuid,
             'userId': currentUser.id
           }
-        }, function (err, news) {
+        }, function(err, news) {
           if (err) {
             var e = new VError(err, 'could not update NewsFeedItem');
             return cb(e);
           }
           if (news) {
             news.tags = post.tags;
+            news.description = post.description;
             news.save();
           }
           cb(null, post);
         });
       }
-    ], function (err, post) {
+    ], function(err, post) {
       if (err) {
         return res.send({
           'result': {
@@ -219,9 +250,23 @@ module.exports = function (server) {
     });
   });
 
-  // delete a post
+
+  /**
+   * Delete a post
+   *
+   * @name Get Edit a post
+   * @path {DELETE} /post/:postid
+   * @params {String} postid is a valid post id owned by the logged in user
+   * @auth With valid user credentials
+   * @header {Cookie} access_token Request made by a logged in user on this server
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @response {Object} result.status: 'ok' or if error result.status has a human readable error message.
+   */
+
   // TODO improve error handling
-  router.delete('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+  router.delete('/post/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var postId = req.params.id;
@@ -237,7 +282,7 @@ module.exports = function (server) {
             }
           };
 
-          server.models.Post.findOne(query, function (err, post) {
+          server.models.Post.findOne(query, function(err, post) {
             if (err) {
               return cb(err);
             }
@@ -254,8 +299,8 @@ module.exports = function (server) {
         function deletePhotos(post, cb) {
           server.models.PostPhoto.destroyAll({
             'postId': post.id
-          }, function (err, data) {
-            console.log('deletePhotos', err, data);
+          }, function(err, data) {
+            //console.log('deletePhotos', err, data);
             cb(err, post);
           });
         },
@@ -272,7 +317,7 @@ module.exports = function (server) {
             }
           };
 
-          server.models.PushNewsFeedItem.find(q, function (err, items) {
+          server.models.PushNewsFeedItem.find(q, function(err, items) {
             for (var i = 0; i < items.length; i++) {
               items[i].updateAttribute('deleted', true);
             }
@@ -288,18 +333,18 @@ module.exports = function (server) {
                 'like': new RegExp('^' + post.source + '/post/' + post.uuid)
               }
             }]
-          }, function (err, data) {
-            console.log('deleteNewsFeedItems', err, data);
+          }, function(err, data) {
+            //console.log('deleteNewsFeedItems', err, data);
             cb(err, post);
           });
         },
         function deletePost(post, cb) {
-          post.destroy(function (err) {
+          post.destroy(function(err) {
             cb(err);
           });
         }
       ],
-      function (err) {
+      function(err) {
         if (err) {
           return res.send({
             'result': {
@@ -318,8 +363,24 @@ module.exports = function (server) {
       });
   });
 
-  // create a new post
-  router.post('/post', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+  /**
+   * Create a post
+   *
+   * @name POST Edit a post
+   * @path {POST} /post/
+   * @auth With valid user credentials
+   * @code {200} success
+   * @code {404} post not found
+   * @code {401} unauthorized
+   * @body {String} body Body of the post in valid markdown
+   * @body {String} geoDescription
+   * @body {Object} geoLocation eg. {'type':'point','coordinates':[lng,lat]}
+   * @body {Array} visibility Array of strings eg. ['public','friends']
+   * @body {String} autopost date in gmt
+   * @response {Object} result.status: 'ok' 'result.uuid': post.uuid
+   }
+   */
+  router.post('/post', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     req.body.uuid = uuid();
@@ -330,30 +391,26 @@ module.exports = function (server) {
       delete req.body.about;
     }
 
-    var fbIdentity;
-    var twIdentity;
-    if (currentUser.identities()) {
-      for (var i = 0; i < currentUser.identities().length; i++) {
-        var identity = currentUser.identities()[i];
-        if (identity.provider === 'facebook') {
-          fbIdentity = identity;
-        }
-        if (identity.provider === 'twitter') {
-          twIdentity = identity;
-        }
-      }
-    }
-
     async.waterfall([
-      function (cb) { // create the post
+      function(cb) { // create the post
         if (req.body.autopost) {
           req.body.posted = false;
-        }
-        else {
+        } else {
           req.body.posted = true;
         }
 
-        currentUser.posts.create(req.body, function (err, post) {
+        var postDescription = server.locals.marked(req.body.body);
+        if (postDescription.match(/^<h\d[^>]*>([^<]*)/)) {
+          postDescription = postDescription.match(/^<h\d[^>]*>([^<]*)/)[0];
+        }
+        postDescription = postDescription.replace(/<.*?>/g, '').replace(/\n/g, ' ');
+        if (postDescription.length > 30) {
+          postDescription = postDescription.substring(0, 30) + '...';
+        }
+
+        req.body.description = postDescription;
+
+        currentUser.posts.create(req.body, function(err, post) {
           if (err) {
             var e = new VError(err, 'could create Post');
             return cb(e);
@@ -361,28 +418,28 @@ module.exports = function (server) {
           cb(null, post);
         });
       },
-      function (post, cb) { // associate uploaded pending photos through PostPhoto
+      function(post, cb) { // associate uploaded pending photos through PostPhoto
         if (!req.body.photos) {
-          return async.setImmediate(function () {
+          return async.setImmediate(function() {
             cb(null, post, null);
           });
         }
         var count = 0;
-        async.mapSeries(req.body.photos, function (photo, mapCallback) {
+        async.mapSeries(req.body.photos, function(photo, mapCallback) {
           req.app.models.PostPhoto.create({
             'photoId': photo.id,
             'postId': post.id,
             'sequence': count++,
             'title': photo.title,
             'description': photo.description
-          }, function (err, photoInstance) {
+          }, function(err, photoInstance) {
             if (err) {
               var e = new VError(err, 'could create PostPhoto');
               return mapCallback(e);
             }
             mapCallback(null, photoInstance);
           });
-        }, function (err, postPhotoInstances) {
+        }, function(err, postPhotoInstances) {
           if (err) {
             var e = new VError(err, 'error creating PostPhotos');
             return cb(e, post);
@@ -390,33 +447,33 @@ module.exports = function (server) {
           cb(null, post, postPhotoInstances);
         });
       },
-      function (post, postPhotoInstances, cb) { // update the photos
+      function(post, postPhotoInstances, cb) { // update the photos
         if (!req.body.photos) {
-          return async.setImmediate(function () {
+          return async.setImmediate(function() {
             cb(null, post);
           });
         }
         // get photos for PostPhotos
-        req.app.models.PostPhoto.include(postPhotoInstances, 'photo', function (err) {
+        req.app.models.PostPhoto.include(postPhotoInstances, 'photo', function(err) {
           if (err) {
             var e = new VError(err, 'error including photos in PostPhotos');
             return cb(e, post);
           }
 
           // update the photo status from pending to complete
-          async.eachSeries(postPhotoInstances, function (postPhoto, eachCb) {
+          async.eachSeries(postPhotoInstances, function(postPhoto, eachCb) {
             postPhoto.photo().updateAttributes({
               'status': 'complete',
               'title': postPhoto.title,
               'description': postPhoto.description
-            }, function (err) {
+            }, function(err) {
               if (err) {
                 var e = new VError(err, 'error marking status of Photo');
                 return eachCb(e);
               }
               eachCb();
             });
-          }, function (err) {
+          }, function(err) {
             if (err) {
               var e = new VError(err, 'error marking status of Photos');
               return cb(e, post);
@@ -440,25 +497,25 @@ module.exports = function (server) {
 
         re = /\(tag-user-([^)]+)\)/g;
         tags = post.body.match(re);
-        async.map(tags, function (tag, doneTag) {
+        async.map(tags, function(tag, doneTag) {
           var friendEndPoint = tag;
           friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           post.tags.push('@' + friendEndPoint);
           doneTag();
-        }, function (err) {
+        }, function(err) {
           if (post.tags.length) {
             post.save();
           }
           cb(null, post);
         });
       },
-      function (post, cb) {
-        doPostNotifications(currentUser, post, function (err, post) {
+      function(post, cb) {
+        doPostNotifications(currentUser, post, function(err, post) {
           cb(err, post);
         });
       }
-    ], function (err, post) {
+    ], function(err, post) {
       if (err) {
         var e = new WError(err, 'could not save post');
         server.locals.logger.error(e.toString());
@@ -467,9 +524,10 @@ module.exports = function (server) {
         });
       }
       res.send({
-        'status': 'ok',
-        'uuid': post.uuid,
-        'post': post
+        'result': {
+          'status': 'ok',
+          'uuid': post.uuid
+        }
       });
     });
   });

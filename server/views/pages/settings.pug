@@ -13,18 +13,16 @@ block content
 	.container-fluid.content-padding-top.content
 		.row
 			.col-sm-6.left-column
-				h2 User Settings
+				h2.mb-3 User Settings
 
 				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/api/MyUsers/me")
 					.form-group
-							.checkbox
-								label
-									if user.discoverable
-										input(type="checkbox" name="discoverable" checked)
-									else
-										input(type="checkbox" name="discoverable")
-
-									| Discoverable (Public posts and profile visible to search engines)
+						.form-check
+							if user.discoverable
+								input.form-check-input(type="checkbox" name="discoverable" checked)
+							else
+								input.form-check-input(type="checkbox" name="discoverable")
+							label.form-check-label Discoverable (Public posts and profile visible to search engines)
 
 					if !user.username
 						.form-group
@@ -32,7 +30,7 @@ block content
 							.input-relative
 								input.form-control(type="text" name="username" placeholder="Username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-suffix= user.unique data-unique-endpoint= "/api/MyUsers/isunique?field=username")
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 					if !user.name
 						.form-group
@@ -40,7 +38,7 @@ block content
 							.input-relative
 								input.form-control(type="text" name="name" placeholder="Full Name" data-validate="required" value= user.name)
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 
 					.form-group
@@ -48,7 +46,7 @@ block content
 							.input-relative
 								input.form-control(type="text" name="email" placeholder="Email address" data-validate="required" value= user.email  data-unique-endpoint= "/api/MyUsers/isunique?field=email")
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 
 					.form-group
@@ -59,7 +57,7 @@ block content
 								input#audience-list.form-control(type="hidden" name="audiences" placeholder="Audiences" data-validate="required" value= audiences)
 								.list-edit(data-jsclass="editListController" data-target="#audience-list" data-add-only= !init)
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 
 				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/user-settings")
@@ -80,7 +78,43 @@ block content
 									option(value="all" selected) All friends
 								else
 									option(value="all") All friends
-
+					h2 Email Notifications
+					.form-group
+						.form-check
+							if userSettings.notifications_digest
+								input.form-check-input(type="checkbox" name="notifications_digest" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_digest")
+							label.form-check-label Daily Activity Recap
+					.form-group
+						.form-check
+							if userSettings.notifications_friend_request
+								input.form-check-input(type="checkbox" name="notifications_friend_request" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_friend_request")
+							label.form-check-label Friend Request
+					.form-group
+						.form-check
+							if userSettings.notifications_posts
+								input.form-check-input(type="checkbox" name="notifications_posts" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_posts")
+							label.form-check-label Friend Posts
+					.form-group
+						.form-check
+							if userSettings.notifications_reactions
+								input.form-check-input(type="checkbox" name="notifications_reactions" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_reactions")
+							label.form-check-label Reactions to my Posts
+					.form-group
+						.form-check
+							if userSettings.notifications_comments
+								input.form-check-input(type="checkbox" name="notifications_comments" checked)
+							else
+								input.form-check-input(type="checkbox" name="notifications_comments")
+							label.form-check-label Comments on my Posts
+									
 				- var fb,tw
 				if user.identities()
 					for identity in user.identities()
@@ -89,7 +123,7 @@ block content
 						if identity.provider === 'twitter'
 							- tw= identity
 							
-				if environment.FACEBOOK_CLIENT_ID
+				if 0 && environment.FACEBOOK_CLIENT_ID
 					.form-group
 						span.fa.fa-2x.fa-facebook-square(style="color:#3B5998;margin-right:7px;")
 						if fb
@@ -155,30 +189,29 @@ block content
 								.input-relative
 									input.form-control(type="text" name="serverName" placeholder="Server Name" data-validate="required" value= globalSettings.serverName)
 									.input-ok-indicator
-										span.glyphicon.glyphicon-ok
+										span.fa.fa-check
 									.validation-help
 						.form-group
 							label Server Title
 							.input-relative
 								input.form-control(type="text" name="serverTitle" placeholder="Server Title" data-validate="required" value= globalSettings.serverTitle)
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 						.form-group
 							label serverDescription
 							.input-relative
 								textarea.form-control(type="text" name="serverDescription" placeholder="Server Description" data-validate="required")= globalSettings.serverDescription
 								.input-ok-indicator
-									span.glyphicon.glyphicon-ok
+									span.fa.fa-check
 								.validation-help
 						.form-group
-							.checkbox
-								label
-									if globalSettings.communityChannel
-										input(type="checkbox" name="communityChannel" checked)
-									else
-										input(type="checkbox" name="communityChannel")
-									| Community Channel
+							.form-check
+								if globalSettings.communityChannel
+									input.form-check-input(type="checkbox" name="communityChannel" checked)
+								else
+									input.form-check-input(type="checkbox" name="communityChannel")
+								label.form-check-label Community Channel
 						
 						if globalSettings.instance
 							.form-group

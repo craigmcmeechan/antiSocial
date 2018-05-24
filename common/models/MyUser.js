@@ -12,6 +12,8 @@ var debug = require('debug')('user');
 var debugVerbose = require('debug')('user:verbose');
 var sh = require('shorthash');
 var request = require('request');
+var stripe = require('stripe')(process.env.STRIPE_SK);
+var _ = require('lodash');
 
 module.exports = function (MyUser) {
 	if (!process.env.ADMIN) {
@@ -22,7 +24,11 @@ module.exports = function (MyUser) {
 				'@register',
 				'@login',
 				'@logout',
+				'@resetPassword',
 				'@confirm',
+				'@subscriptionstatus',
+				'@subscriptioncancel',
+				'@subscriptionupdate',
 				'updateAttributes',
 				'__updateById__friends',
 				'__destroyById__photos',
@@ -69,7 +75,7 @@ module.exports = function (MyUser) {
 		url += '#password-reset-form';
 		var options = {
 			'to': info.email,
-			'from': 'noreply@myantisocial.net',
+			'from': process.env.OUTBOUND_MAIL_SENDER,
 			'subject': 'Password Reset Request.',
 			'url': url
 		};
@@ -116,6 +122,41 @@ module.exports = function (MyUser) {
 		// add uploadable endpoints to MyUser
 		uploadable(MyUser, 'MyUser', versions);
 	});
+
+	MyUser.prototype.getSelfToken = function (done) {
+		var self = this;
+
+		async.waterfall([
+			function (cb) { // if we have a tokenId read it
+				if (!self.selfAccessToken) {
+					return cb(null, null);
+				}
+				server.models.AccessToken.resolve(self.selfAccessToken, function (err, tokenInstance) {
+					if (err || !tokenInstance) {
+						return cb(null, null);
+					}
+					cb(err, tokenInstance.id);
+				});
+			},
+			function (tokenId, cb) { // if we don't have a token create it
+				if (tokenId) {
+					return cb(null, tokenId);
+				}
+				var twoWeeks = 60 * 60 * 24 * 7 * 2;
+				self.createAccessToken(twoWeeks, {}, function (err, accessToken) {
+					if (err) {
+						var e = new VError(err, 'create access token');
+						return cb(e);
+					}
+					self.selfAccessToken = accessToken.id;
+					self.save();
+					cb(null, accessToken.id);
+				});
+			}
+		], function (err, tokenId) {
+			done(err, tokenId);
+		});
+	};
 
 	MyUser.register = function (email, password, ctx, next) {
 		var req = ctx.req;
@@ -167,7 +208,7 @@ module.exports = function (MyUser) {
 
 				var options = {
 					'to': user.email,
-					'from': 'mrhodes@myantisocial.net',
+					'from': process.env.OUTBOUND_MAIL_SENDER,
 					'subject': 'Thanks for registering.',
 					'user': user,
 					'url': url
@@ -176,10 +217,12 @@ module.exports = function (MyUser) {
 				mailer(server, 'emails/verify', options, function (err) {
 					if (err) {
 						var e = new VError(err, 'could not send verification email');
-						return cb(e);
+						debug(e.toString());
+						debug(e.stack);
 					}
-					cb(null, user);
 				});
+
+				cb(null, user);
 			},
 			function (user, cb) { // log in
 				debugVerbose('create access token');
@@ -500,4 +543,229 @@ module.exports = function (MyUser) {
 			}
 		}
 	);
+
+	MyUser.subscriptionstatus = function (id, ctx, cb) {
+		var myContext = ctx.req.myContext;
+		var currentUser = myContext.get('currentUser');
+
+		if (!_.get(currentUser, 'subscription.stripe.stripeCustomerId')) {
+			return cb(null, {
+				'status': 'no subscription'
+			});
+		}
+
+		async.waterfall([
+			function (cb) {
+				stripe.customers.retrieve(currentUser.subscription.stripe.stripeCustomerId, function (err, customer) {
+					cb(err, customer);
+				});
+			},
+			function (customer, cb) {
+				stripe.invoices.retrieveUpcoming(currentUser.subscription.stripe.stripeCustomerId, function (err, upcoming) {
+					if (err && err.code !== 'invoice_upcoming_none') {
+						cb(err);
+					}
+					cb(null, customer, upcoming);
+				});
+			},
+			function (customer, upcoming, cb) {
+				stripe.invoices.list({
+					customer: currentUser.subscription.stripe.stripeCustomerId,
+					subscription: currentUser.subscription.stripe.stripeSubscriptionId,
+					limit: 3
+				}, function (err, invoices) {
+					if (err) {
+						cb(err);
+					}
+					cb(null, customer, upcoming, invoices);
+				});
+			}
+		], function (err, customer, upcoming, invoices) {
+			return cb(null, {
+				'customer': customer,
+				'upcoming': upcoming,
+				'invoices': invoices
+			});
+		});
+	};
+
+	MyUser.remoteMethod(
+		'subscriptionstatus', {
+			http: {
+				path: '/:id/subscriptionstatus',
+				verb: 'get'
+			},
+			accepts: [{
+				arg: 'id',
+				type: 'string',
+				required: true
+			}, {
+				arg: 'options',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				arg: 'subscription',
+				type: 'object'
+			}
+		}
+	);
+
+	MyUser.subscriptionupdate = function (id, body, ctx, cb) {
+		var myContext = ctx.req.myContext;
+		var currentUser = myContext.get('currentUser');
+
+		var trialPeriod = process.env.SUBSCRIPTION_TRIAL_PERIOD;
+		if (_.get(currentUser, 'subscription.stripe.stripeSubscriptionId') && body.new) {
+			trialPeriod = 0; // only get the trial once
+		}
+
+		async.waterfall([
+				function (cb) {
+					if (_.get(currentUser, 'subscription.stripe.stripeCustomerId')) {
+						stripe.customers.retrieve(currentUser.subscription.stripe.stripeCustomerId, function (err, customer) {
+							cb(err, customer);
+						});
+					}
+					else {
+						var options = {
+							'description': currentUser.name + ' ' + currentUser.id.toString(),
+							'email': currentUser.email
+						};
+						stripe.customers.create(options, function (err, customer) {
+							if (err) {
+								return cb(err);
+							}
+							cb(null, customer);
+						});
+					}
+				},
+				function (customer, cb) {
+					stripe.customers.update(customer.id, {
+						'source': body.token.id
+					}, function (err, customer) {
+						if (err) {
+							return cb(err);
+						}
+						cb(null, customer);
+					});
+				},
+				function (customer, cb) {
+					if (_.get(currentUser, 'subscription.stripe.stripeSubscriptionId') && !body.new) {
+						stripe.subscriptions.retrieve(currentUser.subscription.stripe.stripeSubscriptionId, function (err, subscription) {
+							cb(err, customer, subscription);
+						});
+					}
+					else {
+						stripe.customers.createSubscription(customer.id, {
+							'plan': process.env.SUBSCRIPTION_STRIPE_PLAN_ID,
+							'trial_period_days': trialPeriod
+						}, function (err, subscription) {
+							cb(err, customer, subscription);
+						});
+					}
+				},
+				function (customer, subscription, cb) {
+					if (!subscription.cancel_at_period_end) {
+						return cb(null, customer, subscription);
+					}
+
+					stripe.subscriptions.update(subscription.id, {
+						cancel_at_period_end: false
+					}, function (err, subscription) {
+						cb(err, customer, subscription);
+					});
+				}
+			],
+			function (err, customer, subscription) {
+				if (err) {
+					return cb(err);
+				}
+				if (!currentUser.subscription) {
+					currentUser.subscription = {};
+				}
+				currentUser.subscription.stripe = {
+					'stripeCustomerId': customer.id,
+					'stripeSubscriptionId': subscription.id
+				};
+				currentUser.stripeCustomerId = customer.id;
+				currentUser.save();
+				cb(null, {
+					'status': 'ok'
+				});
+			});
+	};
+
+	MyUser.remoteMethod(
+		'subscriptionupdate', {
+			http: {
+				path: '/:id/subscriptionupdate',
+				verb: 'post'
+			},
+			accepts: [{
+				arg: 'id',
+				type: 'string',
+				required: true
+			}, {
+				arg: 'body',
+				type: 'object',
+				required: true,
+				http: {
+					source: 'body'
+				}
+			}, {
+				arg: 'options',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				arg: 'result',
+				type: 'object'
+			}
+		}
+	);
+
+	MyUser.subscriptioncancel = function (id, ctx, cb) {
+		var myContext = ctx.req.myContext;
+		var currentUser = myContext.get('currentUser');
+		stripe.customers.cancelSubscription(
+			currentUser.subscription.stripe.stripeCustomerId,
+			currentUser.subscription.stripe.stripeSubscriptionId, {
+				at_period_end: true
+			},
+			function (err, confirmation) {
+				cb(err, {
+					'status': err ? err : 'ok'
+				});
+			});
+	};
+
+	MyUser.remoteMethod(
+		'subscriptioncancel', {
+			http: {
+				path: '/:id/subscriptioncancel',
+				verb: 'get'
+			},
+			accepts: [{
+				arg: 'id',
+				type: 'string',
+				required: true
+			}, {
+				arg: 'options',
+				type: 'object',
+				http: {
+					source: 'context'
+				}
+			}],
+			returns: {
+				arg: 'result',
+				type: 'object'
+			}
+		}
+	);
+
 };

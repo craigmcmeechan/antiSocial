@@ -2,6 +2,7 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var resolveProfiles = require('../lib/resolveProfiles');
 var proxyEndPoint = require('../lib/proxy-endpoint');
+var getProfile = require('../lib/getProfile');
 
 var VError = require('verror').VError;
 var WError = require('verror').WError;
@@ -9,11 +10,12 @@ var async = require('async');
 var request = require('request');
 var _ = require('lodash');
 var url = require('url');
+var jsdom = require('jsdom');
 
 var debug = require('debug')('scroll');
 var debugVerbose = require('debug')('scroll:verbose');
 
-var ITEMS_PER_PAGE = 30;
+var ITEMS_PER_PAGE = 4;
 var ITEMS_PER_SELECT = 50;
 
 module.exports = function (server) {
@@ -107,7 +109,7 @@ module.exports = function (server) {
             cb(e);
           }
 
-          async.map(items, resolveProfiles, function (err) {
+          async.mapSeries(items, resolveProfiles, function (err) {
 
             if (items && items.length) {
               session.feedHighwater = items[items.length - 1].createdOn;
@@ -145,6 +147,10 @@ module.exports = function (server) {
               if (!session.uniqueAbout[key]) { // ignore item if already shown in this session
                 session.uniqueAbout[key] = true;
                 session.queue.push(group);
+                debug('pushing queue %s', key);
+              }
+              else {
+                debug('dupe %s', key);
               }
             }
 
@@ -217,19 +223,19 @@ module.exports = function (server) {
             if (groupItem.type === 'comment' || groupItem.type === 'react') {
               if (!hash[groupItem.source]) {
                 hash[groupItem.source] = true;
-                var mention = '<a href="' + groupItem.source + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
+                var mention = '<a href="' + proxyEndPoint(groupItem.source, currentUser) + '">' + groupItem.resolvedProfiles[groupItem.source].profile.name + '</a>';
                 mentions.push(mention);
               }
             }
           }
 
           if (mentions.length) {
-            var summary = mentions.slice(0, 3).join(', ');
+            var summary = mentions.slice(0, 2).join(', ');
 
             if (mentions.length > 2) {
               var remainder = mentions.length - 2;
               summary += ' and ' + remainder + ' other';
-              if (mentions.length > 2) {
+              if (remainder > 1) {
                 summary += 's';
               }
             }
@@ -245,11 +251,56 @@ module.exports = function (server) {
         }
 
         cb(null, session, items);
-
       },
       function saveScrollSession(session, items, cb) {
         debug('save scroll session');
         cache.set('scrollSession-' + currentUser.id.toString(), session, 3600, function (err) {
+          cb(err, items);
+        });
+      },
+      function resolvePosts(items, cb) {
+        async.map(items, function (item, doneResolve) {
+          var post = item.about;
+          post = post.replace(/\/(comment|photo)\/.*/, '');
+          var endpoint = proxyEndPoint(post, ctx.get('currentUser'), {
+            'embed': true
+          });
+          var proxyHost = res.app.locals.config.publicHost;
+
+          if (process.env.BEHIND_PROXY === "true") {
+            var rx = new RegExp('^' + server.locals.config.publicHost);
+            if (proxyHost.match(rx)) {
+              proxyHost = proxyHost.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+              debug('bypass proxy ' + proxyHost);
+            }
+          }
+
+          request.get({
+            'url': proxyHost + endpoint,
+            'headers': {
+              'access_token': req.signedCookies.access_token
+            }
+          }, function (err, response, body) {
+            if (err) {
+              item.httpStatus = 500;
+              item.html = '<div class="post">Content unavailable. (' + err + ')</div>';
+              return doneResolve();
+            }
+
+            item.httpStatus = response.statusCode;
+
+            if (response.statusCode !== 200) {
+              item.html = '<div class="post">Content unavailable. (' + response.statusCode + ')</div>';
+              return doneResolve();
+            }
+
+            var dom = new jsdom.JSDOM(body);
+            var element = dom.window.document.querySelector('.post');
+            item.html = element ? element.outerHTML : '<div class="post">Content unavailable.</div>';
+
+            doneResolve();
+          })
+        }, function (err) {
           cb(err, items);
         });
       }
@@ -260,7 +311,9 @@ module.exports = function (server) {
         'user': ctx.get('currentUser'),
         'globalSettings': ctx.get('globalSettings'),
         'userSettings': ctx.get('userSettings'),
-        'items': items
+        'items': items,
+        'more': req.query.more,
+        'profile': getProfile(currentUser)
       });
 
     });

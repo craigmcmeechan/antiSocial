@@ -46,6 +46,7 @@ module.exports = function (OgTag) {
 	//   Save resized image in s3 if needed
 
 	OgTag.scrape = function (url, ctx, done) {
+
 		var refresh = _.get(ctx, 'req.query.refresh') ? true : false;
 
 		if (verbose) {
@@ -66,6 +67,7 @@ module.exports = function (OgTag) {
 				console.log(e.toString());
 				return done(null, {});
 			}
+
 			done(err, instance);
 		});
 
@@ -200,7 +202,8 @@ module.exports = function (OgTag) {
 					'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
 				},
 				'jar': request.jar(),
-				'onlyGetOpenGraphInfo': true
+				'onlyGetOpenGraphInfo': true,
+				'timeout': 15000
 			};
 
 			// call open-graph-scraper

@@ -2,20 +2,21 @@
 
 #scope-posting-form
 	.clearfix
-	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= about data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body" data-single-upload= "1" data-modal="#edit-comment-form")
+	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-description= post ? post.description : '' data-about= about data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body" data-single-upload= "1" data-modal="#edit-comment-form")
 		.tabbed
 			#form-tab
 				.form-group.input-relative
 					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown"  data-in-modal= editing ? 'true' : '' style="font-family:Helvetica,Arial,sans-serif;")
 						if comment
 							!= marked(comment.details.body)
-					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required" style="display:none;")
+					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
 					.input-ok-indicator.hide-until-subject-focus
-						span.glyphicon.glyphicon-ok
+						span.fa.fa-check
 					.validation-help.hide-until-subject-focus
 		.hide-until-subject-focus
 			.upload-zone
 		.form-group.input-relative.hide-until-subject-focus.comment-button-zone
-			button.post-submit-button.btn.btn-sm.btn-primary Post
-			a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="glyphicon glyphicon-upload"></i>
-			a#post-cancel-button.btn.btn-sm.btn-default.pull-right(href="#") Cancel
+			a#post-cancel-button.btn.btn-sm.btn-default(href="#") Cancel
+			a#post-upload-button.btn.btn-sm.btn-default(href="#") <i class="fa fa-images"></i>
+			.float-right
+				button.post-submit-button.btn.btn-sm.btn-primary Post

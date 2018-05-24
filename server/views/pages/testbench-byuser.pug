@@ -1,0 +1,20 @@
+
+block seo
+	title.
+		Testbench
+
+block content
+	.container-fluid.content-padding-top.content
+
+		.page-header
+			h1 Testbench byuser
+		.row
+			.col-xs-12
+				ul
+					for source, sourceEndpoint in items
+						li= sourceEndpoint + ' - '
+							for count,type in source.counts
+								= type + ':' + count + ' '
+							ul
+								for item  in source.items
+									li= item.mention + ' ' + item.type + ' ' + item.about

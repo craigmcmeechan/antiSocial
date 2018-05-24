@@ -11,22 +11,22 @@ module.exports = function resolveProfiles(item, done) {
 	var endpoints = [];
 	var profiles = {};
 
-	if (item.source) {
+	if (item.source && endpoints.indexOf(item.source) === -1) {
 		endpoints.push(item.source);
 		profiles[item.source] = {};
 	}
 
-	if (item.remoteEndPoint) {
+	if (item.remoteEndPoint && endpoints.indexOf(item.remoteEndPoint) === -1) {
 		endpoints.push(item.remoteEndPoint);
 		profiles[item.remoteEndPoint] = {};
 	}
 
-	if (item.about) {
+	if (item.about && endpoints.indexOf(item.about) === -1) {
 		endpoints.push(item.about);
 		profiles[item.about] = {};
 	}
 
-	if (item.target) {
+	if (item.target && endpoints.indexOf(item.target) === -1) {
 		endpoints.push(item.target);
 		profiles[item.target] = {};
 	}
@@ -50,10 +50,23 @@ module.exports = function resolveProfiles(item, done) {
 			'json': true
 		};
 
+		// if connecting to ourself behind a proxy don't use publicHost
+		if (process.env.BEHIND_PROXY === "true") {
+			var rx = new RegExp('^' + app.locals.config.publicHost);
+			if (options.url.match(rx)) {
+				options.url = options.url.replace(app.locals.config.publicHost, 'http://localhost:' + app.locals.config.port);
+				debug('bypass proxy ' + options.url);
+			}
+		}
+
 		request.get(options, function (err, response, body) {
 			var payload = {};
 			if (err || response.statusCode !== 200) {
 				payload.status = 'could not load endpoint profile';
+				payload.status = 503;
+				if (response && response.statusCode) {
+					payload.status = response.statusCode;
+				}
 			}
 			else {
 				payload.status = response.statusCode;
@@ -67,10 +80,10 @@ module.exports = function resolveProfiles(item, done) {
 					'endpoint': endpoint,
 					'name': 'unknown',
 					'photo': {
-						'url': '/images/slug.png'
+						'url': app.locals.config.publicHost + '/images/slug.png'
 					},
 					'background': {
-						'url': '/images/fpo.jpg'
+						'url': app.locals.config.publicHost + '/images/fpo.jpg'
 					}
 				};
 			}
@@ -78,7 +91,7 @@ module.exports = function resolveProfiles(item, done) {
 				payload.profile.photo.url = payload.profile.photo.url;
 				payload.profile.background.url = payload.profile.background.url;
 			}
-			myCache.set('profile-' + whoAbout, payload, 3600);
+			myCache.set('profile-' + whoAbout, payload, payload.status === 200 ? 1800 : 60);
 			profiles[endpoint] = payload;
 			cb();
 		});

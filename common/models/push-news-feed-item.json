@@ -46,6 +46,9 @@
     },
     "tags": {
       "type": ["string"]
+    },
+    "description": {
+      "type": "string"
     }
   },
   "validations": [],

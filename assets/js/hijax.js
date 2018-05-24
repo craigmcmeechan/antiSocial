@@ -72,7 +72,7 @@
 			$(this.element).on('DigitopiaReloadPage', function (e, href) {
 				e.stopPropagation();
 				if (e.target === this) {
-					self.settings.nextScrollTop = $(window).scrollTop();
+					self.settings.nextScrollTop = $(scrollViewport).scrollTop();
 					self.hijaxLoad(self.currentPath, self.currentPath);
 				}
 			});
@@ -196,10 +196,10 @@
 				var top = this.settings.nextScrollTop;
 
 				if (this.settings.disableScrollAnimation) {
-					$("html, body").scrollTop(top);
+					$(scrollViewport).scrollTop(top);
 				}
 				else {
-					$("html, body").animate({
+					$('html,body').animate({
 						scrollTop: top
 					}, '250');
 				}

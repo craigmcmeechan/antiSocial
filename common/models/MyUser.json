@@ -70,6 +70,18 @@
     },
     "online": {
       "type": "boolean"
+    },
+    "subscription": {
+      "type": "object"
+    },
+    "subscriptionStatus": {
+      "type": "string"
+    },
+    "stripeCustomerId": {
+      "type": "string"
+    },
+    "selfAccessToken": {
+      "type": "string"
     }
   },
   "validations": [],
@@ -175,6 +187,24 @@
     "principalId": "$owner",
     "permission": "ALLOW",
     "property": "tag"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "subscriptionstatus"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "subscriptioncancel"
+  }, {
+    "accessType": "EXECUTE",
+    "principalType": "ROLE",
+    "principalId": "$owner",
+    "permission": "ALLOW",
+    "property": "subscriptionupdate"
   }],
   "methods": {}
 }

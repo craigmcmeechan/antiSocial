@@ -1,19 +1,54 @@
-.wrapper(style="border: thin solid #333;border-radius:7px;margin:30px;")
-	.header(style="background-color:#333;text-align:center")
-		img(src= config.publicHost + "/images/logo.svg" style="margin:0 auto;width:75;padding:14px;")
-	.content(style="padding:14px;")
-		h2 Hi!
-		p Some stuff has been happening.
-		
-		if friends 
-			a(href= config.publicHost + '/friends') Click Here 
-			| to see pending friend request(s)
-
-			ul
-			for friend in friends
-				li
-					a(href= config.publicHost + '/proxy-profile?endpoint=' +  encodeURIComponent(friend.remoteEndPoint))= friend.remoteName
+head
+	style.
+		.news-feed-items {
+			font-size: 14px;
+			overflow: hidden;
+		}
+		.news-feed-items .news-feed-item {
+			min-height:50px;
+			border-bottom:thin dashed #eee;
+			padding-right: 10px;
+			margin-left:50px;
+		}
+		.news-feed-items .news-feed-item img {
+			height:39px;
+			border-radius:25px;
+			margin-top:5px;
+			margin-bottom:5px;
+			margin-left:-40px;
+			vertical-align:middle;
+		}
+		.news-feed-items .news-feed-item div {
+			padding-left:10px;
+			display:inline-block;
+			vertical-align:middle;
+		}
+body
+	.wrapper(style="border: thin solid #333;border-radius:7px;margin:30px;")
+		.header(style="background-color:#333;text-align:center")
+			img(src= config.publicHost + "/images/logo.svg" style="margin:0 auto;width:75;padding:14px;")
+		.content(style="padding:14px;")
+			h2= 'Hi there ' + user.name + '!'
 			
-		//
-			if notifications
-				for notification in notifications
+			p Some stuff has been happening on your new home on the digital range. Come check it out!
+			
+			if friends && friends.length
+				a(href= config.publicHost + '/friends') Click Here 
+				| to see 
+				= friends.length
+				|  pending friend request(s)
+
+				ul
+				for friend in friends
+					li
+						a(href= config.publicHost + '/proxy-profile?endpoint=' +  encodeURIComponent(friend.remoteEndPoint))= friend.remoteName
+				
+			if notifications && notifications.length
+				.news-feed-items
+					for notification in notifications
+						-var item = notification.humanReadable.replace(/href=\"\//g,'href=\"' + config.publicHost + '/')
+						- item = item.replace(/src=\"\//g,'src=\"' + config.publicHost + '/')
+						.news-feed-item!= item
+						
+			p Also: More features and less broken stuff every day! Please come and bang on it.
+						

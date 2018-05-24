@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  "webapp-antisocial":
+    container_name: webapp-antisocial
+    image: webapp-antisocial
+    restart: always
+    build:
+      context: ../../
+      dockerfile: deploy/docker-assets/Dockerfile-webapp
+    ports:
+      - "3000:3000"
+    volumes:
+      - /data/images:/var/app/current/client/uploads
+    networks:
+      - frontend
+  "xray-antisocial":
+    container_name: xray-antisocial
+    image: xray-antisocial
+    restart: always
+    build:
+      context: ../../
+      dockerfile: deploy/docker-assets/Dockerfile-xray
+    ports:
+      - "2000:2000"
+    networks:
+      - frontend
+networks:
+  frontend:

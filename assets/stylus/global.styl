@@ -10,10 +10,32 @@ quick()
 body
 	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
 
+body.cordova
+	height: 100vh
+	width: 100vw
+
+.cordova
+	.scroll-viewport
+		-webkit-overflow-scrolling: touch
+		height: 100vh
+		width: 100vw
+		position: absolute
+		overflow: scroll
+		overflow-x: hidden
+		overflow-y: scroll
+
 a
 	&:focus
 		outline:none
 		text-decoration:none
+
+button:focus
+	outline: none !important
+	box-shadow: none !important
+
+.btn:focus
+	outline: none !important
+	box-shadow: none !important
 
 .header-logo
 	height:30px
@@ -22,9 +44,17 @@ a
 	background-size: cover
 	background-repeat:no-repeat
 	background-position: center center
+	margin-right:20px
 
 .container-fluid
 	max-width:1024px
+
+.notification-zone
+	margin-top:50px
+	padding:10px
+	background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,.8) 100%)
+	.alert
+		margin:0
 
 .content
 	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
@@ -67,23 +97,10 @@ a
 		font-size: 3em
 
 #content
-	margin-top:50px
+	margin-top: 56px
 	.content-padding-top
 		padding-top:15px
 		padding-bottom:15px
-
-	.mobile-no-gutters
-		.digitopia-xsmall &
-			padding-right: 0
-			padding-left: 0
-			.newsfeed-item
-				border-radius: 0px
-			.row
-				margin-right: 0
-				margin-left: 0
-				& > [class^="col-"], & > [class*=" col-"]
-					padding-right: 0
-					padding-left: 0
 
 .feed-controls
 	margin-bottom:7px
@@ -170,7 +187,7 @@ img.avatar
 	z-index:1030
 	border-radius: 75px
 	width: 42px
-	top: 4px
+	top: 6px
 	right: calc(50% - 25px)
 	.modal-open &
 		display:none
@@ -188,7 +205,7 @@ img.avatar
 		background: linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)
 		padding-bottom:50px
 	.text-overlay
-		margin-top: 50px;
+		margin-top: 56px;
 		color:white
 		a
 			color:white
@@ -199,13 +216,7 @@ img.avatar
 	background-color:white
 
 .subnav-tabs
-	margin-top:-38px
 	border-bottom: none
-	li
-		a
-			background-color:rgba(255,255,255,.6)
-			padding:7px
-			color:#333
 
 #ajax-status
 	position:fixed
@@ -270,7 +281,9 @@ img.avatar
 	.comment-photo
 		img
 			.not-digitopia-xsmall &,.not-digitopia-small &
-				max-height:50vh
+				max-height:40vh
+				max-width: 100%
+
 			.digitopia-xsmall &, .digitopia-small &
 				max-width: 100%
 				max-height: auto
@@ -283,7 +296,6 @@ img.avatar
 
 	.reaction-summary-icons
 		padding-right: 4px
-
 
 #scope-posting-form
 	.scope-posting-form
@@ -302,6 +314,13 @@ img.avatar
 	.form-control
 		box-shadow: none
 		-webkit-box-shadow: none
+	.shared-post
+		background-color:white
+		#scope-post-list
+			min-height:auto
+			padding: 15px
+			.post
+				box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 
 	.form-control:focus
 		box-shadow: none
@@ -422,6 +441,7 @@ img.avatar
 	h1,h2,h3,h4
 		margin-top:0px
 		margin-bottom:7px
+		clear: both
 	h1
 		font-size: 26px
 		line-height: 32px
@@ -437,6 +457,11 @@ img.avatar
 	blockquote
 		font-size:18px
 		border-color: #666
+		clear: both
+		border-left: thick solid
+		padding-left: 1rem
+	div
+		clear: both
 	ul
 		li
 			p
@@ -478,6 +503,12 @@ img.avatar
 	.pending
 		border: thin dashed yellow
 
+	.shared-post
+		background-color:white
+		padding: 15px
+		.post
+			box-shadow: 0 0 3px 1px rgb(94, 158, 214)
+
 	.post
 		background-color:white
 		border:thin solid $borderColor
@@ -504,7 +535,8 @@ img.avatar
 				border:none
 				background-color:rgba(0,0,0,0)
 				&:focus
-					outline: none
+					outline: none !important;
+					box-shadow: none !important;
 			.dropdown-menu
 				font-size: .75em
 				text-align:left
@@ -562,6 +594,7 @@ img.avatar
 			background: linear-gradient(to right bottom, rgba(0,0,0,.9), rgba(0,0,0,.6))
 			&.full-width
 				min-height:50vh
+				min-width:100%
 			.more-photos
 				background-color:rgba(0,0,0,.5)
 				color:white
@@ -634,10 +667,15 @@ img.avatar
 			border:thin solid rgba(0,0,0,0)
 			border-radius:2px
 			cursor:pointer
+			div
+				padding-top: 2px;
+				padding-left: 2px;
 			&:hover
-				border-color:red
+				div
+					box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 			&.selected
-				border-color:orange
+				div
+					box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 		.more-reactions
 			animation-duration: .35s
 			position:absolute
@@ -673,13 +711,14 @@ img.avatar
 			.indicator
 				padding-left:7px
 				&:after
-					font-family: 'Glyphicons Halflings'
-					content: "\e114"
+					font-family: 'Font Awesome 5 Free'
+					font-weight: 900;
+					content: "\F078"
 					color: #FF8166
 			&.collapsed
 				.indicator
 					&:after
-						content: "\e080";
+						content: "\F054";
 
 		.comment
 			.thumb-container
@@ -693,8 +732,7 @@ img.avatar
 			.profile-link
 				margin-right:7px
 	.reaction-details
-		z-index:-1
-		animation-duration: .15s
+		animation-duration: .1s
 		display:none
 		table
 			width:100%
@@ -702,20 +740,56 @@ img.avatar
 			td
 				padding-right: 7px
 		img
-			height:20px
-			border-radius:50%
-			margin-top:5px
-			margin-bottom:5px
+			height: 24px
+			border-radius: 50%
+			margin-top: 5px
+			margin-bottom: 5px
+			margin-left: 2px
+			margin-right: 4px
+#fixed-footer
+	text-align:center
+	.not-digitopia-xsmall &
+		display:none
+	.digitopia-xsmall &
+		position:fixed
+		height:40px
+		padding:4px
+		width:100%
+		bottom:0px
+		background-color:#333
+	.footer-button
+		position:relative
+		border: thin solid #999
+		border-radius: 4px
+		display:inline-block
+		padding:4px
+		color:#666
+		margin-right:10px
+		&.active
+			color:#999
+	.activity-count
+		position: absolute
+		font-size: 9px
+		top: -10px
+		right: -15px
+		background-color:red
+		color:white
 #news-feed
-	display:none
 	position:absolute
 	top:calc(100vh + 75px)
 	left:0px
 	overflow: hidden
 	background-color:white
 	border-radius:4px
+	&.on-screen
+		display:block!important
+		top:50px!important
+		left:0px!important
+		margin:0
+		margin-bottom:40px
+		width:100%!important
 	.digitopia-xsmall &
-		display:none!important
+		display: none
 
 	.status
 		width:8px
@@ -724,9 +798,9 @@ img.avatar
 		background-color:green
 		margin-top:11px
 		margin-right:10px
-
-		&.offline
+		.offline &
 			background-color:red
+
 	.news-feed-header
 		height:30px
 		line-height:30px
@@ -734,6 +808,13 @@ img.avatar
 		padding-right: 10px
 		font-weight:bold
 		background-color:#eee
+		.activity-count
+			position: absolute
+			font-size: 9px
+			top: 7px
+			left: 20px
+			background-color:red
+			color:white
 	.news-feed-footer
 		height:30px
 		line-height:30px
@@ -742,16 +823,21 @@ img.avatar
 		background-color:#eee
 		text-align:right
 		font-size:.75em
-
+		.digitopia-xsmall &
+			display:none
 	.news-feed-items
 		font-size:.75em
-		max-height: 500px
-		overflow: hidden;
+		.not-digitopia-xsmall &.constrained-height
+			overflow: hidden
+			max-height:calc(100vh - 75px - 60px)
 		.news-feed-item
-			height:50px
+			min-height:50px
 			border-bottom:thin dashed $borderColor
 			padding-right: 10px
 			margin-left:50px
+			cursor:pointer
+			&.is-new
+				background-color:#fee
 			img
 				height:39px
 				border-radius:25px
@@ -765,6 +851,7 @@ img.avatar
 .menu-icon-placeholder
 	width:75px
 	position:relative
+	margin-top:-6px
 .menubar-thumb
 	position:absolute
 	right:16px
@@ -801,6 +888,15 @@ img.avatar
 	.address
 		padding-left:.5em
 		padding-right:.5em
+		padding-bottom:.2em
+		padding-top:.2em
 		cursor:pointer
 		&:hover
 			background-color:#eee
+	.freeform
+		font-style: italic
+	.distance
+		color:#ccc
+
+.position-relative
+	position:relative

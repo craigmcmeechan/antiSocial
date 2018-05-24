@@ -54,7 +54,7 @@ module.exports = function (server) {
 
 				var options = {
 					'to': invitation.email,
-					'from': 'mrhodes@myantisocial.net',
+					'from': process.env.OUTBOUND_MAIL_SENDER,
 					'subject': 'Friend request from ' + invitation.user().name,
 					'user': invitation.user().name,
 					'email': invitation.user().email,
@@ -67,11 +67,12 @@ module.exports = function (server) {
 				mailer(server, 'emails/invite-friend', options, function (err) {
 					if (err) {
 						var e = new VError(err, 'could not send invite email');
-						return cb(e);
+						debug(e.toString());
+						debug(e.stack);
 					}
-					cb();
 				});
 
+				cb();
 			}
 		], function (err) {
 			if (err) {

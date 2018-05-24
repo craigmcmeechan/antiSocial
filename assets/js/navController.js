@@ -32,7 +32,7 @@
 			// deselect last nav item
 			$(self.element).find('.active').removeClass('active');
 			// select new nave item which has id #nav- followed by section name
-			$('#nav-' + root[1]).addClass('active');
+			$('#nav-' + root[1] + ' a').addClass('active');
 		};
 	}
 

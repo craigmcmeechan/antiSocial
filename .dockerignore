@@ -1,0 +1,11 @@
+.circleci
+.git
+client/uploads
+devel-notes
+native-app
+locals
+notes
+trash
+working
+.DS_Store
+localdev.env

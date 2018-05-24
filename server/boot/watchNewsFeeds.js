@@ -1,4 +1,5 @@
-var watchFeed = require('../lib/watchFeedWebsockets')
+var _ = require('lodash');
+var watchFeed = require('../lib/watchFeedWebsockets').connect;
 
 module.exports = function (server) {
 
@@ -15,9 +16,17 @@ module.exports = function (server) {
 			return;
 		}
 
+
 		for (var i = 0; i < friends.length; i++) {
 			var friend = friends[i];
-			watchFeed.connect(server, friend);
+			later(server, friend, i);
 		}
 	});
+
+	function later(server, friend, i) {
+		setTimeout(function () {
+			console.log('connecting: ', friend.user().username, friend.remoteUsername);
+			watchFeed(server, friend);
+		}, i * 500);
+	}
 };

@@ -1,0 +1,10 @@
+.post-callout-scope
+	.post-callout-wrapper
+		.post-callout
+			.source
+				.name= profile.name
+				if _.get(profile,'photo.url')
+					.poster-avatar
+						img(src= profile.photo.url)
+			.body
+				a(href= link)= message

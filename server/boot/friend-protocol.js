@@ -2,6 +2,8 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var watchFeed = require('../lib/watchFeedWebsockets');
 var resolveProfiles = require('../lib/resolveProfiles');
+var utils = require('../lib/utilities');
+var mailer = require('../lib/mail');
 var forge = require('node-forge');
 var crc = require('crc');
 
@@ -128,7 +130,7 @@ module.exports = function (server) {
 				debug('requestFriend ' + myEndPoint + '->' + friend.remoteEndPoint + '/friend-request', payload);
 
 				var options = {
-					'url': friend.remoteEndPoint + '/friend-request',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-request'),
 					'form': payload,
 					'json': true
 				};
@@ -168,7 +170,7 @@ module.exports = function (server) {
 				debug('exchangeToken ' + myEndPoint + '->' + friend.remoteEndPoint + '/friend-exchange %j', payload);
 
 				request.post({
-					'url': friend.remoteEndPoint + '/friend-exchange',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-exchange'),
 					'form': payload,
 					'json': true
 				}, function (err, response, body) {
@@ -422,7 +424,7 @@ module.exports = function (server) {
 				debug('/friend-request exchangeToken ' + myEndPoint + '->' + friend.remoteEndPoint + '/friend-exchange', payload);
 
 				request.post({
-					'url': friend.remoteEndPoint + '/friend-exchange',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-exchange'),
 					'form': payload,
 					'json': true
 				}, function (err, response, body) {
@@ -494,18 +496,41 @@ module.exports = function (server) {
 						'userId': user.id,
 						'friendId': friend.id,
 						'uuid': uuid(),
-						'type': invitation ? 'frend invite accepted' : 'pending friend request',
+						'type': invitation ? 'friend invite accepted' : 'pending friend request',
 						'source': friend.remoteEndPoint,
 						'about': friend.remoteEndPoint,
 						'originator': false
 					};
+
 					req.app.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 						if (err) {
 							var e = new VError(err, 'error creating newsfeed item');
 							return cb(e);
 						}
-						cb(null, user, friend, invitation);
+						cb(null, user, friend, invitation, sourceProfile, item);
 					});
+				});
+			},
+			function notifyEmail(user, friend, invitation, profile, item, cb) {
+				utils.getUserSettings(server, user, function (err, settings) {
+					if (!settings.notifications_friend_request) {
+						return cb(null, user, friend, invitation);
+					}
+					var template = 'emails/notify-friend-request';
+					var options = {
+						'to': user.email,
+						'from': process.env.OUTBOUND_MAIL_SENDER,
+						'config': server.locals.config,
+						'subject': 'Friend request from ' + friend.remoteUsername,
+						'profile': profile ? profile.profile : null,
+						'_': require('lodash'),
+						'marked': server.locals.marked,
+						'item': item
+					};
+					mailer(server, template, options, function (err, info) {
+						debug('mail status %j %j', err, info);
+					});
+					cb(null, user, friend, invitation);
 				});
 			}
 		], function (err, user, friend, invitation) {
@@ -587,7 +612,7 @@ module.exports = function (server) {
 				var endpoint = url.parse(friend.remoteEndPoint);
 
 				var options = {
-					'url': friend.remoteEndPoint + '/friend-webhook/friend-request-accepted',
+					'url': fixIfBehindProxy(friend.remoteEndPoint + '/friend-webhook/friend-request-accepted'),
 					'form': payload,
 					'json': true
 				};
@@ -823,4 +848,15 @@ module.exports = function (server) {
 	});
 
 	server.use(router);
+
+	function fixIfBehindProxy(url) {
+		if (process.env.BEHIND_PROXY === "true") {
+			var rx = new RegExp('^' + server.locals.config.publicHost);
+			if (url.match(rx)) {
+				url = url.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+				debug('bypass proxy ' + url);
+			}
+		}
+		return url;
+	}
 };

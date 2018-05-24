@@ -5,13 +5,15 @@
 
 		this.endpoint = this.element.data('endpoint');
 		this.photoId = this.element.data('photoId');
+		this.description = this.element.data('description');
 
 		this.debounceIn = null;
 		this.debounceOut = null;
 		this.shown = false;
+		this.clickable = false;
 
 		this.start = function () {
-			this.element.on('mouseenter', function (e) {
+			this.element.on('click', function (e) {
 				if (self.debounceIn) {
 					clearTimeout(self.debounceIn);
 				}
@@ -23,56 +25,49 @@
 						self.debounceIn = undefined;
 						self.element.find('.more-reactions').show().animateCss('flipInX', function () {
 							self.shown = true;
+							self.clickable = true;
 							self.element.find('.reaction-details').show().animateCss('fadeInDown');
 						});
 					}, 500);
 				}
-			});
-
-			this.element.on('mouseleave', function (e) {
-				if (self.debounceOut) {
-					clearTimeout(self.debounceOut);
-				}
-				if (self.debounceIn) {
-					clearTimeout(self.debounceIn);
-				}
-				if (self.shown) {
-					self.debounceOut = setTimeout(function () {
-						self.debounceOut = undefined;
-						self.element.find('.more-reactions').animateCss('flipOutX', function () {
+				else {
+					self.clickable = false;
+					self.element.find('.more-reactions').animateCss('flipOutX', function () {
+						self.element.find('.more-reactions').hide();
+						self.element.find('.reaction-details').show().animateCss('fadeOutUp', function () {
 							self.shown = false;
-							self.element.find('.more-reactions').hide();
-							self.element.find('.reaction-details').show().animateCss('fadeOutUp', function () {
-								self.element.find('.reaction-details').hide();
-							});
+							self.element.find('.reaction-details').hide();
 						});
 					});
 				}
 			});
 
 			this.element.on('click', '.reaction-button', function (e) {
+				e.preventDefault();
+				if (self.clickable) {
 
-				var prev = self.element.find('.selected');
-				if (prev.length) {
-					prev.removeClass('selected');
-				}
-				var reaction;
-				if (prev[0] !== this) {
-					reaction = $(this).data('value');
-					$(this).addClass('selected');
-				}
+					var prev = self.element.find('.selected');
+					if (prev.length) {
+						prev.removeClass('selected');
+					}
+					var reaction;
+					if (prev[0] !== this) {
+						reaction = $(this).data('value');
+						$(this).addClass('selected');
+					}
 
-				self.element.find('.more-reactions').animateCss('flipOutX', function () {
-					self.shown = false;
-					self.element.find('.more-reactions').hide();
-					self.saveReaction(reaction);
-				});
+					self.clickable = false;
+					self.element.find('.more-reactions').animateCss('flipOutX', function () {
+						self.shown = false;
+						self.element.find('.more-reactions').hide();
+						self.saveReaction(reaction);
+					});
+				}
 			});
 		};
 
 		this.stop = function () {
-			self.element.off('mouseleave');
-			self.element.off('mouseleave');
+			self.element.off('click');
 			this.element.off('click', '.reaction-button');
 		};
 
@@ -80,7 +75,8 @@
 			var payload = {
 				'reaction': reaction,
 				'endpoint': self.endpoint,
-				'photoId': this.photoId
+				'photoId': this.photoId,
+				'description': self.description
 			};
 			$.post('/react', payload, function (data, status, xhr) {
 				if (status !== 'success') {

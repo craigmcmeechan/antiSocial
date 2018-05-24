@@ -1,5 +1,6 @@
 var debug = require('debug')('authentication');
 var async = require('async');
+var utils = require('../lib/utilities');
 
 module.exports = function () {
 	return function contextCurrentUser(req, res, next) {
@@ -54,23 +55,7 @@ module.exports = function () {
 					});
 				},
 				function (cb) {
-					var q = {
-						'where': {
-							'group': user.username
-						}
-					};
-
-					req.app.models.Settings.findOne(q, function (err, group) {
-						var settings;
-						if (group) {
-							settings = group.settings;
-						}
-						if (!settings) {
-							settings = {
-								'friendListVisibility': 'all', // all, mutual, none
-								'feedSortOrder': 'activity' // post, activity
-							};
-						}
+					utils.getUserSettings(req.app, user, function (err, settings) {
 						reqContext.set('userSettings', settings);
 						cb();
 					});

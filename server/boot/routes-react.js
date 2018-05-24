@@ -25,6 +25,7 @@ module.exports = function (server) {
     var reaction = req.body.reaction;
     var endpoint = req.body.endpoint;
     var photoId = req.body.photoId;
+    var description = req.body.description;
 
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
@@ -56,6 +57,7 @@ module.exports = function (server) {
               'timestamp': new Date(),
             });
             item.details.reaction = reaction;
+            item.description = description;
             item.save(function (err) {
               if (err) {
                 return cb(err);
@@ -67,6 +69,8 @@ module.exports = function (server) {
             var query = {
               'where': {
                 'and': [{
+                  'type': 'react'
+                }, {
                   'uuid': pushNewsFeedItem.uuid
                 }, {
                   'userId': currentUser.id
@@ -114,7 +118,8 @@ module.exports = function (server) {
               'details': {
                 'reaction': reaction,
                 'photoId': photoId
-              }
+              },
+              'description': description
             }, function (err, news) {
               if (err) {
                 var e = new VError(err, 'could not create reaction');
