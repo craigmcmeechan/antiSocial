@@ -1,0 +1,27 @@
+extends ../wrapper
+
+block seo
+	title.
+		Setup Server
+
+block content
+	.container-fluid.content-padding-top.content
+		.page-header
+			h2.mb-3 Setup Server
+			p= config.publicHost
+			
+			form.form(action="/environment" method="POST")
+				.form-group
+					label.label PUBLIC_HOST: dns name for server
+					input.form-control(name="PUBLIC_HOST" placeholder="example.hostname.com" value= env.PUBLIC_HOST ? env.PUBLIC_HOST: config.host data-validate="required")
+				.form-group
+					label.label PUBLIC_PROTOCOL: http or https
+					input.form-control(name="PUBLIC_PROTOCOL"  value= env.PUBLIC_PROTOCOL ? env.PUBLIC_PROTOCOL: config.protocol)
+				.form-group
+					label.label PUBLIC_PORT: 80 or 443
+					input.form-control(name="PUBLIC_PORT"  value= env.PUBLIC_PORT ? env.PUBLIC_PORT : config.publicPort)
+				.form-group
+					label.label BEHIND_PROXY: 'true' if behind proxy or load balancer
+					input.form-control(name="BEHIND_PROXY" value= env.BEHIND_PROXY ? 'true' : 'false')
+
+				button.btn.btn-primary Save

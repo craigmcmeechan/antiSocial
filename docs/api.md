@@ -1,6 +1,15 @@
 ## Members
 
 <dl>
+<dt><a href="#POST Create a new comment">POST Create a new comment</a></dt>
+<dd><p>create a new comment</p>
+</dd>
+<dt><a href="#GET Get a comment">GET Get a comment</a></dt>
+<dd><p>Get a comment</p>
+</dd>
+<dt><a href="#POST Post a comment">POST Post a comment</a></dt>
+<dd><p>Post a comment</p>
+</dd>
 <dt><a href="#Get Edit a post">Get Edit a post</a></dt>
 <dd><p>get a post for edit</p>
 </dd>
@@ -159,6 +168,58 @@ requestor. Otherwise a 404 error is returned</p>
 </dd>
 </dl>
 
+<a name="POST Create a new comment"></a>
+
+## POST Create a new comment
+create a new comment
+
+**Kind**: global variable  
+**Path**: <code>POST</code> /comment/  
+**Auth**: With valid user credentials  
+**Code**: <code>200</code> success  
+**Code**: <code>404</code> post not found  
+**Code**: <code>401</code> unauthorized  
+**Body**: <code>String</code> description body of the comment in valid markdown  
+**Body**: <code>String</code> about contains the uuid of the post and the username of the post  
+**Body**: <code>String</code> photoId id of photo included in comment  
+**Response**: <code>Object</code> {String} result.status: 'ok' {Object} 'result.comment':
+   }  
+<a name="GET Get a comment"></a>
+
+## GET Get a comment
+Get a comment
+
+**Kind**: global variable  
+**Path**: <code>GET</code> /comment/:id  
+**Auth**: With valid user credentials  
+**Code**: <code>200</code> success  
+**Code**: <code>404</code> post not found  
+**Code**: <code>401</code> unauthorized
+   }  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>String</code> | Id of comment being retrieved |
+
+<a name="POST Post a comment"></a>
+
+## POST Post a comment
+Post a comment
+
+**Kind**: global variable  
+**Path**: <code>POST</code> /comment/:id  
+**Auth**: With valid user credentials  
+**Code**: <code>200</code> success  
+**Code**: <code>404</code> post not found  
+**Code**: <code>401</code> unauthorized  
+**Body**: <code>String</code> body text of the comment in valid markdown  
+**Response**: <code>Object</code> {String} result.status: 'ok' {Object} 'result.comment':
+   }  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>String</code> | Id of comment being retrieved |
+
 <a name="Get Edit a post"></a>
 
 ## Get Edit a post
@@ -166,7 +227,7 @@ get a post for edit
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /post/:postid  
-**Params**: <code>String</code> :postid is a valid post id owned by the logged in user  
+**Params**: <code>String</code> postid is a valid post id owned by the logged in user  
 **Auth**: With valid user credentials  
 **Header**: <code>Cookie</code> access_token Request made by a logged in user on this server  
 **Code**: <code>200</code> success  
@@ -181,7 +242,7 @@ Edit a post
 **Kind**: global variable  
 **Path**: <code>POST</code> /post/:postid  
 **Auth**: With valid user credentials  
-**Params**: <code>String</code> :postid is a valid post id owned by the logged in user  
+**Params**: <code>String</code> postid is a valid post id owned by the logged in user  
 **Code**: <code>200</code> success  
 **Code**: <code>404</code> post not found  
 **Code**: <code>401</code> unauthorized  
@@ -198,7 +259,7 @@ Delete a post
 
 **Kind**: global variable  
 **Path**: <code>DELETE</code> /post/:postid  
-**Params**: <code>String</code> :postid is a valid post id owned by the logged in user  
+**Params**: <code>String</code> postid is a valid post id owned by the logged in user  
 **Auth**: With valid user credentials  
 **Header**: <code>Cookie</code> access_token Request made by a logged in user on this server  
 **Code**: <code>200</code> success  
@@ -236,7 +297,7 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Query**: <code>String</code> highwater Used for pagination or infinite scrolling of user posts. highwater is the createdOn timestamp of last post seen. (HTML mode only)  
 **Query**: <code>String</code> tags Filter posts by tags. eg. ?tags=["%23randompic"] returns only posts hashtagged with #randompic (HTML mode only)  
@@ -259,7 +320,7 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/photos[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Query**: <code>String</code> tags Filter photos by tags. eg. ?tags=["%23randompic"] returns only photos hashtagged with #randompic (HTML mode only)  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
@@ -279,7 +340,7 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Query**: <code>String</code> tags Filter photos by tags. eg. ?tags=["%23randompic"] returns only photos hashtagged with #randompic (HTML mode only)  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
@@ -300,7 +361,7 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/posts[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Query**: <code>String</code> highwater Used for pagination or infinite scrolling of user posts. highwater is the createdOn timestamp of last post seen. (HTML mode only)  
 **Query**: <code>String</code> tags Filter posts by tags. eg. ?tags=["%23randompic"] returns only posts hashtagged with #randompic (HTML mode only)  
@@ -321,8 +382,8 @@ requestor. Otherwise a 404 error is returned
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of post  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of post  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -341,9 +402,9 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/reactions[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
 **Header**: <code>Cookie</code> access_token Request made by a logged in user on this server (set when user logges in.)  
@@ -361,8 +422,8 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/comments[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -381,9 +442,9 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/comment/:commentId[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> :commentId Id of wanted comment  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> commentId Id of wanted comment  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -402,9 +463,9 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/comment/commentId/reactions[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> :commentId Id of wanted comment  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> commentId Id of wanted comment  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -423,8 +484,8 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/photos[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -443,9 +504,9 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/photo/:photoId[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> :photoId Id of wanted post  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> photoId Id of wanted post  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -464,9 +525,9 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/photo/:photoId/reactions[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> :photoId Id of wanted post  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> photoId Id of wanted post  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -485,9 +546,9 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/photo/:photoId/comments[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> :photoId Id of wanted post  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> photoId Id of wanted post  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -506,10 +567,10 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/photo/:photoId/comment/:commentId[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> :photoId Id of wanted post  
-**Params**: <code>String</code> :commentId Id of wanted comment  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> photoId Id of wanted post  
+**Params**: <code>String</code> commentId Id of wanted comment  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -528,10 +589,10 @@ requestor.
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/post/:postId/photo/:photoId/comment/commentId/reactions[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :postId Id of wanted post  
-**Params**: <code>String</code> :photoId Id of wanted post  
-**Params**: <code>String</code> :commentId Id of wanted comment  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> postId Id of wanted post  
+**Params**: <code>String</code> photoId Id of wanted post  
+**Params**: <code>String</code> commentId Id of wanted comment  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
@@ -550,8 +611,8 @@ requestor. Otherwise a 404 error is returned
 
 **Kind**: global variable  
 **Path**: <code>GET</code> /:username/photo/:photoId[.json]  
-**Params**: <code>String</code> :username Username of user on this server or a friend of the logged in user  
-**Params**: <code>String</code> :photoId Id of photo  
+**Params**: <code>String</code> username Username of user on this server or a friend of the logged in user  
+**Params**: <code>String</code> photoId Id of photo  
 **Params**: <code>String</code> .json Append the .json suffix for JSON response otherwise HTML is returned  
 **Auth**: Anonymous, with valid user credentials or with valid friend credentials  
 **Header**: <code>String</code> friend-access-token Request made by a friend of :username. Must match remoteAccessToken in one of :username's FRIEND records  
