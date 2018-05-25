@@ -13,6 +13,7 @@ describe('proxy endpoints', function () {
 	var client2 = request.agent();
 	var client3 = request.agent();
 	var client4 = request.agent();
+	var client5 = request.agent();
 
 	var clientAnon = request.agent();
 
@@ -20,6 +21,7 @@ describe('proxy endpoints', function () {
 	var email2 = 'mrhodes+test+proxy2@myantisocial.net';
 	var email3 = 'mrhodes+test+proxy3@myantisocial.net';
 	var email4 = 'mrhodes+test+proxy4@myantisocial.net';
+	var email5 = 'mrhodes+test+proxy5@myantisocial.net';
 
 	var endpoint1 = 'http://127.0.0.1:3000/';
 	var endpoint2 = 'http://127.0.0.1:3000/';
@@ -140,6 +142,23 @@ describe('proxy endpoints', function () {
 				});
 		});
 
+		it('should be able to create account 5', function (done) {
+			client5.post('http://127.0.0.1:3000/api/MyUsers/register')
+				.type('form')
+				.send({
+					'email': email5,
+					'password': password,
+					'name': 'user five'
+				})
+				.end(function (err, res) {
+					expect(err).to.be(null);
+					expect(res.status).to.equal(200);
+					var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
+					expect(accessToken).to.be.a('string');
+					done();
+				});
+		});
+
 		it('user1 should be able to friend user2', function (done) {
 			client1.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint2).end(function (err, res) {
 				expect(res.status).to.be(200);
@@ -195,10 +214,9 @@ describe('proxy endpoints', function () {
 			visibility: ['public', 'friends']
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
-			expect(res.body.status).to.be('ok');
+			expect(res.body.result.status).to.be('ok');
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			expect(res.body.status).to.be('ok');
-			post1 = res.body.uuid;
+			post1 = res.body.result.uuid;
 			done();
 		});
 	});
@@ -230,8 +248,8 @@ describe('proxy endpoints', function () {
 		client2.post('http://127.0.0.1:3000/post').send(payload).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			expect(res.body.status).to.be('ok');
-			post2 = res.body.uuid;
+			expect(res.body.result.status).to.be('ok');
+			post2 = res.body.result.uuid;
 			done();
 		});
 	});
@@ -246,7 +264,7 @@ describe('proxy endpoints', function () {
 		client2.post('http://127.0.0.1:3000/post').send(payload).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
-			expect(res.body.status).to.be('ok');
+			expect(res.body.result.status).to.be('ok');
 			done();
 		});
 	});
