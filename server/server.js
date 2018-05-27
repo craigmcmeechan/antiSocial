@@ -1,3 +1,8 @@
+if (process.env.ENVFILE) {
+  require('dotenv').config({
+    path: process.env.ENVFILE
+  });
+}
 var loopback = require('loopback');
 var boot = require('loopback-boot');
 var bunyan = require('bunyan');

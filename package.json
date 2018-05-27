@@ -24,6 +24,7 @@
     "debug": "^3.1.0",
     "digitopia": "git+https://github.com/mediapolis/digitopia.git#jquery-3-working",
     "digitopia-admin": "*",
+    "dotenv": "^5.0.1",
     "dtrace-provider": "^0.8.6",
     "express-session": "^1.15.4",
     "fb": "^2.0.0",
