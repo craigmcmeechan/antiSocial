@@ -21,12 +21,12 @@ module.exports = function resolveCommentsSummary(item, done) {
 			}
 		}
 
-		var summary = mentions.slice(0, 3).join(', ');
+		var summary = mentions.slice(0, 2).join(', ');
 
 		if (mentions.length > 2) {
 			var remainder = mentions.length - 2
 			summary += ' and ' + remainder + ' other'
-			if (mentions.length > 2) {
+			if (remainder > 1) {
 				summary += 's'
 			}
 		}
