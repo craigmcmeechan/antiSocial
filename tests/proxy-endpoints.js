@@ -271,7 +271,7 @@ describe('proxy endpoints', function () {
 
 	it('user1 should be able to react to user2 post', function (done) {
 		client1.post('http://127.0.0.1:3000/react').send({
-			reaction: 'thumbsup',
+			reaction: 'thumbs-up',
 			endpoint: endpoint2 + '/post/' + post2
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
@@ -296,7 +296,7 @@ describe('proxy endpoints', function () {
 
 	it('user1 should be able to react to comment on user2 post', function (done) {
 		client1.post('http://127.0.0.1:3000/react').send({
-			reaction: 'thumbsup',
+			reaction: 'vomit',
 			endpoint: endpoint2 + '/post/' + post2 + '/comment/' + commentId
 		}).end(function (err, res) {
 			expect(res.status).to.be(200);
