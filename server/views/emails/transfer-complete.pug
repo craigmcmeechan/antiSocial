@@ -1,0 +1,14 @@
+head
+	meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
+	include ../cards/callout-email-css
+body
+	p Your account transfer request has finished importing your data from your old sever to your new account.
+	if status
+		p= ' with status ' + status
+	else
+		p
+			| Please use 
+			a(href= config.publicHost + user.username) this new account 
+			|  from now on. Your old account is now deactivated and all your data on the old server will be deleted.
+	
+	

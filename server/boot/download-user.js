@@ -5,48 +5,22 @@ var archiver = require('archiver');
 var unzipper = require('unzipper');
 var path = require('path');
 var fs = require('fs');
+var rimraf = require('rimraf');
 var mime = require('mime-types');
 var uuid = require('uuid');
 var async = require('async');
-var base64 = require('base-64');
 var request = require('request');
 var JSONStream = require('JSONStream');
+var debug = require('debug')('addresschange');
+var mailer = require('../lib/mail');
 
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 
-var TWO_HOURS = 60 * 60 * 2;
-
 module.exports = function downloadUser(server) {
 	var router = server.loopback.Router();
 
-	/*
-	// get a token to download data to a new server
-	router.get('/transfer-token', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
-		var ctx = req.myContext;
-		var currentUser = ctx.get('currentUser');
-
-		currentUser.createAccessToken(TWO_HOURS, function (err, accessToken) {
-			if (err) {
-				var e = new VError(err, 'user.createAccessToken error');
-				return next(e);
-			}
-
-			var token = {
-				endpoint: req.app.locals.config.publicHost + '/' + currentUser.username,
-				token: accessToken.id
-			};
-
-			res.render('pages/transfer-token', {
-				'globalSettings': ctx.get('globalSettings'),
-				user: currentUser,
-				token: base64.encode(JSON.stringify(token))
-			});
-		});
-	});
-	*/
-
-	// form to initiate account data transfer from another account/server
+	// form to initiate account data transfer from another server/account
 	router.get('/transfer', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
@@ -62,7 +36,7 @@ module.exports = function downloadUser(server) {
 		var currentUser = ctx.get('currentUser');
 		var errors = '';
 
-		// login and download data if we have credentials
+		// if we have credentials, login and start download/import of data
 		if (req.body['server'] && req.body['email'] && req.body['password']) {
 			async.waterfall([
 				function (cb) {
@@ -116,7 +90,68 @@ module.exports = function downloadUser(server) {
 				}
 			], function (err, token, filename) {
 				if (filename) {
-					reanimate(server, currentUser, filename, function (err) {});
+					reanimate(server, currentUser, filename, function (err) {
+						var status = '';
+						if (err) {
+							status = VError.cause(err);
+							console.log('error processing transfer request %j', VError.cause(err));
+							console.log(VError.fullStack(err));
+							// notify user via email
+							var template = 'emails/transfer-complete';
+							var options = {
+								'to': currentUser.email,
+								'from': process.env.OUTBOUND_MAIL_SENDER,
+								'config': server.locals.config,
+								'subject': 'Account data transfer complete',
+								'_': require('lodash'),
+								'status': status,
+								'user': currentUser
+							};
+							mailer(server, template, options, function (err, info) {
+								debug('mail status %j %j', err, info);
+							});
+							debug('error processing transfer request');
+						}
+						else {
+							var options = {
+								'url': req.body['server'] + '/change-address',
+								'form': {
+									'newEndPoint': server.locals.config.publicHost + '/' + currentUser.username
+								},
+								'headers': {
+									'access_token': token
+								},
+								'json': true
+							};
+
+							request.post(options, function (err, response, body) {
+								var status = '';
+								if (err || response.statusCode !== 200) {
+									status = 'Data imported but could not notify friend network. ';
+									if (err) {
+										status += ' ' + VError.cause(err);
+									}
+									else {
+										status += ' http error ' + response.statusCode;
+									}
+								}
+
+								var template = 'emails/transfer-complete';
+								var options = {
+									'to': currentUser.email,
+									'from': process.env.OUTBOUND_MAIL_SENDER,
+									'config': server.locals.config,
+									'subject': 'Account data transfer complete',
+									'_': require('lodash'),
+									'status': status,
+									'user': currentUser
+								};
+								mailer(server, template, options, function (err, info) {
+									debug('mail status %j %j', err, info);
+								});
+							});
+						}
+					});
 				}
 				res.render('pages/transfer', {
 					'globalSettings': ctx.get('globalSettings'),
@@ -346,8 +381,42 @@ module.exports = function downloadUser(server) {
 				zip.finalize();
 			});
 	});
+
+	router.post('/change-address', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+		var ctx = req.myContext;
+		var currentUser = ctx.get('currentUser');
+
+		if (!req.body.newEndPoint) {
+			return res.sendStatus(400);
+		}
+
+		var newsFeedItem = {
+			'userId': currentUser.id,
+			'uuid': uuid(),
+			'type': 'address change',
+			'source': server.locals.config.publicHost + '/' + currentUser.username,
+			'about': server.locals.config.publicHost + '/' + currentUser.username,
+			'visibility': ['friends'],
+			'details': {
+				'newEndPoint': req.body.newEndPoint
+			}
+		};
+
+		currentUser.pushNewsFeedItems.create(newsFeedItem, function (err, item) {
+			if (err) {
+				return res.sendStatus(500);
+			}
+			res.send({
+				'response': {
+					'status': 'ok'
+				}
+			});
+		});
+	});
+
 	server.use(router);
 };
+
 
 function getImageSetUrls(imageSet) {
 	var result = [];
@@ -372,15 +441,30 @@ function reanimate(app, currentUser, archive, done) {
 	});
 
 	parser.on('error', function (err) {
-		console.log(err);
+		done(new VError(err, 'reanimate encountered an error reading archive'));
 	});
 
-	parser.on('finish', function (err) {
-		if (err) {
-			return done(err);
-		}
+	parser.on('finish', function () {
 		processArchive(app, currentUser, extractTo, function (err) {
-			done(err);
+			if (err) {
+				done(new VError(err, 'reanimate encountered an error processing archive'));
+			}
+			async.series([
+				function (cb) {
+					debug('reanimate unlink ' + extractTo);
+					rimraf(extractTo, function (err) { // toast unpacked archive
+						cb(err ? new VError(err, 'error deleting unpacked archive') : null);
+					});
+				},
+				function (cb) {
+					debug('reanimate unlink ' + archive);
+					fs.unlink(archive, function (err) { // toast zip file
+						cb(err ? new VError(err, 'error deleting archive') : null);
+					});
+				}
+			], function (err) {
+				done(err ? new VError(err, 'processArchive encountered and error') : null);
+			});
 		});
 	});
 
@@ -395,22 +479,29 @@ function processArchive(app, currentUser, directory, done) {
 	async.series([
 			function importFriends(cb) {
 				// import friends keeping track of new Id's
+				// TODO - protect against self
 				var reader = fs.createReadStream(directory + '/Friend.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'Error reading /Friend.json'));
 				});
 				reader.on('end', function () {
+					debug('importFriends done processing /Friend.json');
 					cb();
 				});
 				parser.on('data', function (data) {
 					var oldId = data.id;
 					delete data.id;
 					data.userId = currentUser.id;
-					currentUser.friends.create(data, function (err, friend) {
-						newFriends[oldId] = friend.id;
-						console.log('friends create', err, friend);
-					});
+					if (data.remoteUsername === currentUser.username) {
+						debug('importFriends skipping', data.remoteUsername);
+					}
+					else {
+						currentUser.friends.create(data, function (err, friend) {
+							newFriends[oldId] = friend.id;
+							debug('importFriends', friend.id, err);
+						});
+					}
 				});
 				reader.pipe(parser);
 			},
@@ -419,9 +510,10 @@ function processArchive(app, currentUser, directory, done) {
 				var reader = fs.createReadStream(directory + '/NewsFeedItem.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'importNewsFeedItems Error reading /NewsFeedItem.json'));
 				});
 				reader.on('end', function () {
+					debug('importNewsFeedItems done processing /NewsFeedItem.json');
 					cb();
 				});
 				parser.on('data', function (data) {
@@ -430,26 +522,27 @@ function processArchive(app, currentUser, directory, done) {
 					data.source = app.locals.config.publicHost + '/' + currentUser.username;
 					data.friendId = newFriends[data.friendId];
 					currentUser.newsFeeds.create(data, function (err, item) {
-						console.log('newsFeeds create', err, item);
+						debug('importNewsFeedItems', item.id, err);
 					});
 				});
 				reader.pipe(parser);
 			},
 			function importPushNewsFeedItems(cb) {
 				// import PushNewsFeedItems
-				var reader = fs.createReadStream(directory + '/NewsFeedItem.json');
+				var reader = fs.createReadStream(directory + '/PushNewsFeedItem.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'importPushNewsFeedItems Error reading /PushNewsFeedItem.json'));
 				});
 				reader.on('end', function () {
+					debug('importPushNewsFeedItems done processing /PushNewsFeedItem.json');
 					cb();
 				});
 				parser.on('data', function (data) {
 					delete data.id;
 					data.userId = currentUser.id;
 					currentUser.pushNewsFeedItems.create(data, function (err, item) {
-						console.log('pushNewsFeedItems create', err, item);
+						debug('importPushNewsFeedItems', item.id, err);
 					});
 				});
 				reader.pipe(parser);
@@ -459,16 +552,17 @@ function processArchive(app, currentUser, directory, done) {
 				var reader = fs.createReadStream(directory + '/UserIdentity.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'importIdentities Error reading /UserIdentity.json'));
 				});
 				reader.on('end', function () {
+					debug('importIdentities done processing /UserIdentity.json');
 					cb();
 				});
 				parser.on('data', function (data) {
 					delete data.id;
 					data.userId = currentUser.id;
 					currentUser.identities.create(data, function (err, identity) {
-						console.log('identity create', err, identity);
+						debug('importIdentities %s %j', identity, err);
 					});
 				});
 				reader.pipe(parser);
@@ -478,30 +572,32 @@ function processArchive(app, currentUser, directory, done) {
 				var reader = fs.createReadStream(directory + '/imageMap.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'importImages Error reading /imageMap.json'));
 				});
 				reader.on('end', function () {
+					debug('importImages done processing /imageMap.json');
 					cb();
 				});
 				parser.on('data', function (data) {
-					// copy image to new location
-					// adjust data.new to point to new location (href)
-					// TODO: deal with s3 images
+					// copy image to new location and cache newLocation so we can update path
+					// TODO: deal with s3 images?
 					var newLocation = app.locals.config.publicHost + '/uploads/' + data.new;
 					fs.rename(directory + '/images/' + data.new, 'client/uploads/' + data.new, function (err) {
+						debug('importImages rename %s %j', newLocation, err);
 						newImages[data.old] = newLocation;
 					});
 				});
 				reader.pipe(parser);
 			},
 			function importPhotos(cb) {
-				// Import photos and Uploads fixing related reference
+				// Import photos and Uploads fixing related reference and url
 				var reader = fs.createReadStream(directory + '/Photo.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'importPhotos Error reading /Photo.json'));
 				});
 				reader.on('end', function () {
+					debug('importPhotos done processing /Photo.json');
 					cb();
 				});
 				parser.on('data', function (data) {
@@ -511,16 +607,22 @@ function processArchive(app, currentUser, directory, done) {
 					var uploads = data.uploads;
 					delete data.uploads;
 					currentUser.photos.create(data, function (err, photo) {
-						console.log('photo create', err, photo);
+						debug('photo create %s %j', photo.id, err);
 						newPhotos[oldId] = photo.id;
 						async.mapSeries(uploads, function (data, doneUpload) {
 							delete data.id;
 							data.uploadableId = photo.id;
+							for (var size in data.imageSet) {
+								var image = data.imageSet[size];
+								image.url = newImages[image.url]; // new location of image from importImages
+							}
 							photo.uploads.create(data, function (err, upload) {
-								console.log('upload create', err, upload);
+								debug('upload create %s %j', upload.id, err);
 								doneUpload();
 							});
-						}, function (err) {});
+						}, function (err) {
+							debug('importPhotos done %j', err);
+						});
 					});
 				});
 				reader.pipe(parser);
@@ -530,9 +632,10 @@ function processArchive(app, currentUser, directory, done) {
 				var reader = fs.createReadStream(directory + '/Post.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'importPosts Error reading /Post.json'));
 				});
 				reader.on('end', function () {
+					debug('importPosts done processing /Post.json');
 					cb();
 				});
 				parser.on('data', function (data) {
@@ -542,61 +645,67 @@ function processArchive(app, currentUser, directory, done) {
 					var postPhotos = data.postPhotos;
 					delete data.postPhotos;
 					currentUser.posts.create(data, function (err, post) {
-						console.log('photo create', err, post);
+						debug('post create %s %j', post.id, err);
 						async.mapSeries(postPhotos, function (data, donePhoto) {
 							delete data.id;
 							data.postId = post.id;
 							data.photoId = newPhotos[data.photoId];
-							app.models.PostPhoto.create(data, function (err, upload) {
-								console.log('upload create', err, upload);
+							app.models.PostPhoto.create(data, function (err, postPhoto) {
+								debug('postPhoto create %s %j', postPhoto.id, err);
 								donePhoto();
 							});
-						}, function (err) {});
+						}, function (err) {
+							debug('importPosts done %j', err);
+						});
 					});
 				});
 				reader.pipe(parser);
 			},
 			function importSettings(cb) {
 				if (!fs.existsSync(directory + '/Settings.json')) {
-					async.setImmediate(function () {
-						return cb();
-					});
-				}
-				var reader = fs.createReadStream(directory + '/Settings.json');
-				var parser = JSONStream.parse('*');
-				reader.on('error', function (err) {
-					cb(err);
-				});
-				reader.on('end', function () {
-					cb();
-				});
-				parser.on('data', function (data) {
-					var q = {
-						'where': {
-							'group': currentUser.username
-						}
-					};
-					app.models.Settings.findOrCreate(q, {
-						'group': currentUser.username
-					}, function (err, settings) {
-						if (err) {
-							return cb(err);
-						}
-						settings.settings = data.settings;
-						settings.save();
+					return async.setImmediate(function () {
 						cb();
 					});
-				});
-				reader.pipe(parser);
+				}
+				else {
+					var reader = fs.createReadStream(directory + '/Settings.json');
+					var parser = JSONStream.parse('*');
+					reader.on('error', function (err) {
+						cb(new VError(err, 'importSettings Error reading /Settings.json'));
+					});
+					reader.on('end', function () {
+						debug('importSettings done processing /Settings.json');
+						cb();
+					});
+					parser.on('data', function (data) {
+						var q = {
+							'where': {
+								'group': currentUser.username
+							}
+						};
+						app.models.Settings.findOrCreate(q, {
+							'group': currentUser.username
+						}, function (err, settings) {
+							if (err) {
+								return cb(err);
+							}
+							settings.settings = data.settings;
+							settings.save();
+							cb();
+						});
+					});
+					reader.pipe(parser);
+				}
 			},
 			function importUser(cb) {
 				// import user, does nothing at the moment
 				var reader = fs.createReadStream(directory + '/MyUser.json');
 				var parser = JSONStream.parse('*');
 				reader.on('error', function (err) {
-					cb(err);
+					cb(new VError(err, 'importUser Error reading /MyUser.json'));
 				});
 				reader.on('end', function () {
+					debug('importUser done processing /MyUser.json');
 					cb();
 				});
 				parser.on('data', function (data) {});
@@ -604,7 +713,11 @@ function processArchive(app, currentUser, directory, done) {
 			}
 		],
 		function (err) {
-			done(err);
+			if (err) {
+				return done(new VError(err, 'processArchive encountered an error'));
+			}
+			debug('processArchive done');
+			done();
 		}
 	);
 }

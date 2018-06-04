@@ -24,27 +24,30 @@ block content
 					
 				else
 					
+					if !errors
+						p IMPORTANT: This will import the all the information in your account on your old server into your new account on this server and will tell all your friend connections to use this server from now on. This can not be undone. Please be pretty sure you want to do this before you do it.
+					
 					form.form.form-validation(action="/transfer" method="POST" data-jsclass="formValidator" data-submitter="#submitter")
 						.form-group
 							label Old server url
 							.input-relative
-								input.login-server.form-control(type="url" name="server" placeholder="https://mr.myantisocial.net" data-validate="required")
+								input.login-server.form-control(type="url" name="server" placeholder="Old Server URL eg. https://old.someserver.com" data-validate="required")
 								.input-ok-indicator
 									span.fa.fa-check
 								.validation-help
 						.form-group
-							label Email Address of account on old server
+							label Email Address of your account on the old server
 							.input-relative
 								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
 								.input-ok-indicator
 									span.fa.fa-check
 								.validation-help
 						.form-group
-							label Password of account on old server
+							label Password of your account on the old server
 							.input-relative
 								input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="current-password")
 								.input-ok-indicator
 									span.fa.fa-check
 								.validation-help
 						.form-group
-							button#submitter.btn.btn-primary(type="submit") Validate
+							button#submitter.btn.btn-primary(type="submit") Log In and Import All Account Data to This Server
