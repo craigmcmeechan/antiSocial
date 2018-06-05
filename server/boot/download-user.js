@@ -406,10 +406,14 @@ module.exports = function downloadUser(server) {
 			if (err) {
 				return res.sendStatus(500);
 			}
-			res.send({
-				'response': {
-					'status': 'ok'
-				}
+			currentUser.updateAttributes({
+				'deactivated': new Date()
+			}, function (err) {
+				res.send({
+					'response': {
+						'status': 'ok'
+					}
+				});
 			});
 		});
 	});

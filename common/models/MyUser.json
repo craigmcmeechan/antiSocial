@@ -82,6 +82,9 @@
     },
     "selfAccessToken": {
       "type": "string"
+    },
+    "deactivated": {
+      "type": "date"
     }
   },
   "validations": [],
