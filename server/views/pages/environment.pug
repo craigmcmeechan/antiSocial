@@ -58,26 +58,20 @@ block content
 							span.fa.fa-check
 						.validation-help
 				.form-group
-					label.label SSL_KEY_PATH: /etc/letsencrypt/live/host.domain.com/privkey.pem
+					label.label SSL_KEY_PATH: /etc/letsencrypt/live/some.domain.com/privkey.pem
 					.input-relative
 						input.form-control(name="SSL_KEY_PATH" value= env.SSL_KEY_PATH)
 						.input-ok-indicator
 							span.fa.fa-check
 						.validation-help
 				.form-group
-					label.label SSL_CERT_PATH: /etc/letsencrypt/live/host.domain.com/fullchain.pem
+					label.label SSL_CERT_PATH: /etc/letsencrypt/live/some.domain.com/fullchain.pem
 					.input-relative
 						input.form-control(name="SSL_CERT_PATH" value= env.SSL_CERT_PATH)
 						.input-ok-indicator
 							span.fa.fa-check
 						.validation-help
-				.form-group
-					label.label TEST
-					.input-relative
-						input.form-control(name="TEST" value= env.TEST)
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
+				
 				//	
 					OUTBOUND_MAIL
 					OUTBOUND_MAIL_SENDER
@@ -87,5 +81,8 @@ block content
 					OUTBOUND_MAIL_SMTP_PASSWORD
 					OUTBOUND_MAIL_SMTP_SSL
 					OUTBOUND_MAIL_SENDMAIL_PATH
+					SES_KEY
+					SES_KEY_ID
+					GOOGLE_MAPS_API_KEY
 	
 				button.btn.btn-primary Save &amp; Restart
