@@ -1,5 +1,5 @@
 var getCurrentUser = require('../middleware/context-currentUser');
-
+var fs = require('fs');
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
 
@@ -62,7 +62,7 @@ module.exports = function (server) {
 		var current = require('dotenv').config({
 			path: process.env.ENVFILE
 		});
-		console.log(current);
+
 		var variables = {};
 		for (var prop in current.parsed) {
 			variables[prop] = 1;
@@ -76,24 +76,21 @@ module.exports = function (server) {
 			process.env[prop] = req.body[prop];
 		}
 
-		var save = '';
+		var toSave = '';
 		for (var prop in process.env) {
 			if (variables[prop]) {
-				save += prop + '=' + process.env[prop] + '\n';
+				toSave += prop + '=' + process.env[prop] + '\n';
 			}
 		}
 
-		console.log(save);
-
-		server.locals.config = require('../config-' + server.get('env'));
-
-		res.render('pages/environment', {
-			'user': ctx.get('currentUser'),
-			'globalSettings': ctx.get('globalSettings'),
-			'env': process.env
+		fs.writeFile(process.env.ENVFILE, toSave, function (err) {
+			if (err) {
+				res.sendStatus(500);
+			}
+			res.send('Saved. Restarting server - please wait a bit then <a href="/">Click Here</a> to continue.');
+			process.exit();
 		});
 	});
-
 
 	server.use(router);
 };
