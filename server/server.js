@@ -317,7 +317,7 @@ app.stop = function () {
 app.start = function () {
   app.locals.logger.info('app staring');
 
-  if (!process.env.HTTPS_LISTENER) {
+  if (process.env.HTTPS_LISTENER !== 'true') {
     var http = require('http');
     listener = http.createServer(app).listen(app.locals.config.port, function (err) {
       if (err) {

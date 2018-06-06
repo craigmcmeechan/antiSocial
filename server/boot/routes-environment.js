@@ -67,10 +67,62 @@ module.exports = function (server) {
 		for (var prop in current.parsed) {
 			variables[prop] = 1;
 		}
+		variables['PORT'] = 1;
 		variables['PUBLIC_HOST'] = 1;
 		variables['PUBLIC_PROTOCOL'] = 1;
 		variables['PUBLIC_PORT'] = 1;
 		variables['BEHIND_PROXY'] = 1;
+
+		variables['HTTPS_LISTENER'] = 1;
+		variables['SSL_KEY_PATH'] = 1;
+		variables['SSL_CERT_PATH'] = 1;
+		variables['S3_SSL_KEY_PATH'] = 1;
+		variables['S3_SSL_CERT_PATH'] = 1;
+
+		variables['OUTBOUND_MAIL'] = 1;
+		variables['OUTBOUND_MAIL_SENDER'] = 1;
+		variables['OUTBOUND_MAIL_SMTP_HOST'] = 1;
+		variables['OUTBOUND_MAIL_SMTP_PORT'] = 1;
+		variables['OUTBOUND_MAIL_SMTP_USER'] = 1;
+		variables['OUTBOUND_MAIL_SMTP_PASSWORD'] = 1;
+		variables['OUTBOUND_MAIL_SMTP_SSL'] = 1;
+		variables['OUTBOUND_MAIL_SENDMAIL_PATH'] = 1;
+		variables['SES_KEY'] = 1;
+		variables['SES_KEY_ID'] = 1;
+		variables['TEST'] = 1;
+
+		variables['CONNECTOR'] = 1;
+		variables['MONGO_HOSTNAME'] = 1;
+		variables['MONGO_DB_NAME'] = 1;
+
+		variables['NODE_ENV'] = 1;
+		variables['ADMIN'] = 1;
+		variables['AUTOUPDATE'] = 1;
+		variables['DEBUG'] = 1;
+
+		variables['FACEBOOK_CLIENT_ID'] = 1;
+		variables['FACEBOOK_CLIENT_SECRET'] = 1;
+		variables['GOOGLE_MAPS_API_KEY'] = 1;
+
+		variables['KEEP_FEEDS_OPEN'] = 1;
+		variables['LOG_LEVEL'] = 1;
+		variables['AWS_REGION'] = 1;
+
+		variables['RAVEN_DSN'] = 1;
+		variables['RAVEN_DSN_PUBLIC'] = 1;
+
+		variables['AWS_S3_BUCKET'] = 1;
+		variables['AWS_S3_REGION'] = 1;
+
+		variables['ACCESS_LOG'] = 1;
+
+		variables['SUBSCRIPTION'] = 1;
+		variables['STRIPE_PK'] = 1;
+		variables['STRIPE_SK'] = 1;
+		variables['SUBSCRIPTION_TRIAL_PERIOD'] = 1;
+		variables['SUBSCRIPTION_STRIPE_PLAN_ID'] = 1;
+
+		variables['ENVFILE'] = 1;
 
 		for (var prop in req.body) {
 			process.env[prop] = req.body[prop];
@@ -85,7 +137,7 @@ module.exports = function (server) {
 
 		fs.writeFile(process.env.ENVFILE, toSave, function (err) {
 			if (err) {
-				res.sendStatus(500);
+				return res.sendStatus(500);
 			}
 			res.send('Saved. Restarting server - please wait a bit then <a href="/">Click Here</a> to continue.');
 			process.exit();
