@@ -706,7 +706,7 @@ module.exports = function (server) {
 		in response return visibility policy so caller can stop requesting if applicable
 	*/
 
-	var webhookRegex = /^\/([a-zA-Z0-9\-.]+)\/friend-webhook\/(friend-request-accepted|change-address|friend-request-canceled|friend-request-declined)$/;
+	var webhookRegex = /^\/([a-zA-Z0-9\-.]+)\/friend-webhook\/(friend-request-accepted|friend-request-canceled|friend-request-declined)$/;
 
 	router.post(webhookRegex, function (req, res, next) {
 		var matches = req.url.match(webhookRegex);
@@ -799,50 +799,6 @@ module.exports = function (server) {
 
 						return res.send(payload);
 					});
-			}
-
-			if (action === 'change-address') {
-				async.waterfall([
-						function saveFriend(cb) {
-							debug('/friend-webhook/%s saveFriend', action);
-
-							var parsed = url.parse(req.body.newEndPoint);
-
-							friend.updateAttributes({
-								'remoteEndPoint': req.body.newEndPoint,
-								'remoteHost': parsed.protocol + '://' + parsed.host,
-								'remoteUsername': parsed.pathname.substring(1)
-							}, function (err) {
-								if (err) {
-									return cb(new VError(err, '/friend-webhook/change-address saveFriend failed'));
-								}
-								cb(err, friend);
-							});
-						}
-					],
-					function (err, friend) {
-						if (err) {
-							var e = new WError(err, 'friend-webhook/address-change failed');
-							req.logger.error(e.toString());
-							return res.send({
-								'status': e.cause().message
-							});
-						}
-
-						debug('webhook/address-change opening feed', friend);
-						setTimeout(function () {
-							watchFeed.connect(req.app, friend);
-						}, 5000);
-
-						var payload = {
-							'status': 'ok'
-						};
-
-						debug('webhook response %j', payload);
-
-						return res.send(payload);
-					}
-				);
 			}
 		});
 	});

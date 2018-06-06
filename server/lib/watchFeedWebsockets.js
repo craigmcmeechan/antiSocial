@@ -389,6 +389,36 @@ function getListener(server, connection) {
 					}
 
 					async.waterfall([
+							function doAddressChange(cb) {
+								if (message.data.type !== 'address change') {
+									return async.setImmediate(function () {
+										cb();
+									});
+								}
+
+								if (!message.data.details.newEndPoint) {
+									console.log('huh? %j', message.data);
+								}
+
+								disConnect(server, friend);
+
+								var parsed = url.parse(message.data.details.newEndPoint);
+
+								friend.updateAttributes({
+									'remoteEndPoint': message.data.details.newEndPoint,
+									'remoteHost': parsed.protocol + '://' + parsed.host,
+									'remoteUsername': parsed.pathname.substring(1)
+								}, function (err, updated) {
+									if (err) {
+										logger.error({
+											err: err
+										}, 'error saving address change');
+										watchFeed(server, friend);
+										return cb(err);
+									}
+									cb();
+								});
+							},
 							function createNewFeedItem(cb) {
 
 								delete myNewsFeedItem.id;

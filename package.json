@@ -74,6 +74,7 @@
     "raven": "^2.4.0",
     "raw-body": "^2.1.6",
     "request": "^2.69.0",
+    "rimraf": "^2.6.2",
     "s3": "^4.4.0",
     "s3-uploader": "git+https://github.com/mediapolis/node-s3-uploader.git",
     "serve-favicon": "^2.4.3",
