@@ -40,11 +40,11 @@ function bootMyAntiSocial() {
 
 	$('.nav a').on('click', function () {
 		if ($('body').hasClass('digitopia-xsmall')) {
-			$('.navbar-toggle').click();
+			$('.navbar-toggler').click();
 		}
 	});
 
-	$('.navbar-toggle').on('click', function (e) {
+	$('.navbar-toggler').on('click', function (e) {
 		$('.avatar').toggle();
 	});
 

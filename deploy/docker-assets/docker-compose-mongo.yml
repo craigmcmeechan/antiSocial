@@ -25,9 +25,12 @@ services:
       - "443:443"
     volumes:
       - data_uploads:/var/app/current/client/uploads
+      - /root/antisocial-docker-mongo.env:/root/antisocial-docker-mongo.env
+      - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - frontend
-    env_file: ~/antisocial-docker-mongo.env
+    environment:
+      - ENVFILE=/root/antisocial-docker-mongo.env
 
   watchtower:
     image: v2tec/watchtower

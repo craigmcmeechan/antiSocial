@@ -6,6 +6,7 @@ docker volume create mongo-logs
 docker volume create uploads
 curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose
 chmod +x /usr/bin/docker-compose
+mkdir /etc/letsencrypt
 cd ~/
 touch antisocial-docker-mongo.env
 echo LOG_LEVEL=debug >> antisocial-docker-mongo.env

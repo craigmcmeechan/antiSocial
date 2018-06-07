@@ -31,6 +31,9 @@ module.exports = function resolveReactionsSummary(item, done) {
 						if (!name) {
 							name = reaction.source;
 						}
+
+						name = name.replace(/ .*/, '');
+
 						var mention = '<a href="/proxy-profile?endpoint=' + encodeURIComponent(reaction.source) + '">' + name + '</a>';
 
 						mentions.push(mention);
@@ -39,12 +42,12 @@ module.exports = function resolveReactionsSummary(item, done) {
 			}
 		}
 
-		var summary = mentions.slice(0, 3).join(', ');
+		var summary = mentions.slice(0, 2).join(', ');
 
 		if (mentions.length > 2) {
 			var remainder = mentions.length - 2;
 			summary += ' and ' + remainder + ' other';
-			if (mentions.length > 2) {
+			if (remainder > 1) {
 				summary += 's';
 			}
 		}

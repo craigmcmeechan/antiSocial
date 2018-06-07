@@ -26,7 +26,7 @@ module.exports = function (server) {
 	 *
 	 * @name Get user profile as JSON object or as an HTML page including posts
 	 * @path {GET} /:username[.json]
-	 * @params {String} :username Username of user on this server or a friend of the logged in user
+	 * @params {String} username Username of user on this server or a friend of the logged in user
 	 * @params {String} .json Append the .json suffix for JSON response otherwise HTML is returned
 	 * @query {String} highwater Used for pagination or infinite scrolling of user posts. highwater is the createdOn timestamp of last post seen. (HTML mode only)
 	 * @query {String} tags Filter posts by tags. eg. ?tags=["%23randompic"] returns only posts hashtagged with #randompic (HTML mode only)

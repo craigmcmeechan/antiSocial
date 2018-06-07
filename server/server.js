@@ -1,3 +1,8 @@
+if (process.env.ENVFILE) {
+  require('dotenv').config({
+    path: process.env.ENVFILE
+  });
+}
 var loopback = require('loopback');
 var boot = require('loopback-boot');
 var bunyan = require('bunyan');
@@ -312,7 +317,7 @@ app.stop = function () {
 app.start = function () {
   app.locals.logger.info('app staring');
 
-  if (!process.env.HTTPS_LISTENER) {
+  if (process.env.HTTPS_LISTENER !== 'true') {
     var http = require('http');
     listener = http.createServer(app).listen(app.locals.config.port, function (err) {
       if (err) {

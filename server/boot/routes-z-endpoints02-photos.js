@@ -7,7 +7,7 @@ var utils = require('../lib/endpoint-utils');
 
 var photosRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/photos(\.json)?$/;
 
-module.exports = function (server) {
+module.exports = function(server) {
 	var router = server.loopback.Router();
 
 	/**
@@ -20,8 +20,8 @@ module.exports = function (server) {
 	 * requestor.
 	 *
 	 * @name Get user's photos as JSON object or as an HTML page
-	 * @path {GET} /:username/photos[.json] 
-	 * @params {String} :username Username of user on this server or a friend of the logged in user
+	 * @path {GET} /:username/photos[.json]
+	 * @params {String} username Username of user on this server or a friend of the logged in user
 	 * @params {String} .json Append the .json suffix for JSON response otherwise HTML is returned
 	 * @query {String} tags Filter photos by tags. eg. ?tags=["%23randompic"] returns only photos hashtagged with #randompic (HTML mode only)
 	 * @auth Anonymous, with valid user credentials or with valid friend credentials
@@ -30,7 +30,7 @@ module.exports = function (server) {
 	 * @response {JSON|HTML} If .json is requested returns an array of photo objects, otherwise HTML
 	 */
 
-	router.get(photosRE, getCurrentUser(), checkNeedProxyRewrite('photos'), getFriendAccess(), function (req, res, next) {
+	router.get(photosRE, getCurrentUser(), checkNeedProxyRewrite('photos'), getFriendAccess(), function(req, res, next) {
 		var ctx = req.myContext;
 		var redirectProxy = ctx.get('redirectProxy');
 		if (redirectProxy) {
@@ -45,8 +45,8 @@ module.exports = function (server) {
 
 		var isMe = false;
 		async.waterfall([
-			function (cb) {
-				utils.getUser(username, function (err, user) {
+			function(cb) {
+				utils.getUser(username, function(err, user) {
 					if (err) {
 						return cb(err);
 					}
@@ -65,7 +65,7 @@ module.exports = function (server) {
 					cb(err, user);
 				});
 			},
-			function (user, cb) {
+			function(user, cb) {
 				var query = {
 					'where': {
 						'userId': user.id
@@ -73,11 +73,11 @@ module.exports = function (server) {
 					'include': ['uploads']
 				};
 
-				server.models.Photo.find(query, function (err, photos) {
+				server.models.Photo.find(query, function(err, photos) {
 					cb(err, user, photos);
 				});
 			}
-		], function (err, user, photos) {
+		], function(err, user, photos) {
 			if (err) {
 				if (err.statusCode === 404) {
 					return res.sendStatus(404);
@@ -108,7 +108,7 @@ module.exports = function (server) {
 				'myEndpoint': utils.getPOVEndpoint(friend, currentUser)
 			};
 
-			utils.renderFile('/components/rendered-photos.pug', options, req, function (err, html) {
+			utils.renderFile('/components/rendered-photos.pug', options, req, function(err, html) {
 				if (err) {
 					return next(err);
 				}
