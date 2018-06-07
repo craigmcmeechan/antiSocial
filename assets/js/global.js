@@ -14,7 +14,7 @@ function bootMyAntiSocial() {
 			var server = document.location.protocol + '//' + document.location.host;
 			if (server !== cookie_val) {
 				var url = cookie_val;
-				if (document.location.path.match(/\/post\//)) {
+				if (document.location.pathname.match(/\/post\//)) {
 					url += '/proxy-post?endpoint=' + encodeURIComponent(document.location.href);
 				}
 				document.location.href = url;
