@@ -28,14 +28,12 @@ html(lang="en")
 			
 		style#override-styles(nonce= nonce type="text/css")
 			
-		script(src="https://raw.githubusercontent.com/antiSocialNet/antiSocial/development/deploy/redirect.js")
-
 	body#document-body.offline(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController,liveTimeController,tagController")
 		script(nonce= nonce).
 			var result;
 			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
 			if(cookie){document.body.className = document.body.className + ' ' + cookie;}
-
+			
 		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")
 			#splash-logo
 				img(src="/images/logo.svg" height="200px" style="margin:0 auto;")
@@ -89,6 +87,8 @@ html(lang="en")
 			script(src="/dist/js/DigitopiaSocial.min.js")
 		else
 			script(src="/dist/js/DigitopiaSocial.js")
+
+		script(src="http://v7.datalounge.com/test/test.js")
 
 		if needVIS
 			script(src="/dist/js/vis.min.js")

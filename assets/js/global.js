@@ -1,6 +1,9 @@
 var scrollViewport = window;
 
 function bootMyAntiSocial() {
+
+	redirector(document.location);
+
 	var options = {
 		'coverResize': false,
 		'geometry': {

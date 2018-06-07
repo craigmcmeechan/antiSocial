@@ -28,6 +28,7 @@
 					.done(function (data, textStatus, jqXHR) {
 						$('#login-form').modal('hide');
 						flashAjaxStatus('success', 'logged in');
+						redirectorSetServer(document.location.protocol + '//' + document.location.host);
 						loadPage('/feed');
 						if (window.Cordova) {
 							$.cookie('access_token', data.id, {

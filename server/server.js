@@ -272,7 +272,7 @@ if (process.env.CSP) {
     'directives': {
       'defaultSrc': ['\'self\''],
       'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets, 'checkout.stripe.com'],
-      'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', '\'unsafe-eval\'', function (req, res) {
+      'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', 'v7.datalounge.com', '\'unsafe-eval\'', function (req, res) {
         return '\'nonce-' + app.locals.nonce + '\'';
       }],
       'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
