@@ -124,7 +124,7 @@ module.exports = function (server) {
 		var domain = req.body.PUBLIC_HOST;
 		var email = req.body.email;
 
-		var command = '/usr/local/bin/certbot-auto certonly --debug --webroot -w /var/app/current/public -m ' + email + ' -d ' + domain + ' --agree-tos --test-cert';
+		var command = '/usr/local/bin/certbot-auto certonly --debug --webroot -w /var/app/current/client -m ' + email + ' -d ' + domain + ' --agree-tos --test-cert';
 
 		exec(command, function (err, stdout, stderr) {
 			if (err) {
