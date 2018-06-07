@@ -11,11 +11,11 @@ function bootMyAntiSocial() {
 			}
 		}
 		else {
-			var server = location.protocol + '//' + location.host;
+			var server = document.location.protocol + '//' + document.location.host;
 			if (server !== cookie_val) {
 				var url = cookie_val;
-				if (location.path.match(/\/post\//)) {
-					url += '/proxy-post?endpoint=' + encodeURIComponent(location.href);
+				if (document.location.path.match(/\/post\//)) {
+					url += '/proxy-post?endpoint=' + encodeURIComponent(document.location.href);
 				}
 				document.location.href = url;
 			}
