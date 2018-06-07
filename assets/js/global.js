@@ -2,6 +2,10 @@ var scrollViewport = window;
 
 function bootMyAntiSocial() {
 
+	if ($.cookie('access_token')) {
+		redirectorSetServer(document.location.protocol + '//' + document.location.host);
+	}
+
 	redirector(document.location);
 
 	var options = {
