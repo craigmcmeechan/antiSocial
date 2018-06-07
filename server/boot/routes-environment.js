@@ -124,7 +124,7 @@ module.exports = function (server) {
 		var domain = req.body.PUBLIC_HOST;
 		var email = req.body.email;
 
-		var command = '/usr/local/bin/certbot-auto certonly --debug --webroot -w /var/app/current/client -m ' + email + ' -d ' + domain + ' --agree-tos --test-cert';
+		var command = '/usr/local/bin/certbot-auto certonly --debug --webroot -w /var/app/current/client -m ' + email + ' -d ' + domain + ' --agree-tos';
 
 		exec(command, function (err, stdout, stderr) {
 			if (err) {
@@ -151,7 +151,7 @@ module.exports = function (server) {
 				if (err) {
 					return res.sendStatus(500);
 				}
-				res.send('SSL configured. Restarting server - please wait a bit then <a href="/">Click Here</a> to continue.');
+				res.send('SSL configured. Restarting server - please wait a bit then <a href="https://' + server.locals.config.host + '/environment">Click Here</a> to continue.');
 				process.exit();
 			});
 		});
