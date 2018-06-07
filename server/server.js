@@ -277,7 +277,7 @@ if (process.env.CSP) {
       }],
       'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
       'styleSrc': ['\'self\'', 'fonts.googleapis.com', 'checkout.stripe.com', '\'unsafe-inline\''],
-      'frameSrc': ['\'self\'', '*'],
+      'frameSrc': ['\'self\'', 's3.amazonaws.com', '*'],
       'mediaSrc': ['\'self\'', '*'],
       'imgSrc': ['\'self\'', 'data:', '*'],
       'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],

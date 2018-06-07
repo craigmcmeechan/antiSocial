@@ -2,6 +2,26 @@ var scrollViewport = window;
 
 function bootMyAntiSocial() {
 
+	var xd_cookie = xDomainCookie('//s3.amazonaws.com/myantisocial');
+	xd_cookie.get('antisocial-home', function (cookie_val) {
+		if (!cookie_val) {
+			if ($.cookie('access_token')) {
+				var new_val = document.location.protocol + '//' + document.location.host;
+				xd_cookie.set('antisocial-home', new_val);
+			}
+		}
+		else {
+			var server = location.protocol + '//' + location.host;
+			if (server !== cookie_val) {
+				var url = cookie_val;
+				if (location.path.match(/\/post\//)) {
+					url += '/proxy-post?endpoint=' + encodeURIComponent(location.href);
+				}
+				document.location.href = url;
+			}
+		}
+	}, 365);
+
 	var options = {
 		'coverResize': false,
 		'geometry': {
