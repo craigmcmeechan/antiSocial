@@ -16,8 +16,8 @@ function bootMyAntiSocial() {
 				var url = cookie_val;
 				if (document.location.pathname.match(/\/post\//)) {
 					url += '/proxy-post?endpoint=' + encodeURIComponent(document.location.href);
+					document.location.href = url;
 				}
-				document.location.href = url;
 			}
 		}
 	}, 365);
