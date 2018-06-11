@@ -151,7 +151,7 @@ module.exports = function (server) {
 				if (err) {
 					return res.sendStatus(500);
 				}
-				res.send('SSL configured. Restarting server - please wait a bit then <a href="https://' + server.locals.config.host + '/environment">Click Here</a> to continue.');
+				res.send('SSL configured. Restarting server - please wait a bit then <a href="https://' + domain + '/environment">Click Here</a> to continue.');
 				process.exit();
 			});
 		});
