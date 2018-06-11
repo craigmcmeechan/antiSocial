@@ -182,8 +182,10 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 
 		// doing a url upload
 		if (params.url) {
+			if (params.url.match(/^\/\//)) { // if url starts with '//'
+				params.url = 'https:' + params.url;
+			}
 			meta.filename = params.url;
-
 			try {
 				var options = {
 					url: params.url,
