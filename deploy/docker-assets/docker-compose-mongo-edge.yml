@@ -17,7 +17,7 @@ services:
       - frontend
 
   "webapp-antisocial":
-    image: myantisocialnet/community-server:latest
+    image: myantisocialnet/community-server:edge
     container_name: webapp-antisocial
     restart: always
     ports:

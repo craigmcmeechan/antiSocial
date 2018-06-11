@@ -272,12 +272,12 @@ if (process.env.CSP) {
     'directives': {
       'defaultSrc': ['\'self\''],
       'connect-src': ['\'self\'', 'sentry.io', app.locals.config.websockets, 'checkout.stripe.com'],
-      'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', '\'unsafe-eval\'', function (req, res) {
+      'scriptSrc': ['\'self\'', 'sentry.io', 'maps.googleapis.com', 'csi.gstatic.com', 'cdn.ravenjs.com', 'checkout.stripe.com', 's3.amazonaws.com', '\'unsafe-eval\'', function (req, res) {
         return '\'nonce-' + app.locals.nonce + '\'';
       }],
       'fontSrc': ['\'self\'', 'fonts.googleapis.com', 'fonts.gstatic.com'],
       'styleSrc': ['\'self\'', 'fonts.googleapis.com', 'checkout.stripe.com', '\'unsafe-inline\''],
-      'frameSrc': ['\'self\'', '*'],
+      'frameSrc': ['\'self\'', 's3.amazonaws.com', '*'],
       'mediaSrc': ['\'self\'', '*'],
       'imgSrc': ['\'self\'', 'data:', '*'],
       'sandbox': ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-modals'],
@@ -317,7 +317,7 @@ app.stop = function () {
 app.start = function () {
   app.locals.logger.info('app staring');
 
-  if (!process.env.HTTPS_LISTENER) {
+  if (process.env.HTTPS_LISTENER !== 'true') {
     var http = require('http');
     listener = http.createServer(app).listen(app.locals.config.port, function (err) {
       if (err) {

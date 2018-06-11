@@ -1,0 +1,31 @@
+extends ../wrapper
+
+block seo
+	title.
+		Setup Server SSL
+
+block content
+	.container-fluid.content-padding-top.content
+		.page-header.mb-3
+			h2 Setup Server SSL
+			p This process will register an SSL cert using the EFF LetsEncrypt service (free).
+			p Prerequisites: this server must be up and publicly available on the domain you wish to get the certificate for.
+
+		form.form.form-validation(action="/letsencrypt" method="POST" data-jsclass="formValidator" data-submitter=".btn-primary")
+			.form-group
+				label.label PUBLIC_HOST: dns host name for server
+				.input-relative
+					input.form-control(name="PUBLIC_HOST" placeholder="example.hostname.com" value= config.host data-validate="required")
+					.input-ok-indicator
+						span.fa.fa-check
+					.validation-help
+						
+			.form-group
+				label.label Email address
+				.input-relative
+					input.form-control(name="email" value= env.DNS_EMAIL data-validate="required,email")
+					.input-ok-indicator
+						span.fa.fa-check
+					.validation-help
+						
+			button.btn.btn-primary Request Certificate

@@ -187,6 +187,13 @@
 				}
 			}
 
+			if (input.data('options')) {
+				var options = input.data('options').split(',');
+				if (options.indexOf(val) === -1) {
+					errors.push('Must be one of: ' + input.data('options'));
+				}
+			}
+
 			if (input.data('length') && val.length !== input.data('length')) {
 				errors.push('Must be ' + input.data('length') + ' characters long');
 			}
