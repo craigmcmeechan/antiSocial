@@ -20,7 +20,9 @@ function bootMyAntiSocial() {
 			if (server !== cookie_val) {
 				var url = cookie_val;
 				if (document.location.pathname.match(/\/post\//)) {
-					url += '/proxy-post?endpoint=' + encodeURIComponent(document.location.href);
+					var href = document.location.href;
+					href = href.replace('?source=facebook', '');
+					url += '/proxy-post?endpoint=' + encodeURIComponent(href);
 					document.location.href = url;
 				}
 			}
