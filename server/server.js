@@ -335,7 +335,9 @@ app.start = function () {
     // set up a connection upgrade redirect for http -> https
     var http = require('http');
     http.createServer(function (req, res) {
-      res.redirect(app.locals.config.publishHost + req.url);
+      res.writeHead(302, {
+        'Location': app.locals.config.publicHost + req.url
+      });
       res.end();
     }).listen(80);
 
