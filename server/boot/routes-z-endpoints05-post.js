@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var getCurrentUser = require('../middleware/context-currentUser');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var checkNeedProxyRewrite = require('../middleware/rewriteUrls');
@@ -11,7 +15,7 @@ var utils = require('../lib/endpoint-utils');
 
 var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?(\?source=facebook)?(\?share=1)?$/;
 
-module.exports = function(server) {
+module.exports = function (server) {
 	var router = server.loopback.Router();
 
 	/**
@@ -34,7 +38,7 @@ module.exports = function(server) {
 	 * @response {JSON|HTML} If .json is requested the post JSON object, otherwise HTML
 	 */
 
-	router.get(postRE, getCurrentUser(), checkNeedProxyRewrite('post'), getFriendAccess(), function(req, res, next) {
+	router.get(postRE, getCurrentUser(), checkNeedProxyRewrite('post'), getFriendAccess(), function (req, res, next) {
 		var ctx = req.myContext;
 		var redirectProxy = ctx.get('redirectProxy');
 		if (redirectProxy) {
@@ -50,43 +54,43 @@ module.exports = function(server) {
 		var isProxy = req.headers['proxy'];
 
 		async.waterfall([
-			function(cb) {
-				utils.getUser(username, function(err, user) {
+			function (cb) {
+				utils.getUser(username, function (err, user) {
 					if (err) {
 						return cb(err);
 					}
 					cb(err, user);
 				});
 			},
-			function(user, cb) {
+			function (user, cb) {
 				if (currentUser) {
 					if (currentUser.id.toString() === user.id.toString()) {
 						isMe = true;
 					}
 				}
-				utils.getPost(postId, user, friend, isMe, function(err, post) {
+				utils.getPost(postId, user, friend, isMe, function (err, post) {
 					if (err) {
 						return cb(err);
 					}
 					cb(err, user, post);
 				});
 			},
-			function(user, post, cb) {
-				resolvePostPhotos([post], function(err) {
+			function (user, post, cb) {
+				resolvePostPhotos([post], function (err) {
 					cb(err, user, post);
 				});
 			},
-			function(user, post, cb) {
-				resolveReactionsCommentsAndProfiles([post], isMe, function(err) {
+			function (user, post, cb) {
+				resolveReactionsCommentsAndProfiles([post], isMe, function (err) {
 					cb(err, user, post);
 				});
 			},
-			function(user, post, cb) {
-				resolvePostOg([post], function(err, postOgMap) {
+			function (user, post, cb) {
+				resolvePostOg([post], function (err, postOgMap) {
 					cb(err, user, post, postOgMap);
 				});
 			}
-		], function(err, user, post, postOgMap) {
+		], function (err, user, post, postOgMap) {
 			if (err) {
 				if (err.statusCode === 404) {
 					return res.sendStatus(404);
@@ -120,7 +124,7 @@ module.exports = function(server) {
 				'source': req.query.source
 			};
 
-			utils.renderFile('/components/rendered-post.pug', options, req, function(err, html) {
+			utils.renderFile('/components/rendered-post.pug', options, req, function (err, html) {
 				if (err) {
 					return next(err);
 				}

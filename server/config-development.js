@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var packageInfo = require('../package.json');
 var version = packageInfo.version.split('.').shift();
 var h = process.env.PUBLIC_HOST || '127.0.0.1';

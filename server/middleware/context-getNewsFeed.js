@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var async = require('async');
 
 module.exports = function () {
@@ -16,7 +20,7 @@ module.exports = function () {
 			'include': ['friend']
 		};
 
-		req.app.models.NewsFeedItem.find(query,function(err,feed){
+		req.app.models.NewsFeedItem.find(query, function (err, feed) {
 			reqContext.set('newsFeed', feed);
 			return next();
 		});

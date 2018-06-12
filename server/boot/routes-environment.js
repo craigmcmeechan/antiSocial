@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var getCurrentUser = require('../middleware/context-currentUser');
 var fs = require('fs');
 var exec = require('child_process').exec;
@@ -17,6 +21,7 @@ var variables = [
 	'SSL_CERT_PATH',
 	'S3_SSL_KEY_PATH',
 	'S3_SSL_CERT_PATH',
+	'LETS_ENCRYPT',
 
 	'OUTBOUND_MAIL',
 	'OUTBOUND_MAIL_SENDER',
@@ -139,6 +144,7 @@ module.exports = function (server) {
 			process.env['PUBLIC_PORT'] = '443';
 			process.env['PUBLIC_PROTOCOL'] = 'https';
 			process.env['PORT'] = '443';
+			process.env['LETS_ENCRYPT'] = 'true';
 
 			var toSave = '';
 			for (var prop in process.env) {
@@ -151,7 +157,7 @@ module.exports = function (server) {
 				if (err) {
 					return res.sendStatus(500);
 				}
-				res.send('SSL configured. Restarting server - please wait a bit then <a href="https://' + server.locals.config.host + '/environment">Click Here</a> to continue.');
+				res.send('SSL configured. Restarting server - please wait a bit then <a href="https://' + domain + '/environment">Click Here</a> to continue.');
 				process.exit();
 			});
 		});
