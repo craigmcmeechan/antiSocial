@@ -332,6 +332,14 @@ app.start = function () {
     });
   }
   else {
+    // set up a connection upgrade redirect for http -> https
+    var http = require('http');
+    http.createServer(function (req, res) {
+      res.redirect(app.locals.config.publishHost + req.url);
+      res.end();
+    }).listen(80);
+
+    // listen for https and websocket requests
     var setupHTTPS = require('./lib/setupHTTPS');
     setupHTTPS(app, function (err, sslListener) {
       listener = sslListener;

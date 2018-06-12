@@ -29,10 +29,6 @@
 						$('#login-form').modal('hide');
 						flashAjaxStatus('success', 'logged in');
 
-						var xd_cookie = xDomainCookie('//s3.amazonaws.com/myantisocial');
-						var new_val = document.location.protocol + '//' + document.location.host;
-						xd_cookie.set('antisocial-home', new_val);
-
 						loadPage('/feed');
 						if (window.Cordova) {
 							$.cookie('access_token', data.id, {
