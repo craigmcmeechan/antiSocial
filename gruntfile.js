@@ -26,7 +26,6 @@ module.exports = function (grunt) {
 		'node_modules/medium-editor/dist/js/medium-editor.js',
 		'node_modules/turndown/dist/turndown.js',
 		'node_modules/base-64/base64.js',
-		'node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
 		'node_modules/bootstrap-confirmation2/dist/bootstrap-confirmation.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
@@ -37,10 +36,8 @@ module.exports = function (grunt) {
 		'node_modules/vis/dist/vis.css',
 		'node_modules/medium-editor/dist/css/medium-editor.css',
 		'node_modules/medium-editor/dist/css/themes/default.css',
-		'node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
 		'assets/vendor/*.css',
-		'working/css/*.css',
-		'assets/css/*.css'
+		'working/css/*.css'
 	];
 
 	var copyCommand = [{
