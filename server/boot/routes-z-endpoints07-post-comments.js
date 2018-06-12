@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var getCurrentUser = require('../middleware/context-currentUser');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var checkNeedProxyRewrite = require('../middleware/rewriteUrls');
@@ -10,7 +14,7 @@ var utils = require('../lib/endpoint-utils');
 
 var postCommentsRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)\/comments(\.json)?$/;
 
-module.exports = function(server) {
+module.exports = function (server) {
 	var router = server.loopback.Router();
 
 	/**
@@ -33,7 +37,7 @@ module.exports = function(server) {
 	 * @response {JSON|HTML} If .json is requested returns an array of comment objects, otherwise HTML
 	 */
 
-	router.get(postCommentsRE, getCurrentUser(), checkNeedProxyRewrite('comments'), getFriendAccess(), function(req, res, next) {
+	router.get(postCommentsRE, getCurrentUser(), checkNeedProxyRewrite('comments'), getFriendAccess(), function (req, res, next) {
 		var ctx = req.myContext;
 		var redirectProxy = ctx.get('redirectProxy');
 		if (redirectProxy) {
@@ -51,45 +55,45 @@ module.exports = function(server) {
 		var isMe = false;
 
 		async.waterfall([
-			function(cb) {
-				utils.getUser(username, function(err, user) {
+			function (cb) {
+				utils.getUser(username, function (err, user) {
 					if (err) {
 						return cb(err);
 					}
 					cb(err, user);
 				});
 			},
-			function(user, cb) {
+			function (user, cb) {
 				if (currentUser) {
 					if (currentUser.id.toString() === user.id.toString()) {
 						isMe = true;
 					}
 				}
 
-				utils.getPost(postId, user, friend, isMe, function(err, post) {
+				utils.getPost(postId, user, friend, isMe, function (err, post) {
 					if (err) {
 						return cb(err);
 					}
 					cb(err, user, post);
 				});
 			},
-			function(user, post, cb) {
-				resolveComments([post], 'post', isMe, function(err) {
+			function (user, post, cb) {
+				resolveComments([post], 'post', isMe, function (err) {
 					cb(err, user, post);
 				});
 			},
-			function(user, post, cb) {
+			function (user, post, cb) {
 				var comments = typeof post.resolvedComments === 'function' ? post.resolvedComments() : post.resolvedComments;
-				async.each(comments, resolveProfiles, function(err) {
+				async.each(comments, resolveProfiles, function (err) {
 					cb(err, user, post);
 				});
 			},
-			function(user, post, cb) {
-				resolveCommentsSummary(post, function(err) {
+			function (user, post, cb) {
+				resolveCommentsSummary(post, function (err) {
 					cb(err, user, post);
 				});
 			}
-		], function(err, user, post) {
+		], function (err, user, post) {
 			if (err) {
 				if (err.statusCode === 404) {
 					return res.sendStatus(404);
@@ -124,7 +128,7 @@ module.exports = function(server) {
 				'friend': friend
 			};
 
-			utils.renderFile('/components/rendered-comments.pug', options, req, function(err, html) {
+			utils.renderFile('/components/rendered-comments.pug', options, req, function (err, html) {
 				if (err) {
 					return next(err);
 				}

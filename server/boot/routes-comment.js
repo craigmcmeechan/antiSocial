@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var url = require('url');
@@ -8,7 +12,7 @@ var async = require('async');
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
 
-module.exports = function(server) {
+module.exports = function (server) {
   var router = server.loopback.Router();
 
   /**
@@ -27,7 +31,7 @@ module.exports = function(server) {
    }
    */
 
-  router.post('/comment', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.post('/comment', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var myEndPoint = req.app.locals.config.publicHost + '/' + currentUser.username;
@@ -47,7 +51,7 @@ module.exports = function(server) {
           }
         };
 
-        req.app.models.Friend.findOne(query, function(err, friend) {
+        req.app.models.Friend.findOne(query, function (err, friend) {
           if (err) {
             var e = new VError(err, 'could not find friend');
             return next(e);
@@ -59,7 +63,7 @@ module.exports = function(server) {
         if (!req.body.photos || !req.body.photos.length) {
           return cb(null, friend, null);
         }
-        server.models.Photo.findById(req.body.photos[0].id, function(err, photo) {
+        server.models.Photo.findById(req.body.photos[0].id, function (err, photo) {
           if (err) {
             var e = new VError(err, 'could not read photo');
             return cb(e);
@@ -71,7 +75,7 @@ module.exports = function(server) {
 
           photo.updateAttributes({
             'status': 'complete'
-          }, function(err) {
+          }, function (err) {
             if (err) {
               var e = new VError(err, 'could not update photo status');
               return cb(e);
@@ -94,7 +98,7 @@ module.exports = function(server) {
           'description': req.body.description
         };
 
-        currentUser.pushNewsFeedItems.create(item, function(err, pushNews) {
+        currentUser.pushNewsFeedItems.create(item, function (err, pushNews) {
           if (err) {
             var e = new VError(err, 'could not save pushNewsFeedItems');
             return cb(e);
@@ -118,7 +122,7 @@ module.exports = function(server) {
           'description': news.description
         };
 
-        req.app.models.NewsFeedItem.create(item, function(err, item) {
+        req.app.models.NewsFeedItem.create(item, function (err, item) {
           if (err) {
             var e = new VError(err, 'could not save NewsFeedItem');
             return cb(e);
@@ -128,7 +132,7 @@ module.exports = function(server) {
         });
       }
 
-    ], function(err, item) {
+    ], function (err, item) {
       if (err) {
         var e = new WError(err, 'could not save comment');
         return next(err);
@@ -155,7 +159,7 @@ module.exports = function(server) {
    }
    */
 
-  router.get('/comment/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.get('/comment/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var commentId = req.params.id;
@@ -171,7 +175,7 @@ module.exports = function(server) {
           }
         };
 
-        server.models.PushNewsFeedItem.findOne(query, function(err, comment) {
+        server.models.PushNewsFeedItem.findOne(query, function (err, comment) {
           if (err) {
             return cb(err);
           }
@@ -185,7 +189,7 @@ module.exports = function(server) {
           cb(null, comment);
         });
       }
-    ], function(err, comment) {
+    ], function (err, comment) {
       res.render('components/comment-form', {
         'endpoint': '/comment/' + comment.uuid,
         'editing': true,
@@ -209,7 +213,7 @@ module.exports = function(server) {
    }
    */
 
-  router.post('/comment/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.post('/comment/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var commentId = req.params.id;
@@ -225,7 +229,7 @@ module.exports = function(server) {
           }
         };
 
-        server.models.PushNewsFeedItem.findOne(query, function(err, comment) {
+        server.models.PushNewsFeedItem.findOne(query, function (err, comment) {
           if (err) {
             return cb(err);
           }
@@ -249,7 +253,7 @@ module.exports = function(server) {
             }]
           }
         };
-        server.models.NewsFeedItem.findOne(query, function(err, item) {
+        server.models.NewsFeedItem.findOne(query, function (err, item) {
           if (err || !item) {
             return cb(err, comment);
           }
@@ -262,12 +266,12 @@ module.exports = function(server) {
             'timestamp': new Date(),
           });
           item.details.body = req.body.body;
-          item.save(function(err) {
+          item.save(function (err) {
             cb(err, comment);
           });
         });
       }
-    ], function(err, comment) {
+    ], function (err, comment) {
       if (!comment.versions) {
         comment.versions = [];
       }
@@ -276,7 +280,7 @@ module.exports = function(server) {
         'timestamp': new Date(),
       });
       comment.details.body = req.body.body;
-      comment.save(function(err) {
+      comment.save(function (err) {
         if (err) {
           return res.send({
             'result': {
@@ -295,7 +299,7 @@ module.exports = function(server) {
     });
   });
 
-  router.delete('/comment/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.delete('/comment/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var commentId = req.params.id;
@@ -311,12 +315,12 @@ module.exports = function(server) {
               'userId': currentUser.id
             }]
           }
-        }, function(err, items) {
-          async.map(items, function(item, mapcb) {
+        }, function (err, items) {
+          async.map(items, function (item, mapcb) {
             item.deleted = true;
             item.save();
             mapcb();
-          }, function(err) {
+          }, function (err) {
             cb(err);
           });
         });
@@ -332,17 +336,17 @@ module.exports = function(server) {
               'userId': currentUser.id
             }]
           }
-        }, function(err, items) {
-          async.map(items, function(item, mapcb) {
+        }, function (err, items) {
+          async.map(items, function (item, mapcb) {
             item.deleted = true;
             item.save();
             mapcb();
-          }, function(err) {
+          }, function (err) {
             cb(err);
           });
         });
       }
-    ], function(err) {
+    ], function (err) {
       if (err) {
         return res.send({
           'result': {
