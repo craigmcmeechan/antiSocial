@@ -17,6 +17,7 @@ var variables = [
 	'SSL_CERT_PATH',
 	'S3_SSL_KEY_PATH',
 	'S3_SSL_CERT_PATH',
+	'LETS_ENCRYPT',
 
 	'OUTBOUND_MAIL',
 	'OUTBOUND_MAIL_SENDER',
@@ -139,6 +140,7 @@ module.exports = function (server) {
 			process.env['PUBLIC_PORT'] = '443';
 			process.env['PUBLIC_PROTOCOL'] = 'https';
 			process.env['PORT'] = '443';
+			process.env['LETS_ENCRYPT'] = 'true';
 
 			var toSave = '';
 			for (var prop in process.env) {
