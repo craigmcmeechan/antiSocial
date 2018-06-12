@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var admin = require('digitopia-admin');
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureAdminUser = require('../middleware/context-ensureAdminUser');

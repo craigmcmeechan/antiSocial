@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var loopback = require('loopback');
 var server = require('../server');
 var fs = require('fs');
@@ -182,8 +186,10 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 
 		// doing a url upload
 		if (params.url) {
+			if (params.url.match(/^\/\//)) { // if url starts with '//'
+				params.url = 'https:' + params.url;
+			}
 			meta.filename = params.url;
-
 			try {
 				var options = {
 					url: params.url,

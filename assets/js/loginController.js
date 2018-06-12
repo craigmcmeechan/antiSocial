@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 (function ($) {
 	function loginController(elem, options) {
 		this.element = $(elem);
@@ -28,10 +32,6 @@
 					.done(function (data, textStatus, jqXHR) {
 						$('#login-form').modal('hide');
 						flashAjaxStatus('success', 'logged in');
-
-						var xd_cookie = xDomainCookie('//s3.amazonaws.com/myantisocial');
-						var new_val = document.location.protocol + '//' + document.location.host;
-						xd_cookie.set('antisocial-home', new_val);
 
 						loadPage('/feed');
 						if (window.Cordova) {

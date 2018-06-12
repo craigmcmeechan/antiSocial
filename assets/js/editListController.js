@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 (function ($) {
 	function editListController(elem, options) {
 		this.element = $(elem);
@@ -19,7 +23,7 @@
 			self.element.on('click', 'button', function (e) {
 				e.preventDefault();
 				var index = $(this).data('index');
-				var value = self.element.find('[data-index='+index+']').val();
+				var value = self.element.find('[data-index=' + index + ']').val();
 				var mode = $(this).data('mode');
 				if (value) {
 					if (mode === 'remove') {
@@ -40,7 +44,7 @@
 
 		};
 
-		this.updateTarget = function() {
+		this.updateTarget = function () {
 			self.target.val(JSON.stringify(self.list));
 			self.target.trigger('change');
 		};
@@ -61,8 +65,8 @@
 				row.append(value);
 			}
 			else {
-				var input = $('<input data-index="'+i+'">');
-				var button = $('<button data-index="'+i+'">');
+				var input = $('<input data-index="' + i + '">');
+				var button = $('<button data-index="' + i + '">');
 				if (value) {
 					button.data('mode', 'remove');
 					button.append('-');

@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 function notifyUser(type, message, icon, link) {
 	if (window.Notification && Notification.requestPermission) {
 		var myNotification = new Notify(type, {

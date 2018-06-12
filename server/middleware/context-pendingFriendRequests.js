@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var VError = require('verror').VError;
 
 module.exports = function () {
@@ -18,8 +22,8 @@ module.exports = function () {
 				}]
 			}
 		}, function (err, pending) {
-			if(err) {
-				return next(new VError(err,'error finding pending friend requests'));
+			if (err) {
+				return next(new VError(err, 'error finding pending friend requests'));
 			}
 			reqContext.set('pendingFriendRequests', pending);
 			next();

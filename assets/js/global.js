@@ -1,9 +1,16 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 var scrollViewport = window;
 
 function bootMyAntiSocial() {
 
+	// auto redirect to proxy form of url in the case where a users follows a link from
+	// somewhere such as facebook and ends up on someone sleses antisocial server.
 	var xd_cookie = xDomainCookie('//s3.amazonaws.com/myantisocial');
 	xd_cookie.get('antisocial-home', function (cookie_val) {
+		// if the antisocial-home xdomain cookie is not set and we are logged in set the cookie for later
 		if (!cookie_val) {
 			if ($.cookie('access_token')) {
 				var new_val = document.location.protocol + '//' + document.location.host;
@@ -11,11 +18,15 @@ function bootMyAntiSocial() {
 			}
 		}
 		else {
+			// the antisocial-home cookie exists, if we are not on the user's antisocial server redirect to it
+			// if the link is a post
 			var server = document.location.protocol + '//' + document.location.host;
 			if (server !== cookie_val) {
 				var url = cookie_val;
 				if (document.location.pathname.match(/\/post\//)) {
-					url += '/proxy-post?endpoint=' + encodeURIComponent(document.location.href);
+					var href = document.location.href;
+					href = href.replace('?source=facebook', '');
+					url += '/proxy-post?endpoint=' + encodeURIComponent(href);
 					document.location.href = url;
 				}
 			}
@@ -144,6 +155,9 @@ function didLogIn() {
 	var current = getAccessToken();
 	$('#document-body').removeClass('is-logged-out').addClass('is-logged-in');
 	$('.DigitopiaInstance').trigger('DidLogIn');
+	var xd_cookie = xDomainCookie('//s3.amazonaws.com/myantisocial');
+	var new_val = document.location.protocol + '//' + document.location.host;
+	xd_cookie.set('antisocial-home', new_val);
 }
 
 function didLogOut() {

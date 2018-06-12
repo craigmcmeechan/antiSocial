@@ -1,3 +1,7 @@
+// Copyright Michael Rhodes. 2017,2018. All Rights Reserved.
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 if (process.env.ENVFILE) {
   require('dotenv').config({
     path: process.env.ENVFILE
@@ -332,6 +336,16 @@ app.start = function () {
     });
   }
   else {
+    // set up a connection upgrade redirect for http -> https
+    var http = require('http');
+    http.createServer(function (req, res) {
+      res.writeHead(302, {
+        'Location': app.locals.config.publicHost + req.url
+      });
+      res.end();
+    }).listen(80);
+
+    // listen for https and websocket requests
     var setupHTTPS = require('./lib/setupHTTPS');
     setupHTTPS(app, function (err, sslListener) {
       listener = sslListener;
