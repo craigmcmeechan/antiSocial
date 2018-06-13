@@ -5,6 +5,7 @@
 var debug = require('debug')('routes');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
 var getCurrentUser = require('../middleware/context-currentUser');
+var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var encryption = require('../lib/encryption');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
@@ -19,7 +20,7 @@ var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comm
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	router.get(proxyRE, getCurrentUser(), getFriendForEndpoint(), function (req, res, next) {
+	router.get(proxyRE, getCurrentUser(), ensureLoggedIn(), getFriendForEndpoint(), function (req, res, next) {
 
 		var ctx = req.myContext;
 		var endpoint = req.query.endpoint;
