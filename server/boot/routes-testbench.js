@@ -20,6 +20,10 @@ var async = require('async');
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
+	if (process.env.TESTBENCH !== 'true') {
+		return;
+	}
+
 	router.get('/testbench-callout', getCurrentUser(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
