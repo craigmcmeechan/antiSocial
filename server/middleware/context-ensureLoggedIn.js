@@ -11,9 +11,9 @@ module.exports = function () {
 			res.set('x-digitopia-hijax-flash-level', 'warning');
 			res.set('x-digitopia-hijax-flash-message', 'Not Logged In');
 			if (req.headers['x-digitopia-hijax']) {
-				return res.set('x-digitopia-hijax-location', '/').send('redirect to ' + '/');
+				return res.set('x-digitopia-hijax-location', '/need-login?page=' + encodeURIComponent(req.url)).send('redirect to ' + '/');
 			}
-			res.redirect('/');
+			res.redirect('/need-login?page=' + encodeURIComponent(req.url));
 		}
 		else {
 			next();
