@@ -10,7 +10,7 @@
 <dt><a href="#POST Post a comment">POST Post a comment</a></dt>
 <dd><p>Post a comment</p>
 </dd>
-<dt><a href="#Get Edit a post">Get Edit a post</a></dt>
+<dt><a href="#Get get a post for edit">Get get a post for edit</a></dt>
 <dd><p>get a post for edit</p>
 </dd>
 <dt><a href="#POST Edit a post">POST Edit a post</a></dt>
@@ -220,9 +220,9 @@ Post a comment
 | --- | --- | --- |
 | id | <code>String</code> | Id of comment being retrieved |
 
-<a name="Get Edit a post"></a>
+<a name="Get get a post for edit"></a>
 
-## Get Edit a post
+## Get get a post for edit
 get a post for edit
 
 **Kind**: global variable  
