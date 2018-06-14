@@ -27,6 +27,7 @@ module.exports = function (grunt) {
 		'node_modules/turndown/dist/turndown.js',
 		'node_modules/base-64/base64.js',
 		'node_modules/bootstrap-confirmation2/dist/bootstrap-confirmation.js',
+		'working/js/*.js',
 		'assets/vendor/*.js',
 		'assets/js/*.js'
 	];
@@ -112,7 +113,10 @@ module.exports = function (grunt) {
 		sass: {
 			boostrap: {
 				files: {
-					'./working/css/custom-bootstrap.css': './assets/scss/custom-bootstrap.scss'
+					'./working/css/app.css': './assets/scss/app.scss'
+				},
+				options: {
+					loadPath: './node_modules'
 				}
 			}
 		},
@@ -125,6 +129,9 @@ module.exports = function (grunt) {
 					'working/css/<%= pkg.name %>-compiled.css': stylusFiles
 				}
 			}
+		},
+		exec: {
+			webpack: 'node_modules/.bin/webpack'
 		},
 		concat: {
 			js: {
@@ -189,6 +196,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-jsdoc-to-markdown');
+	grunt.loadNpmTasks('grunt-exec');
 
 	grunt.registerTask('default', [
 		'mkdir',
@@ -196,6 +204,7 @@ module.exports = function (grunt) {
 		'less',
 		'sass',
 		'stylus',
+		'exec',
 		'concat',
 		'uglify',
 		'cssmin',
@@ -208,6 +217,7 @@ module.exports = function (grunt) {
 		'less',
 		'sass',
 		'stylus',
+		'exec',
 		'concat',
 		'jsdoc2md',
 		'watch'
