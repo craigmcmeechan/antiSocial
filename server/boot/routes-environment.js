@@ -5,6 +5,10 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var fs = require('fs');
 var exec = require('child_process').exec;
+var isInitialized = require('../middleware/context-initialized');
+var ensureSuperUser = require('../middleware/context-ensureSuperUser');
+
+
 var debug = require('debug')('routes');
 var debugVerbose = require('debug')('routes:verbose');
 
@@ -71,26 +75,11 @@ var variables = [
 module.exports = function (server) {
 	var router = server.loopback.Router();
 
-	router.get('/letsencrypt', getCurrentUser(), function (req, res, next) {
+	router.get('/letsencrypt', isInitialized(), getCurrentUser(), ensureSuperUser(), function (req, res, next) {
 		var ctx = req.myContext;
 
 		if (!process.env.ENVFILE) {
 			return res.send('Environment file not defined. (ENVFILE)');
-		}
-
-		// if not first run need to be superuser
-		if (ctx.get('nodeIsInitialized')) {
-			var roles = ctx.get('currentUserRoles');
-			if (roles && roles.length) {
-				for (var i = 0; i < roles.length; i++) {
-					if (roles[i].role().name === 'superuser') {
-						ctx.set('isSuperUser', 'true');
-					}
-				}
-			}
-			if (!ctx.get('currentUser') || !ctx.get('isSuperUser')) {
-				return res.sendStatus(401);
-			}
 		}
 
 		res.render('pages/letsencrypt', {
@@ -100,26 +89,11 @@ module.exports = function (server) {
 		});
 	});
 
-	router.post('/letsencrypt', getCurrentUser(), function (req, res, next) {
+	router.post('/letsencrypt', isInitialized(), getCurrentUser(), ensureSuperUser(), function (req, res, next) {
 		var ctx = req.myContext;
 
 		if (!process.env.ENVFILE) {
 			return res.send('Environment file not defined. (ENVFILE)');
-		}
-
-		// if not first run need to be superuser
-		if (ctx.get('nodeIsInitialized')) {
-			var roles = ctx.get('currentUserRoles');
-			if (roles && roles.length) {
-				for (var i = 0; i < roles.length; i++) {
-					if (roles[i].role().name === 'superuser') {
-						ctx.set('isSuperUser', 'true');
-					}
-				}
-			}
-			if (!ctx.get('currentUser') || !ctx.get('isSuperUser')) {
-				return res.sendStatus(401);
-			}
 		}
 
 		if (!req.body.PUBLIC_HOST || !req.body.email) {
@@ -163,26 +137,11 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/environment', getCurrentUser(), function (req, res, next) {
+	router.get('/environment', isInitialized(), getCurrentUser(), ensureSuperUser(), function (req, res, next) {
 		var ctx = req.myContext;
 
 		if (!process.env.ENVFILE) {
 			return res.send('Environment file not defined. (ENVFILE)');
-		}
-
-		// if not first run need to be superuser
-		if (ctx.get('nodeIsInitialized')) {
-			var roles = ctx.get('currentUserRoles');
-			if (roles && roles.length) {
-				for (var i = 0; i < roles.length; i++) {
-					if (roles[i].role().name === 'superuser') {
-						ctx.set('isSuperUser', 'true');
-					}
-				}
-			}
-			if (!ctx.get('currentUser') || !ctx.get('isSuperUser')) {
-				return res.sendStatus(401);
-			}
 		}
 
 		res.render('pages/environment', {
@@ -192,26 +151,11 @@ module.exports = function (server) {
 		});
 	});
 
-	router.post('/environment', getCurrentUser(), function (req, res, next) {
+	router.post('/environment', isInitialized(), getCurrentUser(), ensureSuperUser(), function (req, res, next) {
 		var ctx = req.myContext;
 
 		if (!process.env.ENVFILE) {
 			return res.send('Environment file not defined. (ENVFILE)');
-		}
-
-		// if not first run need to be superuser
-		if (ctx.get('nodeIsInitialized')) {
-			var roles = ctx.get('currentUserRoles');
-			if (roles && roles.length) {
-				for (var i = 0; i < roles.length; i++) {
-					if (roles[i].role().name === 'superuser') {
-						ctx.set('isSuperUser', 'true');
-					}
-				}
-			}
-			if (!ctx.get('currentUser') || !ctx.get('isSuperUser')) {
-				return res.sendStatus(401);
-			}
 		}
 
 		// make a list of defined + editable environment vars
