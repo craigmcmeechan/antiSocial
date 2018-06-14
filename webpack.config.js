@@ -1,5 +1,5 @@
 module.exports = [{
-	entry: "./assets/material.js",
+	entry: "./assets/materialjs/app.js",
 	output: {
 		filename: "working/js/material-bundle.js"
 	},
