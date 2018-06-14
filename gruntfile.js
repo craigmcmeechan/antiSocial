@@ -171,13 +171,11 @@ module.exports = function (grunt) {
 		},
 		jsdoc2md: {
 			oneOutputFile: {
-				src: 'server/boot/*.js',
+				src: ['server/boot/*.js', 'common/models/*.js'],
 				dest: 'docs/api.md'
 			},
 			withOptions: {
-				options: {
-					'no-gfm': false
-				}
+				options: {}
 			}
 		},
 		watch: {
