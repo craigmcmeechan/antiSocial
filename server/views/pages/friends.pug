@@ -12,22 +12,34 @@ block content
 				- myendpoint = base64.encode(myendpoint)
 				input#myendpoint(type="text" value= myendpoint style="opacity:0;width:10px;")
 				button.btn.btn-xs.btn-primary.copy-to-clipboard(data-target="#myendpoint") Copy Your Endpoint to Clipboard
-			h3 Friends
-				
+			
+			h2 Friends
+
 		.row
-			.col-sm-6.fold-column
-							
+			.col-sm-12
+				p.
+					You can add friends in either of two ways. You can have the system 
+					send someone an friend request via email that they can use to create an account.
+					You can send them a friend request directly via email or by exchanging an 
+					"endpoint", which identifies their node and user name. They can generate their 
+					endpoint and send it to you (such as via email, text, message), or you can 
+					generate your endpoint and send it to them.
+					
+		.row
+			.col-sm-6
 				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
-					h4 Add friend by Public Page Endpoint
+					h4 Add friend by Their Public Page Endpoint
+					p If you know someone's endpoint enter it here.
 					.form-group
 						.input-group
 							.input-relative
 								input.form-control(type="text" name="endpoint" placeholder="Endpoint" data-validate="required" value= endpoint)
 							.input-group-btn
 								button#lookup-button.btn.btn-primary Lookup
-								
-							
-				h4 - or - Invite a friend via Email
+
+			.col-sm-6
+				h4 Invite a friend via Email
+				p If they don't have an antiSocial account the email will include instructions on how to create one.
 
 				form#invite-friend-form.form.form-validation(method="POST" action="/invite" data-submitter="#send-invite" data-jsclass="formValidator,postEndpointController")
 					input(type="hidden" name="type" value="friend")
@@ -43,16 +55,16 @@ block content
 							.input-ok-indicator
 								span.fa.fa-check
 							.validation-help
-					button#send-invite.btn.btn-primary.btn-sm Send
-
-			.col-sm-6
+					button#send-invite.btn.btn-primary Send
+		.row.friends-list
+			.col-sm-12
 				if !friends.length
 					p Oops. No friends yet.
 				else
 					.row
 						for friend in friends
 							if friend.status === 'pending' || friend.status === 'accepted'
-								.col-4.col-sm-6
+								.col-6.col-md-4.col-lg-3
 									.media.friend-card
 										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
 										.media-body
@@ -79,11 +91,11 @@ block content
 
 											a(href= proxyEndPoint(friend.remoteEndPoint,user))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
 											if friend.status === 'pending'
-												|  (pending) 
+												|  (pending)
 
+			//
 				if invites && invites.length
 					.page-header Invitations
 					ul
 						for invite in invites
 							li= invite.email + ' (' + invite.status + ')'
-	
