@@ -44,15 +44,15 @@ block content
 								span.fa.fa-check
 							.validation-help
 					button#send-invite.btn.btn-primary.btn-sm Send
-
-			.col-sm-6
+		.row
+			.col-sm-12
 				if !friends.length
 					p Oops. No friends yet.
 				else
 					.row
 						for friend in friends
 							if friend.status === 'pending' || friend.status === 'accepted'
-								.col-4.col-sm-6
+								.col-4.col-sm-4
 									.media.friend-card
 										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
 										.media-body
