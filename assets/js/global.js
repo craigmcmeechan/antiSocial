@@ -177,9 +177,16 @@ function didInjectContent(element) {
 	instantiateMaterialDesignElements(element);
 }
 
+var MDCInstanciateOnce = 0;
+
 function instantiateMaterialDesignElements(element) {
+	if (!MDCInstanciateOnce++) {
+		const topAppBar = new MDC.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
+		const drawer = new MDC.MDCTemporaryDrawer(document.querySelector('.mdc-drawer--temporary'));
+		document.querySelector('.menu').addEventListener('click', () => drawer.open = true);
+	}
 	$(element).find('.mdc-button').each(function () {
-		var buttonRipple = new MDC.MDCRipple(this);
+		const buttonRipple = new MDC.MDCRipple(this);
 	});
 }
 
