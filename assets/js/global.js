@@ -66,6 +66,8 @@ function bootMyAntiSocial() {
 		didLogOut();
 	}
 
+	instantiateMaterialDesignElements($('body'));
+
 	window.setTimeout(function () {
 		$('#splash').fadeOut('fast');
 	}, 1000);
@@ -172,6 +174,13 @@ function didInjectContent(element) {
 	$('#document-body').data('aspectRatioController').fixAspectRatio();
 	$('#document-body').data('constrainedController').fixConstrained();
 	$('#document-body').data('liveTimeController').updateTimes();
+	instantiateMaterialDesignElements(element);
+}
+
+function instantiateMaterialDesignElements(element) {
+	$(element).find('.mdc-button').each(function () {
+		var buttonRipple = new MDC.MDCRipple(this);
+	});
 }
 
 var flashAjaxStatusTimeout;
