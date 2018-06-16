@@ -99,10 +99,12 @@ function bootMyAntiSocial() {
 
 	$('.show-notifications-button').on('click', function (e) {
 		e.preventDefault();
-		$('.footer-button.active').toggleClass('active');
-		$(this).toggleClass('active');
-		$('.on-screen').toggleClass('on-screen');
-		$('#content').hide();
+		if (!$('#news-feed').hasClass('on-screen')) {
+			$('body').addClass('modal-open');
+		}
+		else {
+			$('body').removeClass('modal-open');
+		}
 		$('#news-feed').toggleClass('on-screen');
 		$(scrollViewport).scrollTop(0);
 	});

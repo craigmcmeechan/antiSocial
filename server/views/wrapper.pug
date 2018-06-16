@@ -48,7 +48,7 @@ html(lang="en")
 			
 			include components/modals.pug
 			
-			#content(data-hijax="true")
+			#content.navbar-margin(data-hijax="true")
 				block content
 
 			#tmks.container-fluid.text-center
@@ -56,14 +56,6 @@ html(lang="en")
 					Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
 
 			#ajax-status
-
-		#fixed-footer.hidden-logged-out
-			.footer-button.active.show-feed-button
-				i.fa.fa-fw.fa-list-alt
-			
-			.footer-button.show-notifications-button
-				i.fa.fa-fw.fa-bell
-				.badge.activity-count
 
 		block controller
 

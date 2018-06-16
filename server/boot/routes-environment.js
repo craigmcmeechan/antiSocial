@@ -85,7 +85,8 @@ module.exports = function (server) {
 		res.render('pages/letsencrypt', {
 			'user': ctx.get('currentUser'),
 			'globalSettings': ctx.get('globalSettings'),
-			'env': process.env
+			'env': process.env,
+			'pageTitle': 'Environment'
 		});
 	});
 
@@ -147,7 +148,8 @@ module.exports = function (server) {
 		res.render('pages/environment', {
 			'user': ctx.get('currentUser'),
 			'globalSettings': ctx.get('globalSettings'),
-			'env': process.env
+			'env': process.env,
+			'pageTitle': 'Environment'
 		});
 	});
 

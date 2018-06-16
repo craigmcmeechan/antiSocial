@@ -45,28 +45,6 @@
 					self.connect();
 				}
 			}
-
-			self.setTop();
-		};
-
-		this.setTop = function () {
-			var notMobile = $('#document-body').hasClass('not-digitopia-xsmall');
-			if (self.loggedIn && notMobile) {
-				if ($('#newsfeed-here').length) {
-					var top = $('#newsfeed-here').offset().top;
-					var width = $('#newsfeed-here').width();
-					var left = $('#newsfeed-here').offset().left;
-					self.element.css({
-						'top': top,
-						'width': width,
-						'left': left
-					});
-					self.element.show();
-				}
-				else {
-					self.element.hide();
-				}
-			}
 		};
 
 		this.connect = function () {
@@ -101,7 +79,6 @@
 						$('body').removeClass('offline');
 					});
 				});
-				self.setTop();
 			}, self.reconnecting ? 1000 : 0);
 		};
 
@@ -159,7 +136,7 @@
 					e.preventDefault();
 					loadPage($(this).data('about'));
 					if ($('body').hasClass('digitopia-xsmall')) {
-						$('.show-feed-button').trigger('click');
+						$('.show-notifications-button').trigger('click');
 					};
 				});
 			}
