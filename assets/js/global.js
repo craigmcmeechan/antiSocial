@@ -72,16 +72,6 @@ function bootMyAntiSocial() {
 		$('#splash').fadeOut('fast');
 	}, 1000);
 
-	$('.nav a').on('click', function () {
-		if ($('body').hasClass('digitopia-xsmall')) {
-			$('.navbar-toggler').click();
-		}
-	});
-
-	$('.navbar-toggler').on('click', function (e) {
-		$('.avatar').toggle();
-	});
-
 	$('.moreActivityButton').on('click', function (e) {
 		e.preventDefault();
 		$('.news-feed-items').toggleClass('constrained-height');
@@ -186,6 +176,9 @@ function instantiateMaterialDesignElements(element) {
 		const topAppBar = new MDC.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
 		const drawer = new MDC.MDCTemporaryDrawer(document.querySelector('.mdc-drawer--temporary'));
 		document.querySelector('.menu').addEventListener('click', () => drawer.open = true);
+		$('body').on('click', '.nav-item', function () {
+			drawer.open = false;
+		});
 	}
 	$(element).find('.mdc-button').each(function () {
 		const buttonRipple = new MDC.MDCRipple(this);
