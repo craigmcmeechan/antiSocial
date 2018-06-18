@@ -86,7 +86,12 @@ module.exports = function (server) {
 	router.get('/start-ws', function (req, res, next) {
 		var query = {
 			'where': {
-				'status': 'accepted'
+				'and': [{
+					'status': 'accepted'
+				}, {
+					'originator': true
+				}]
+
 			},
 			'include': ['user']
 		};

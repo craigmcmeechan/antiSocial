@@ -14,13 +14,13 @@ block content
 					strong Clients
 					ul
 						for socket in clients
-							li= socket.currentUser.username
+							li= socket.data.currentUser.username
 				if servers
 					strong Watchers:
 					ul
 						for socket in servers
-							-var user = socket.friend.user() ? socket.friend.user().username : 'unknown'
-							li= user + '->' + socket.friend.remoteEndPoint
+							-var user = socket.data.friend.user() ? socket.data.friend.user().username : 'unknown'
+							li= user + '->' + socket.data.friend.remoteEndPoint
 
 				if connections
 					strong Watching:

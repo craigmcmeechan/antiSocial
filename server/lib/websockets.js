@@ -2,30 +2,15 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
+/*
+	This module handles websocket authentication and set up 'data' event handlers and emitters.
+	
+	Used for client connections and server to server friend connections
+*/
+
 var debug = require('debug')('websockets');
 var watchFeed = require('./watchFeedWebsockets');
-
-module.exports.disconnectAll = function (app) {
-	// tell friends to disconnect
-	if (app.openFriendListeners) {
-		for (var key in app.openFriendListeners) {
-			var connection = app.openFriendListeners[key];
-			connection.emit('data', {
-				'type': 'offline'
-			});
-		}
-	}
-
-	// tell users to disconnect
-	if (app.openClientListeners) {
-		for (var key in app.openClientListeners) {
-			var connection = app.openClientListeners[key];
-			connection.emit('data', {
-				'type': 'offline'
-			});
-		}
-	}
-};
+var getDataEventHandler = require('./websocketDataEventHandler');
 
 module.exports.mount = function websocketsMount(app) {
 	if (!app.openClientListeners) {
@@ -38,6 +23,7 @@ module.exports.mount = function websocketsMount(app) {
 		'timeout': 60000,
 		'authenticate': function (socket, data, callback) {
 			var friendAccessToken = data.friendAccessToken;
+			// this is a server to server friend connection, authenticate with friend access token
 			if (friendAccessToken) {
 				var query = {
 					'where': {
@@ -57,7 +43,7 @@ module.exports.mount = function websocketsMount(app) {
 					callback(null, true);
 				});
 			}
-			else {
+			else { // this is a client connection, authenticate with access_token cookie
 				var cookie = require('cookie');
 				var cookieParser = require('cookie-parser');
 				if (!socket.handshake.headers.cookie) {
@@ -88,27 +74,35 @@ module.exports.mount = function websocketsMount(app) {
 			}
 		},
 		'postAuthenticate': function (socket, data) {
+			// this is a server to server friend connection
 			if (data.friend) {
-				socket.friend = data.friend;
-				socket.highwater = data.friendHighWater || 0;
-				socket.currentUser = socket.friend.user();
-				socket.connectionKey = socket.friend.remoteEndPoint + '<-' + socket.friend.user().username;
-				app.openFriendListeners[socket.connectionKey] = socket;
+				socket.data = {
+					friend: data.friend,
+					currentUser: data.friend.user(),
+					highwater: data.friendHighWater || 0,
+					connectionKey: data.friend.remoteEndPoint + '<-' + data.friend.user().username
+				};
+				app.openFriendListeners[socket.data.connectionKey] = socket;
+
+				// set up PushNewsFeedItem change observer to emit data events back to friend
 				if (data.subscriptions) {
 					for (var model in data.subscriptions) {
 						var events = data.subscriptions[model];
 						for (var j = 0; j < events.length; j++) {
 							var eventType = events[j];
 							if (eventType === 'after save' || eventType === 'before delete') {
-								var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType, data);
-								bindEvents(socket, model, eventType, handler);
+								var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType);
+								app.models[model].observe(eventType, handler);
 								app.models[model].changeHandlerBackfill(socket);
 							}
 						}
 					}
 				}
+
+				// listen for data events from friend
+				socket.on('data', getDataEventHandler(app, socket));
 			}
-			else if (data.userId) {
+			else if (data.userId) { // this is a client connection
 				app.models.MyUser.findById(data.userId, {
 					'include': ['friends']
 				}, function (err, currentUser) {
@@ -116,9 +110,11 @@ module.exports.mount = function websocketsMount(app) {
 						debug('websocketsMount user not found for token, which is odd.');
 						return;
 					}
-					socket.connectionKey = currentUser.username;
-					socket.currentUser = currentUser;
-					app.openClientListeners[socket.connectionKey] = socket;
+					socket.data = {
+						currentUser: currentUser,
+						connectionKey: currentUser.username
+					};
+					app.openClientListeners[socket.data.connectionKey] = socket;
 
 					if (data.subscriptions) {
 						for (var model in data.subscriptions) {
@@ -126,8 +122,8 @@ module.exports.mount = function websocketsMount(app) {
 							for (var j = 0; j < events.length; j++) {
 								var eventType = events[j];
 								if (eventType === 'after save' || eventType === 'before delete') {
-									var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType, data);
-									bindEvents(socket, model, eventType, handler);
+									var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType);
+									app.models[model].observe(eventType, handler);
 									app.models[model].changeHandlerBackfill(socket);
 								}
 							}
@@ -138,39 +134,35 @@ module.exports.mount = function websocketsMount(app) {
 					watchFeed.connectAll(app, currentUser);
 				});
 			}
-
-			function bindEvents(socket, model, eventType, handler) {
-				app.models[model].observe(eventType, handler);
-
-				socket.on('disconnect', function (reason) {
-					debug('websocketsChangeHandler ' + socket.connectionKey + ' disconnect event reason ' + reason);
-					if (reason === 'transport close' || reason === 'client namespace disconnect') {
-						debug('websocketsChangeHandler ' + socket.connectionKey + ' stopped subscribing to NewsFeedItem "' + eventType + '" because ' + reason);
-						app.models[model].removeObserver(eventType, handler);
-						if (socket.friend) {
-							delete app.openFriendListeners[socket.connectionKey];
-							socket.friend.updateAttribute('online', false);
-							if (process.env.CLOSE_IDLE_FEEDS) {
-								watchFeed.disConnect(app, socket.friend);
-							}
-						}
-						else {
-							delete app.openClientListeners[socket.connectionKey];
-							socket.currentUser.updateAttribute('online', false);
-							if (process.env.CLOSE_IDLE_FEEDS) {
-								watchFeed.disconnectAll(app, socket.currentUser);
-							}
-						}
-					}
-				});
-			}
 		}
 	});
 
 	app.io.on('connection', function (socket) {
-		debug('websocketsMount a user connected');
+		//debug('websocketsMount a user connected');
 		//socket.on('disconnect', function (reason) {
-		//	debug('websocketsMount %s disconnect %s', socket.connectionKey, reason);
+		//	debug('websocketsMount %s disconnect %s', socket.data.connectionKey, reason);
 		//});
 	});
+};
+
+module.exports.disconnectAll = function (app) {
+	// tell friends to disconnect
+	if (app.openFriendListeners) {
+		for (var key in app.openFriendListeners) {
+			var connection = app.openFriendListeners[key];
+			connection.emit('data', {
+				'type': 'offline'
+			});
+		}
+	}
+
+	// tell users to disconnect
+	if (app.openClientListeners) {
+		for (var key in app.openClientListeners) {
+			var connection = app.openClientListeners[key];
+			connection.emit('data', {
+				'type': 'offline'
+			});
+		}
+	}
 };

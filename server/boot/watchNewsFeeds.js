@@ -9,7 +9,11 @@ module.exports = function (server) {
 
 	var query = {
 		'where': {
-			'status': 'accepted'
+			and: [{
+				'status': 'accepted'
+			}, {
+				'originator': true
+			}]
 		},
 		'include': ['user']
 	};
@@ -20,7 +24,6 @@ module.exports = function (server) {
 			return;
 		}
 
-
 		for (var i = 0; i < friends.length; i++) {
 			var friend = friends[i];
 			later(server, friend, i);
@@ -29,7 +32,7 @@ module.exports = function (server) {
 
 	function later(server, friend, i) {
 		setTimeout(function () {
-			console.log('connecting: ', friend.user().username, friend.remoteUsername);
+			//console.log('connecting: ', friend.user().username, friend.remoteUsername);
 			watchFeed(server, friend);
 		}, i * 500);
 	}
