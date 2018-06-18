@@ -3,8 +3,8 @@
 // License text available at https://opensource.org/licenses/MIT
 
 /*
-	This module handles websocket authentication and set up 'data' event handlers and emitters.
-	
+	This module handles websocket connection authentication and sets up 'data' event handlers and emitters once authenticated.
+
 	Used for client connections and server to server friend connections
 */
 
@@ -13,11 +13,11 @@ var watchFeed = require('./watchFeedWebsockets');
 var getDataEventHandler = require('./websocketDataEventHandler');
 
 module.exports.mount = function websocketsMount(app) {
-	if (!app.openClientListeners) {
-		app.openClientListeners = {};
+	if (!app.openClients) {
+		app.openClients = {};
 	}
-	if (!app.openFriendListeners) {
-		app.openFriendListeners = {};
+	if (!app.listeningFriendConnections) {
+		app.listeningFriendConnections = {};
 	}
 	require('socketio-auth')(app.io, {
 		'timeout': 60000,
@@ -77,23 +77,25 @@ module.exports.mount = function websocketsMount(app) {
 			// this is a server to server friend connection
 			if (data.friend) {
 				socket.data = {
-					friend: data.friend,
-					currentUser: data.friend.user(),
-					highwater: data.friendHighWater || 0,
-					connectionKey: data.friend.remoteEndPoint + '<-' + data.friend.user().username
+					'friend': data.friend,
+					'currentUser': data.friend.user(),
+					'highwater': data.friendHighWater || 0,
+					'connectionKey': data.friend.remoteEndPoint + '<-' + data.friend.user().username
 				};
-				app.openFriendListeners[socket.data.connectionKey] = socket;
+				app.listeningFriendConnections[socket.data.connectionKey] = socket;
 
 				// set up PushNewsFeedItem change observer to emit data events back to friend
 				if (data.subscriptions) {
 					for (var model in data.subscriptions) {
 						var events = data.subscriptions[model];
-						for (var j = 0; j < events.length; j++) {
-							var eventType = events[j];
-							if (eventType === 'after save' || eventType === 'before delete') {
-								var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType);
-								app.models[model].observe(eventType, handler);
-								app.models[model].changeHandlerBackfill(socket);
+						if (model === 'PushNewsFeedItem') {
+							for (var j = 0; j < events.length; j++) {
+								var eventType = events[j];
+								if (eventType === 'after save' || eventType === 'before delete') {
+									var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType);
+									app.models[model].observe(eventType, handler);
+									app.models[model].changeHandlerBackfill(socket);
+								}
 							}
 						}
 					}
@@ -114,17 +116,19 @@ module.exports.mount = function websocketsMount(app) {
 						currentUser: currentUser,
 						connectionKey: currentUser.username
 					};
-					app.openClientListeners[socket.data.connectionKey] = socket;
+					app.openClients[socket.data.connectionKey] = socket;
 
 					if (data.subscriptions) {
 						for (var model in data.subscriptions) {
 							var events = data.subscriptions[model];
-							for (var j = 0; j < events.length; j++) {
-								var eventType = events[j];
-								if (eventType === 'after save' || eventType === 'before delete') {
-									var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType);
-									app.models[model].observe(eventType, handler);
-									app.models[model].changeHandlerBackfill(socket);
+							if (model === 'NewsFeedItem') {
+								for (var j = 0; j < events.length; j++) {
+									var eventType = events[j];
+									if (eventType === 'after save' || eventType === 'before delete') {
+										var handler = app.models[model].buildWebSocketChangeHandler(socket, eventType);
+										app.models[model].observe(eventType, handler);
+										app.models[model].changeHandlerBackfill(socket);
+									}
 								}
 							}
 						}
@@ -147,9 +151,9 @@ module.exports.mount = function websocketsMount(app) {
 
 module.exports.disconnectAll = function (app) {
 	// tell friends to disconnect
-	if (app.openFriendListeners) {
-		for (var key in app.openFriendListeners) {
-			var connection = app.openFriendListeners[key];
+	if (app.listeningFriendConnections) {
+		for (var key in app.listeningFriendConnections) {
+			var connection = app.listeningFriendConnections[key];
 			connection.emit('data', {
 				'type': 'offline'
 			});
@@ -157,9 +161,9 @@ module.exports.disconnectAll = function (app) {
 	}
 
 	// tell users to disconnect
-	if (app.openClientListeners) {
-		for (var key in app.openClientListeners) {
-			var connection = app.openClientListeners[key];
+	if (app.openClients) {
+		for (var key in app.openClients) {
+			var connection = app.openClients[key];
 			connection.emit('data', {
 				'type': 'offline'
 			});

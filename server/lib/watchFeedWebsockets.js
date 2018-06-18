@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 /*
-	set up server side friend websockets
+	set up server side friend websocket channel for a friend
 */
 
 var url = require('url');
@@ -11,10 +11,11 @@ var debug = require('debug')('feeds');
 var debugWebsockets = require('debug')('websockets');
 var getDataEventHandler = require('./websocketDataEventHandler');
 
-var watchFeedConnections = {};
-module.exports.watchFeedConnections = watchFeedConnections;
 
 var watchFeed = function watchFeed(server, friend) {
+	if (!server.watchFriendConnections) {
+		server.watchFriendConnections = {};
+	}
 
 	server.models.Friend.include([friend], 'user', function (err, instances) {
 
@@ -22,7 +23,7 @@ var watchFeed = function watchFeed(server, friend) {
 
 		var key = currentUser.username + '<-' + friend.remoteEndPoint;
 
-		if (watchFeedConnections[key]) {
+		if (server.watchFriendConnections[key]) {
 			debugWebsockets('watchFeed %s already listening ', key);
 		}
 		else {
@@ -46,16 +47,15 @@ var watchFeed = function watchFeed(server, friend) {
 
 			// open websocket connection
 			var socket = require('socket.io-client')(endpoint, {});
-
-			var connection = {
+			socket.data = {
 				'key': key,
 				'endpoint': feed,
-				'socket': socket,
 				'currentUser': currentUser,
 				'friend': friend,
 				'status': 'closed'
 			};
-			watchFeedConnections[key] = connection;
+
+			server.watchFriendConnections[key] = socket;
 
 			// perform authentication
 			socket.emit('authentication', {
@@ -83,42 +83,42 @@ var watchFeed = function watchFeed(server, friend) {
 				server.models[model].observe(eventType, handler);
 				server.models[model].changeHandlerBackfill(socket);
 			});
-			socket.on('connect', getOpenHandler(server, connection));
-			socket.on('disconnect', getCloseHandler(server, connection));
-			socket.on('error', getErrorHandler(server, connection));
+			socket.on('connect', getOpenHandler(server, socket));
+			socket.on('disconnect', getCloseHandler(server, socket));
+			socket.on('error', getErrorHandler(server, socket));
 		}
 	});
 };
 
-function getOpenHandler(server, connection) {
+function getOpenHandler(server, socket) {
 	return function openHandler(e) {
-		connection.status = 'open';
-		debugWebsockets('watchFeed openHandler %s', connection.key);
+		socket.data.status = 'open';
+		debugWebsockets('watchFeed openHandler %s', socket.data.key);
 	};
 }
 
-function getCloseHandler(server, connection) {
+function getCloseHandler(server, socket) {
 	return function closeHandler(e) {
-		connection.status = 'closed';
-		debugWebsockets('watchFeed closeHandler %s because %j', connection.key, e);
+		socket.data.status = 'closed';
+		debugWebsockets('watchFeed closeHandler %s because %j', socket.data.key, e);
 		setTimeout(function () {
-			watchFeed(server, connection.friend);
+			watchFeed(server, socket.data.friend);
 		}, 5000);
 	};
 }
 
-function getErrorHandler(server, connection) {
+function getErrorHandler(server, socket) {
 	return function errorHandler(e) {
-		connection.status = 'error';
-		debugWebsockets('watchFeed errorHandler %s %j', connection.key, e);
+		socket.data.status = 'error';
+		debugWebsockets('watchFeed errorHandler %s %j', socket.data.key, e);
 	};
 }
 
 module.exports.connect = watchFeed;
 
 module.exports.disconnectAll = function disconnectAll(server, user) {
-	for (var key in watchFeedConnections) {
-		var connection = watchFeedConnections[key];
+	for (var key in server.watchFriendConnections) {
+		var connection = server.watchFriendConnections[key].data;
 		if (connection.currentUser.id.toString() === user.id.toString()) {
 			connection.socket.close();
 			debugWebsockets('watchFeed closed %s', connection.key);
@@ -127,8 +127,8 @@ module.exports.disconnectAll = function disconnectAll(server, user) {
 };
 
 module.exports.disConnect = function disConnect(server, friend) {
-	for (var key in watchFeedConnections) {
-		var connection = watchFeedConnections[key];
+	for (var key in server.watchFriendConnections) {
+		var connection = server.watchFriendConnections[key].data;
 		if (connection.friend.id.toString() === friend.id.toString()) {
 			connection.socket.close();
 			debugWebsockets('watchFeed disConnect %s closed', connection.key);

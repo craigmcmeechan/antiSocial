@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 /*
-	Build and return handler for websocket data events
+	Build and return a handler for websocket 'data' events
 */
 
 var url = require('url');

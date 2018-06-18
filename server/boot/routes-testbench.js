@@ -116,9 +116,9 @@ module.exports = function (server) {
 		res.render('pages/status', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser'),
-			'servers': server.openFriendListeners,
-			'clients': server.openClientListeners,
-			'connections': watchFeed.watchFeedConnections
+			'listeningFriendConnections': server.listeningFriendConnections,
+			'openClients': server.openClients,
+			'watchFriendConnections': server.watchFriendConnections
 		});
 	});
 
