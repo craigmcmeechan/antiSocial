@@ -6,13 +6,13 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
-var watchFeed = require('../lib/watchFeedWebsockets');
+var watchFeed = require('../lib/websocketWatchFriend');
 var utils = require('../lib/utilities');
 
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
 var resolveProfiles = require('../lib/resolveProfiles');
 
-var clientWebsockets = require('../lib/websockets');
+var clientWebsockets = require('../lib/websocketAuthenticate');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');

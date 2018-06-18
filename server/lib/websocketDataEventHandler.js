@@ -13,7 +13,7 @@ var encryption = require('./encryption');
 var utils = require('./utilities');
 var mailer = require('./mail');
 var debug = require('debug')('websockets');
-var debugVerbose = require('debug')('feeds:verbose');
+var debugVerbose = require('debug')('websockets:verbose');
 
 function getDataEventHandler(server, socket) {
 	var friend = socket.data.friend;
@@ -29,7 +29,6 @@ function getDataEventHandler(server, socket) {
 
 		if (message.type === 'offline') {
 			debugVerbose('watchFeed listener %s received offline message', socket.data.key);
-			socket.close();
 			return;
 		}
 

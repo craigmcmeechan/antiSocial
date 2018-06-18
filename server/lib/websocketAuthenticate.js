@@ -10,10 +10,10 @@
 */
 
 var debug = require('debug')('websockets');
-var watchFeed = require('./watchFeedWebsockets');
+var watchFeed = require('./websocketWatchFriend');
 var getDataEventHandler = require('./websocketDataEventHandler');
 
-module.exports.mount = function websocketsMount(app) {
+module.exports.mount = function mount(app) {
 	if (!app.openClients) {
 		app.openClients = {};
 	}
@@ -63,11 +63,11 @@ module.exports.mount = function websocketsMount(app) {
 					if (err) throw err;
 					if (tokenDetail.length) {
 						data.userId = tokenDetail[0].userId;
-						debug('websocketsMount access token found');
+						debug('mount access token found');
 						callback(null, true);
 					}
 					else {
-						debug('websocketsMount access token not found');
+						debug('mount access token not found');
 						callback(null, false);
 					}
 				});
@@ -114,7 +114,7 @@ module.exports.mount = function websocketsMount(app) {
 					'include': ['friends']
 				}, function (err, currentUser) {
 					if (err) {
-						debug('websocketsMount user not found for token, which is odd.');
+						debug('mount user not found for token, which is odd.');
 						return;
 					}
 					socket.data = {
@@ -152,10 +152,10 @@ module.exports.mount = function websocketsMount(app) {
 	});
 
 	app.io.on('connection', function (socket) {
-		//debug('websocketsMount a user connected');
-		//socket.on('disconnect', function (reason) {
-		//	debug('websocketsMount %s disconnect %s', socket.data.connectionKey, reason);
-		//});
+		debug('websockets connection');
+		socket.on('disconnect', function (reason) {
+			debug('websockets %s disconnect %s', socket.data.connectionKey, reason);
+		});
 	});
 };
 

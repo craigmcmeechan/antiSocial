@@ -4,7 +4,7 @@
 
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
-var watchFeed = require('../lib/watchFeedWebsockets');
+var watchFeed = require('../lib/websocketWatchFriend');
 var resolveProfiles = require('../lib/resolveProfiles');
 var utils = require('../lib/utilities');
 var mailer = require('../lib/mail');

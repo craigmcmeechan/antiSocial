@@ -7,8 +7,7 @@
 */
 
 var url = require('url');
-var debug = require('debug')('feeds');
-var debugWebsockets = require('debug')('websockets');
+var debug = require('debug')('websockets');
 var getDataEventHandler = require('./websocketDataEventHandler');
 
 
@@ -24,7 +23,7 @@ var watchFeed = function watchFeed(server, friend) {
 		var key = currentUser.username + '<-' + friend.remoteEndPoint;
 
 		if (server.watchFriendConnections[key]) {
-			debugWebsockets('watchFeed %s already listening ', key);
+			debug('watchFeed %s already listening ', key);
 		}
 		else {
 
@@ -34,7 +33,7 @@ var watchFeed = function watchFeed(server, friend) {
 			var endpoint = remoteEndPoint.protocol === 'https:' ? 'wss' : 'ws';
 			endpoint += '://' + remoteEndPoint.host;
 
-			debugWebsockets('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
+			debug('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
 
 			// if connecting to ourself behind a proxy don't use publicHost
 			if (process.env.BEHIND_PROXY === "true") {
@@ -93,14 +92,14 @@ var watchFeed = function watchFeed(server, friend) {
 function getOpenHandler(server, socket) {
 	return function openHandler(e) {
 		socket.data.status = 'open';
-		debugWebsockets('watchFeed openHandler %s', socket.data.key);
+		debug('watchFeed openHandler %s', socket.data.key);
 	};
 }
 
 function getCloseHandler(server, socket) {
 	return function closeHandler(e) {
 		socket.data.status = 'closed';
-		debugWebsockets('watchFeed closeHandler %s because %j', socket.data.key, e);
+		debug('watchFeed closeHandler %s because %j', socket.data.key, e);
 		setTimeout(function () {
 			watchFeed(server, socket.data.friend);
 		}, 5000);
@@ -110,7 +109,7 @@ function getCloseHandler(server, socket) {
 function getErrorHandler(server, socket) {
 	return function errorHandler(e) {
 		socket.data.status = 'error';
-		debugWebsockets('watchFeed errorHandler %s %j', socket.data.key, e);
+		debug('watchFeed errorHandler %s %j', socket.data.key, e);
 	};
 }
 
@@ -121,7 +120,7 @@ module.exports.disconnectAll = function disconnectAll(server, user) {
 		var socket = server.watchFriendConnections[key];
 		if (socket.data.currentUser.id.toString() === user.id.toString()) {
 			socket.close();
-			debugWebsockets('watchFeed closed %s', socket.connectionKey);
+			debug('watchFeed closed %s', socket.connectionKey);
 		}
 	}
 };
@@ -131,7 +130,7 @@ module.exports.disConnect = function disConnect(server, friend) {
 		var socket = server.watchFriendConnections[key];
 		if (socket.data.friend.id.toString() === friend.id.toString()) {
 			socket.close();
-			debugWebsockets('watchFeed disConnect %s closed', socket.data.connectionKey);
+			debug('watchFeed disConnect %s closed', socket.data.connectionKey);
 		}
 	}
 };

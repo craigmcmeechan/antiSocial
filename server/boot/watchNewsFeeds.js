@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 var _ = require('lodash');
-var watchFeed = require('../lib/watchFeedWebsockets').connect;
+var watchFeed = require('../lib/websocketWatchFriend').connect;
 
 module.exports = function (server) {
 
