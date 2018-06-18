@@ -3,9 +3,10 @@
 // License text available at https://opensource.org/licenses/MIT
 
 /*
-	This module handles websocket connection authentication and sets up 'data' event handlers and emitters once authenticated.
+	Handles websocket connection authentication and set up 'data' event
+	handlers and emitters once authenticated.
 
-	Used for client connections and server to server friend connections
+	Used for server side and client side websocket connections
 */
 
 var debug = require('debug')('websockets');
@@ -22,12 +23,11 @@ module.exports.mount = function websocketsMount(app) {
 	require('socketio-auth')(app.io, {
 		'timeout': 60000,
 		'authenticate': function (socket, data, callback) {
-			var friendAccessToken = data.friendAccessToken;
 			// this is a server to server friend connection, authenticate with friend access token
-			if (friendAccessToken) {
+			if (data.friendAccessToken) {
 				var query = {
 					'where': {
-						'localAccessToken': friendAccessToken
+						'localAccessToken': data.friendAccessToken
 					},
 					'include': ['user']
 				};
@@ -103,6 +103,11 @@ module.exports.mount = function websocketsMount(app) {
 
 				// listen for data events from friend
 				socket.on('data', getDataEventHandler(app, socket));
+				socket.on('disconnect', function (reason) {
+					debug('recieved disconnect %s %s ', socket.data.connectionKey, reason);
+					socket.data.friend.updateAttribute('online', false);
+				});
+				socket.data.friend.updateAttribute('online', true);
 			}
 			else if (data.userId) { // this is a client connection
 				app.models.MyUser.findById(data.userId, {
@@ -134,8 +139,13 @@ module.exports.mount = function websocketsMount(app) {
 						}
 					}
 
+					socket.on('disconnect', function (reason) {
+						debug('recieved disconnect %s %s ', socket.data.connectionKey, reason);
+						delete app.openClients[socket.data.connectionKey];
+						socket.data.currentUser.updateAttribute('online', false);
+					});
+
 					currentUser.updateAttribute('online', true);
-					watchFeed.connectAll(app, currentUser);
 				});
 			}
 		}

@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 /*
-	set up server side friend websocket channel for a friend
+	set up server side friend websocket connection
 */
 
 var url = require('url');
@@ -118,20 +118,20 @@ module.exports.connect = watchFeed;
 
 module.exports.disconnectAll = function disconnectAll(server, user) {
 	for (var key in server.watchFriendConnections) {
-		var connection = server.watchFriendConnections[key].data;
-		if (connection.currentUser.id.toString() === user.id.toString()) {
-			connection.socket.close();
-			debugWebsockets('watchFeed closed %s', connection.key);
+		var socket = server.watchFriendConnections[key];
+		if (socket.data.currentUser.id.toString() === user.id.toString()) {
+			socket.close();
+			debugWebsockets('watchFeed closed %s', socket.connectionKey);
 		}
 	}
 };
 
 module.exports.disConnect = function disConnect(server, friend) {
 	for (var key in server.watchFriendConnections) {
-		var connection = server.watchFriendConnections[key].data;
-		if (connection.friend.id.toString() === friend.id.toString()) {
-			connection.socket.close();
-			debugWebsockets('watchFeed disConnect %s closed', connection.key);
+		var socket = server.watchFriendConnections[key];
+		if (socket.data.friend.id.toString() === friend.id.toString()) {
+			socket.close();
+			debugWebsockets('watchFeed disConnect %s closed', socket.data.connectionKey);
 		}
 	}
 };
