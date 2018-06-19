@@ -3,11 +3,10 @@
 // License text available at https://opensource.org/licenses/MIT
 
 //var PassThrough = require('stream').PassThrough;
-var debug = require('debug')('feeds');
-var debugVerbose = require('debug')('feeds:verbose');
+var debug = require('debug')('pushfeeds');
+var debugVerbose = require('debug')('pushfeeds:verbose');
 var encryption = require('../../server/lib/encryption');
 var RemoteRouting = require('loopback-remote-routing');
-var watchFeed = require('../../server/lib/watchFeedWebsockets');
 var server = require('../../server/server');
 
 module.exports = function (PushNewsFeedItem) {
@@ -18,10 +17,10 @@ module.exports = function (PushNewsFeedItem) {
 	}
 
 	PushNewsFeedItem.changeHandlerBackfill = function (socket, options) {
-		var friend = socket.friend;
+		var friend = socket.data.friend;
 		var user = friend.user();
 
-		var highwater = socket.highwater ? socket.highwater : 0;
+		var highwater = socket.data.highwater ? socket.data.highwater : 0;
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;
 		var privateKey = friend.keys.private;
 		var publicKey = friend.remotePublicKey;
@@ -124,8 +123,8 @@ module.exports = function (PushNewsFeedItem) {
 	};
 
 	PushNewsFeedItem.buildWebSocketChangeHandler = function (socket, eventType, options) {
-		var friend = socket.friend;
-		var user = friend.user();
+		var friend = socket.data.friend;
+		var user = socket.data.currentUser;
 
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;
 		var privateKey = friend.keys.private;

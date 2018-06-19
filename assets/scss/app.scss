@@ -12,12 +12,15 @@ $fa-font-path: "/dist/fonts";
 @import "../vendor/fa/web-fonts-with-css/scss/fa-regular";
 @import "../vendor/fa/web-fonts-with-css/scss/fa-solid";
 
+
+$mdc-theme-primary: #0d47a1;
+$mdc-theme-secondary: #00bcd4;
+
 @import "@material/theme/mdc-theme";
 @import "@material/list/mdc-list";
 @import "@material/top-app-bar/mdc-top-app-bar";
 @import "@material/drawer/mdc-drawer";
 @import "@material/button/mdc-button";
-
 
 .mdc-top-app-bar {
 	top:0px;

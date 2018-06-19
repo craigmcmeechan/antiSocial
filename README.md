@@ -13,7 +13,7 @@ In concept it is to Facebook what Mastodon is to Twitter.
 A user can create friend relationships with other users and can post stories and photographs, comment and react (like, love, dislike etc) to content that other users share. Posts can be public or limited to friends or customized groups.
 Each node is independently operated and core user data remains only there under the control of the user.
 
-You can find some useful information below about the project. 
+You can find some useful information below about the project.
 
 [Project Repository Architecture & Overview](https://github.com/antiSocialNet/antiSocial/wiki/Project-Repository-Architecture-&-Overview)
 [The Principles of antiSocial](https://github.com/antiSocialNet/antiSocial/wiki/The-Principles-of-antiSocial)

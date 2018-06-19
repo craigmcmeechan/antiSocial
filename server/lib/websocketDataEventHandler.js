@@ -2,51 +2,8 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-
 /*
-
-Notifications happen through updates to 2 tables
-	PushNewsFeedItem: announcements that propagate through the friend network
-		Updated when things are created or changed.
-		Eg: I posted something, I commented on something, I reacted to something.
-
-	NewsFeedItem: user cache of applicable events from their POV
-		Used to build "news feed" for user
-		Eg: I posted something, My friend xxx posted something, Someone reacted to someone elses post
-
-Users watch all their friends PushNewsFeedItem feeds for changes. When a friend
-starts listenting they are sent all PushNewsFeedItems that have been modified
-since they last connected. While they are listenting they are sent changes in real time.
-
-When you creates a post, reaction or a comment
-	Make an entry in PushNewsFeedItems
-When you modify a post, reaction or a comment
-	Update the entry in PushNewsFeedItem
-When you delete a post or a comment
-	Mark then entry in PushNewsFeedItem as deleted=true
-
-PushNewsFeedItems events are filtered based on friend visibility permisions.
-	if the PushNewsFeedItem is being created and it is visible to the listenting friend
-		Send a 'create' event
-	if the PushNewsFeedItem is being updated
-		if is not visible to the listenting friend
-			Send a 'remove' event (allow them to remove it from their cache
-			it was formally visible)
-		else
-			Send an update event
-
-The listening friend updates their local NewsFeedItem database when events in their
-friends PushNewsFeedItems are receieved
-	If it's a create event, create a NewsFeedItem
-	If it's a remove, destroy the NewsFeedItem
-	If it's an update
-		if it exists, update the existing NewsFeedItem
-		else create it again (edge case - was visible to me, then not, then was again)
-
-Notes:
-	PushNewsFeedItems are never deleted - they are marked as deleted so backfilling
-	can occur to offline friends.
-
+	Build and return a handler for server side friend websocket 'data' events
 */
 
 var url = require('url');
@@ -55,169 +12,28 @@ var VError = require('verror').VError;
 var encryption = require('./encryption');
 var utils = require('./utilities');
 var mailer = require('./mail');
-var debug = require('debug')('feeds');
-var debugWebsockets = require('debug')('websockets');
+var debug = require('debug')('websockets');
+var debugVerbose = require('debug')('websockets:verbose');
 
-var watchFeedConnections = {};
-module.exports.watchFeedConnections = watchFeedConnections;
+function getDataEventHandler(server, socket) {
+	var friend = socket.data.friend;
+	var currentUser = socket.data.currentUser;
 
-module.exports.disconnectAll = function disconnectAll(server, user) {
-	for (var key in watchFeedConnections) {
-		var connection = watchFeedConnections[key];
-		if (connection.currentUser.id.toString() === user.id.toString()) {
-			connection.socket.close();
-			//connection.status = 'closed';
-			debugWebsockets('watchFeed closed %s', connection.key);
-			//delete watchFeedConnections[key];
-		}
-	}
-};
+	debug('getDataEventHandler %s observing %s', friend.remoteEndPoint, currentUser.username);
 
-var disConnect = function disConnect(server, friend) {
-	for (var key in watchFeedConnections) {
-		var connection = watchFeedConnections[key];
-		if (connection.friend.id.toString() === friend.id.toString()) {
-			connection.socket.close();
-			debugWebsockets('watchFeed disConnect %s closed', connection.key);
-			//connection.status = 'closed';
-			//delete watchFeedConnections[key];
-		}
-	}
-};
-
-module.exports.disConnect = disConnect;
-
-module.exports.connectAll = function connectAll(server, user) {
-	// poll friends feeds
-	var query = {
-		'where': {
-			'and': [{
-				'userId': user.id
-			}, {
-				'status': 'accepted'
-			}]
-		}
-	};
-
-	server.models.Friend.find(query, function (err, friends) {
-		if (err) {
-			console.log('Friend.find failed', err);
-			return;
-		}
-
-		for (var i = 0; i < friends.length; i++) {
-			var friend = friends[i];
-			watchFeed(server, friend);
-		}
-	});
-};
-
-
-var watchFeed = function watchFeed(server, friend) {
-
-	server.models.Friend.include([friend], 'user', function (err, instances) {
-
-		var currentUser = friend.user();
-
-		var key = currentUser.username + '<-' + friend.remoteEndPoint;
-
-		if (watchFeedConnections[key] && watchFeedConnections[key].status === 'open') {
-			debugWebsockets('watchFeed %s already listening ', key);
-		}
-		else {
-
-			var remoteEndPoint = url.parse(friend.remoteEndPoint);
-			var feed = remoteEndPoint.protocol + '//' + remoteEndPoint.host;
-
-			var endpoint = remoteEndPoint.protocol === 'https:' ? 'wss' : 'ws';
-			endpoint += '://' + remoteEndPoint.host;
-
-			debugWebsockets('watchFeed %s %s connecting %s', key, remoteEndPoint.protocol, endpoint);
-
-			// if connecting to ourself behind a proxy don't use publicHost
-			if (process.env.BEHIND_PROXY === "true") {
-				var rx = new RegExp('^' + server.locals.config.websockets);
-				if (endpoint.match(rx)) {
-					endpoint = endpoint.replace(server.locals.config.websockets, 'ws://localhost:' + server.locals.config.port);
-					debug('bypass proxy ' + endpoint);
-				}
-			}
-
-			var socket = require('socket.io-client')(endpoint, {});
-
-			var connection = {
-				'key': key,
-				'endpoint': feed,
-				'socket': socket,
-				'currentUser': currentUser,
-				'friend': friend,
-				'status': 'closed'
-			};
-			watchFeedConnections[key] = connection;
-			socket.emit('authentication', {
-				'friendAccessToken': friend.remoteAccessToken,
-				'friendHighWater': friend.highWater,
-				'subscriptions': {
-					'PushNewsFeedItem': ['after save']
-				}
-			});
-			socket.on('authenticated', function () {
-				debugWebsockets('watchFeed %s authenticated', key);
-				socket.on('data', getListener(server, connection));
-			});
-			socket.on('connect', getOpenHandler(server, connection));
-			socket.on('disconnect', getCloseHandler(server, connection));
-			socket.on('error', getErrorHandler(server, connection));
-		}
-	});
-};
-
-function getOpenHandler(server, connection) {
-	return function openHandler(e) {
-		connection.status = 'open';
-		debugWebsockets('watchFeed openHandler %s', connection.key);
-	};
-}
-
-function getCloseHandler(server, connection) {
-	return function closeHandler(e) {
-		connection.status = 'closed';
-		debugWebsockets('watchFeed closeHandler %s because %j', connection.key, e);
-		//delete watchFeedConnections[connection.key];
-		setTimeout(function () {
-			watchFeed(server, connection.friend);
-		}, 5000);
-	};
-}
-
-function getErrorHandler(server, connection) {
-	return function errorHandler(e) {
-		connection.status = 'error';
-		debugWebsockets('watchFeed errorHandler %s %j', connection.key, e);
-		//delete watchFeedConnections[connection.key];
-	};
-}
-
-function getListener(server, connection) {
-	var friend = connection.friend;
-	var currentUser = friend.user();
-
-	return function listener(data) {
+	return function dataEventHandler(data) {
 
 		var logger = server.locals.logger;
 
 		var message = data;
 
 		if (message.type === 'offline') {
-			debugWebsockets('watchFeed listener %s received offline message', connection.key);
-			connection.socket.close();
-			//connection.status = 'closed';
-			//delete watchFeedConnections[connection.key];
+			debugVerbose('watchFeed listener %s received offline message', socket.data.key);
 			return;
 		}
 
 		if (message.type === 'online') {
-			debugWebsockets('watchFeed listener %s received online message', connection.key);
+			debugVerbose('watchFeed listener %s received online message', socket.data.key);
 			return;
 		}
 
@@ -264,7 +80,7 @@ function getListener(server, connection) {
 
 			if (oldNews) {
 				if (message.type === 'create') {
-					debug('watchFeed listener ' + currentUser.username + ' skipping old news %j %j', oldNews);
+					debugVerbose('watchFeed listener ' + currentUser.username + ' skipping old news %j %j', oldNews);
 					return;
 				}
 				else if (message.type === 'remove') {
@@ -272,7 +88,7 @@ function getListener(server, connection) {
 					return;
 				}
 				else if (message.type === 'update' || message.type === 'backfill') {
-					debug('watchFeed listener ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
+					debugVerbose('watchFeed listener ' + currentUser.username + ' updating old news %j %j', oldNews, myNewsFeedItem);
 					oldNews.details = myNewsFeedItem.details;
 					oldNews.versions = myNewsFeedItem.versions;
 					oldNews.deleted = myNewsFeedItem.deleted;
@@ -344,18 +160,18 @@ function getListener(server, connection) {
 					}
 				}
 				else {
-					debug('watchFeed listener ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
+					debugVerbose('watchFeed listener ' + currentUser.username + ' skipping old news unknown type %s %j %j', message.type, oldNews, myNewsFeedItem);
 					return;
 				}
 			}
 			else { // not old news
 				if (message.type !== 'create' && message.type !== 'update' && message.type !== 'backfill') {
-					debug('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' but NewsFeedItem not found %j', myNewsFeedItem);
+					debugVerbose('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' but NewsFeedItem not found %j', myNewsFeedItem);
 					return;
 				}
 
 				if (myNewsFeedItem.deleted) {
-					debug('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' marked as deleted but NewsFeedItem not found %j', myNewsFeedItem);
+					debugVerbose('watchFeed listener ' + currentUser.username + ' received ' + message.type + ' marked as deleted but NewsFeedItem not found %j', myNewsFeedItem);
 					return;
 				}
 
@@ -389,7 +205,7 @@ function getListener(server, connection) {
 					}
 
 					if (!found.length && !isMe) {
-						debug('watchFeed ' + currentUser.username + ' ' + server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
+						debugVerbose('watchFeed ' + currentUser.username + ' ' + server.locals.config.publicHost + '/' + currentUser.username + 'meh. not interested in stuff about ' + whoAbout);
 						return;
 					}
 
@@ -432,7 +248,7 @@ function getListener(server, connection) {
 								myNewsFeedItem.userId = currentUser.id;
 								myNewsFeedItem.friendId = friend.id;
 
-								debug('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
+								debugVerbose('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
 
 								server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
 									if (err) {
@@ -494,7 +310,7 @@ function getListener(server, connection) {
 							},
 							function updateHighwater(cb) {
 
-								debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
+								debugVerbose('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
 
 								friend.updateAttributes({
 									'highWater': message.data.createdOn
@@ -649,7 +465,7 @@ function getListener(server, connection) {
 									}
 
 									mailer(server, template, options, function (err, info) {
-										debug('mail status %j %j', err, info);
+										debugVerbose('mail status %j %j', err, info);
 									});
 
 									cb();
@@ -670,4 +486,4 @@ function getListener(server, connection) {
 	};
 }
 
-module.exports.connect = watchFeed;
+module.exports = getDataEventHandler;

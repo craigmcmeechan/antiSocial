@@ -6,13 +6,13 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
-var watchFeed = require('../lib/watchFeedWebsockets');
+var watchFeed = require('../lib/websocketWatchFriend');
 var utils = require('../lib/utilities');
 
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
 var resolveProfiles = require('../lib/resolveProfiles');
 
-var clientWebsockets = require('../lib/websockets');
+var clientWebsockets = require('../lib/websocketAuthenticate');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');
@@ -86,7 +86,12 @@ module.exports = function (server) {
 	router.get('/start-ws', function (req, res, next) {
 		var query = {
 			'where': {
-				'status': 'accepted'
+				'and': [{
+					'status': 'accepted'
+				}, {
+					'originator': true
+				}]
+
 			},
 			'include': ['user']
 		};
@@ -111,9 +116,9 @@ module.exports = function (server) {
 		res.render('pages/status', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser'),
-			'servers': server.openFriendListeners,
-			'clients': server.openClientListeners,
-			'connections': watchFeed.watchFeedConnections
+			'listeningFriendConnections': server.listeningFriendConnections,
+			'openClients': server.openClients,
+			'watchFriendConnections': server.watchFriendConnections
 		});
 	});
 

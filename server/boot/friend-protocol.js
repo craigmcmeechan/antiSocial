@@ -4,7 +4,7 @@
 
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
-var watchFeed = require('../lib/watchFeedWebsockets');
+var watchFeed = require('../lib/websocketWatchFriend');
 var resolveProfiles = require('../lib/resolveProfiles');
 var utils = require('../lib/utilities');
 var mailer = require('../lib/mail');
@@ -47,7 +47,7 @@ module.exports = function (server) {
 	/*
 		GET /friend
 
-		must be authenticated user
+		Originator of friend request. must be authenticated user
 
 		expects:
 			?endpoint=xxx to be the endpoint url of the desired friend
@@ -553,12 +553,6 @@ module.exports = function (server) {
 			};
 
 			res.send(payload);
-
-			if (invitation) {
-				process.nextTick(function () {
-					watchFeed.connect(req.app, friend);
-				});
-			}
 		});
 	});
 
