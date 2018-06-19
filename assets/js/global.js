@@ -72,16 +72,6 @@ function bootMyAntiSocial() {
 		$('#splash').fadeOut('fast');
 	}, 1000);
 
-	$('.nav a').on('click', function () {
-		if ($('body').hasClass('digitopia-xsmall')) {
-			$('.navbar-toggler').click();
-		}
-	});
-
-	$('.navbar-toggler').on('click', function (e) {
-		$('.avatar').toggle();
-	});
-
 	$('.moreActivityButton').on('click', function (e) {
 		e.preventDefault();
 		$('.news-feed-items').toggleClass('constrained-height');
@@ -99,10 +89,12 @@ function bootMyAntiSocial() {
 
 	$('.show-notifications-button').on('click', function (e) {
 		e.preventDefault();
-		$('.footer-button.active').toggleClass('active');
-		$(this).toggleClass('active');
-		$('.on-screen').toggleClass('on-screen');
-		$('#content').hide();
+		if (!$('#news-feed').hasClass('on-screen')) {
+			$('body').addClass('modal-open');
+		}
+		else {
+			$('body').removeClass('modal-open');
+		}
 		$('#news-feed').toggleClass('on-screen');
 		$(scrollViewport).scrollTop(0);
 	});
@@ -184,6 +176,9 @@ function instantiateMaterialDesignElements(element) {
 		const topAppBar = new MDC.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
 		const drawer = new MDC.MDCTemporaryDrawer(document.querySelector('.mdc-drawer--temporary'));
 		document.querySelector('.menu').addEventListener('click', () => drawer.open = true);
+		$('body').on('click', '.nav-item', function () {
+			drawer.open = false;
+		});
 	}
 	$(element).find('.mdc-button').each(function () {
 		const buttonRipple = new MDC.MDCRipple(this);

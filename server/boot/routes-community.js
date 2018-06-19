@@ -76,7 +76,8 @@ module.exports = function (server) {
             'data': {
               'posts': posts
             },
-            'community': settings.community
+            'community': settings.community,
+            'pageTitle': 'Community'
           });
         });
       });

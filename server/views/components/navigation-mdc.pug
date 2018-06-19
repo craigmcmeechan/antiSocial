@@ -1,12 +1,23 @@
 header.mdc-top-app-bar.mdc-top-app-bar--fixed
 	div.mdc-top-app-bar__row
 		section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start
-			a.menu.material-icons(href="#") menu
-			span.mdc-top-app-bar__title Title
+			a.menu.material-icons.mdc-top-app-bar__navigation-icon(href="#") menu
+			
+			a.navbar-brand(href="/")
+				.header-logo
+			#page-title.mdc-top-app-bar__title(data-hijax="true")
+				span= pageTitle
+
+			section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end
+				.position-relative
+					.show-notifications-button.material-icons.mdc-top-app-bar__action-item
+						i.fa.fa-fw.fa-bell
+					.badge.activity-count
+
 aside.mdc-drawer.mdc-drawer--temporary.mdc-typography
 	nav.mdc-drawer__drawer
 		header.mdc-drawer__header.hidden-logged-out
-			.mdc-drawer__header-content
+			.mdc-drawer__header-content.text-center
 				#menu-icon(data-hijax="true")
 					if user
 						a(href=user ? '/' + user.username : "/profile")
@@ -24,22 +35,22 @@ aside.mdc-drawer.mdc-drawer--temporary.mdc-typography
 				if globalSettings.communityChannel
 					li
 						a#nav-community.nav-item.mdc-list-item(href="/community" data-toggle="tooltip" title="Community posts." data-placement="bottom")
-							<i class="fa fa-bullhorn fa-fw"></i>
-							| Community Feed
+							<i class="fa fa-bullhorn fa-fw material-icons mdc-list-item__graphic"></i>
+							|  Community Feed
 				a#nav-feed.nav-item.mdc-list-item(href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom")
-					<i class="fa fa-users fa-fw"></i>
+					<i class="fa fa-users fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Friends Feed
 				a#nav-profile.nav-item.mdc-list-item(href= user ? '/' + user.username : "/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom")
-					<i class="fa fa-user fa-fw"></i>
+					<i class="fa fa-user fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Your Posts
 				a#nav-friends.nav-item.mdc-list-item(href="/friends" data-toggle="tooltip" title="Your friends." data-placement="bottom")
-					<i class="fa fa-user-plus fa-fw"></i>
+					<i class="fa fa-user-plus fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Friends
 				a#nav-settings.nav-item.mdc-list-item(href="/settings" data-toggle="tooltip" title="Your Settings." data-placement="bottom")
-					<i class="fa fa-cog fa-fw"></i>
+					<i class="fa fa-cog fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Settings
 				a#nav-bugs.nav-item.mdc-list-item.bug-report(href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom")
-					<i class="fa fa-bug fa-fw"></i>
+					<i class="fa fa-bug fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Bug Report
 				a.nav-item.mdc-list-item(href="" data-jsclass="logoutController") Logout
 			

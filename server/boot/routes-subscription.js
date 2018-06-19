@@ -16,7 +16,8 @@ module.exports = function (server) {
 		var ctx = req.myContext;
 		res.render('pages/subscription', {
 			'globalSettings': ctx.get('globalSettings'),
-			'currentUser': ctx.get('currentUser')
+			'currentUser': ctx.get('currentUser'),
+			'pageTitle': 'Subscription'
 		});
 	});
 

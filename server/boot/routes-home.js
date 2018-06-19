@@ -76,7 +76,8 @@ module.exports = function (server) {
                 'posts': posts
               },
               'passwordResetToken': req.query.access_token,
-              'noComments': true
+              'noComments': true,
+              'pageTitle': 'Home'
             });
           });
         });

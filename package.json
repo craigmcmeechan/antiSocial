@@ -113,7 +113,7 @@
     "grunt-contrib-less": "*",
     "grunt-contrib-sass": "^1.0.0",
     "grunt-contrib-stylus": "*",
-    "grunt-contrib-uglify": "*",
+    "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-contrib-watch": "*",
     "grunt-exec": "^3.0.0",
     "grunt-jsdoc-to-markdown": "^4.0.0",
