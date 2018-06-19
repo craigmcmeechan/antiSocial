@@ -80,6 +80,7 @@ module.exports = function (grunt) {
 	}];
 
 	var allFiles = [];
+	allFiles.push('assets/materialjs/app.js');
 	allFiles = allFiles.concat(
 		jsFiles,
 		stylusFiles,
@@ -180,7 +181,7 @@ module.exports = function (grunt) {
 		},
 		watch: {
 			files: allFiles,
-			tasks: ['less', 'sass', 'stylus', 'concat', 'jsdoc2md']
+			tasks: ['less', 'sass', 'stylus', 'exec', 'concat', 'jsdoc2md']
 		}
 	});
 
@@ -190,7 +191,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-stylus');
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-uglify-es');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-jsdoc-to-markdown');

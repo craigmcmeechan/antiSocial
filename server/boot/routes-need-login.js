@@ -10,7 +10,8 @@ module.exports = function (server) {
 
 		res.render('pages/need-login', {
 			'globalSettings': ctx.get('globalSettings'),
-			'page': req.query.page
+			'page': req.query.page,
+			'pageTitle': 'Please Login'
 		});
 	});
 

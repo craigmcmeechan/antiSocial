@@ -317,7 +317,8 @@ module.exports = function (server) {
         'userSettings': ctx.get('userSettings'),
         'items': items,
         'more': req.query.more,
-        'profile': getProfile(currentUser)
+        'profile': getProfile(currentUser),
+        'pageTitle': 'Feed'
       });
 
     });

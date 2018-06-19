@@ -14,8 +14,7 @@ html(lang="en")
 
 		block seo
 			
-		//link(rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous")
-
+		link(href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet')
 
 		if env === 'production'
 			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.min.css")
@@ -28,12 +27,14 @@ html(lang="en")
 			
 		style#override-styles(nonce= nonce type="text/css")
 			
-	body#document-body.offline(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController,liveTimeController,tagController")
+	body#document-body.offline.mdc-typography(data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController,liveTimeController,tagController")
 		script(nonce= nonce).
 			var result;
 			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
 			if(cookie){document.body.className = document.body.className + ' ' + cookie;}
-			
+		
+		include components/navigation-mdc
+
 		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")
 			#splash-logo
 				img(src="/images/logo.svg" height="200px" style="margin:0 auto;")
@@ -42,13 +43,12 @@ html(lang="en")
 		#news-feed.hidden-logged-out(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets )
 			include components/news-feed
 
-		include components/navigation
 		
 		.scroll-viewport
 			
 			include components/modals.pug
 			
-			#content(data-hijax="true")
+			#content.navbar-margin(data-hijax="true")
 				block content
 
 			#tmks.container-fluid.text-center
@@ -56,14 +56,6 @@ html(lang="en")
 					Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
 
 			#ajax-status
-
-		#fixed-footer.hidden-logged-out
-			.footer-button.active.show-feed-button
-				i.fa.fa-fw.fa-list-alt
-			
-			.footer-button.show-notifications-button
-				i.fa.fa-fw.fa-bell
-				.badge.activity-count
 
 		block controller
 

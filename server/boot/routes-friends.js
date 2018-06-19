@@ -24,7 +24,8 @@ module.exports = function (server) {
       'user': ctx.get('currentUser'),
       'globalSettings': ctx.get('globalSettings'),
       'friends': ctx.get('friends'),
-      'invites': ctx.get('invites')
+      'invites': ctx.get('invites'),
+      'pageTitle': 'Friends'
     });
   });
 
@@ -59,7 +60,8 @@ module.exports = function (server) {
           'globalSettings': ctx.get('globalSettings'),
           'endpoint': req.body.endpoint,
           'profile': body,
-          'error': e
+          'error': e,
+          'pageTitle': 'Friends'
         });
       });
     });

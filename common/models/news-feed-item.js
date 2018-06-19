@@ -25,7 +25,7 @@ module.exports = function (NewsFeedItem) {
 	}
 
 	NewsFeedItem.changeHandlerBackfill = function (socket, options) {
-		var user = socket.currentUser;
+		var user = socket.data.currentUser;
 		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
 		var query = {
@@ -70,7 +70,7 @@ module.exports = function (NewsFeedItem) {
 	};
 
 	NewsFeedItem.buildWebSocketChangeHandler = function (socket, eventType, options) {
-		var user = socket.currentUser;
+		var user = socket.data.currentUser;
 		var streamDescription = 'user.username->client';
 		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 

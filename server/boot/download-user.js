@@ -31,7 +31,8 @@ module.exports = function downloadUser(server) {
 
 		res.render('pages/transfer', {
 			'globalSettings': ctx.get('globalSettings'),
-			user: currentUser
+			user: currentUser,
+			'pageTitle': 'Transfer'
 		});
 	});
 
@@ -162,6 +163,7 @@ module.exports = function downloadUser(server) {
 					'user': currentUser,
 					'errors': err,
 					'importing': filename ? true : false,
+					'pageTitle': 'Transfer'
 				});
 			});
 		}
@@ -170,7 +172,8 @@ module.exports = function downloadUser(server) {
 			res.render('pages/transfer', {
 				'globalSettings': ctx.get('globalSettings'),
 				user: currentUser,
-				errors: errors
+				errors: errors,
+				'pageTitle': 'Transfer'
 			});
 		}
 	});

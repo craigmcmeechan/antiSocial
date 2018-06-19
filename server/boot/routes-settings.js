@@ -28,7 +28,8 @@ module.exports = function (server) {
       'user': ctx.get('currentUser'),
       'globalSettings': ctx.get('globalSettings'),
       'userSettings': ctx.get('userSettings'),
-      'isAdmin': isAdmin
+      'isAdmin': isAdmin,
+      'pageTitle': 'Settings'
     });
   });
 

@@ -13,7 +13,7 @@ var bunyan = require('bunyan');
 var uuid = require('uuid');
 var NodeCache = require('node-cache');
 var proxyEndPoint = require('./lib/proxy-endpoint');
-var websockets = require('./lib/websockets');
+var websockets = require('./lib/websocketAuthenticate');
 
 var app = module.exports = loopback();
 

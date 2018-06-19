@@ -37,14 +37,20 @@ button:focus
 	outline: none !important
 	box-shadow: none !important
 
+.navbar-margin
+	margin-top:56px
+	.not-digitopia-xsmall &
+		margin-top:64px
+
 .header-logo
-	height:30px
-	width:30px
+	height:40px
+	width:40px
+	margin-left:20px
+	margin-right:20px
 	background-image:url(/images/logo.svg)
 	background-size: cover
 	background-repeat:no-repeat
 	background-position: center center
-	margin-right:20px
 
 .img-responsive
 	display:block
@@ -55,7 +61,6 @@ button:focus
 	max-width:1024px
 
 .notification-zone
-	margin-top:50px
 	padding:10px
 	background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,.8) 100%)
 	.alert
@@ -106,7 +111,6 @@ button:focus
 		font-size: 3em
 
 #content
-	margin-top: 56px
 	.content-padding-top
 		padding-top:15px
 		padding-bottom:15px
@@ -214,7 +218,6 @@ img.avatar
 		background: linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)
 		padding-bottom:50px
 	.text-overlay
-		margin-top: 56px;
 		color:white
 		a
 			color:white
@@ -755,53 +758,29 @@ img.avatar
 			margin-bottom: 5px
 			margin-left: 2px
 			margin-right: 4px
-#fixed-footer
-	text-align:center
-	.not-digitopia-xsmall &
-		display:none
-	.digitopia-xsmall &
-		position:fixed
-		height:40px
-		padding:4px
-		width:100%
-		bottom:0px
-		background-color:#333
-		z-index:1000
-	.footer-button
-		position:relative
-		border: thin solid #999
-		border-radius: 4px
-		display:inline-block
-		padding:4px
-		color:#666
-		margin-right:10px
-		&.active
-			color:#999
-	.activity-count
-		position: absolute
-		font-size: 9px
-		top: -10px
-		right: -15px
-		background-color:red
-		color:white
+
+.activity-count
+	position: absolute
+	top: 0px
+	right: 0px
+	background-color:red
+	color:white
+	text-align: center
+	padding: 4px
+
 #news-feed
+	display:none;
 	position:absolute
-	top:calc(100vh + 75px)
-	left:0px
+	top:80px
+	right:15px
 	overflow: hidden
 	background-color:white
 	border-radius:4px
 	z-index: 1000
 	&.on-screen
 		display:block!important
-		top:50px!important
-		left:0px!important
-		margin:0
-		margin-bottom:40px
-		width:100%!important
 	.digitopia-xsmall &
-		display: none
-
+		left:15px
 	.status
 		width:8px
 		height:8px
@@ -819,13 +798,7 @@ img.avatar
 		padding-right: 10px
 		font-weight:bold
 		background-color:#eee
-		.activity-count
-			position: absolute
-			font-size: 9px
-			top: 7px
-			left: 20px
-			background-color:red
-			color:white
+
 	.news-feed-footer
 		height:30px
 		line-height:30px
@@ -859,17 +832,15 @@ img.avatar
 				padding-left:10px
 				display:inline-block
 				vertical-align:middle
+#menu-icon
+	margin:0 auto
 .menu-icon-placeholder
 	width:75px
 	position:relative
 	margin-top:-6px
 .menubar-thumb
-	position:absolute
-	right:16px
-	height:42px
-	top:4px
-	border-radius:21px
-	z-index:2000
+	height:100px
+	border-radius:50px
 .friend-card
 	margin-bottom:7px
 	padding:10px

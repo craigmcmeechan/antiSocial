@@ -10,6 +10,7 @@ module.exports = function (server) {
 
 		res.render('pages/terms-privacy', {
 			'globalSettings': ctx.get('globalSettings'),
+			'pageTitle': 'Initital Setup'
 		});
 	});
 
