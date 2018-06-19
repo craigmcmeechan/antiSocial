@@ -49,7 +49,7 @@ describe('proxy endpoints', function () {
 		setTimeout(function () {
 			app.stop();
 			done();
-		}, 5000);
+		}, 8000);
 	});
 
 	it('http should be up', function (done) {

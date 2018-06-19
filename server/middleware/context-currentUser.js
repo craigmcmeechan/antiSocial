@@ -10,6 +10,7 @@ module.exports = function () {
 	return function contextCurrentUser(req, res, next) {
 		if (!req.accessToken) {
 			debug('no accessToken');
+			fixCookie(res);
 			return next();
 		}
 
@@ -30,13 +31,16 @@ module.exports = function () {
 		}, function (err, user) {
 
 			if (err) {
-				debug('no user found for ', req.accessToken);
+				debug('error finding user for token ', req.accessToken);
+				fixCookie(res);
 				return next(err);
 			}
 
 			if (!user) {
 				// user not found for accessToken, which is very odd.
 				// behave like they are not logged in
+				debug('no user found for token ', req.accessToken);
+				fixCookie(res);
 				return next();
 			}
 
@@ -69,4 +73,8 @@ module.exports = function () {
 			});
 		});
 	};
+
+	function fixCookie(res) {
+		res.clearCookie('access_token');
+	}
 };

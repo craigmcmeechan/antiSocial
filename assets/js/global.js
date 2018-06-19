@@ -66,6 +66,8 @@ function bootMyAntiSocial() {
 		didLogOut();
 	}
 
+	instantiateMaterialDesignElements($('body'));
+
 	window.setTimeout(function () {
 		$('#splash').fadeOut('fast');
 	}, 1000);
@@ -172,6 +174,20 @@ function didInjectContent(element) {
 	$('#document-body').data('aspectRatioController').fixAspectRatio();
 	$('#document-body').data('constrainedController').fixConstrained();
 	$('#document-body').data('liveTimeController').updateTimes();
+	instantiateMaterialDesignElements(element);
+}
+
+var MDCInstanciateOnce = 0;
+
+function instantiateMaterialDesignElements(element) {
+	if (!MDCInstanciateOnce++) {
+		const topAppBar = new MDC.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
+		const drawer = new MDC.MDCTemporaryDrawer(document.querySelector('.mdc-drawer--temporary'));
+		document.querySelector('.menu').addEventListener('click', () => drawer.open = true);
+	}
+	$(element).find('.mdc-button').each(function () {
+		const buttonRipple = new MDC.MDCRipple(this);
+	});
 }
 
 var flashAjaxStatusTimeout;

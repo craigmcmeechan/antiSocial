@@ -10,22 +10,23 @@ block content
 			h1 Testbench
 		.row
 			.col-xs-12
-				if clients
+				if openClients
 					strong Clients
 					ul
-						for socket in clients
-							li= socket.currentUser.username
-				if servers
-					strong Watchers:
+						for socket in openClients
+							li= socket.data.currentUser.username
+							
+				if listeningFriendConnections
+					strong listeningFriendConnections:
 					ul
-						for socket in servers
-							-var user = socket.friend.user() ? socket.friend.user().username : 'unknown'
-							li= user + '->' + socket.friend.remoteEndPoint
+						for socket in listeningFriendConnections
+							-var user = socket.data.friend.user() ? socket.data.friend.user().username : 'unknown'
+							li= user + '->' + socket.data.friend.remoteEndPoint + ' ('+socket.id+')'
 
-				if connections
-					strong Watching:
+				if listeningFriendConnections
+					strong watchFriendConnections:
 					ul
-						for connection in connections
-							-var name = connection.currentUser ? connection.currentUser.username : 'unknown'
-							li= name + '<-' + connection.friend.remoteEndPoint + ' ('+connection.status+')'
+						for socket in watchFriendConnections
+							-var name = socket.data.currentUser ? socket.data.currentUser.username : 'unknown'
+							li= name + '<-' + socket.data.friend.remoteEndPoint + ' ('+socket.id+')'
 					

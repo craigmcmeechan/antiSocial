@@ -65,7 +65,7 @@ Michael's server  immediately sees the PushNewsFeedItem and creates a NewsFeedIt
 ### Prototype Implementation
 [Start Listeners on boot](https://github.com/antiSocialNet/antiSocial/blob/master/server/boot/watchNewsFeeds.js)
 
-[PushNewsFeedItem Agent](https://github.com/antiSocialNet/antiSocial/blob/master/server/lib/watchFeedWebsockets.js)
+[PushNewsFeedItem Agent](https://github.com/antiSocialNet/antiSocial/blob/master/server/lib/websocketWatchFriend.js)
 
 [PushNewsFeedItem definition](https://github.com/antiSocialNet/antiSocial/blob/master/common/models/push-news-feed-item.json)
 

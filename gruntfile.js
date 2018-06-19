@@ -80,6 +80,7 @@ module.exports = function (grunt) {
 	}];
 
 	var allFiles = [];
+	allFiles.push('assets/materialjs/app.js');
 	allFiles = allFiles.concat(
 		jsFiles,
 		stylusFiles,
@@ -180,7 +181,7 @@ module.exports = function (grunt) {
 		},
 		watch: {
 			files: allFiles,
-			tasks: ['less', 'sass', 'stylus', 'concat', 'jsdoc2md']
+			tasks: ['less', 'sass', 'stylus', 'exec', 'concat', 'jsdoc2md']
 		}
 	});
 
