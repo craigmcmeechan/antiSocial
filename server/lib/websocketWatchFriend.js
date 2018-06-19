@@ -50,8 +50,7 @@ var watchFeed = function watchFeed(server, friend) {
 				'key': key,
 				'endpoint': feed,
 				'currentUser': currentUser,
-				'friend': friend,
-				'status': 'closed'
+				'friend': friend
 			};
 
 			server.watchFriendConnections[key] = socket;
@@ -67,18 +66,23 @@ var watchFeed = function watchFeed(server, friend) {
 
 			// once authenticated succeeds
 			socket.on('authenticated', function () {
+				var model = 'PushNewsFeedItem';
+				var eventType = 'after save';
+				var handler = server.models[model].buildWebSocketChangeHandler(socket, eventType);
 				socket.data = {
 					'friend': friend,
-					'currentUser': currentUser
+					'currentUser': currentUser,
+					'observers': [{
+						'model': model,
+						'eventType': eventType,
+						'handler': handler
+					}]
 				};
 
 				// listen for data events from friend
 				socket.on('data', getDataEventHandler(server, socket));
 
 				// set up PushNewsFeedItem change observer to emit data events back to friend
-				var model = 'PushNewsFeedItem';
-				var eventType = 'after save';
-				var handler = server.models[model].buildWebSocketChangeHandler(socket, eventType);
 				server.models[model].observe(eventType, handler);
 				server.models[model].changeHandlerBackfill(socket);
 			});
@@ -100,9 +104,16 @@ function getCloseHandler(server, socket) {
 	return function closeHandler(e) {
 		socket.data.status = 'closed';
 		debug('watchFeed closeHandler %s because %j', socket.data.key, e);
-		setTimeout(function () {
-			watchFeed(server, socket.data.friend);
-		}, 5000);
+
+		if (socket.data.observers) {
+			for (var i = 0; i < socket.data.observers.length; i++) {
+				var observer = socket.data.observers[i];
+				console.log(observer);
+				server.models[observer.model].removeObserver(observer.eventType, observer.handler);
+			}
+		}
+
+		delete server.watchFriendConnections[socket.data.key];
 	};
 }
 
@@ -119,8 +130,9 @@ module.exports.disconnectAll = function disconnectAll(server, user) {
 	for (var key in server.watchFriendConnections) {
 		var socket = server.watchFriendConnections[key];
 		if (socket.data.currentUser.id.toString() === user.id.toString()) {
-			socket.close();
 			debug('watchFeed closed %s', socket.connectionKey);
+			socket.close();
+			delete server.watchFriendConnections[key];
 		}
 	}
 };
@@ -129,8 +141,9 @@ module.exports.disConnect = function disConnect(server, friend) {
 	for (var key in server.watchFriendConnections) {
 		var socket = server.watchFriendConnections[key];
 		if (socket.data.friend.id.toString() === friend.id.toString()) {
-			socket.close();
 			debug('watchFeed disConnect %s closed', socket.data.connectionKey);
+			socket.close();
+			delete server.watchFriendConnections[key];
 		}
 	}
 };

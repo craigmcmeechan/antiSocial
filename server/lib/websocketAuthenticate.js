@@ -63,11 +63,9 @@ module.exports.mount = function mount(app) {
 					if (err) throw err;
 					if (tokenDetail.length) {
 						data.userId = tokenDetail[0].userId;
-						debug('mount access token found');
 						callback(null, true);
 					}
 					else {
-						debug('mount access token not found');
 						callback(null, false);
 					}
 				});
@@ -80,9 +78,9 @@ module.exports.mount = function mount(app) {
 					'friend': data.friend,
 					'currentUser': data.friend.user(),
 					'highwater': data.friendHighWater || 0,
-					'connectionKey': data.friend.remoteEndPoint + '<-' + data.friend.user().username
+					'key': data.friend.remoteEndPoint + '<-' + data.friend.user().username
 				};
-				app.listeningFriendConnections[socket.data.connectionKey] = socket;
+				app.listeningFriendConnections[socket.data.key] = socket;
 
 				// set up PushNewsFeedItem change observer to emit data events back to friend
 				if (data.subscriptions) {
@@ -101,13 +99,15 @@ module.exports.mount = function mount(app) {
 					}
 				}
 
+				debug('server connect %s', socket.data.key);
+
 				// listen for data events from friend
 				socket.on('data', getDataEventHandler(app, socket));
 				socket.on('disconnect', function (reason) {
-					debug('recieved disconnect %s %s ', socket.data.connectionKey, reason);
-					socket.data.friend.updateAttribute('online', false);
+					debug('server disconnect %s %s ', socket.data.key, reason);
+					//socket.data.friend.updateAttribute('online', false);
 				});
-				socket.data.friend.updateAttribute('online', true);
+				//socket.data.friend.updateAttribute('online', true);
 			}
 			else if (data.userId) { // this is a client connection
 				app.models.MyUser.findById(data.userId, {
@@ -118,10 +118,10 @@ module.exports.mount = function mount(app) {
 						return;
 					}
 					socket.data = {
-						currentUser: currentUser,
-						connectionKey: currentUser.username
+						'currentUser': currentUser,
+						'key': currentUser.username
 					};
-					app.openClients[socket.data.connectionKey] = socket;
+					app.openClients[socket.data.key] = socket;
 
 					if (data.subscriptions) {
 						for (var model in data.subscriptions) {
@@ -139,9 +139,11 @@ module.exports.mount = function mount(app) {
 						}
 					}
 
+					debug('client connect %s', socket.data.key);
+
 					socket.on('disconnect', function (reason) {
-						debug('recieved disconnect %s %s ', socket.data.connectionKey, reason);
-						delete app.openClients[socket.data.connectionKey];
+						debug('client disconnect %s %s ', socket.data.key, reason);
+						delete app.openClients[socket.data.key];
 						socket.data.currentUser.updateAttribute('online', false);
 					});
 
@@ -149,13 +151,6 @@ module.exports.mount = function mount(app) {
 				});
 			}
 		}
-	});
-
-	app.io.on('connection', function (socket) {
-		debug('websockets connection');
-		socket.on('disconnect', function (reason) {
-			debug('websockets %s disconnect %s', socket.data.connectionKey, reason);
-		});
 	});
 };
 
