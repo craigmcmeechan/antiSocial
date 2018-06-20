@@ -2,7 +2,7 @@
 
 #scope-posting-form
 	.clearfix
-	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-description= post ? post.description : '' data-about= about data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body" data-single-upload= "1" data-modal="#edit-comment-form")
+	form.scope-posting-form.form.form-validation(class= replyTo ? 'reply' : '' data-jsclass="postingFormController,formValidator" data-description= post ? post.description : '' data-about= about data-reply-to= replyTo data-endpoint= endpoint data-photo= photoId data-submitter='.post-submit-button' data-focus-target=".posting-body" data-single-upload= "1" data-modal="#edit-comment-form")
 		.tabbed
 			#form-tab
 				.form-group.input-relative

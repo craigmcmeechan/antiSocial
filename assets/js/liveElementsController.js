@@ -8,7 +8,7 @@
 		var self = this;
 
 		this.start = function () {
-			this.element.on('NotifyLiveElement', function (e, type, about, endpoint, eventType) {
+			this.element.on('NotifyLiveElement', function (e, type, about, endpoint, eventType, newsFeedItem) {
 				e.stopPropagation();
 				self.element.find('.live-element[data-watch="' + about + '"]').each(function () {
 					var element = $(this);
@@ -34,11 +34,19 @@
 								element.find('#comment-' + matches[1]).empty().append(comment);
 							}
 							else {
-								element.find('.comments').append(comment);
+								if (_.has(newsFeedItem, 'details.replyTo')) {
+									// find the comment and append to thread
+									var matches = newsFeedItem.details.replyTo.match(/([a-z0-9-]+)$/);
+									element.find('#comment-' + matches[1]).nextAll().find('.end-of-thread').first().before(comment);
+								}
+								else {
+									// append to comments
+									element.find('.comments').append(comment);
+								}
 								element.find('.comments-label').empty().append(summary);
 							}
 							didInjectContent(element);
-						})
+						});
 					}
 					else if (type === 'react' && element.data('watch-type') === type) {
 						var item = $('<div>');

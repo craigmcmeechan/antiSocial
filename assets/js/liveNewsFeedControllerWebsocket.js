@@ -164,7 +164,7 @@
 					}
 				}
 				else if (event.data.type === 'comment') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid, event.type]);
+					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid, event.type, event.data]);
 				}
 				else if (event.data.type === 'react') {
 					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/reactions']);
