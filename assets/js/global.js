@@ -117,8 +117,8 @@ function bootMyAntiSocial() {
 	$('body').on('click', '.toggle-modal', function (e) {
 		e.preventDefault();
 		var self = $(this);
-
 		var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
+		$(self.data('target')).data('mdc-dialog', dialog);
 		dialog.show();
 	});
 

@@ -22,10 +22,10 @@ aside#login-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-desc
 								span.fa.fa-check
 							.validation-help
 			footer.mdc-dialog__footer
-				a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#password-request-reset-form") Forgot Password
+				a.toggle-modal.mdc-button.mdc-dialog__footer__button--cancel(href="#" data-target="#password-request-reset-form") Forgot Password
 				if globalSettings.multiUser === 'open'
-					a.toggle-modal(href="#" data-target="#register-form" data-dismiss="modal") Don't Have Account
-				button.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel Cancel
+					a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form") Don't Have Account
+				a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#") Cancel
 				button#login-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Login
 
 
@@ -45,9 +45,9 @@ aside#password-request-reset-form.mdc-dialog(role="alertdialog" aria-labelledby=
 								span.fa.fa-check
 							.validation-help
 			footer.mdc-dialog__footer
-				a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
+				a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
 				if globalSettings.multiUser === 'open'
-					a.toggle-modal(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
+					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form" data-dismiss="modal") Don't Have Account
 				button.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel Cancel
 				button#reset-request-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Password Reset
 
@@ -90,11 +90,11 @@ if globalSettings.multiUser === 'open' || inviteToken
 						.validation-help
 
 				footer.mdc-dialog__footer
-					a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Already Have Account
-					button#register-button..mdc-button.mdc-dialog__footer__button.mdc-button--raised Sign Up
+					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Already Have Account
+					button#register-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised Sign Up
 
 aside#password-reset-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
-	.modal-	.mdc-dialog__surface
+	.mdc-dialog__surface
 		form.form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
 			input(type="hidden" name="access_token" value= passwordResetToken)
 			header.mdc-dialog__header
@@ -113,7 +113,7 @@ aside#password-reset-form.mdc-dialog(role="alertdialog" aria-labelledby="login" 
 						span.fa.fa-check
 					.validation-help
 			footer.mdc-dialog__footer
-				a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
+				a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
 				button#reset-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised Reset Password
 
 aside#request-invite-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
