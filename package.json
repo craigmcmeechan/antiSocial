@@ -8,6 +8,7 @@
   "dependencies": {
     "@material/base": "^0.35.0",
     "@material/button": "^0.36.0",
+    "@material/dialog": "^0.36.1",
     "@material/drawer": "^0.36.0",
     "@material/list": "^0.36.0",
     "@material/ripple": "^0.36.0",
@@ -106,7 +107,7 @@
     "expect.js": "^0.3.1",
     "extract-loader": "^2.0.1",
     "file-loader": "^1.1.11",
-    "grunt": "*",
+    "grunt": "^1.0.3",
     "grunt-contrib-concat": "*",
     "grunt-contrib-copy": "*",
     "grunt-contrib-cssmin": "*",
