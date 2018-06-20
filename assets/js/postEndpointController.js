@@ -96,7 +96,7 @@
 					}
 
 					if (self.modal) {
-						$(self.modal).modal('hide');
+						$(self.modal).data('mdc-dialog').destroy();
 					}
 				}
 
