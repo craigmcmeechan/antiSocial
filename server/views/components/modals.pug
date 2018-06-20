@@ -1,34 +1,34 @@
 
-#login-form.modal.fade(tabindex="-1" role="dialog")
-	.modal-dialog(role="document")
+aside#login-form.mdc-dialog(role="alertdialog" aria-labelledby="my-mdc-dialog-label" aria-describedby="my-mdc-dialog-description")
+	.mdc-dialog__surface
 		form.form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button" data-modal="#login-form")
-			.modal-content
-				.modal-header
-					<h4 class="modal-title">Login</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				.modal-body
-					.row
-						.col-sm-6.form-group
-							label Email Address
-							.input-relative
-								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
-								.input-ok-indicator
-									span.fa.fa-check
-								.validation-help
-						.col-sm-6.form-group
-							label Password
-							.input-relative
-								input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="current-password")
-								.input-ok-indicator
-									span.fa.fa-check
-								.validation-help
-				.modal-footer
-					.float-left
-						a(href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal") Forgot Password
-						if globalSettings.multiUser === 'open'
-							| &nbsp;|&nbsp;
-							a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
-					button#login-button.mdc-button.mdc-button--raised(type="submit") Login
+			header.mdc-dialog__header
+				h4.mdc-dialog__header__title.
+					Login
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			section.mdc-dialog__body
+				.row
+					.col-sm-6.form-group
+						label Email Address
+						.input-relative
+							input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
+							.input-ok-indicator
+								span.fa.fa-check
+							.validation-help
+					.col-sm-6.form-group
+						label Password
+						.input-relative
+							input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="current-password")
+							.input-ok-indicator
+								span.fa.fa-check
+							.validation-help
+			footer.mdc-dialog__footer
+				.float-left
+					a(href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal") Forgot Password
+					if globalSettings.multiUser === 'open'
+						| &nbsp;|&nbsp;
+						a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
+				button#login-button.mdc-button.mdc-button--raised(type="submit") Login
 
 #password-request-reset-form.modal.fade(tabindex="-1" role="dialog")
 	.modal-dialog(role="document")
@@ -56,7 +56,7 @@
 if globalSettings.multiUser === 'open' || inviteToken
 	#register-form.modal.fade(tabindex="-1" role="dialog")
 		.modal-dialog(role="document")
-			
+
 			form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
 				.modal-content
 					.modal-header
@@ -68,7 +68,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 							.input-ok-indicator
 								span.fa.fa-check
 							.validation-help
-								
+
 						.form-group.input-relative
 							input.form-control(type="email" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']" autocomplete="email")
 							.input-ok-indicator
@@ -80,24 +80,24 @@ if globalSettings.multiUser === 'open' || inviteToken
 							.input-ok-indicator
 								span.fa.fa-check
 							.validation-help
-								
+
 						.form-group.input-relative
 							input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']"  autocomplete="off")
 							.input-ok-indicator
 								span.fa.fa-check
 							.validation-help
-						
+
 						.form-group.input-relative
 							input.form-control(type="text" name="name" placeholder="Name" data-validate="required" autocomplete="name")
 							.input-ok-indicator
 								span.fa.fa-check
 							.validation-help
-										
+
 					.modal-footer
 						.float-left
 							a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Already Have Account
 						button#register-button.btn.btn-primary Sign Up
-						
+
 #password-reset-form.modal.fade(tabindex="-1" role="dialog")
 	.modal-dialog(role="document")
 		form.form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
@@ -112,7 +112,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 						.input-ok-indicator
 							span.fa.fa-check
 						.validation-help
-							
+
 					.form-group.input-relative
 						input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
 						.input-ok-indicator

@@ -183,6 +183,21 @@ function instantiateMaterialDesignElements(element) {
 	$(element).find('.mdc-button').each(function () {
 		const buttonRipple = new MDC.MDCRipple(this);
 	});
+
+	var dialog = new mdc.dialog.MDCDialog(document.querySelector('#login-form'));
+
+	dialog.listen('MDCDialog:accept', function () {
+		console.log('accepted');
+	})
+
+	dialog.listen('MDCDialog:cancel', function () {
+		console.log('canceled');
+	})
+
+	document.querySelector('#default-dialog-activation').addEventListener('click', function (evt) {
+		dialog.lastFocusedTarget = evt.target;
+		dialog.show();
+	})
 }
 
 var flashAjaxStatusTimeout;
