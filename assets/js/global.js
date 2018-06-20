@@ -114,6 +114,14 @@ function bootMyAntiSocial() {
 		}, 1000);
 	});
 
+	$('body').on('click', '.toggle-modal', function (e) {
+		e.preventDefault();
+		var self = $(this);
+
+		var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
+		dialog.show();
+	});
+
 	$.fn.extend({
 		animateCss: function (animationName, callback) {
 			var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -184,20 +192,6 @@ function instantiateMaterialDesignElements(element) {
 		const buttonRipple = new MDC.MDCRipple(this);
 	});
 
-	var dialog = new mdc.dialog.MDCDialog(document.querySelector('#login-form'));
-
-	dialog.listen('MDCDialog:accept', function () {
-		console.log('accepted');
-	})
-
-	dialog.listen('MDCDialog:cancel', function () {
-		console.log('canceled');
-	})
-
-	document.querySelector('#default-dialog-activation').addEventListener('click', function (evt) {
-		dialog.lastFocusedTarget = evt.target;
-		dialog.show();
-	})
 }
 
 var flashAjaxStatusTimeout;

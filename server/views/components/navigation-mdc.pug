@@ -2,7 +2,7 @@ header.mdc-top-app-bar.mdc-top-app-bar--fixed
 	div.mdc-top-app-bar__row
 		section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start
 			a.menu.material-icons.mdc-top-app-bar__navigation-icon(href="#") menu
-			
+
 			a.navbar-brand(href="/")
 				.header-logo
 			#page-title.mdc-top-app-bar__title(data-hijax="true")
@@ -29,8 +29,8 @@ aside.mdc-drawer.mdc-drawer--temporary.mdc-typography
 					a.nav-item.mdc-list-item(href="#" data-toggle="modal" data-target="#request-invite-form") Request Account
 				if globalSettings.multiUser === 'open' || inviteToken
 					a.nav-item.mdc-list-item(href="#" data-toggle="modal" data-target="#register-form") Create Account
-				a.nav-item.mdc-list-item(href="#" data-toggle="modal" data-target="#login-form") Login
-				
+				a.nav-item.mdc-list-item.toggle-modal(href="#" data-target="#login-form") Login
+
 			.hidden-logged-out
 				if globalSettings.communityChannel
 					li
@@ -53,4 +53,3 @@ aside.mdc-drawer.mdc-drawer--temporary.mdc-typography
 					<i class="fa fa-bug fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Bug Report
 				a.nav-item.mdc-list-item(href="" data-jsclass="logoutController") Logout
-			
