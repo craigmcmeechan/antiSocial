@@ -1,11 +1,10 @@
 
-aside#login-form.mdc-dialog(role="alertdialog" aria-labelledby="my-mdc-dialog-label" aria-describedby="my-mdc-dialog-description")
+aside#login-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
 	.mdc-dialog__surface
-		form.form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button" data-modal="#login-form")
+		form.form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button")
 			header.mdc-dialog__header
-				h4.mdc-dialog__header__title.
+				h2.mdc-dialog__header__title.
 					Login
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			section.mdc-dialog__body
 				.row
 					.col-sm-6.form-group
@@ -23,161 +22,146 @@ aside#login-form.mdc-dialog(role="alertdialog" aria-labelledby="my-mdc-dialog-la
 								span.fa.fa-check
 							.validation-help
 			footer.mdc-dialog__footer
-				.float-left
-					a(href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal") Forgot Password
-					if globalSettings.multiUser === 'open'
-						| &nbsp;|&nbsp;
-						a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
-				button#login-button.mdc-button.mdc-button--raised(type="submit") Login
+				a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#password-request-reset-form") Forgot Password
+				if globalSettings.multiUser === 'open'
+					a.toggle-modal(href="#" data-target="#register-form" data-dismiss="modal") Don't Have Account
+				button.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel Cancel
+				button#login-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Login
 
-#password-request-reset-form.modal.fade(tabindex="-1" role="dialog")
-	.modal-dialog(role="document")
+
+aside#password-request-reset-form.mdc-dialog(role="alertdialog" aria-labelledby="forgot password" aria-describedby="forget password")
+	.mdc-dialog__surface
 		form.form.form-validation(action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.")
-			.modal-content
-				.modal-header
-					<h4 class="modal-title">Recover Password</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				.modal-body
-					.row
-						.col-sm-6.form-group
-							label Email Address
-							.input-relative
-								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
-								.input-ok-indicator
-									span.fa.fa-check
-								.validation-help
-				.modal-footer
-					.float-left
-						a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Login
-						if globalSettings.multiUser === 'open'
-							a(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
-					button#reset-request-button.btn.btn-primary(type="submit") Password Reset
+			header.mdc-dialog__header
+				h2.mdc-dialog__header__title.
+					Recover Password
+			section.mdc-dialog__body
+				.row
+					.col-sm-6.form-group
+						label Email Address
+						.input-relative
+							input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
+							.input-ok-indicator
+								span.fa.fa-check
+							.validation-help
+			footer.mdc-dialog__footer
+				a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
+				if globalSettings.multiUser === 'open'
+					a.toggle-modal(href="#" data-toggle="modal" data-target="#register-form" data-dismiss="modal") Don't Have Account
+				button.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel Cancel
+				button#reset-request-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Password Reset
 
 if globalSettings.multiUser === 'open' || inviteToken
-	#register-form.modal.fade(tabindex="-1" role="dialog")
-		.modal-dialog(role="document")
-
+	aside#register-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
+		.mdc-dialog__surface
 			form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
-				.modal-content
-					.modal-header
-						<h4 class="modal-title">Register</h4>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					.modal-body
-						.form-group.input-relative
-							input.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email" autocomplete="email")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
+				header.mdc-dialog__header
+					h2.mdc-dialog__header__title.
+						Register
+				section.mdc-dialog__body
+					.form-group.input-relative
+						input.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email" autocomplete="email")
+						.input-ok-indicator
+							span.fa.fa-check
+						.validation-help
 
-						.form-group.input-relative
-							input.form-control(type="email" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']" autocomplete="email")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
+					.form-group.input-relative
+						input.form-control(type="email" name="confirm-email" placeholder="Email address" data-validate="required,email" data-match="input[name='email']" autocomplete="email")
+						.input-ok-indicator
+							span.fa.fa-check
+						.validation-help
 
-						.form-group.input-relative
-							input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="new-password")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
+					.form-group.input-relative
+						input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="new-password")
+						.input-ok-indicator
+							span.fa.fa-check
+						.validation-help
 
-						.form-group.input-relative
-							input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']"  autocomplete="off")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
+					.form-group.input-relative
+						input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']"  autocomplete="off")
+						.input-ok-indicator
+							span.fa.fa-check
+						.validation-help
 
-						.form-group.input-relative
-							input.form-control(type="text" name="name" placeholder="Name" data-validate="required" autocomplete="name")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
+					.form-group.input-relative
+						input.form-control(type="text" name="name" placeholder="Name" data-validate="required" autocomplete="name")
+						.input-ok-indicator
+							span.fa.fa-check
+						.validation-help
 
-					.modal-footer
-						.float-left
-							a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Already Have Account
-						button#register-button.btn.btn-primary Sign Up
+				footer.mdc-dialog__footer
+						a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Already Have Account
+					button#register-button..mdc-button.mdc-dialog__footer__button.mdc-button--raised Sign Up
 
-#password-reset-form.modal.fade(tabindex="-1" role="dialog")
-	.modal-dialog(role="document")
+aside#password-reset-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
+	.modal-	.mdc-dialog__surface
 		form.form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
 			input(type="hidden" name="access_token" value= passwordResetToken)
-			.modal-content
-				.modal-header
-					<h4 class="modal-title">Reset Password</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				.modal-body
-					.form-group.input-relative
-						input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
+			header.mdc-dialog__header
+				h2.mdc-dialog__header__title.
+					Reset Password
+			section.mdc-dialog__body
+				.form-group.input-relative
+					input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password")
+					.input-ok-indicator
+						span.fa.fa-check
+					.validation-help
 
-					.form-group.input-relative
-						input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.modal-footer
-					.float-left
-						a(href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal") Login
+				.form-group.input-relative
+					input.form-control(type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']")
+					.input-ok-indicator
+						span.fa.fa-check
+					.validation-help
+			footer.mdc-dialog__footer
+				a.toggle-modal.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
+				button#reset-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised Reset Password
 
-					button#reset-button.btn.btn-primary Reset Password
-
-#request-invite-form.modal.fade(tabindex="-1" role="dialog")
-	.modal-dialog(role="document")
+aside#request-invite-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
+	.mdc-dialog__surface
 		form.form.form-validation(action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.")
-			.modal-content
-				.modal-header
-					<h4 class="modal-title">Request an Account on This Server</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				.modal-body
-					.row
-						.col-sm-6.form-group
-							label Your Email Address
+			header.mdc-dialog__header
+				h2.mdc-dialog__header__title.
+					Request an Account on This Server
+			section.mdc-dialog__body
+				.row
+					.col-sm-6.form-group
+						label Your Email Address
+						.input-relative
+							input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
+							.input-ok-indicator
+								span.fa.fa-check
+							.validation-help
+				.row
+					.col-sm-6.form-group
+						.form-group
 							.input-relative
-								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
+								input.form-control(type="text" name="name" placeholder="Your Name" data-validate="required")
 								.input-ok-indicator
 									span.fa.fa-check
 								.validation-help
-					.row
-						.col-sm-6.form-group
-							.form-group
-								.input-relative
-									input.form-control(type="text" name="name" placeholder="Your Name" data-validate="required")
-									.input-ok-indicator
-										span.fa.fa-check
-									.validation-help
-					.row
-						.col-sm-12
-							p.
-								This is a very, very early prototype. Once things are more stable we will add users who want to help us test the system.
-				.modal-footer
-					button#request-invite-button.btn.btn-primary(type="submit") Send Request
+			footer.mdc-dialog__footer
+				button#request-invite-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Send Request
 
-#edit-post-form.modal.fade(tabindex="-1" role="dialog")
-	.modal-dialog(role="document")
-		.modal-content
-			.modal-header
-				<h4 class="modal-title">Edit post</h4>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			.modal-body
-				| edit form here
+aside#edit-post-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
+	.mdc-dialog__surface
+		header.mdc-dialog__header
+			h2.mdc-dialog__header__title.
+				Edit post
+		section.mdc-dialog__body
+			| edit form here
 
-#edit-comment-form.modal.fade(tabindex="-1" role="dialog")
-	.modal-dialog(role="document")
-		.modal-content
-			.modal-header
-				<h4 class="modal-title">Edit comment</h4>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			.modal-body
-				| edit form here
+aside#edit-comment-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
+	.mdc-dialog__surface
+		header.mdc-dialog__header
+			h2.mdc-dialog__header__title.
+				Edit comment
+		section.mdc-dialog__body
+			| edit form here
 
-#post-form.modal.fade(tabindex="-1" role="dialog")
-	.modal-dialog(role="document")
-		.modal-content
-			.modal-header
-				<h4 class="modal-title">Share Post</h4>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			.modal-body
-				include posting-form
+aside#post-form.mdc-dialog(role="alertdialog" aria-labelledby="login" aria-describedby="login form")
+	.mdc-dialog__surface
+		header.mdc-dialog__header
+			h2.mdc-dialog__header__title.
+				Share Post
+		section.mdc-dialog__body
+			include posting-form
