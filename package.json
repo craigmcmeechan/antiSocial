@@ -1,6 +1,6 @@
 {
-  "name": "DigitopiaSocial",
-  "version": "1.0.0",
+  "name": "AntiSocial",
+  "version": "0.0.0-beta.1",
   "main": "server/server.js",
   "scripts": {
     "pretest": "jshint ."
