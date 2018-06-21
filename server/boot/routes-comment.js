@@ -16,6 +16,26 @@ module.exports = function (server) {
   var router = server.loopback.Router();
 
   /**
+   * comment form
+   *
+   * @name GET Comment Form
+   * @path {GET} /comment-form
+   * @code {200} success
+
+   * @query {String} about endpoint of post commenting on
+   * @query {String} replyTo endpoint of comment replying to
+   * @response {String} html comment form
+   */
+
+  router.get('/comment-form', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+    res.render('components/comment-form', {
+      'endpoint': '/comment',
+      'about': req.query.about,
+      'replyTo': req.query.replyTo
+    });
+  });
+
+  /**
    * create a new comment
    *
    * @name POST Create a new comment
@@ -93,7 +113,8 @@ module.exports = function (server) {
           'visibility': ['public'],
           'details': {
             'body': req.body.body,
-            'photo': photo ? server.locals.config.publicHost + '/' + currentUser.username + '/photo/' + photo.uuid : ''
+            'photo': photo ? server.locals.config.publicHost + '/' + currentUser.username + '/photo/' + photo.uuid : '',
+            'replyTo': req.body.replyTo ? req.body.replyTo : ''
           },
           'description': req.body.description
         };
@@ -114,7 +135,8 @@ module.exports = function (server) {
           'about': news.about,
           'details': {
             'body': news.details.body,
-            'photo': news.details.photo
+            'photo': news.details.photo,
+            'replyTo': news.details.replyTo
           },
           'userId': currentUser.id,
           'createdOn': news.createdOn,

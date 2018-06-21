@@ -77,6 +77,28 @@ function bootMyAntiSocial() {
 		$('.news-feed-items').toggleClass('constrained-height');
 	});
 
+	$('.reply-to-button').on('click', function (e) {
+		e.preventDefault();
+		var that = $(this);
+		// download and inject comment form at end after closest comment
+		$.get('/comment-form?about=' + encodeURIComponent(that.data('about')) + '&replyTo=' + encodeURIComponent(that.data('reply-to')), function (data, status, xhr) {
+			if (status !== 'success') {
+				flashAjaxStatus('danger', 'Could not load comment form');
+			}
+			else {
+				var form = $(data);
+				// no nested comments yet
+				if (that.closest('.a-comment').find('.end-of-thread').length) {
+					that.closest('.a-comment').find('.end-of-thread').before(form);
+				}
+				else {
+					that.closest('.a-comment').nextAll().find('.end-of-thread').first().before(form);
+				}
+				didInjectContent(form);
+			}
+		})
+	});
+
 	$('.show-feed-button').on('click', function (e) {
 		e.preventDefault();
 		$('.footer-button.active').toggleClass('active');
@@ -112,6 +134,14 @@ function bootMyAntiSocial() {
 		setTimeout(function () {
 			self.text(saveText);
 		}, 1000);
+	});
+
+	$('body').on('click', '.toggle-modal', function (e) {
+		e.preventDefault();
+		var self = $(this);
+		var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
+		$(self.data('target')).data('mdc-dialog', dialog);
+		dialog.show();
 	});
 
 	$.fn.extend({
@@ -183,6 +213,7 @@ function instantiateMaterialDesignElements(element) {
 	$(element).find('.mdc-button').each(function () {
 		const buttonRipple = new MDC.MDCRipple(this);
 	});
+
 }
 
 var flashAjaxStatusTimeout;

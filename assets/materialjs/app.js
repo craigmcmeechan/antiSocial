@@ -13,9 +13,16 @@ import {
 }
 from '@material/drawer';
 
+import {
+	MDCDialog, MDCDialogFoundation, util
+}
+from '@material/dialog';
 
 module.exports = {
 	'MDCRipple': MDCRipple,
 	'MDCTopAppBar': MDCTopAppBar,
-	'MDCTemporaryDrawer': MDCTemporaryDrawer
+	'MDCTemporaryDrawer': MDCTemporaryDrawer,
+	'MDCDialog': MDCDialog,
+	'MDCDialogFoundation': MDCDialogFoundation,
+	'util': util
 }

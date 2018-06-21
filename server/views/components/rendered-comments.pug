@@ -16,7 +16,7 @@ if !about
 				for comment,index in comments
 					- about = comment.about + '/comment/' + comment.uuid
 					include rendered-comment
-		
+					
 		- about = saveAbout
 		- endpoint= "/comment"
 		include comment-form

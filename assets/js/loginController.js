@@ -25,12 +25,14 @@
 						'expires': 999
 					})
 				}
+
 				$.post('/api/MyUsers/login', {
 						'email': self.element.find('[name="email"]').val(),
 						'password': self.element.find('[name="password"]').val()
 					})
 					.done(function (data, textStatus, jqXHR) {
-						$('#login-form').modal('hide');
+						$('#login-form').data('mdc-dialog').destroy();
+
 						flashAjaxStatus('success', 'logged in');
 
 						loadPage('/feed');

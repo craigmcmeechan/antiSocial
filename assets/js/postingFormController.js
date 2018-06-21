@@ -19,6 +19,7 @@
 		this.singleUpload = this.element.data('single-upload');
 		this.modal = this.element.data('modal');
 		this.description = this.element.data('description');
+		this.replyTo = this.element.data('reply-to');
 		this.share = null;
 
 		this.start = function () {
@@ -194,7 +195,8 @@
 					'photos': photos,
 					'photoId': photoId,
 					'description': self.description,
-					'shareEndpoint': self.share
+					'shareEndpoint': self.share,
+					'replyTo': self.replyTo
 				};
 
 				if (self.element.find('[name="autopost"]').val()) {
@@ -210,12 +212,15 @@
 					else {
 						self.hideForm();
 						if (self.share) {
-							$('#post-form').modal('hide');
+							$('#post-form').data('mdc-dialog').destroy();
 						}
 						if (self.modal) {
 							$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
 							$(self.modal).find('.modal-body').empty().append('loading...');
-							$(self.modal).modal('hide');
+							$(self.modal).data('mdc-dialog').destroy();
+						}
+						if (self.replyTo) {
+							self.element.closest('.scope-posting-form').hide();
 						}
 					}
 				}, 'json');
@@ -231,7 +236,7 @@
 					if (self.modal) {
 						$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
 						$(self.modal).find('.modal-body').empty().append('loading...');
-						$(self.modal).modal('hide');
+						$(self.modal).data('mdc-dialog').destroy();
 					}
 				}
 			});
