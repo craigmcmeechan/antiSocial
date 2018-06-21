@@ -219,6 +219,9 @@
 							$(self.modal).find('.modal-body').empty().append('loading...');
 							$(self.modal).data('mdc-dialog').destroy();
 						}
+						if (self.replyTo) {
+							self.element.closest('.scope-posting-form').hide();
+						}
 					}
 				}, 'json');
 			});
