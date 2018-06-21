@@ -28,7 +28,7 @@
 	if globalSettings.multiUser === 'invite'
 		p 
 			= 'You can create an account on this server by '
-			a(href="#" data-toggle="modal" data-target="#request-invite-form") requesting an invitation
+			a.toggle-modal(href="#" data-target="#request-invite-form") requesting an invitation
 			= '.'
 
 	

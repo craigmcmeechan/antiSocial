@@ -26,9 +26,9 @@ aside.mdc-drawer.mdc-drawer--temporary.mdc-typography
 		nav#icon-with-text-demo.mdc-drawer__content.mdc-list
 			.hidden-logged-in
 				if globalSettings.multiUser === 'invite' && !inviteToken
-					a.nav-item.mdc-list-item(href="#" data-toggle="modal" data-target="#request-invite-form") Request Account
+					a.nav-item.mdc-list-item.toggle-modal(href="#" data-target="#request-invite-form") Request Account
 				if globalSettings.multiUser === 'open' || inviteToken
-					a.nav-item.mdc-list-item(href="#" data-toggle="modal" data-target="#register-form") Create Account
+					a.nav-item.mdc-list-item.toggle-modal(href="#" data-target="#register-form") Create Account
 				a.nav-item.mdc-list-item.toggle-modal(href="#" data-target="#login-form") Login
 
 			.hidden-logged-out
