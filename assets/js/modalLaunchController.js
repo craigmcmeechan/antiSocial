@@ -9,7 +9,7 @@
 
 		this.start = function () {
 			var modal = location.hash;
-			if (modal && modal !== '#_=_') {
+			if (modal && modal.length > 1 && modal !== '#_=_') {
 				$(modal).modal();
 			}
 		};

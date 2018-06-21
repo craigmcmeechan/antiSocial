@@ -22,5 +22,7 @@ module.exports = {
 	'MDCRipple': MDCRipple,
 	'MDCTopAppBar': MDCTopAppBar,
 	'MDCTemporaryDrawer': MDCTemporaryDrawer,
-	'MDCDialog': MDCDialog
+	'MDCDialog': MDCDialog,
+	'MDCDialogFoundation': MDCDialogFoundation,
+	'util': util
 }

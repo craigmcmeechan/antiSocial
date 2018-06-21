@@ -42,12 +42,18 @@
 
 				this.element.on('click', '.edit-post', function (e) {
 					e.preventDefault();
-					var modal = $('#edit-post-form');
-					modal.find('.modal-body').empty().append('loading...');
-					modal.modal();
-					modal.find('.modal-body').load('/post/' + self.postId, function () {
+
+					var target = '#edit-post-form';
+
+					var modal = $(target);
+					modal.find('.mdc-dialog__body').empty().append('loading...');
+					modal.find('.mdc-dialog__body').load('/post/' + self.postId, function () {
 						didInjectContent(modal);
 					});
+
+					var dialog = new MDC.MDCDialog(document.querySelector(target));
+					$(target).data('mdc-dialog', dialog);
+					dialog.show();
 				});
 			}
 			this.element.on('click', '.share-post', function (e) {
@@ -55,7 +61,12 @@
 				e.preventDefault();
 				$('#post-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
 				$('#post-form').find('.posting-body').click().keyup().focus();
-				$('#post-form').modal();
+
+				var target = '#post-form';
+				var modal = $(target);
+				var dialog = new MDC.MDCDialog(document.querySelector(target));
+				$(target).data('mdc-dialog', dialog);
+				dialog.show();
 			});
 		};
 

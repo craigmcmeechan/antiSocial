@@ -136,6 +136,14 @@ function bootMyAntiSocial() {
 		}, 1000);
 	});
 
+	$('body').on('click', '.toggle-modal', function (e) {
+		e.preventDefault();
+		var self = $(this);
+		var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
+		$(self.data('target')).data('mdc-dialog', dialog);
+		dialog.show();
+	});
+
 	$.fn.extend({
 		animateCss: function (animationName, callback) {
 			var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -205,6 +213,7 @@ function instantiateMaterialDesignElements(element) {
 	$(element).find('.mdc-button').each(function () {
 		const buttonRipple = new MDC.MDCRipple(this);
 	});
+
 }
 
 var flashAjaxStatusTimeout;

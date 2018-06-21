@@ -212,12 +212,12 @@
 					else {
 						self.hideForm();
 						if (self.share) {
-							$('#post-form').modal('hide');
+							$('#post-form').data('mdc-dialog').destroy();
 						}
 						if (self.modal) {
 							$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
 							$(self.modal).find('.modal-body').empty().append('loading...');
-							$(self.modal).modal('hide');
+							$(self.modal).data('mdc-dialog').destroy();
 						}
 					}
 				}, 'json');
@@ -233,7 +233,7 @@
 					if (self.modal) {
 						$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
 						$(self.modal).find('.modal-body').empty().append('loading...');
-						$(self.modal).modal('hide');
+						$(self.modal).data('mdc-dialog').destroy();
 					}
 				}
 			});
