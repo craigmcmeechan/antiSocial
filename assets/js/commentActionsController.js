@@ -35,12 +35,18 @@
 
 				this.element.on('click', '.edit-comment', function (e) {
 					e.preventDefault();
-					var modal = $('#edit-comment-form');
-					modal.find('.modal-body').empty().append('loading...');
-					modal.modal();
-					modal.find('.modal-body').load('/comment/' + self.commentId, function () {
+
+					var target = '#edit-comment-form';
+
+					var modal = $(target);
+					modal.find('.mdc-dialog__body').empty().append('loading...');
+					modal.find('.mdc-dialog__body').load('/comment/' + self.commentId, function () {
 						didInjectContent(modal);
 					});
+
+					var dialog = new MDC.MDCDialog(document.querySelector(target));
+					$(target).data('mdc-dialog', dialog);
+					dialog.show();
 				});
 			}
 		};

@@ -48,7 +48,29 @@ module.exports = function resolveComments(items, itemType, isMe, done) {
 				return doneMap(err);
 			}
 
-			item.resolvedComments = comments;
+			var threads = [];
+			for (var i = 0; i < comments.length; i++) {
+				var comment = comments[i];
+				if (!comment.details.replyTo) {
+					var key = comment.about + '/comment/' + comment.uuid;
+					threads[key] = [comment];
+				}
+				else {
+					var key = comment.details.replyTo;
+					threads[key].push(comment);
+				}
+			}
+
+			var threaded = [];
+			for (var i = 0; i < comments.length; i++) {
+				var comment = comments[i];
+				if (!comment.details.replyTo) {
+					var key = comment.about + '/comment/' + comment.uuid;
+					threaded = threaded.concat(threads[key]);
+				}
+			}
+
+			item.resolvedComments = threaded;
 			item.commentCount = comments.length;
 
 			resolveReactions(item.resolvedComments, 'comment', function (err) {
