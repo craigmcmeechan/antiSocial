@@ -19,6 +19,7 @@
 		this.singleUpload = this.element.data('single-upload');
 		this.modal = this.element.data('modal');
 		this.description = this.element.data('description');
+		this.replyTo = this.element.data('reply-to');
 		this.share = null;
 
 		this.start = function () {
@@ -194,7 +195,8 @@
 					'photos': photos,
 					'photoId': photoId,
 					'description': self.description,
-					'shareEndpoint': self.share
+					'shareEndpoint': self.share,
+					'replyTo': self.replyTo
 				};
 
 				if (self.element.find('[name="autopost"]').val()) {

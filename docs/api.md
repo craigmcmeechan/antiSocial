@@ -1,6 +1,9 @@
 ## Members
 
 <dl>
+<dt><a href="#GET Comment Form">GET Comment Form</a></dt>
+<dd><p>comment form</p>
+</dd>
 <dt><a href="#POST Create a new comment">POST Create a new comment</a></dt>
 <dd><p>create a new comment</p>
 </dd>
@@ -168,6 +171,17 @@ requestor. Otherwise a 404 error is returned</p>
 </dd>
 </dl>
 
+<a name="GET Comment Form"></a>
+
+## GET Comment Form
+comment form
+
+**Kind**: global variable  
+**Path**: <code>GET</code> /comment-form  
+**Code**: <code>200</code> success  
+**Query**: <code>String</code> about endpoint of post commenting on  
+**Query**: <code>String</code> replyTo endpoint of comment replying to  
+**Response**: <code>String</code> html comment form  
 <a name="POST Create a new comment"></a>
 
 ## POST Create a new comment
