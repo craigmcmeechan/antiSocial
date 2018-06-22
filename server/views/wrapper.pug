@@ -17,9 +17,9 @@ html(lang="en")
 		link(href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet')
 
 		if env === 'production'
-			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.min.css")
+			link(rel='stylesheet' href="/dist/css/AntiSocial.min.css")
 		else
-			link(rel='stylesheet' href="/dist/css/DigitopiaSocial.css")
+			link(rel='stylesheet' href="/dist/css/AntiSocial.css")
 
 		link(rel='stylesheet' href="/dist/css/vis.min.css")
 
@@ -76,9 +76,9 @@ html(lang="en")
 			script(src="https://checkout.stripe.com/checkout.js")
 
 		if env === 'production'
-			script(src="/dist/js/DigitopiaSocial.min.js")
+			script(src="/dist/js/AntiSocial.min.js")
 		else
-			script(src="/dist/js/DigitopiaSocial.js")
+			script(src="/dist/js/AntiSocial.js")
 
 		script(src="https://s3.amazonaws.com/myantisocial/xdomain_cookie.js")
 
@@ -89,6 +89,7 @@ html(lang="en")
 			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
 
 		script(nonce= nonce defer).
+			var APIVersion = #{config.APIVersion};
 			(function ($) {
 				$(document).ready(function() { bootMyAntiSocial(); });
 			})(jQuery);
