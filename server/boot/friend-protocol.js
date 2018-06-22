@@ -676,9 +676,6 @@ module.exports = function (server) {
 			}
 
 			debug('/accept-friend opening feed', friend);
-			setTimeout(function () {
-				watchFeed.connect(req.app, friend);
-			}, 5000);
 			var payload = {
 				'status': 'ok'
 			};

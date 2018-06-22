@@ -34,7 +34,6 @@ module.exports = function (grunt) {
 
 	var cssFiles = [
 		'node_modules/digitopia/dist/css/digitopia.css',
-		'node_modules/vis/dist/vis.css',
 		'node_modules/medium-editor/dist/css/medium-editor.css',
 		'node_modules/medium-editor/dist/css/themes/default.css',
 		'assets/vendor/*.css',
@@ -117,7 +116,7 @@ module.exports = function (grunt) {
 					'./working/css/app.css': './assets/scss/app.scss'
 				},
 				options: {
-					loadPath: './node_modules'
+					includePaths: ['./node_modules']
 				}
 			}
 		},
@@ -188,7 +187,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-mkdir');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-sass');
+	grunt.loadNpmTasks('grunt-sass');
 	grunt.loadNpmTasks('grunt-contrib-stylus');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify-es');
