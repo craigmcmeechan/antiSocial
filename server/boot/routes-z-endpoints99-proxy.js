@@ -56,7 +56,8 @@ module.exports = function (server) {
 			'url': endpoint + '.json',
 			'json': true,
 			'headers': {
-				'proxy': true
+				'proxy': true,
+				'X-API-Version': server.locals.config.APIVersion
 			}
 		};
 

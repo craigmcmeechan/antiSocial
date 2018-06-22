@@ -33,6 +33,10 @@ function bootMyAntiSocial() {
 		}
 	}, 365);
 
+	$(document).ajaxSend(function (event, jqxhr, settings) {
+		jqxhr.setRequestHeader('X-API-Version', APIVersion);
+	});
+
 	var options = {
 		'coverResize': false,
 		'geometry': {

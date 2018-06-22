@@ -21,5 +21,6 @@ module.exports = {
   port: port,
   protocol: pubProtocol,
   websockets: websockets,
-  publicHost: pub
+  publicHost: pub,
+  APIVersion: version
 };
