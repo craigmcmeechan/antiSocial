@@ -15,6 +15,6 @@ Each node is independently operated and core user data remains only there under 
 
 You can find some useful information below about the project.
 
-[Project Repository Architecture & Overview](https://github.com/antiSocialNet/antiSocial/wiki/Project-Repository-Architecture-&-Overview)
-[The Principles of antiSocial](https://github.com/antiSocialNet/antiSocial/wiki/The-Principles-of-antiSocial)
-[Development](https://github.com/antiSocialNet/antiSocial/wiki/Configuring-Without-Docker)
+- [Project Repository Architecture & Overview](https://github.com/antiSocialNet/antiSocial/wiki/Project-Repository-Architecture-&-Overview)
+- [The Principles of antiSocial](https://github.com/antiSocialNet/antiSocial/wiki/The-Principles-of-antiSocial)
+- [Development](https://github.com/antiSocialNet/antiSocial/wiki/Configuring-Without-Docker)

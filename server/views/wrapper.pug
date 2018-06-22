@@ -89,6 +89,7 @@ html(lang="en")
 			script(src!= 'https://maps.googleapis.com/maps/api/js?key='+environment.GOOGLE_MAPS_API_KEY+'&libraries=geometry,places' async defer)
 
 		script(nonce= nonce defer).
+			var APIVersion = #{config.APIVersion};
 			(function ($) {
 				$(document).ready(function() { bootMyAntiSocial(); });
 			})(jQuery);
