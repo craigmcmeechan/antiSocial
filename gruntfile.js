@@ -34,7 +34,6 @@ module.exports = function (grunt) {
 
 	var cssFiles = [
 		'node_modules/digitopia/dist/css/digitopia.css',
-		'node_modules/vis/dist/vis.css',
 		'node_modules/medium-editor/dist/css/medium-editor.css',
 		'node_modules/medium-editor/dist/css/themes/default.css',
 		'assets/vendor/*.css',
