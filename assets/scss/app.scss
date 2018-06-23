@@ -26,3 +26,7 @@ $mdc-theme-secondary: #757575;
 .mdc-top-app-bar {
 	top:0px;
 }
+.dialog__body--scrollable {
+	max-height: 66vh;
+	overflow: auto;
+}

@@ -27,7 +27,7 @@ aside#login-form.mdc-dialog(role="alertdialog")
 					a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form") Don't Have Account
 				a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#") Cancel
 				button#login-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Login
-
+	.mdc-dialog__backdrop
 
 aside#password-request-reset-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
@@ -50,6 +50,7 @@ aside#password-request-reset-form.mdc-dialog(role="alertdialog")
 					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form" data-dismiss="modal") Don't Have Account
 				button.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel Cancel
 				button#reset-request-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Password Reset
+	.mdc-dialog__backdrop
 
 if globalSettings.multiUser === 'open' || inviteToken
 	aside#register-form.mdc-dialog(role="alertdialog")
@@ -92,7 +93,8 @@ if globalSettings.multiUser === 'open' || inviteToken
 				footer.mdc-dialog__footer
 					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Already Have Account
 					button#register-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised Sign Up
-
+		.mdc-dialog__backdrop
+			
 aside#password-reset-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
 		form.form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
@@ -115,7 +117,8 @@ aside#password-reset-form.mdc-dialog(role="alertdialog")
 			footer.mdc-dialog__footer
 				a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
 				button#reset-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised Reset Password
-
+	.mdc-dialog__backdrop
+		
 aside#request-invite-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
 		form.form.form-validation(action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.")
@@ -142,27 +145,31 @@ aside#request-invite-form.mdc-dialog(role="alertdialog")
 			footer.mdc-dialog__footer
 				a.toggle-modal.mdc-button.mdc-dialog__footer__button--cancel(href="#") Cancel
 				button#request-invite-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Send Request
-
+	.mdc-dialog__backdrop
+		
 aside#edit-post-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
 		header.mdc-dialog__header
 			h2.mdc-dialog__header__title.
 				Edit post
-		section.mdc-dialog__body
+		section.mdc-dialog__body.dialog__body--scrollable
 			| edit form here
-
+	.mdc-dialog__backdrop
+		
 aside#edit-comment-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
 		header.mdc-dialog__header
 			h2.mdc-dialog__header__title.
 				Edit comment
-		section.mdc-dialog__body
+		section.mdc-dialog__body.dialog__body--scrollable
 			| edit form here
-
+	.mdc-dialog__backdrop
+		
 aside#post-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
 		header.mdc-dialog__header
 			h2.mdc-dialog__header__title.
 				Share Post
-		section.mdc-dialog__body
+		section.mdc-dialog__body.dialog__body--scrollable
 			include posting-form
+	.mdc-dialog__backdrop

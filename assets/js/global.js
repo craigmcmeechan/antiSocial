@@ -22,10 +22,19 @@ function bootMyAntiSocial() {
 			// if the link is a post
 			var server = document.location.protocol + '//' + document.location.host;
 			if (server !== cookie_val) {
+
 				var url = cookie_val;
+				var href = document.location.href;
+				href = href.replace(/\?.*$/, ''); // get rid of query string
+
+				// profile url form
+				if (document.location.pathname.match(/^\/([a-zA-Z0-9-]+)$/)) {
+					url += '/proxy-profile?endpoint=' + encodeURIComponent(href);
+					document.location.href = url;
+				}
+
+				// post permalink url form
 				if (document.location.pathname.match(/\/post\//)) {
-					var href = document.location.href;
-					href = href.replace('?source=facebook', '');
 					url += '/proxy-post?endpoint=' + encodeURIComponent(href);
 					document.location.href = url;
 				}
