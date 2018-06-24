@@ -1,26 +1,31 @@
 
 aside#login-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
-		form.form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button")
+		form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button")
 			header.mdc-dialog__header
 				h2.mdc-dialog__header__title.
 					Login
 			section.mdc-dialog__body
-				.row
-					.col-sm-6.form-group
-						label Email Address
-						.input-relative
-							input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
-					.col-sm-6.form-group
-						label Password
-						.input-relative
-							input.form-control(type="password" name="password" placeholder="Password" data-validate="required,password" autocomplete="current-password")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
+				.mdc-layout-grid
+					.mdc-layout-grid__inner
+						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+							.form-group
+								.mdc-text-field.mdc-text-field--with-trailing-icon
+									input.login-email-address.mdc-text-field__input(type="email" name="email" data-validate="required,email" autocomplete="email")
+									label.mdc-floating-label Email Address
+									.input-ok-indicator.material-icons.mdc-text-field__icon
+										span.fa.fa-check
+									.mdc-line-ripple
+								.validation-help.mdc-text-field-helper-text--persistent
+						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+							.form-group
+								.mdc-text-field.mdc-text-field--with-trailing-icon
+									input.mdc-text-field__input(type="password" name="password" data-validate="required,password" autocomplete="current-password")
+									label.mdc-floating-label Password
+									.input-ok-indicator.material-icons.mdc-text-field__icon
+										span.fa.fa-check
+									.mdc-line-ripple
+								.validation-help.mdc-text-field-helper-text--persistent
 			footer.mdc-dialog__footer
 				a.toggle-modal.mdc-button.mdc-dialog__footer__button--cancel(href="#" data-target="#password-request-reset-form") Forgot Password
 				if globalSettings.multiUser === 'open'

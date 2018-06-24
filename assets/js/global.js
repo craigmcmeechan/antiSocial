@@ -227,6 +227,17 @@ function instantiateMaterialDesignElements(element) {
 		const buttonRipple = new MDC.MDCRipple(this);
 	});
 
+	$(element).find('.mdc-text-field').each(function () {
+		const textField = new MDC.MDCTextField(this);
+	});
+
+	$(element).find('.mdc-text-field__icon').each(function () {
+		const icon = new MDC.MDCTextFieldIcon(this);
+	});
+
+	$(element).find('.mdc-text-field-helper-text').each(function () {
+		const helperText = new MDC.MDCTextFieldHelperText(this);
+	});
 }
 
 var flashAjaxStatusTimeout;

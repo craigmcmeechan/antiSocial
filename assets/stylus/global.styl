@@ -247,20 +247,9 @@ img.avatar
 		input[type="text"]
 			padding-right:30px
 
-	.form-control
-		box-shadow: none
-		-webkit-box-shadow: none
-
-	.form-control:focus
-		box-shadow: none
-		-webkit-box-shadow: none
-
 	.input-ok-indicator
 		opacity:0
-		position:absolute
-		right:8px
-		top:8px
-		color: green
+		color: green!important
 
 	.input-ok
 		.input-ok-indicator
@@ -268,18 +257,13 @@ img.avatar
 
 	.validation-help
 		opacity:0
-		padding-left:5px
-		height:18px
-		color: red
 		pointer-events:none
+		color:#b00020
 
 	.input-error
 		&.touched
 			.validation-help
-				opacity:.8
-
-			input[type="text"], input[type="password"], input[type="tel"], select
-				border: thin solid tomato
+				opacity:1
 
 	.input-with-icon
 		padding-left:25px!important
@@ -322,9 +306,7 @@ img.avatar
 					border-top-right-radius: 4px
 		&.reply
 			margin-left:37px
-	.form-control
-		box-shadow: none
-		-webkit-box-shadow: none
+
 	.shared-post
 		background-color:white
 		#scope-post-list
@@ -333,10 +315,6 @@ img.avatar
 			.post
 				box-shadow: 0 0 3px 1px rgb(94, 158, 214)
 
-	.form-control:focus
-		box-shadow: none
-		-webkit-box-shadow: none
-		border-color: $borderColor
 	.tabbed
 		position:relative
 		overflow:auto
