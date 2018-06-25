@@ -285,25 +285,7 @@ function getDataEventHandler(server, socket) {
 											}
 											cbPostOnMyWall(null, post);
 										});
-									},
-									function (post, cbPostOnMyWall) { // make a PushNewsFeed record
-										server.models.PushNewsFeedItem.create({
-											'uuid': message.data.uuid,
-											'type': 'post',
-											'source': server.locals.config.publicHost + '/' + currentUser.username,
-											'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
-											'visibility': post.visibility,
-											'details': {},
-											'userId': currentUser.id
-										}, function (err, news) {
-											if (err) {
-												var e = new VError(err, 'could push news feed');
-												return cb(e);
-											}
-											cbPostOnMyWall(null);
-										});
 									}
-
 								], function (err) {
 									cb(err);
 								});
