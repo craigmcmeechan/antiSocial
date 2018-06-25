@@ -108,7 +108,7 @@ function getCloseHandler(server, socket) {
 		if (socket.data.observers) {
 			for (var i = 0; i < socket.data.observers.length; i++) {
 				var observer = socket.data.observers[i];
-				console.log(observer);
+				//console.log(observer);
 				server.models[observer.model].removeObserver(observer.eventType, observer.handler);
 			}
 		}
