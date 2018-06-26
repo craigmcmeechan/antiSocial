@@ -22,10 +22,19 @@ function bootMyAntiSocial() {
 			// if the link is a post
 			var server = document.location.protocol + '//' + document.location.host;
 			if (server !== cookie_val) {
+
 				var url = cookie_val;
+				var href = document.location.href;
+				href = href.replace(/\?.*$/, ''); // get rid of query string
+
+				// profile url form
+				if (document.location.pathname.match(/^\/([a-zA-Z0-9-]+)$/)) {
+					url += '/proxy-profile?endpoint=' + encodeURIComponent(href);
+					document.location.href = url;
+				}
+
+				// post permalink url form
 				if (document.location.pathname.match(/\/post\//)) {
-					var href = document.location.href;
-					href = href.replace('?source=facebook', '');
 					url += '/proxy-post?endpoint=' + encodeURIComponent(href);
 					document.location.href = url;
 				}
@@ -218,6 +227,17 @@ function instantiateMaterialDesignElements(element) {
 		const buttonRipple = new MDC.MDCRipple(this);
 	});
 
+	$(element).find('.mdc-text-field').each(function () {
+		const textField = new MDC.MDCTextField(this);
+	});
+
+	$(element).find('.mdc-text-field__icon').each(function () {
+		const icon = new MDC.MDCTextFieldIcon(this);
+	});
+
+	$(element).find('.mdc-text-field-helper-text').each(function () {
+		const helperText = new MDC.MDCTextFieldHelperText(this);
+	});
 }
 
 var flashAjaxStatusTimeout;

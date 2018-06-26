@@ -11,19 +11,18 @@ block content
 				- myendpoint = base64.encode(myendpoint)
 				input#myendpoint(type="text" value= myendpoint style="opacity:0;width:10px;")
 				button.btn.btn-xs.btn-primary.copy-to-clipboard(data-target="#myendpoint") Copy Your Endpoint to Clipboard
-			
+
 			h2 Friends
 
 		.row
 			.col-sm-12
 				p.
-					You can add friends in either of two ways. You can have the system 
-					send someone an friend request via email that they can use to create an account.
-					You can send them a friend request directly via email or by exchanging an 
-					"endpoint", which identifies their node and user name. They can generate their 
-					endpoint and send it to you (such as via email, text, message), or you can 
-					generate your endpoint and send it to them.
-					
+					You can add friends in two ways. You can have the system
+					send someone an friend request via email that they can use to create an account. Enter their email address on the "Invite a friend via Email" form and an optional note.
+					Or you can friend them by exchanging an "endpoint", which identifies their node and user name. They can generate their
+					endpoint and send it to you (such as via email, text, message), or you can
+					generate your endpoint and send it to them. Once you (or they) receive the endpoint enter it in "Add friend by Their Public Page Endpoint".
+
 		.row
 			.col-sm-6
 				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")

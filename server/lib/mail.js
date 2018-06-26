@@ -23,6 +23,7 @@ function mail(server, template, options, cb) {
 					'pass': process.env.SES_KEY
 				}
 			};
+			debug('using SES %j', config);
 		}
 		else {
 			var AWS = require('aws-sdk');
@@ -80,7 +81,7 @@ function mail(server, template, options, cb) {
 		}
 		options.html = html;
 		transporter.sendMail(options, function (err, info) {
-			debug('email result %j %j', err, info);
+			debug('email result %j %j', err, info, html);
 			if (err) {
 				var e = new VError(err, 'could not send email');
 				return cb(e);
