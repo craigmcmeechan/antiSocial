@@ -41,14 +41,16 @@ aside#password-request-reset-form.mdc-dialog(role="alertdialog")
 				h2.mdc-dialog__header__title.
 					Recover Password
 			section.mdc-dialog__body
-				.row
-					.col-sm-6.form-group
-						label Email Address
-						.input-relative
-							input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
+				.mdc-layout-grid
+					.mdc-layout-grid__inner
+						.mdc-layout-grid__cell
+							.form-group
+								.mdc-text-field.mdc-text-field--with-trailing-icon
+									input.login-email-address.mdc-text-field__input(type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email")
+									label.mdc-floating-label Email Address
+									.input-ok-indicator.material-icons.mdc-text-field__icon
+										span.fa.fa-check
+								.validation-help.mdc-text-field-helper-text--persistent
 			footer.mdc-dialog__footer
 				a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
 				if globalSettings.multiUser === 'open'
@@ -131,18 +133,18 @@ aside#request-invite-form.mdc-dialog(role="alertdialog")
 				h2.mdc-dialog__header__title.
 					Request an Account on This Server
 			section.mdc-dialog__body
-				.row
-					.col-sm-6.form-group
-						label Your Email Address
-						.input-relative
-							input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
-							.input-ok-indicator
-								span.fa.fa-check
-							.validation-help
-				.row
-					.col-sm-6.form-group
-						.form-group
-							.input-relative
+				.mdc-layout-grid
+					.mdc-layout-grid__inner
+						.mdc-layout-grid__cell
+							label Your Email Address
+							.form-group.input-relative
+								input.login-email-address.form-control(type="email" name="email" placeholder="Email address" data-validate="required,email")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+					.mdc-layout-grid__inner
+						.mdc-layout-grid__cell
+							.form-group.input-relative
 								input.form-control(type="text" name="name" placeholder="Your Name" data-validate="required")
 								.input-ok-indicator
 									span.fa.fa-check
