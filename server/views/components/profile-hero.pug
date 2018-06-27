@@ -2,45 +2,47 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 
 .profile-hero(data-jsclass="scrollToController,scrollEffectsController" data-bg= profile.background.url data-effect-start="0.3" data-effect-end="0.6" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
 	.text-gradient
-		.container-fluid.text-overlay.navbar-margin
-			h1
-				= profile.name
-				if isMe
-					= ' (me)'
+		.mdc-layout-grid
+			.mdc-layout-grid__inner
+				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12.text-overlay.navbar-margin
+					h1
+						= profile.name
+						if isMe
+							= ' (me)'
 
-			if friend
-				if friend.status === 'accepted'
-					| This friend can see my public posts and posts in
-					each audience, i in friend.audiences
-						if i
-							| ,
-						= ' ' + audience
+					if friend
+						if friend.status === 'accepted'
+							| This friend can see my public posts and posts in
+							each audience, i in friend.audiences
+								if i
+									| ,
+								= ' ' + audience
 
-					span.revealer(data-target="#edit-friend-audience" data-toggle="collapse")
-						i.fa.fa-chevron-down
+							span.revealer(data-target="#edit-friend-audience" data-toggle="collapse")
+								i.fa.fa-chevron-down
 
-					#edit-friend-audience.collapse
-						form#form.form-validation(data-jsclass="postingFormController,formValidator,saveOnChange" data-method="PUT" data-endpoint="/api/MyUsers/me/friends/"+ friend.id)
-							
-							.checkbox-group(data-jsclass="checkboxGroupController" data-target="#friend-audiences")
-								input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(friend.audiences))
-								.form-check.form-check-inline
-									label.form-check-label Set Audience
-								.form-check.form-check-inline
-									input.form-check-input(type="checkbox" data-value="friends")
-									label.form-check-label friends
-								if user && user.audiences
-									each audience in user.audiences
+							#edit-friend-audience.collapse
+								form#form.form-validation(data-jsclass="postingFormController,formValidator,saveOnChange" data-method="PUT" data-endpoint="/api/MyUsers/me/friends/"+ friend.id)
+									
+									.checkbox-group(data-jsclass="checkboxGroupController" data-target="#friend-audiences")
+										input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(friend.audiences))
 										.form-check.form-check-inline
-											input.form-check-input(type="checkbox" data-value= audience)
-											label.form-check-label = audience
+											label.form-check-label Set Audience
+										.form-check.form-check-inline
+											input.form-check-input(type="checkbox" data-value="friends")
+											label.form-check-label friends
+										if user && user.audiences
+											each audience in user.audiences
+												.form-check.form-check-inline
+													input.form-check-input(type="checkbox" data-value= audience)
+													label.form-check-label = audience
 
-				else 
-					if friend.status === 'pending'
-						| Pending friend request 
-						if !friend.originator
-							a.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
-			else
-				if user && !isMe && profile.endpoint
-					button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= '/friend?endpoint=' + encodeURIComponent(profile.endpoint)) Add Friend
-					|  this user can see my public posts.
+						else 
+							if friend.status === 'pending'
+								| Pending friend request 
+								if !friend.originator
+									a.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint)) Accept
+					else
+						if user && !isMe && profile.endpoint
+							button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= '/friend?endpoint=' + encodeURIComponent(profile.endpoint)) Add Friend
+							|  this user can see my public posts.

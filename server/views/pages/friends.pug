@@ -4,18 +4,18 @@ block seo
 	title= pageTitle
 
 block content
-	.container-fluid.content-padding-top.content
-		.page-header.mb-5
-			.float-right
-				- var myendpoint = config.publicHost + '/' + user.username;
-				- myendpoint = base64.encode(myendpoint)
-				input#myendpoint(type="text" value= myendpoint style="opacity:0;width:10px;")
-				button.btn.btn-xs.btn-primary.copy-to-clipboard(data-target="#myendpoint") Copy Your Endpoint to Clipboard
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12.content-padding-top
+				.page-header
+					.float-right
+						- var myendpoint = config.publicHost + '/' + user.username;
+						- myendpoint = base64.encode(myendpoint)
+						input#myendpoint(type="text" value= myendpoint style="opacity:0;width:10px;")
+						button.btn.btn-xs.btn-primary.copy-to-clipboard(data-target="#myendpoint") Copy Your Endpoint to Clipboard
 
-			h2 Friends
+					h2 Friends
 
-		.row
-			.col-sm-12
 				p.
 					You can add friends in two ways. You can have the system
 					send someone an friend request via email that they can use to create an account. Enter their email address on the "Invite a friend via Email" form and an optional note.
@@ -23,8 +23,8 @@ block content
 					endpoint and send it to you (such as via email, text, message), or you can
 					generate your endpoint and send it to them. Once you (or they) receive the endpoint enter it in "Add friend by Their Public Page Endpoint".
 
-		.row
-			.col-sm-6
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
 				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
 					h4 Add friend by Their Public Page Endpoint
 					p If you know someone's endpoint enter it here.
@@ -35,7 +35,7 @@ block content
 							.input-group-btn
 								button#lookup-button.btn.btn-primary Lookup
 
-			.col-sm-6
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
 				h4 Invite a friend via Email
 				p If they don't have an antiSocial account the email will include instructions on how to create one.
 
@@ -54,15 +54,15 @@ block content
 								span.fa.fa-check
 							.validation-help
 					button#send-invite.btn.btn-primary Send
-		.row.friends-list
-			.col-sm-12
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
 				if !friends.length
 					p Oops. No friends yet.
 				else
 					.row
 						for friend in friends
 							if friend.status === 'pending' || friend.status === 'accepted'
-								.col-6.col-md-4.col-lg-3
+								.mdc-layout-grid__cell.mdc-layout-grid__cell--span-2
 									.media.friend-card
 										img(src= friend.resolvedProfiles[friend.remoteEndPoint].profile.photo.url)
 										.media-body

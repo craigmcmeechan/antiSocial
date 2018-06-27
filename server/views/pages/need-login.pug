@@ -4,8 +4,8 @@ block seo
 	title= pageTitle
 
 block content
-	.container-fluid.content-padding-top.content(data-jsclass="clearAccessToken")
-		.row
-			.col-sm-12
-				p Please login to access the page #{page}
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content(data-jsclass="clearAccessToken")
+				p Please login to access the requested page #{page}
 				

@@ -44,6 +44,10 @@ $mdc-theme-secondary: #757575;
 	padding-top:1px
 }
 
+.mdc-layout-grid {
+	max-width:1024px;
+}
+
 // bootstrap disambiguation - remove when bootstrap is gone
 label {
 	margin-bottom: auto;
