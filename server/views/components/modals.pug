@@ -29,7 +29,7 @@ aside#login-form.mdc-dialog(role="alertdialog")
 			footer.mdc-dialog__footer
 				a.toggle-modal.mdc-button.mdc-dialog__footer__button--cancel(href="#" data-target="#password-request-reset-form") Forgot Password
 				if globalSettings.multiUser === 'open'
-					a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form") Don't Have Account
+					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form") Don't Have Account
 				a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#") Cancel
 				button#login-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Login
 	.mdc-dialog__backdrop
