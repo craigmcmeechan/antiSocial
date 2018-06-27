@@ -9,9 +9,10 @@ block content
 	- var communityBackground = { 'url': '/images/fpo.jpg' }
 	if globalSettings.instance
 		- communityBackground =getUploadForProperty('background',globalSettings.instance.uploads(),'large',FPO)
-	.container-fluid.content-padding-top.content
-		.row
-			.col-sm-6.left-column
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6.content-padding-top.content
+		
 				h2.mb-3 User Settings
 
 				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/api/MyUsers/me")
@@ -139,27 +140,25 @@ block content
 							a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
 
 				#scope-upload
-					.col-sm-8
-						.form-group
-							h3 Profile Photo
-							- var endpoint = "/api/MyUsers/me/upload/photo"
-							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-								img(data-jsclass="digitopiaLazyImg" data-lazy-src= photo.url)
-								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-									.dz-message.
-										Drop your photo here<br><small>(or click to upload)</small>
+					.form-group
+						h3 Profile Photo
+						- var endpoint = "/api/MyUsers/me/upload/photo"
+						.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+							img(data-jsclass="digitopiaLazyImg" data-lazy-src= photo.url)
+							.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+								.dz-message.
+									Drop your photo here<br><small>(or click to upload)</small>
 
-					.col-sm-12
-						.form-group
-							h3 Profile Background
-							- var endpoint = "/api/MyUsers/me/upload/background"
-							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-								img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
-								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-									.dz-message.
-										Drop your image here<br><small>(or click to upload)</small>
+					.form-group
+						h3 Profile Background
+						- var endpoint = "/api/MyUsers/me/upload/background"
+						.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+							img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
+							.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+								.dz-message.
+									Drop your image here<br><small>(or click to upload)</small>
 			
-			.col-sm-6
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
 				if isAdmin
 					.page-heading
 						h2 Server Settings
