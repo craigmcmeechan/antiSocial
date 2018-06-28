@@ -20,9 +20,9 @@ block content
 	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 		include profile-tabs
 					
-		.container-fluid.content-padding-top.content
-			.row
-				.col-sm-8.left-column(style="background-color:white;padding:15px")
+		.mdc-layout-grid
+			.mdc-layout-grid__inner
+				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
 					if !friends 
 						- friends = data.friends
 					.page-heading
@@ -52,8 +52,6 @@ block content
 									a(href="/proxy-profile?endpoint=" + encodeURIComponent(friend.v))= friend.value.name
 					if !count
 						| none
-				.col-sm-4
-					if user
-						#newsfeed-here
-					else
+				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4
+					if !user
 						include ../components/server-sidebar

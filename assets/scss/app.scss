@@ -15,6 +15,7 @@ $fa-font-path: "/dist/fonts";
 $mdc-theme-primary: #212121;
 $mdc-theme-secondary: #757575;
 
+@import "@material/typography/mdc-typography";
 @import "@material/theme/mdc-theme";
 @import "@material/list/mdc-list";
 @import "@material/top-app-bar/mdc-top-app-bar";
@@ -25,6 +26,7 @@ $mdc-theme-secondary: #757575;
 @import "@material/textfield/helper-text/mdc-text-field-helper-text";
 @import "@material/textfield/icon/mdc-text-field-icon";
 @import "@material/layout-grid/mdc-layout-grid";
+@import "@material/snackbar/mdc-snackbar";
 
 
 .mdc-top-app-bar {
@@ -34,6 +36,8 @@ $mdc-theme-secondary: #757575;
 .dialog__body--scrollable {
 	max-height: 66vh;
 	overflow: auto;
+	border-top: thin solid #eee;
+	border-bottom: thin solid #eee;
 }
 
 .mdc-text-field {
@@ -42,6 +46,10 @@ $mdc-theme-secondary: #757575;
 
 .mdc-text-field__input {
 	padding-top:1px
+}
+
+.mdc-layout-grid {
+	max-width:1024px;
 }
 
 // bootstrap disambiguation - remove when bootstrap is gone

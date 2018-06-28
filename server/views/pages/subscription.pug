@@ -9,9 +9,10 @@ block content
 	-var SUBSCRIPTION_RATE_DESCRIPTION_PROMOTION = "\$1.50 a month w/free trial period of 15 days."
 	-var SUBSCRIPTION_PROMOTIONAL_PERIOD = 15
 
-	.container-fluid.content-padding-top.content
-		.row
-			.col-sm-12
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6.content-padding-top.content
+
 				
 				if currentUser.subscriptionStatus
 					p= 'Status: ' + currentUser.subscriptionStatus
