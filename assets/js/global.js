@@ -223,6 +223,7 @@ function instantiateMaterialDesignElements(element) {
 			drawer.open = false;
 		});
 	}
+
 	$(element).find('.mdc-button').each(function () {
 		const buttonRipple = new MDC.MDCRipple(this);
 	});
@@ -240,21 +241,19 @@ function instantiateMaterialDesignElements(element) {
 	});
 }
 
-var flashAjaxStatusTimeout;
+var flashTimer = null;
 
 function flashAjaxStatus(level, message) {
-
-	var alert = '<div class="alert-container"><div class="alert alert-' + level + '">' + message + '</div></div>';
-
-	$('#ajax-status').empty().html(alert);
-
-	if (flashAjaxStatusTimeout) {
-		clearTimeout(flashAjaxStatusTimeout);
+	if (flashTimer) {
+		clearTimeout(flashTimer);
 	}
-	flashAjaxStatusTimeout = setTimeout(function () {
-		$('#ajax-status').empty();
-		flashAjaxStatusTimeout = null;
-	}, 6000);
+	$('#ajax-status').find('.mdc-snackbar__text').html(message);
+	$('#ajax-status').addClass('mdc-snackbar--active');
+
+	flashTimer = setTimeout(function () {
+		flashTimer = null;
+		$('#ajax-status').removeClass('mdc-snackbar--active');
+	}, 1500);
 }
 
 function getUploadForProperty(prop, uploads, type, fpo) {
