@@ -17,6 +17,7 @@ block content
 							input.mdc-text-field__input(type="text" name="email"  data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email")
 							.input-ok-indicator.material-icons.mdc-text-field__icon
 								span.fa.fa-check
+							.mdc-line-ripple
 						.validation-help.mdc-text-field-helper-text--persistent
 							
 					.form-group
@@ -25,6 +26,7 @@ block content
 							input.mdc-text-field__input(type="text" name="confirm-email"  data-validate="required,email" data-match="input[name='email']")
 							.input-ok-indicator.material-icons.mdc-text-field__icon
 								span.fa.fa-check
+							.mdc-line-ripple
 						.validation-help.mdc-text-field-helper-text--persistent
 
 					.form-group
@@ -33,6 +35,7 @@ block content
 							input.mdc-text-field__input(type="password" name="password" data-validate="required,password")
 							.input-ok-indicator.material-icons.mdc-text-field__icon
 								span.fa.fa-check
+							.mdc-line-ripple
 						.validation-help.mdc-text-field-helper-text--persistent
 							
 					.form-group
@@ -41,6 +44,7 @@ block content
 							input.mdc-text-field__input(type="password" name="confirm-password" data-validate="required,password" data-match="input[name='password']")
 							.input-ok-indicator.material-icons.mdc-text-field__icon
 								span.fa.fa-check
+							.mdc-line-ripple
 						.validation-help.mdc-text-field-helper-text--persistent
 							
 					.form-group
@@ -49,7 +53,8 @@ block content
 							input.mdc-text-field__input(type="text" name="name" data-validate="required")
 							.input-ok-indicator.material-icons.mdc-text-field__icon
 								span.fa.fa-check
+							.mdc-line-ripple
 						.validation-help.mdc-text-field-helper-text--persistent
 							
 					.form-group
-						button.register-button.form-control.btn.btn-primary Sign Up
+						button.register-button.mdc-button.mdc-button--raised Sign Up

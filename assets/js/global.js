@@ -80,6 +80,11 @@ function bootMyAntiSocial() {
 	}
 
 	instantiateMaterialDesignElements($('body'));
+	$('body').on('DigitopiaDidLoadNewPage', function (e) {
+		if (e.target === this) {
+			instantiateMaterialDesignElements($('body'));
+		}
+	});
 
 	window.setTimeout(function () {
 		$('#splash').fadeOut('fast');
