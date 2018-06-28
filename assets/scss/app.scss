@@ -36,6 +36,8 @@ $mdc-theme-secondary: #757575;
 .dialog__body--scrollable {
 	max-height: 66vh;
 	overflow: auto;
+	border-top: thin solid #eee;
+	border-bottom: thin solid #eee;
 }
 
 .mdc-text-field {
@@ -49,8 +51,6 @@ $mdc-theme-secondary: #757575;
 .mdc-layout-grid {
 	max-width:1024px;
 }
-
-.mdc-snackbar { transform: translateY(100%); }
 
 // bootstrap disambiguation - remove when bootstrap is gone
 label {

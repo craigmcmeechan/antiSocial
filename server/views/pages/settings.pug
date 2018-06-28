@@ -26,28 +26,31 @@ block content
 
 					if !user.username
 						.form-group
-							label User Name (one time edit)
-							.input-relative
-								input.form-control(type="text" name="username" placeholder="Username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-suffix= user.unique data-unique-endpoint= "/api/MyUsers/isunique?field=username")
-								.input-ok-indicator
+							.mdc-text-field.mdc-text-field--with-trailing-icon
+								label.mdc-floating-label User Name (one time edit)
+								input.mdc-text-field__input(type="text" name="username" data-validate="required" data-mask="^[0-9a-zA-Z\-\_\.]+$" value= user.username data-autofocus="true" data-suffix= user.unique data-unique-endpoint= "/api/MyUsers/isunique?field=username")
+								.input-ok-indicator.material-icons.mdc-text-field__icon
 									span.fa.fa-check
-								.validation-help
+								.mdc-line-ripple
+							.validation-help.mdc-text-field-helper-text--persistent
 					if !user.name
 						.form-group
-							label Full Name
-							.input-relative
-								input.form-control(type="text" name="name" placeholder="Full Name" data-validate="required" value= user.name)
-								.input-ok-indicator
+							.mdc-text-field.mdc-text-field--with-trailing-icon
+								label.mdc-floating-label Full Name
+								input.mdc-text-field__input(type="text" name="name" data-validate="required" value= user.name)
+								.input-ok-indicator.material-icons.mdc-text-field__icon
 									span.fa.fa-check
-								.validation-help
+								.mdc-line-ripple
+							.validation-help.mdc-text-field-helper-text--persistent
 
 					.form-group
-							label Email
-							.input-relative
-								input.form-control(type="text" name="email" placeholder="Email address" data-validate="required" value= user.email  data-unique-endpoint= "/api/MyUsers/isunique?field=email")
-								.input-ok-indicator
-									span.fa.fa-check
-								.validation-help
+						.mdc-text-field.mdc-text-field--with-trailing-icon
+							label.mdc-floating-label Email
+							input.mdc-text-field__input(type="text" name="email" data-validate="required" value= user.email  data-unique-endpoint= "/api/MyUsers/isunique?field=email")
+							.input-ok-indicator.material-icons.mdc-text-field__icon
+								span.fa.fa-check
+							.mdc-line-ripple
+						.validation-help.mdc-text-field-helper-text--persistent
 
 					.form-group
 							.input-relative
@@ -56,8 +59,6 @@ block content
 								- var audiences = JSON.stringify(user.audiences ? user.audiences : ['close','family','colleagues','acquaintances'])
 								input#audience-list.form-control(type="hidden" name="audiences" placeholder="Audiences" data-validate="required" value= audiences)
 								.list-edit(data-jsclass="editListController" data-target="#audience-list" data-add-only= !init)
-								.input-ok-indicator
-									span.fa.fa-check
 								.validation-help
 
 				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/user-settings")
@@ -189,34 +190,34 @@ block content
 									.input-ok-indicator
 										span.fa.fa-check
 									.validation-help
-						.form-group
-							label Server Title
-							.input-relative
-								input.form-control(type="text" name="serverTitle" placeholder="Server Title" data-validate="required" value= globalSettings.serverTitle)
-								.input-ok-indicator
-									span.fa.fa-check
-								.validation-help
-						.form-group
-							label serverDescription
-							.input-relative
-								textarea.form-control(type="text" name="serverDescription" placeholder="Server Description" data-validate="required")= globalSettings.serverDescription
-								.input-ok-indicator
-									span.fa.fa-check
-								.validation-help
-						.form-group
-							.form-check
-								if globalSettings.communityChannel
-									input.form-check-input(type="checkbox" name="communityChannel" checked)
-								else
-									input.form-check-input(type="checkbox" name="communityChannel")
-								label.form-check-label Community Channel
-						
-						if globalSettings.instance
 							.form-group
-								h3 Community Background
-								- var endpoint = "/api/Settings/"+globalSettings.instance.id.toString()+"/upload/background"
-								.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-									img(data-jsclass="digitopiaLazyImg" data-lazy-src= communityBackground.url)
-									.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-										.dz-message.
-											Drop your image here<br><small>(or click to upload)</small>
+								label Server Title
+								.input-relative
+									input.form-control(type="text" name="serverTitle" placeholder="Server Title" data-validate="required" value= globalSettings.serverTitle)
+									.input-ok-indicator
+										span.fa.fa-check
+									.validation-help
+							.form-group
+								label serverDescription
+								.input-relative
+									textarea.form-control(type="text" name="serverDescription" placeholder="Server Description" data-validate="required")= globalSettings.serverDescription
+									.input-ok-indicator
+										span.fa.fa-check
+									.validation-help
+							.form-group
+								.form-check
+									if globalSettings.communityChannel
+										input.form-check-input(type="checkbox" name="communityChannel" checked)
+									else
+										input.form-check-input(type="checkbox" name="communityChannel")
+									label.form-check-label Community Channel
+							
+							if globalSettings.instance
+								.form-group
+									h3 Community Background
+									- var endpoint = "/api/Settings/"+globalSettings.instance.id.toString()+"/upload/background"
+									.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+										img(data-jsclass="digitopiaLazyImg" data-lazy-src= communityBackground.url)
+										.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+											.dz-message.
+												Drop your image here<br><small>(or click to upload)</small>
