@@ -4,84 +4,86 @@ block seo
 	title= pageTtitle
 
 block content
-	.container-fluid.content-padding-top.content
-		.page-header
-			h2.mb-3 Setup Server Environment
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
+				.page-header
+					h2.mb-3 Setup Server Environment
+					
+					form.form.form-validation(action="/environment" method="POST" data-jsclass="formValidator" data-submitter=".btn-primary")
+						.text-center
+							h3 Host and Protocol
+							p= config.publicHost
+						.form-group
+							label.label PORT: listener eg. 80, 443
+							.input-relative
+								input.form-control(name="PORT" value= config.port data-validate="required,integer")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label.label PUBLIC_HOST: dns host name for server
+							.input-relative
+								input.form-control(name="PUBLIC_HOST" placeholder="example.hostname.com" value= config.host data-validate="required")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label.label PUBLIC_PROTOCOL: http or https
+							.input-relative
+								input.form-control(name="PUBLIC_PROTOCOL"  value= config.protocol data-validate="required" data-options="http,https")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label.label PUBLIC_PORT: eg. 80 or 443
+							.input-relative
+								input.form-control(name="PUBLIC_PORT"  value= config.publicPort data-validate="required,integer")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label.label BEHIND_PROXY: 'true' if behind proxy or load balancer
+							.input-relative
+								input.form-control(name="BEHIND_PROXY" value= env.BEHIND_PROXY ? 'true' : 'false' data-options="true,false")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.text-center
+							h3 SSL Configuration
+						.form-group
+							label.label HTTPS_LISTENER: 'true' if webservice SSL listener
+							.input-relative
+								input.form-control(name="HTTPS_LISTENER" value= env.HTTPS_LISTENER === 'true' ? 'true' : 'false' data-options="true,false")
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label.label SSL_KEY_PATH: /etc/letsencrypt/live/some.domain.com/privkey.pem
+							.input-relative
+								input.form-control(name="SSL_KEY_PATH" value= env.SSL_KEY_PATH)
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						.form-group
+							label.label SSL_CERT_PATH: /etc/letsencrypt/live/some.domain.com/fullchain.pem
+							.input-relative
+								input.form-control(name="SSL_CERT_PATH" value= env.SSL_CERT_PATH)
+								.input-ok-indicator
+									span.fa.fa-check
+								.validation-help
+						
+						//	
+							OUTBOUND_MAIL
+							OUTBOUND_MAIL_SENDER
+							OUTBOUND_MAIL_SMTP_HOST
+							OUTBOUND_MAIL_SMTP_PORT
+							OUTBOUND_MAIL_SMTP_USER
+							OUTBOUND_MAIL_SMTP_PASSWORD
+							OUTBOUND_MAIL_SMTP_SSL
+							OUTBOUND_MAIL_SENDMAIL_PATH
+							SES_KEY
+							SES_KEY_ID
+							GOOGLE_MAPS_API_KEY
 			
-			form.form.form-validation(action="/environment" method="POST" data-jsclass="formValidator" data-submitter=".btn-primary")
-				.text-center
-					h3 Host and Protocol
-					p= config.publicHost
-				.form-group
-					label.label PORT: listener eg. 80, 443
-					.input-relative
-						input.form-control(name="PORT" value= config.port data-validate="required,integer")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.form-group
-					label.label PUBLIC_HOST: dns host name for server
-					.input-relative
-						input.form-control(name="PUBLIC_HOST" placeholder="example.hostname.com" value= config.host data-validate="required")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.form-group
-					label.label PUBLIC_PROTOCOL: http or https
-					.input-relative
-						input.form-control(name="PUBLIC_PROTOCOL"  value= config.protocol data-validate="required" data-options="http,https")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.form-group
-					label.label PUBLIC_PORT: eg. 80 or 443
-					.input-relative
-						input.form-control(name="PUBLIC_PORT"  value= config.publicPort data-validate="required,integer")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.form-group
-					label.label BEHIND_PROXY: 'true' if behind proxy or load balancer
-					.input-relative
-						input.form-control(name="BEHIND_PROXY" value= env.BEHIND_PROXY ? 'true' : 'false' data-options="true,false")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.text-center
-					h3 SSL Configuration
-				.form-group
-					label.label HTTPS_LISTENER: 'true' if webservice SSL listener
-					.input-relative
-						input.form-control(name="HTTPS_LISTENER" value= env.HTTPS_LISTENER === 'true' ? 'true' : 'false' data-options="true,false")
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.form-group
-					label.label SSL_KEY_PATH: /etc/letsencrypt/live/some.domain.com/privkey.pem
-					.input-relative
-						input.form-control(name="SSL_KEY_PATH" value= env.SSL_KEY_PATH)
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				.form-group
-					label.label SSL_CERT_PATH: /etc/letsencrypt/live/some.domain.com/fullchain.pem
-					.input-relative
-						input.form-control(name="SSL_CERT_PATH" value= env.SSL_CERT_PATH)
-						.input-ok-indicator
-							span.fa.fa-check
-						.validation-help
-				
-				//	
-					OUTBOUND_MAIL
-					OUTBOUND_MAIL_SENDER
-					OUTBOUND_MAIL_SMTP_HOST
-					OUTBOUND_MAIL_SMTP_PORT
-					OUTBOUND_MAIL_SMTP_USER
-					OUTBOUND_MAIL_SMTP_PASSWORD
-					OUTBOUND_MAIL_SMTP_SSL
-					OUTBOUND_MAIL_SENDMAIL_PATH
-					SES_KEY
-					SES_KEY_ID
-					GOOGLE_MAPS_API_KEY
-	
-				button.btn.btn-primary Save &amp; Restart
+						button.btn.btn-primary Save &amp; Restart

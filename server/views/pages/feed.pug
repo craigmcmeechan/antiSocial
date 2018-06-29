@@ -5,9 +5,9 @@ block seo
 
 block content
 	div(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
-		.container-fluid.content-padding-top.content
-			.row
-				.col-sm-8.left-column
+		.mdc-layout-grid
+			.mdc-layout-grid__inner
+				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
 					#the-posting-form
 						include ../components/posting-form
 					.feed-controls
@@ -41,5 +41,3 @@ block content
 					.text-center
 						.loader(data-jsclass="loadMoreController")
 						
-				.col-sm-4
-					#newsfeed-here

@@ -34,6 +34,11 @@ import {
 }
 from '@material/textfield/icon';
 
+import {
+	MDCSnackbar
+}
+from '@material/snackbar';
+
 module.exports = {
 	'MDCRipple': MDCRipple,
 	'MDCTopAppBar': MDCTopAppBar,
@@ -43,5 +48,6 @@ module.exports = {
 	'util': util,
 	'MDCTextField': MDCTextField,
 	'MDCTextFieldIcon': MDCTextFieldIcon,
-	'MDCTextFieldHelperText': MDCTextFieldHelperText
+	'MDCTextFieldHelperText': MDCTextFieldHelperText,
+	'MDCSnackbar': MDCSnackbar
 }
