@@ -70,7 +70,8 @@ var variables = [
 	'SUBSCRIPTION_TRIAL_PERIOD',
 	'SUBSCRIPTION_STRIPE_PLAN_ID',
 
-	'ENVFILE'
+	'ENVFILE',
+	'LOCAL_UPLOADS'
 ];
 
 module.exports = function (server) {
