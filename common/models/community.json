@@ -1,5 +1,6 @@
 {
   "name": "Community",
+  "plural": "Communities",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -37,7 +38,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "members": {
+      "type": "hasMany",
+      "model": "Member",
+      "foreignKey": "memberId"
+    }
+  },
   "acls": [{
     "accessType": "*",
     "property": "*",

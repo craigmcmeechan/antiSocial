@@ -107,6 +107,31 @@ describe('communities', function () {
 				done();
 			});
 	});
+
+	it('user1 should be able to join community-one', function (done) {
+		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community-one').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body.status).to.equal('ok');
+			done();
+		});
+	});
+
+	it('user1 should not able to join community-one again', function (done) {
+		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community-one').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body.status).to.equal('duplicate subscription request');
+			done();
+		});
+	});
+
+	it('user1 should be able to accept user-one as a member', function (done) {
+		client1.get('http://127.0.0.1:3000/community-one/accept-member?endpoint=' + 'http://127.0.0.1:3000/user-one').end(function (err, res) {
+			console.log('body', res.body);
+			expect(res.status).to.be(200);
+			expect(res.body.status).to.equal('ok');
+			done();
+		});
+	});
 });
 
 function getCookie(headers, id) {

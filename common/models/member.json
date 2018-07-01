@@ -1,0 +1,76 @@
+{
+	"name": "Member",
+	"base": "PersistedModel",
+	"idInjection": true,
+	"options": {
+		"validateUpsert": true
+	},
+	"strictObjectIDCoercion": true,
+	"mixins": {
+		"TimeStamp": {
+			"createdAt": "createdOn",
+			"updatedAt": "updatedOn",
+			"required": false,
+			"validateUpsert": true
+		}
+	},
+	"indexes": {
+		"Friend_remoteEndPoint": {
+			"keys": {
+				"remoteEndPoint": 1
+			}
+		}
+	},
+	"properties": {
+		"status": {
+			"type": "string"
+		},
+		"remoteEndPoint": {
+			"type": "string"
+		},
+		"localRequestToken": {
+			"type": "string"
+		},
+		"localAccessToken": {
+			"type": "string"
+		},
+		"remoteRequestToken": {
+			"type": "string"
+		},
+		"remoteAccessToken": {
+			"type": "string"
+		},
+		"keys": {
+			"type": "object"
+		},
+		"remotePublicKey": {
+			"type": "string"
+		},
+		"karma": {
+			"type": "object"
+		}
+	},
+	"protected": ["keys", "localRequestToken", "localAccessToken", "remoteRequestToken", "remoteAccessToken"],
+	"validations": [],
+	"relations": {
+		"community": {
+			"type": "belongsTo",
+			"model": "Community",
+			"foreignKey": "communityId"
+		}
+	},
+	"acls": [{
+		"accessType": "*",
+		"property": "*",
+		"principalType": "ROLE",
+		"principalId": "$everyone",
+		"permission": "DENY"
+	}, {
+		"accessType": "*",
+		"property": "*",
+		"principalType": "ROLE",
+		"principalId": "admin",
+		"permission": "ALLOW"
+	}],
+	"methods": {}
+}
