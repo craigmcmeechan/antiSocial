@@ -1,0 +1,61 @@
+{
+  "name": "Community",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdOn",
+      "updatedAt": "updatedOn",
+      "required": false,
+      "validateUpsert": true
+    }
+  },
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "viewPolicy": {
+      "type": "string"
+    },
+    "postPolicy": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "nickname": {
+      "type": "text",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [{
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "DENY"
+  }, {
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "admin",
+    "permission": "ALLOW"
+  }, {
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "superuser",
+    "permission": "ALLOW"
+  }],
+  "methods": {}
+}
