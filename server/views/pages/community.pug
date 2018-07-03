@@ -2,26 +2,26 @@ extends ../wrapper
 
 block seo
 	title
-		!= community.name ? community.name : globalSettings.serverTitle
+		!= data.community.name ? data.community.name : globalSettings.serverTitle
 
 block content
-	- var communityBackground =getUploadForProperty('background',community.uploads(),'large',FPO)
+	- var communityBackground =getUploadForProperty('background',data.community.uploads(),'large',FPO)
 
 	.profile-hero(data-jsclass="scrollToController,scrollEffectsController" data-bg= communityBackground.url data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
 		.text-gradient
 			.mdc-layout-grid
 				.mdc-layout-grid__inner
 					.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12.text-overlay.navbar-margin
-						if community.name
-							h1= community.name
-						if community.tagline
-							p= community.tagline
+						if data.community.name
+							h1= data.community.name
+						if data.community.tagline
+							p= data.community.tagline
 							
 	.profile-parallax(data-jsclass="vibrantController" data-image= communityBackground)
 		.mdc-layout-grid
 			.mdc-layout-grid__inner
 				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
-					if !user
+					if !user && !member
 						h4 You must be logged in to view this page
 					else
 						-var posts = data.posts
@@ -34,4 +34,4 @@ block content
 									
 						else
 							.page-header
-								h4 No public community posts on this server at the moment.
+								h4 No posts visible to you in this community at the moment.

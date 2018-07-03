@@ -73,8 +73,8 @@ module.exports = function (server) {
 				var parsed = url.parse(req.query.endpoint);
 				var communityName = parsed.pathname.substring(1);
 
-				for (var i = 0; i < currentUser.subscriptions.length; i++) {
-					if (currentUser.subscriptions.communityName === communityName) {
+				for (var i = 0; i < currentUser.subscriptions().length; i++) {
+					if (currentUser.subscriptions()[i].communityName === communityName) {
 						++unique;
 					}
 				}
@@ -230,7 +230,7 @@ module.exports = function (server) {
 				404 subscription/member record not found
 	*/
 
-	var exchangeRegex = /^\/.*([a-zA-Z0-9\-.]+)\/join-exchange$/;
+	var exchangeRegex = /^\/.*?([a-zA-Z0-9\-.]+)\/join-exchange$/;
 
 	router.post(exchangeRegex, function (req, res) {
 		var matches = req.url.match(exchangeRegex);
@@ -462,7 +462,7 @@ module.exports = function (server) {
 				});
 			},
 			function exchangeToken(community, member, cb) {
-				var myEndPoint = server.locals.config.publicHost + '/' + community.nickname;
+				var myEndPoint = server.locals.config.publicHost + '/community/' + community.nickname;
 				var payload = {
 					'endpoint': myEndPoint,
 					'requestToken': requestToken,

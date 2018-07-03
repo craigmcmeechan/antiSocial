@@ -41,7 +41,7 @@ module.exports = function () {
 					return next();
 				}
 
-				reqContext.set('communityAccess', member);
+				reqContext.set('communityMember', member);
 				next();
 			});
 		});
