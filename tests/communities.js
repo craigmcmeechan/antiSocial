@@ -35,7 +35,7 @@ describe('communities', function () {
 			.send({
 				'email': email1,
 				'password': password,
-				'name': 'user-1'
+				'name': 'user-one'
 			})
 			.end(function (err, res) {
 				expect(err).to.be(null);
@@ -109,7 +109,7 @@ describe('communities', function () {
 	});
 
 	it('user1 should be able to join community-one', function (done) {
-		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community-one').end(function (err, res) {
+		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community/community-one').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body.status).to.equal('ok');
 			done();
@@ -117,7 +117,7 @@ describe('communities', function () {
 	});
 
 	it('user1 should not able to join community-one again', function (done) {
-		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community-one').end(function (err, res) {
+		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community/community-one').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body.status).to.equal('duplicate subscription request');
 			done();

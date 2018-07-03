@@ -48,6 +48,9 @@
 		},
 		"remotePublicKey": {
 			"type": "string"
+		},
+		"communityName": {
+			"type": "string"
 		}
 	},
 	"protected": ["keys", "localRequestToken", "localAccessToken", "remoteRequestToken", "remoteAccessToken"],

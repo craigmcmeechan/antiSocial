@@ -42,7 +42,7 @@
     "members": {
       "type": "hasMany",
       "model": "Member",
-      "foreignKey": "memberId"
+      "foreignKey": "communityId"
     }
   },
   "acls": [{

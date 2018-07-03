@@ -69,12 +69,23 @@ module.exports = function (server) {
 				});
 			},
 			function createSubscription(pair, cb) { // create pending subscription record
+				var unique = '';
+				var parsed = url.parse(req.query.endpoint);
+				var communityName = parsed.pathname.substring(1);
+
+				for (var i = 0; i < currentUser.subscriptions.length; i++) {
+					if (currentUser.subscriptions.communityName === communityName) {
+						++unique;
+					}
+				}
+
 				currentUser.subscriptions.create({
 					'status': 'pending',
 					'remoteEndPoint': req.query.endpoint,
 					'localRequestToken': uuid(),
 					'localAccessToken': uuid(),
-					'keys': pair
+					'keys': pair,
+					'communityName': unique ? parsed.pathname.substring(1) + '-' + unique : parsed.pathname.substring(1)
 				}, function (err, subscription) {
 					if (err) {
 						var e = new VError(err, '/join createSubscription failed');
@@ -219,7 +230,7 @@ module.exports = function (server) {
 				404 subscription/member record not found
 	*/
 
-	var exchangeRegex = /^\/([a-zA-Z0-9\-.]+)\/join-exchange$/;
+	var exchangeRegex = /^\/.*([a-zA-Z0-9\-.]+)\/join-exchange$/;
 
 	router.post(exchangeRegex, function (req, res) {
 		var matches = req.url.match(exchangeRegex);
@@ -367,7 +378,7 @@ module.exports = function (server) {
 
 	*/
 
-	var requestRegex = /^\/([a-zA-Z0-9\-.]+)\/join-request$/;
+	var requestRegex = /^\/community\/([a-zA-Z0-9\-.]+)\/join-request$/;
 
 	router.post(requestRegex, function (req, res, next) {
 		var matches = req.url.match(requestRegex);
@@ -441,8 +452,7 @@ module.exports = function (server) {
 					'keys': pair,
 					'audiences': ['public'],
 					'uniqueRemoteUsername': unique ? remoteEndPoint.pathname.substring(1) + '-' + unique : remoteEndPoint.pathname.substring(1),
-					'hash': crc.crc32(req.body.remoteEndPoint).toString(16),
-					'communityId': community.id
+					'hash': crc.crc32(req.body.remoteEndPoint).toString(16)
 				}, function (err, member) {
 					if (err) {
 						var e = new VError(err, '/join-request createPendingMember failed');
@@ -531,7 +541,7 @@ module.exports = function (server) {
 				{ 'status': 'ok' }
 	*/
 
-	var acceptRegex = /^\/([a-zA-Z0-9\-.]+)\/accept-member/;
+	var acceptRegex = /^\/community\/([a-zA-Z0-9\-.]+)\/accept-member/;
 
 	router.get(acceptRegex, getCurrentUser(), ensureLoggedIn(), function (req, res) {
 		var matches = req.url.match(acceptRegex);

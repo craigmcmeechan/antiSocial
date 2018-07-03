@@ -35,7 +35,8 @@
       "friends",
       "pushNewsFeedItems",
       "newsFeeds",
-      "photos"
+      "photos",
+      "subscriptions"
     ],
     "helpers": [{
       "type": "upload",
