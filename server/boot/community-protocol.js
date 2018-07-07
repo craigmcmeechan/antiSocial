@@ -71,7 +71,8 @@ module.exports = function (server) {
 			function createSubscription(pair, cb) { // create pending subscription record
 				var unique = '';
 				var parsed = url.parse(req.query.endpoint);
-				var communityName = parsed.pathname.substring(1);
+				var tmp = parsed.pathname.split('/');
+				var communityName = tmp[tmp.length - 1];
 
 				for (var i = 0; i < currentUser.subscriptions().length; i++) {
 					if (currentUser.subscriptions()[i].communityName === communityName) {
@@ -85,7 +86,7 @@ module.exports = function (server) {
 					'localRequestToken': uuid(),
 					'localAccessToken': uuid(),
 					'keys': pair,
-					'communityName': unique ? parsed.pathname.substring(1) + '-' + unique : parsed.pathname.substring(1)
+					'communityName': unique ? communityName + '-' + unique : communityName
 				}, function (err, subscription) {
 					if (err) {
 						var e = new VError(err, '/join createSubscription failed');

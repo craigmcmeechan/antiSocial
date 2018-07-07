@@ -17,6 +17,18 @@ block content
 						if data.community.tagline
 							p= data.community.tagline
 							
+						if !subscription
+							button.mdc-button.mdc-button--raised Join Community
+						else
+							if subscriptionStatus === 'pending'
+								p Pending request
+								
+							else
+								
+								button.mdc-button.mdc-button--raised Leave Community
+
+							
+							
 	.profile-parallax(data-jsclass="vibrantController" data-image= communityBackground)
 		.mdc-layout-grid
 			.mdc-layout-grid__inner
