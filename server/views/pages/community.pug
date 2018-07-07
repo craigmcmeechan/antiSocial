@@ -5,7 +5,8 @@ block seo
 		!= data.community.name ? data.community.name : globalSettings.serverTitle
 
 block content
-	- var communityBackground =getUploadForProperty('background',data.community.uploads(),'large',FPO)
+	- var uploads = typeof data.community.uploads === 'function' ? data.community.uploads() : data.community.uploads
+	- var communityBackground =getUploadForProperty('background',uploads,'large',FPO)
 
 	.profile-hero(data-jsclass="scrollToController,scrollEffectsController" data-bg= communityBackground.url data-effect-start="0.00" data-effect-end="0.66" data-effect-units="viewport" data-effect-transform-units="viewport" data-effect-start-css="margin-top:0.00px;padding-top:0.00px;" data-effect-end-css="margin-top:-0.33px;padding-top:0.33px" data-effect-ease="swing")
 		.text-gradient

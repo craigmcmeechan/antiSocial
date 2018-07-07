@@ -10,8 +10,9 @@ var getCommunityMember = require('../middleware/context-getCommunityMember');
 var async = require('async');
 var request = require('request');
 var utils = require('../lib/endpoint-utils');
-
 var debug = require('debug')('communities');
+var VError = require('verror').VError;
+var WError = require('verror').WError;
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -111,15 +112,20 @@ module.exports = function (server) {
           var options = {
             'url': url,
             'json': true,
-            'headers': [{
+            'headers': {
               'community-access-token': subscription.remoteAccessToken
-            }]
+            }
           };
 
           request.get(options, function (err, response, body) {
             if (err || response.statusCode !== 200) {
-              console.log(err);
-              return res.sendStatus(response ? response.statusCode : 401);
+              console.log('got bad response', err);
+              if (err) {
+                return cb(new VError(err, 'Could not get community feed'));
+              }
+              else {
+                return cb(new VError('Got bad response %s', response.statusCode));
+              }
             }
 
             var data = body;
@@ -134,15 +140,14 @@ module.exports = function (server) {
 
               var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
               if (!decrypted.valid) {
-                return res.sendStatus('401');
+                return cb(new VError('unable to decrypt response'));
               }
               data = JSON.parse(decrypted.data);
             }
 
             data.highwater = highwater;
 
-            return (cb, subscription, data);
-
+            cb(null, subscription, data);
           });
         }
         else {
@@ -153,10 +158,12 @@ module.exports = function (server) {
             }
           }, function (err, community) {
             if (err) {
-              return next(err);
+              return cb(err);
             }
             if (!community) {
-              return res.sendStatus(404);
+              var e = new Error('community not found');
+              e.httpStatusCode = 404;
+              return cb(e);
             }
 
             if (!communityMember) {
@@ -197,7 +204,7 @@ module.exports = function (server) {
 
             req.app.models.Post.find(query, function (err, posts) {
               if (err) {
-                return next(err);
+                return cb(err);
               }
 
               resolveProfilesForPosts(posts, function (err) {
@@ -214,8 +221,11 @@ module.exports = function (server) {
         }
       }
     ], function (err, subscription, feed) {
+      if (err) {
+        return next(err);
+      }
       if (view === '.json') {
-        return res.send(utils.encryptIfFriend(subscription, feed));
+        return res.send(utils.encryptIfFriend(communityMember, feed));
       }
       res.header('x-highwater', feed.highwater);
       res.render('pages/community', {
