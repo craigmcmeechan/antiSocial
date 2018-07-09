@@ -546,7 +546,7 @@ module.exports = function (server) {
             }
             var payload = {
               'source': post.source,
-              'visibility': post.visibility,
+              'visibility': visibility,
               'athoritativeEndpoint': post.source + '/post/' + post.uuid
             };
 
