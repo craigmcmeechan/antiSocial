@@ -57,6 +57,11 @@
 			"type": "belongsTo",
 			"model": "Community",
 			"foreignKey": "communityId"
+		},
+		"posts": {
+			"type": "hasMany",
+			"model": "CommunityPost",
+			"foreignKey": "memberId"
 		}
 	},
 	"acls": [{

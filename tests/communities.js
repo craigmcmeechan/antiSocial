@@ -132,6 +132,18 @@ describe('communities', function () {
 			done();
 		});
 	});
+
+	it('user1 should be able to post to community', function (done) {
+		client1.post('http://127.0.0.1:3000/post').send({
+			body: 'Hello world',
+			visibility: ['community-community-one']
+		}).end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body.result.status).to.be('ok');
+			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
+			done();
+		});
+	});
 });
 
 function getCookie(headers, id) {

@@ -13,6 +13,7 @@ var utils = require('../lib/endpoint-utils');
 var debug = require('debug')('communities');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
+var uuid = require('uuid');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -176,7 +177,7 @@ module.exports = function (server) {
               'where': {
                 'and': [{
                   'visibility': {
-                    'inq': ['community:' + community.nickname]
+                    'inq': ['community:community-' + community.nickname]
                   },
                   'posted': true
                 }]
@@ -235,6 +236,47 @@ module.exports = function (server) {
         'pageTitle': 'Community: ' + feed.community.name,
         'subscription': subscription,
         'member': communityMember
+      });
+    });
+  });
+
+  var communityPost = /^\/community\/([a-zA-Z0-9-]+)\/post$/;
+
+  router.post(communityPost, getCurrentUser(), getCommunityMember(), function (req, res, next) {
+    var ctx = req.myContext;
+    var matches = req.url.match(communityPost);
+    var community = matches[1];
+    var currentUser = ctx.get('currentUser');
+    var communityMember = ctx.get('communityMember');
+
+    if (!communityMember) {
+      return res.sendStatus(401);
+    }
+
+    async.waterfall([
+      function (cb) {
+        req.body.uuid = uuid();
+        communityMember.posts.create(req.body, function (err, post) {
+          if (err) {
+            var e = new VError(err, 'could create Post');
+            return cb(e);
+          }
+          cb(null, post);
+        });
+      }
+    ], function (err, post) {
+      if (err) {
+        var e = new WError(err, 'could not save post');
+        server.locals.logger.error(e.toString());
+        return res.send({
+          'status': e.cause().message
+        });
+      }
+      res.send({
+        'result': {
+          'status': 'ok',
+          'uuid': post.uuid
+        }
       });
     });
   });

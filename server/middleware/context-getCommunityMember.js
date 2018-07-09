@@ -11,8 +11,12 @@ module.exports = function () {
 			return next();
 		}
 
-		var communityRE = /^\/community\/([a-zA-Z0-9-]+)(\.json)?$/;
+		var communityRE = /^\/community\/([a-zA-Z0-9-]+)(\/post)?(\.json)?$/;
 		var matches = req.url.match(communityRE);
+
+		if (!matches) {
+			return next();
+		}
 
 		req.app.models.Community.findOne({
 			'where': {
