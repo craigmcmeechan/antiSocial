@@ -71,10 +71,6 @@
 						input.form-check-input(type="checkbox" data-value="public")
 						label.form-check-label public
 						
-					.form-check.form-check-inline
-						input.form-check-input(type="checkbox" data-value="community")
-						label.form-check-label community
-						
 					if 0 && fb
 						.form-check.form-check-inline
 							input.form-check-input(type="checkbox" data-value="facebook")
@@ -89,7 +85,13 @@
 							.form-check.form-check-inline
 								input.form-check-input(type="checkbox" data-value= audience)
 								label.form-check-label= audience
-			
+								
+					if user && user.subscriptions()
+						for subscription in user.subscriptions()
+							.form-check.form-check-inline
+								input.form-check-input(type="checkbox" data-value="community-" + subscription.communityName)
+								label.form-check-label= subscription.communityName
+
 			.autopost-zone
 				.form-group.input-relative
 					.input-group.date

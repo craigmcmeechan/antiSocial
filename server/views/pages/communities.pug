@@ -1,0 +1,14 @@
+extends ../wrapper
+
+block seo
+	title Communities hosted on this server
+
+block content
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
+				h4 Communities hosted on this server
+				ul
+					for community in communities
+						li
+							a(href="/community/" + community.nickname )= community.name

@@ -1,0 +1,63 @@
+{
+  "name": "CommunityPost",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "strictObjectIDCoercion": true,
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdOn",
+      "updatedAt": "updatedOn",
+      "required": false,
+      "validateUpsert": true
+    }
+  },
+  "indexes": {
+    "Post_uuid": {
+      "keys": {
+        "uuid": 1
+      }
+    }
+  },
+  "properties": {
+    "uuid": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "visibility": {
+      "type": ["string"]
+    },
+    "athoritativeEndpoint": {
+      "type": "string"
+    },
+    "cache": {
+      "type": "object"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "member": {
+      "type": "belongsTo",
+      "model": "Member",
+      "foreignKey": "memberId"
+    }
+  },
+  "acls": [{
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "DENY"
+  }, {
+    "accessType": "*",
+    "property": "*",
+    "principalType": "ROLE",
+    "principalId": "admin",
+    "permission": "ALLOW"
+  }],
+  "methods": {}
+}
