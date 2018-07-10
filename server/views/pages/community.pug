@@ -39,13 +39,16 @@ block content
 					else
 						-var posts = data.posts
 						if posts && posts.length
-							
-							for post in posts
-								p= JSON.stringify(post)
-							
+							#the-posting-form
+								include ../components/posting-form
+							#scope-post-list
+								for post in posts
+									if post.httpStatus === 200
+										.newsfeed-item
+											.news-summary!= post.feedSummary
+											!= post.html
 							.text-center
 								.loader(data-jsclass="loadMoreController")
-									
 						else
 							.page-header
 								h4 No posts visible to you in this community at the moment.

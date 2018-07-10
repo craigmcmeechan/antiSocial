@@ -129,7 +129,7 @@ module.exports.getPosts = function (user, friend, highwater, isMe, tags, cb) {
 	});
 };
 
-module.exports.getPost = function (postId, user, friend, isMe, cb) {
+module.exports.getPost = function (postId, user, friend, subscription, isMe, cb) {
 	var query = {
 		'where': {
 			'and': [{
@@ -141,11 +141,20 @@ module.exports.getPost = function (postId, user, friend, isMe, cb) {
 	};
 
 	if (!isMe) {
-		query.where.and.push({
-			'visibility': {
-				'inq': friend && friend.audiences ? friend.audiences : ['public']
-			}
-		});
+		if (subscription) {
+			query.where.and.push({
+				'visibility': {
+					'inq': ['community-' + subscription.communityName]
+				}
+			});
+		}
+		else {
+			query.where.and.push({
+				'visibility': {
+					'inq': friend && friend.audiences ? friend.audiences : ['public']
+				}
+			});
+		}
 	}
 
 	debug('getPost: %j', query);

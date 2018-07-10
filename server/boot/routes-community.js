@@ -7,9 +7,11 @@ var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
 var encryption = require('../lib/encryption');
 var getCommunityMember = require('../middleware/context-getCommunityMember');
+var proxyEndPoint = require('../lib/proxy-endpoint');
 var async = require('async');
 var request = require('request');
 var utils = require('../lib/endpoint-utils');
+var jsdom = require('jsdom');
 var debug = require('debug')('communities');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
@@ -24,8 +26,6 @@ module.exports = function (server) {
     var matches = req.url.match(communitiesRE);
     var view = matches[1];
     var currentUser = ctx.get('currentUser');
-
-    // TODO is json view needed?
 
     async.waterfall([
       function getHostedCommunities(cb) {
@@ -47,6 +47,7 @@ module.exports = function (server) {
         });
       }
     ], function (err, communities, subscriptions) {
+
       if (subscriptions && subscriptions.length) {
         return res.render('pages/subscriptions', {
           'user': currentUser,
@@ -205,10 +206,38 @@ module.exports = function (server) {
                 return cb(err);
               }
 
-              cb(err, null, {
-                'community': community,
-                'posts': posts,
-                'highwater': highwater
+              async.map(posts, function (item, doneResolve) {
+                request.get({
+                  'url': item.athoritativeEndpoint,
+                  'headers': {
+                    'community-access-token': communityMember.remoteAccessToken
+                  }
+                }, function (err, response, body) {
+                  if (err) {
+                    item.httpStatus = 500;
+                    item.html = '<div class="post">Content unavailable. (' + err + ')</div>';
+                    return doneResolve();
+                  }
+
+                  item.httpStatus = response.statusCode;
+
+                  if (response.statusCode !== 200) {
+                    item.html = '<div class="post">Content unavailable. (' + response.statusCode + ')</div>';
+                    return doneResolve();
+                  }
+
+                  var dom = new jsdom.JSDOM(body);
+                  var element = dom.window.document.querySelector('.post');
+                  item.html = element ? element.outerHTML : '<div class="post">Content unavailable.</div>';
+
+                  doneResolve();
+                });
+              }, function (err) {
+                cb(err, null, {
+                  'community': community,
+                  'posts': posts,
+                  'highwater': highwater
+                });
               });
             });
           });
@@ -221,6 +250,7 @@ module.exports = function (server) {
       if (view === '.json') {
         return res.send(utils.encryptIfFriend(communityMember, feed));
       }
+
       res.header('x-highwater', feed.highwater);
       res.render('pages/community', {
         'user': ctx.get('currentUser'),

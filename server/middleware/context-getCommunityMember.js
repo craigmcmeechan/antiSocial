@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 module.exports = function () {
-	return function contextCommunityAccess(req, res, next) {
+	return function contextCommunityMember(req, res, next) {
 		var reqContext = req.getCurrentContext();
 		var accessToken = req.headers['community-access-token'];
 
