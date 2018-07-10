@@ -74,7 +74,7 @@ module.exports = function (server) {
     });
   });
 
-  var communityRE = /^\/community\/([a-zA-Z0-9-]+)(\.json)?$/;
+  var communityRE = /^\/community\/([a-zA-Z0-9-]+)(\.json)?(\?more=1)?(&highwater=1)?$/;
 
   router.get(communityRE, getCurrentUser(), getCommunityMember(), function (req, res, next) {
     var ctx = req.myContext;
@@ -177,18 +177,15 @@ module.exports = function (server) {
               'where': {
                 'and': [{
                   'visibility': {
-                    'inq': ['community:community-' + community.nickname]
-                  },
-                  'posted': true
+                    'inq': ['community-' + community.nickname]
+                  }
                 }]
               },
               'order': 'createdOn DESC',
               'limit': 30,
-              'include': [{
-                'user': ['uploads']
-              }, {
-                'photos': ['uploads']
-              }]
+              'include': [
+                'member'
+              ]
             };
 
             var highwater = 30;
@@ -203,19 +200,15 @@ module.exports = function (server) {
               }
             }
 
-            req.app.models.Post.find(query, function (err, posts) {
+            req.app.models.CommunityPost.find(query, function (err, posts) {
               if (err) {
                 return cb(err);
               }
 
-              resolveProfilesForPosts(posts, function (err) {
-                resolvePostPhotos(posts, function (err) {
-                  cb(err, null, {
-                    'community': community,
-                    'posts': posts,
-                    'highwater': highwater
-                  });
-                });
+              cb(err, null, {
+                'community': community,
+                'posts': posts,
+                'highwater': highwater
               });
             });
           });

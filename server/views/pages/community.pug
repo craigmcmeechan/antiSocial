@@ -40,7 +40,8 @@ block content
 						-var posts = data.posts
 						if posts && posts.length
 							
-							include ../components/post-list
+							for post in posts
+								p= JSON.stringify(post)
 							
 							.text-center
 								.loader(data-jsclass="loadMoreController")
