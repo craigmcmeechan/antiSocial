@@ -41,12 +41,7 @@ block content
 						if posts && posts.length
 							#the-posting-form
 								include ../components/posting-form
-							#scope-post-list
-								for post in posts
-									if post.httpStatus === 200
-										.newsfeed-item
-											.news-summary!= post.feedSummary
-											!= post.html
+							include ../components/post-list
 							.text-center
 								.loader(data-jsclass="loadMoreController")
 						else
