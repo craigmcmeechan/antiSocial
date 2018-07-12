@@ -2,11 +2,13 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var doPostNotifications = require('../lib/doPostNotifications');
 var uuid = require('uuid');
+var request = require('request');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');
+var debug = require('debug')('communities');
 
-module.exports = function(server) {
+module.exports = function (server) {
   var router = server.loopback.Router();
 
   /**
@@ -23,7 +25,7 @@ module.exports = function(server) {
    * @response {HTML} html form for editing post
    */
 
-  router.get('/post/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.get('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var postId = req.params.id;
@@ -39,7 +41,7 @@ module.exports = function(server) {
           }
         };
 
-        server.models.Post.findOne(query, function(err, post) {
+        server.models.Post.findOne(query, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -53,7 +55,7 @@ module.exports = function(server) {
           cb(null, post);
         });
       }
-    ], function(err, post) {
+    ], function (err, post) {
       res.render('components/posting-form', {
         'editing': true,
         'post': post,
@@ -81,7 +83,7 @@ module.exports = function(server) {
    * @response {Object} result.status 'ok' or if error result.status has a human readable error message. eg. 'result': {'status': 'ok','flashLevel': 'success','flashMessage': 'saved'}
    */
 
-  router.post('/post/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.post('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var postId = req.params.id;
@@ -97,7 +99,7 @@ module.exports = function(server) {
           }
         };
 
-        server.models.Post.findOne(query, function(err, post) {
+        server.models.Post.findOne(query, function (err, post) {
           if (err) {
             return cb(err);
           }
@@ -142,7 +144,7 @@ module.exports = function(server) {
 
         post.description = postDescription;
 
-        post.save(function(err) {
+        post.save(function (err) {
           if (err) {
             cb(err);
           }
@@ -164,13 +166,13 @@ module.exports = function(server) {
 
         re = /\(tag-user-([^)]+)\)/g;
         tags = post.body.match(re);
-        async.map(tags, function(tag, doneTag) {
+        async.map(tags, function (tag, doneTag) {
           var friendEndPoint = tag;
           friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           post.tags.push('@' + friendEndPoint);
           doneTag();
-        }, function(err) {
+        }, function (err) {
           if (post.tags.length) {
             post.save();
           }
@@ -179,7 +181,7 @@ module.exports = function(server) {
       },
       function updatePushNewsFeedItem(post, cb) {
         if (!post.posted) {
-          return async.setImmediate(function() {
+          return async.setImmediate(function () {
             cb(null, post);
           });
         }
@@ -190,7 +192,7 @@ module.exports = function(server) {
             'about': post.source + '/post/' + post.uuid,
             'userId': currentUser.id
           }
-        }, function(err, news) {
+        }, function (err, news) {
           if (err) {
             var e = new VError(err, 'could not update PushNewsFeedItem');
             return cb(e);
@@ -207,7 +209,7 @@ module.exports = function(server) {
       },
       function updateNewsFeedItem(post, cb) { // notify self
         if (!post.posted) {
-          return async.setImmediate(function() {
+          return async.setImmediate(function () {
             cb(null, post);
           });
         }
@@ -218,7 +220,7 @@ module.exports = function(server) {
             'about': post.source + '/post/' + post.uuid,
             'userId': currentUser.id
           }
-        }, function(err, news) {
+        }, function (err, news) {
           if (err) {
             var e = new VError(err, 'could not update NewsFeedItem');
             return cb(e);
@@ -231,7 +233,7 @@ module.exports = function(server) {
           cb(null, post);
         });
       }
-    ], function(err, post) {
+    ], function (err, post) {
       if (err) {
         return res.send({
           'result': {
@@ -266,7 +268,7 @@ module.exports = function(server) {
    */
 
   // TODO improve error handling
-  router.delete('/post/:id', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.delete('/post/:id', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     var postId = req.params.id;
@@ -282,7 +284,7 @@ module.exports = function(server) {
             }
           };
 
-          server.models.Post.findOne(query, function(err, post) {
+          server.models.Post.findOne(query, function (err, post) {
             if (err) {
               return cb(err);
             }
@@ -299,7 +301,7 @@ module.exports = function(server) {
         function deletePhotos(post, cb) {
           server.models.PostPhoto.destroyAll({
             'postId': post.id
-          }, function(err, data) {
+          }, function (err, data) {
             //console.log('deletePhotos', err, data);
             cb(err, post);
           });
@@ -317,7 +319,7 @@ module.exports = function(server) {
             }
           };
 
-          server.models.PushNewsFeedItem.find(q, function(err, items) {
+          server.models.PushNewsFeedItem.find(q, function (err, items) {
             for (var i = 0; i < items.length; i++) {
               items[i].updateAttribute('deleted', true);
             }
@@ -333,18 +335,18 @@ module.exports = function(server) {
                 'like': new RegExp('^' + post.source + '/post/' + post.uuid)
               }
             }]
-          }, function(err, data) {
+          }, function (err, data) {
             //console.log('deleteNewsFeedItems', err, data);
             cb(err, post);
           });
         },
         function deletePost(post, cb) {
-          post.destroy(function(err) {
+          post.destroy(function (err) {
             cb(err);
           });
         }
       ],
-      function(err) {
+      function (err) {
         if (err) {
           return res.send({
             'result': {
@@ -380,7 +382,7 @@ module.exports = function(server) {
    * @response {Object} result.status: 'ok' 'result.uuid': post.uuid
    }
    */
-  router.post('/post', getCurrentUser(), ensureLoggedIn(), function(req, res, next) {
+  router.post('/post', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
     var ctx = req.myContext;
     var currentUser = ctx.get('currentUser');
     req.body.uuid = uuid();
@@ -392,10 +394,11 @@ module.exports = function(server) {
     }
 
     async.waterfall([
-      function(cb) { // create the post
+      function (cb) { // create the post
         if (req.body.autopost) {
           req.body.posted = false;
-        } else {
+        }
+        else {
           req.body.posted = true;
         }
 
@@ -410,7 +413,7 @@ module.exports = function(server) {
 
         req.body.description = postDescription;
 
-        currentUser.posts.create(req.body, function(err, post) {
+        currentUser.posts.create(req.body, function (err, post) {
           if (err) {
             var e = new VError(err, 'could create Post');
             return cb(e);
@@ -418,28 +421,28 @@ module.exports = function(server) {
           cb(null, post);
         });
       },
-      function(post, cb) { // associate uploaded pending photos through PostPhoto
+      function (post, cb) { // associate uploaded pending photos through PostPhoto
         if (!req.body.photos) {
-          return async.setImmediate(function() {
+          return async.setImmediate(function () {
             cb(null, post, null);
           });
         }
         var count = 0;
-        async.mapSeries(req.body.photos, function(photo, mapCallback) {
+        async.mapSeries(req.body.photos, function (photo, mapCallback) {
           req.app.models.PostPhoto.create({
             'photoId': photo.id,
             'postId': post.id,
             'sequence': count++,
             'title': photo.title,
             'description': photo.description
-          }, function(err, photoInstance) {
+          }, function (err, photoInstance) {
             if (err) {
               var e = new VError(err, 'could create PostPhoto');
               return mapCallback(e);
             }
             mapCallback(null, photoInstance);
           });
-        }, function(err, postPhotoInstances) {
+        }, function (err, postPhotoInstances) {
           if (err) {
             var e = new VError(err, 'error creating PostPhotos');
             return cb(e, post);
@@ -447,33 +450,33 @@ module.exports = function(server) {
           cb(null, post, postPhotoInstances);
         });
       },
-      function(post, postPhotoInstances, cb) { // update the photos
+      function (post, postPhotoInstances, cb) { // update the photos
         if (!req.body.photos) {
-          return async.setImmediate(function() {
+          return async.setImmediate(function () {
             cb(null, post);
           });
         }
         // get photos for PostPhotos
-        req.app.models.PostPhoto.include(postPhotoInstances, 'photo', function(err) {
+        req.app.models.PostPhoto.include(postPhotoInstances, 'photo', function (err) {
           if (err) {
             var e = new VError(err, 'error including photos in PostPhotos');
             return cb(e, post);
           }
 
           // update the photo status from pending to complete
-          async.eachSeries(postPhotoInstances, function(postPhoto, eachCb) {
+          async.eachSeries(postPhotoInstances, function (postPhoto, eachCb) {
             postPhoto.photo().updateAttributes({
               'status': 'complete',
               'title': postPhoto.title,
               'description': postPhoto.description
-            }, function(err) {
+            }, function (err) {
               if (err) {
                 var e = new VError(err, 'error marking status of Photo');
                 return eachCb(e);
               }
               eachCb();
             });
-          }, function(err) {
+          }, function (err) {
             if (err) {
               var e = new VError(err, 'error marking status of Photos');
               return cb(e, post);
@@ -482,7 +485,7 @@ module.exports = function(server) {
           });
         });
       },
-      function getTags(post, cb) {
+      function getTags(post, cb) { // set tags
         post.tags = [];
         var re = /\(tag-hash-([^)]+)\)/g;
         var tags = post.body.match(re);
@@ -497,25 +500,78 @@ module.exports = function(server) {
 
         re = /\(tag-user-([^)]+)\)/g;
         tags = post.body.match(re);
-        async.map(tags, function(tag, doneTag) {
+        async.map(tags, function (tag, doneTag) {
           var friendEndPoint = tag;
           friendEndPoint = friendEndPoint.replace(/^\(tag-user-/, '');
           friendEndPoint = friendEndPoint.replace(/\)$/, '');
           post.tags.push('@' + friendEndPoint);
           doneTag();
-        }, function(err) {
+        }, function (err) {
           if (post.tags.length) {
             post.save();
           }
           cb(null, post);
         });
       },
-      function(post, cb) {
-        doPostNotifications(currentUser, post, function(err, post) {
+      function (post, cb) { // do notifications
+        doPostNotifications(currentUser, post, function (err, post) {
+          cb(err, post);
+        });
+      },
+      function (post, cb) {
+        // look for communities in audiences
+        async.mapSeries(post.visibility, function (channel, doneAudiences) {
+          var matches = channel.match(/^community-([0-9a-zA-Z-]+)/);
+          if (!matches) {
+            return async.setImmediate(function () { // not a community
+              doneAudiences();
+            });
+          }
+
+          var subscriptions = [];
+
+          for (var i = 0; i < currentUser.subscriptions().length; i++) {
+            var subscription = currentUser.subscriptions()[i];
+            if (subscription.communityName === matches[1]) {
+              subscriptions.push(subscription);
+            }
+          }
+
+          // post notification to all selected community subscription endpoint(s)
+          async.mapSeries(subscriptions, function (subscription, donePostToCommunity) {
+            var visibility = [];
+            visibility.push('community-' + subscription.communityName);
+            if (post.visibility.indexOf('public') !== -1) {
+              visibility.push('public');
+            }
+            var payload = {
+              'source': post.source,
+              'visibility': visibility,
+              'athoritativeEndpoint': post.source + '/post/' + post.uuid
+            };
+
+            var options = {
+              'url': fixIfBehindProxy(subscription.remoteEndPoint + '/post'),
+              'headers': {
+                'community-access-token': subscription.remoteAccessToken
+              },
+              'form': payload,
+              'json': true
+            };
+
+            request.post(options, function (err, response, body) {
+              donePostToCommunity(err);
+            });
+
+          }, function (err) {
+            doneAudiences(err);
+          });
+
+        }, function (err) {
           cb(err, post);
         });
       }
-    ], function(err, post) {
+    ], function (err, post) {
       if (err) {
         var e = new WError(err, 'could not save post');
         server.locals.logger.error(e.toString());
@@ -533,4 +589,15 @@ module.exports = function(server) {
   });
 
   server.use(router);
+
+  function fixIfBehindProxy(url) {
+    if (process.env.BEHIND_PROXY === "true") {
+      var rx = new RegExp('^' + server.locals.config.publicHost);
+      if (url.match(rx)) {
+        url = url.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+        debug('bypass proxy ' + url);
+      }
+    }
+    return url;
+  }
 };

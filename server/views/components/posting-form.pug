@@ -12,18 +12,14 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					.posting-body.form-control.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '' data-placeholder= placeholder style="font-family:Helvetica,Arial,sans-serif;")
+					.posting-body.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '' data-placeholder= placeholder style="font-family:Helvetica,Arial,sans-serif;")
 						if editing
 							p
 								br
 							!= marked(post.body,true)
 							p
 								br
-					textarea.form-control.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
-						
-					.input-ok-indicator
-						span.fa.fa-check
-					.validation-help
+					textarea.posting-markdown(type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;")
 						
 			
 		.hide-until-subject-focus
@@ -75,10 +71,6 @@
 						input.form-check-input(type="checkbox" data-value="public")
 						label.form-check-label public
 						
-					.form-check.form-check-inline
-						input.form-check-input(type="checkbox" data-value="community")
-						label.form-check-label community
-						
 					if 0 && fb
 						.form-check.form-check-inline
 							input.form-check-input(type="checkbox" data-value="facebook")
@@ -93,7 +85,13 @@
 							.form-check.form-check-inline
 								input.form-check-input(type="checkbox" data-value= audience)
 								label.form-check-label= audience
-			
+								
+					if user && user.subscriptions()
+						for subscription in user.subscriptions()
+							.form-check.form-check-inline
+								input.form-check-input(type="checkbox" data-value="community-" + subscription.communityName)
+								label.form-check-label= subscription.communityName
+
 			.autopost-zone
 				.form-group.input-relative
 					.input-group.date

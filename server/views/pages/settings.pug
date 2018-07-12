@@ -159,7 +159,7 @@ block content
 								.dz-message.
 									Drop your image here<br><small>(or click to upload)</small>
 			
-			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6.content-padding-top.content
 				if isAdmin
 					.page-heading
 						h2 Server Settings
@@ -182,42 +182,32 @@ block content
 											option(value='invite' selected) By Invitation
 										else
 											option(value='invite') By Invitation
-						//
-							.form-group
-								label Server Name
-								.input-relative
-									input.form-control(type="text" name="serverName" placeholder="Server Name" data-validate="required" value= globalSettings.serverName)
-									.input-ok-indicator
-										span.fa.fa-check
-									.validation-help
-							.form-group
-								label Server Title
-								.input-relative
-									input.form-control(type="text" name="serverTitle" placeholder="Server Title" data-validate="required" value= globalSettings.serverTitle)
-									.input-ok-indicator
-										span.fa.fa-check
-									.validation-help
-							.form-group
-								label serverDescription
-								.input-relative
-									textarea.form-control(type="text" name="serverDescription" placeholder="Server Description" data-validate="required")= globalSettings.serverDescription
-									.input-ok-indicator
-										span.fa.fa-check
-									.validation-help
-							.form-group
-								.form-check
-									if globalSettings.communityChannel
-										input.form-check-input(type="checkbox" name="communityChannel" checked)
-									else
-										input.form-check-input(type="checkbox" name="communityChannel")
-									label.form-check-label Community Channel
-							
-							if globalSettings.instance
-								.form-group
-									h3 Community Background
-									- var endpoint = "/api/Settings/"+globalSettings.instance.id.toString()+"/upload/background"
-									.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-										img(data-jsclass="digitopiaLazyImg" data-lazy-src= communityBackground.url)
-										.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-											.dz-message.
-												Drop your image here<br><small>(or click to upload)</small>
+						.form-group
+							.mdc-text-field.mdc-text-field--with-trailing-icon
+								label.mdc-floating-label Server Name
+								input.mdc-text-field__input(type="text" name="serverName" placeholder="Server Name" data-validate="required" value= globalSettings.serverName)
+								.input-ok-indicator.material-icons.mdc-text-field__icon
+									span.fa.fa-check
+								.mdc-line-ripple
+							.validation-help.mdc-text-field-helper-text--persistent
+						.form-group
+							.mdc-text-field.mdc-text-field--with-trailing-icon
+								label.mdc-floating-label Server Title
+								input.mdc-text-field__input(type="text" name="serverTitle" placeholder="Server Title" data-validate="required" value= globalSettings.serverTitle)
+								.input-ok-indicator.material-icons.mdc-text-field__icon
+									span.fa.fa-check
+								.mdc-line-ripple
+							.validation-help.mdc-text-field-helper-text--persistent
+						
+						.form-group
+							.mdc-text-field.mdc-text-field--textarea
+								label.mdc-floating-label(for="#server-description") Server Description
+								textarea#server-description.mdc-text-field__input(name="serverDescription" data-validate="required" rows="2" )= globalSettings.serverDescription
+							.validation-help.mdc-text-field-helper-text--persistent
+						.form-group
+							.form-check
+								if globalSettings.communityChannel
+									input.form-check-input(type="checkbox" name="communityChannel" checked)
+								else
+									input.form-check-input(type="checkbox" name="communityChannel")
+								label.form-check-label Enable Community Channels

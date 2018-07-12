@@ -35,7 +35,8 @@
       "friends",
       "pushNewsFeedItems",
       "newsFeeds",
-      "photos"
+      "photos",
+      "subscriptions"
     ],
     "helpers": [{
       "type": "upload",
@@ -127,6 +128,11 @@
     "invitations": {
       "type": "hasMany",
       "model": "Invitation",
+      "foreignKey": "userId"
+    },
+    "subscriptions": {
+      "type": "hasMany",
+      "model": "Subscription",
       "foreignKey": "userId"
     }
   },

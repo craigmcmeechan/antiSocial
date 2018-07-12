@@ -32,12 +32,7 @@ block content
 									.newsfeed-item
 										.news-summary!= item.feedSummary
 										!= item.html
-										//
-											if index === 0
-												.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post")
-											else
-												.post.loading.live-element.lazy-instantiate(data-lazy-jsclass="loadController" data-target=".post" data-endpoint= proxyEndPoint(post,user,true) data-watch= post data-watch-type="post")
-
+										
 					.text-center
 						.loader(data-jsclass="loadMoreController")
 						
