@@ -177,6 +177,8 @@ module.exports = function (server) {
             var query = {
               'where': {
                 'and': [{
+                  'about': null
+                }, {
                   'visibility': {
                     'inq': ['community-' + community.nickname]
                   }
@@ -274,7 +276,7 @@ module.exports = function (server) {
       feed.posts = posts;
 
       res.header('x-highwater', feed.highwater);
-      res.render('pages/community', {
+      res.render('components/rendered-community', {
         'user': ctx.get('currentUser'),
         'globalSettings': ctx.get('globalSettings'),
         'data': feed,

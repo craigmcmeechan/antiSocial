@@ -19,14 +19,17 @@ block content
 							p= data.community.tagline
 							
 						if !subscription
-							button.mdc-button.mdc-button--raised Join Community
+							button.mdc-button.mdc-button--raised(data-jsclass="getEndpointController" data-endpoint= '/join?endpoint=' + encodeURIComponent(data.community.remoteEndPoint)) Join
+							
 						else
 							if subscriptionStatus === 'pending'
+								button.mdc-button.mdc-button--raised Cancel
+
 								p Pending request
 								
 							else
 								
-								button.mdc-button.mdc-button--raised Leave Community
+								button.mdc-button.mdc-button--raised Leave
 
 							
 							
