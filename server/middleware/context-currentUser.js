@@ -19,6 +19,7 @@ module.exports = function () {
 		req.app.models.MyUser.findById(req.accessToken.userId, {
 			'include': [
 				'uploads',
+				'subscriptions',
 				'identities', {
 					'relation': 'friends',
 					'scope': {

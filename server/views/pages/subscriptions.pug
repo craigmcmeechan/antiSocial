@@ -1,0 +1,14 @@
+extends ../wrapper
+
+block seo
+	title Your Communities
+
+block content
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
+				h4 Your Communities
+				ul
+					for subscription in subscriptions
+						li
+							a(href= '/community/' +subscription.communityName )= subscription.communityName
