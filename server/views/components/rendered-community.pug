@@ -20,12 +20,12 @@ block content
 						
 						if user
 							if !subscription
-								button.mdc-button.mdc-button--raised(data-jsclass="getEndpointController" data-endpoint= '/join?endpoint=' + encodeURIComponent(data.community.remoteEndPoint)) Join
+								button.mdc-button.mdc-button--raised(data-jsclass="getEndpointController" data-endpoint= '/join?endpoint=' + encodeURIComponent(data.endpoint)) Join
 							else
 								
-								if subscriptionStatus === 'pending'
+								if subscription.status === 'pending'
 									button.mdc-button.mdc-button--raised Cancel
-									p Pending request
+									|  Pending request
 								else
 									
 									button.mdc-button.mdc-button--raised Leave

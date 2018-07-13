@@ -41,7 +41,9 @@ module.exports = function (server) {
           return cb(null, communities, null);
         }
         server.models.Subscription.find({
-          'userId': currentUser.id
+          'where': {
+            'userId': currentUser.id
+          }
         }, function (err, subscriptions) {
           cb(err, communities, subscriptions);
         });
@@ -170,7 +172,8 @@ module.exports = function (server) {
 
             if (!communityMember) {
               return cb(err, null, {
-                'community': community
+                'community': community,
+                'endpoint': server.locals.config.publicHost + '/community/' + community.nickname
               });
             }
 
@@ -244,6 +247,7 @@ module.exports = function (server) {
               }, function (err) {
                 cb(err, null, {
                   'community': community,
+                  'endpoint': server.locals.config.publicHost + '/community/' + community.nickname,
                   'posts': posts,
                   'highwater': highwater,
                   'pov': {

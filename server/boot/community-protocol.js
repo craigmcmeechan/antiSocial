@@ -507,6 +507,10 @@ module.exports = function (server) {
 					'remoteName': name
 				};
 
+				if (community.memberPolicy === 'open') {
+					update.status = 'accepted';
+				}
+
 				member.updateAttributes(update, function (err, member) {
 					if (err) {
 						var e = new VError(err, '/join-request saveCredentials error saving');
@@ -528,6 +532,10 @@ module.exports = function (server) {
 				'status': 'ok',
 				'requestToken': member.localRequestToken
 			};
+
+			if (community.memberPolicy === 'open') {
+				payload.accepted = true;
+			}
 
 			res.send(payload);
 		});
