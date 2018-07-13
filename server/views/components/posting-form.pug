@@ -1,5 +1,5 @@
 #scope-posting-form
-	- var placeholder = wall ? 'Post something on ' + profile.name + "'s wall." : "What's on your mind?"
+	- var placeholder = wall && profile? 'Post something on ' + profile.name + "'s wall." : "What's on your mind?"
 	- var fb,tw
 	if user && user.identities()
 		for identity in user.identities()
@@ -8,7 +8,7 @@
 			if identity.provider === 'twitter'
 				- tw= identity
 	
-	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= wall ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint= editing ? "/post/" + post.uuid : "/post" data-modal= editing ? "#edit-post-form" : '' data-community= subscription ? subscription.remoteEndPoint : '')
+	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= wall && profile ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint= editing ? "/post/" + post.uuid : "/post" data-modal= editing ? "#edit-post-form" : '' data-community= subscription ? subscription.remoteEndPoint : '')
 		.tabbed
 			#form-tab
 				.form-group.input-relative

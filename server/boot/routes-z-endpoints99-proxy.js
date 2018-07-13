@@ -139,7 +139,7 @@ module.exports = function (server) {
 			if (json) {
 				data.pov.proxy = {
 					'endpoint': options.url,
-					'encrypted-response': friend && body.sig ? true : false
+					'encrypted-response': body.sig ? true : false
 				};
 				res.send(data);
 			}

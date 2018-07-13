@@ -17,21 +17,20 @@ block content
 							h1= data.community.name
 						if data.community.tagline
 							p= data.community.tagline
-							
-						if !subscription
-							button.mdc-button.mdc-button--raised(data-jsclass="getEndpointController" data-endpoint= '/join?endpoint=' + encodeURIComponent(data.community.remoteEndPoint)) Join
-							
-						else
-							if subscriptionStatus === 'pending'
-								button.mdc-button.mdc-button--raised Cancel
-
-								p Pending request
-								
+						
+						if user
+							if !subscription
+								button.mdc-button.mdc-button--raised(data-jsclass="getEndpointController" data-endpoint= '/join?endpoint=' + encodeURIComponent(data.community.remoteEndPoint)) Join
 							else
 								
-								button.mdc-button.mdc-button--raised Leave
+								if subscriptionStatus === 'pending'
+									button.mdc-button.mdc-button--raised Cancel
+									p Pending request
+								else
+									
+									button.mdc-button.mdc-button--raised Leave
 
-							
+								
 							
 	.profile-parallax(data-jsclass="vibrantController" data-image= communityBackground)
 		.mdc-layout-grid

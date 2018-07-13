@@ -185,10 +185,7 @@ module.exports = function (server) {
                 }]
               },
               'order': 'createdOn DESC',
-              'limit': 30,
-              'include': [
-                'member'
-              ]
+              'limit': 30
             };
 
             var highwater = 30;
@@ -248,7 +245,10 @@ module.exports = function (server) {
                 cb(err, null, {
                   'community': community,
                   'posts': posts,
-                  'highwater': highwater
+                  'highwater': highwater,
+                  'pov': {
+                    'member': communityMember.remoteEndPoint
+                  }
                 });
               });
             });
