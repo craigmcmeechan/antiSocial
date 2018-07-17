@@ -24,12 +24,11 @@ block content
 							else
 								
 								if subscription.status === 'pending'
-									button.mdc-button.mdc-button--raised Cancel
+									// TODO button.mdc-button.mdc-button--raised Cancel
 									|  Pending request
 								else
 									
-									button.mdc-button.mdc-button--raised Leave
-
+									button.mdc-button.mdc-button--raised(data-jsclass="getEndpointController" data-endpoint= '/leave?endpoint=' + encodeURIComponent(data.endpoint)) Leave
 								
 							
 	.profile-parallax(data-jsclass="vibrantController" data-image= communityBackground)
