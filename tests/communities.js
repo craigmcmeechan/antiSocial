@@ -54,7 +54,8 @@ describe('communities', function () {
 				'name': 'community one',
 				'nickname': 'community-one',
 				'viewPolicy': 'open',
-				'postPolicy': 'open'
+				'postPolicy': 'open',
+				'memberPolicy': 'approval'
 			})
 			.end(function (err, res) {
 				expect(err).to.be(null);
@@ -89,7 +90,8 @@ describe('communities', function () {
 				'name': 'community two',
 				'nickname': 'community-two',
 				'viewPolicy': 'open',
-				'postPolicy': 'open'
+				'postPolicy': 'open',
+				'memberPolicy': 'open'
 			})
 			.end(function (err, res) {
 				expect(err).to.be(null);

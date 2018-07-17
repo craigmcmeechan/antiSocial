@@ -6,6 +6,7 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var url = require('url');
 var uuid = require('uuid');
+var request = require('request');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');
@@ -58,6 +59,7 @@ module.exports = function (server) {
     var whoAbout = req.body.about.replace(/\/post\/.*$/, '');
     var postuuid = req.body.about.replace(/^.*\/post\//, '');
     var photoId = req.body.photoId;
+    var community = req.body.community;
 
     async.waterfall([
       function findFriend(cb) {
@@ -152,8 +154,54 @@ module.exports = function (server) {
 
           cb(err, item);
         });
-      }
+      },
+      function postToCommunity(item, cb) {
+        if (!community) {
+          return async.setImmediate(function () {
+            cb(null, item);
+          });
+        }
 
+        var subscription = null;
+
+        for (var i = 0; i < currentUser.subscriptions().length; i++) {
+          if (currentUser.subscriptions()[i].remoteEndPoint === community) {
+            subscription = currentUser.subscriptions()[i];
+          }
+        }
+
+        if (!subscription) {
+          return async.setImmediate(function () {
+            cb(null, item);
+          });
+        }
+
+        // post comment to community endpoint
+        var visibility = [];
+        visibility.push('community-' + subscription.communityName);
+        visibility.push('public');
+
+        var payload = {
+          'uuid': item.uuid,
+          'about': req.body.about,
+          'source': item.source,
+          'visibility': visibility,
+          'athoritativeEndpoint': item.about + '/comment/' + item.uuid
+        };
+
+        var options = {
+          'url': fixIfBehindProxy(subscription.remoteEndPoint + '/post'),
+          'headers': {
+            'community-access-token': subscription.remoteAccessToken
+          },
+          'form': payload,
+          'json': true
+        };
+
+        request.post(options, function (err, response, body) {
+          cb(err, item);
+        });
+      }
     ], function (err, item) {
       if (err) {
         var e = new WError(err, 'could not save comment');
@@ -388,4 +436,15 @@ module.exports = function (server) {
   });
 
   server.use(router);
+
+  function fixIfBehindProxy(url) {
+    if (process.env.BEHIND_PROXY === "true") {
+      var rx = new RegExp('^' + server.locals.config.publicHost);
+      if (url.match(rx)) {
+        url = url.replace(server.locals.config.publicHost, 'http://localhost:' + server.locals.config.port);
+        debug('bypass proxy ' + url);
+      }
+    }
+    return url;
+  }
 };

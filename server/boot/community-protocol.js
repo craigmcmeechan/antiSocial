@@ -34,6 +34,58 @@ module.exports = function (server) {
 			if status is not 'ok', contains reason for failure
 	*/
 
+	router.get('/leave', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+		var ctx = req.myContext;
+		var currentUser = ctx.get('currentUser');
+		async.waterfall([
+			function checkDupe(cb) {
+				req.app.models.MyUser.include([currentUser], 'subscriptions', function (err, instances) {
+					for (var i = 0; i < instances[0].subscriptions().length; i++) {
+						var subscription = instances[0].subscriptions()[i];
+						if (subscription.remoteEndPoint === req.query.endpoint) {
+							return cb(null, subscription);
+						}
+					}
+					cb(new VError('not a community member'));
+				});
+			},
+			function (subscription, cb) {
+				var options = {
+					'url': subscription.remoteEndPoint + '/member-webhook/unsubscribe',
+					'headers': {
+						'member-access-token': subscription.remoteAccessToken
+					},
+					'json': true
+				};
+
+				request.post(options, function (err, response, body) {
+					if (err) {
+						return cb(new VError(err, 'could not unsubscribe'));
+					}
+					if (response.statusCode !== 200) {
+						return cb(new VError(err, 'could not unsubscribe error: ' + response.statusCode));
+					}
+					if (body.status !== 'ok') {
+						return cb(new VError(err, 'could not unsubscribe error: ' + body.status));
+					}
+					cb(null, subscription);
+				});
+			},
+			function (subscription, cb) {
+				subscription.destroy(cb);
+			}
+		], function (err) {
+			if (err) {
+				return res.send({
+					'status': err.cause.message
+				});
+			}
+			res.send({
+				'status': 'ok'
+			});
+		});
+	});
+
 	router.get('/join', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
@@ -507,6 +559,10 @@ module.exports = function (server) {
 					'remoteName': name
 				};
 
+				if (community.memberPolicy === 'open') {
+					update.status = 'accepted';
+				}
+
 				member.updateAttributes(update, function (err, member) {
 					if (err) {
 						var e = new VError(err, '/join-request saveCredentials error saving');
@@ -528,6 +584,10 @@ module.exports = function (server) {
 				'status': 'ok',
 				'requestToken': member.localRequestToken
 			};
+
+			if (community.memberPolicy === 'open') {
+				payload.accepted = true;
+			}
 
 			res.send(payload);
 		});
@@ -600,22 +660,22 @@ module.exports = function (server) {
 			function callWebhook(member, cb) {
 				debug('/accept-member callWebhook');
 
-				var payload = {
-					'accessToken': member.remoteAccessToken
-				};
-
+				var payload = {};
 
 				var options = {
-					'url': fixIfBehindProxy(member.remoteEndPoint + '/subscribe-webhook/subscription-request-accepted'),
+					'url': fixIfBehindProxy(member.remoteEndPoint + '/subscription-webhook/subscription-request-accepted'),
 					'form': payload,
+					'headers': {
+						'subscriber-access-token': member.remoteAccessToken
+					},
 					'json': true
 				};
 
 				//debug('calling join-webook %j', options);
-				debug('callWebhook ' + member.remoteEndPoint + '/subscribe-webhook/subscription-request-accepted %j', payload);
+				debug('callWebhook ' + member.remoteEndPoint + '/subscription-webhook/subscription-request-accepted %j', payload);
 
 				request.post(options, function (err, response, body) {
-					debug('callWebhook ' + member.remoteEndPoint + '/subscribe-webhook/subscription-request-accepted got %j', body);
+					debug('callWebhook ' + member.remoteEndPoint + '/subscription-webhook/subscription-request-accepted got %j', body);
 
 					if (err) {
 						return cb(new VError(err, '/accept-member callWebhook failed'));
@@ -660,30 +720,64 @@ module.exports = function (server) {
 	});
 
 	/*
-		 tell originator that subscription has been accepted
-		 called on requestor's server
+		 tell community that subscription has been cancelled
+		 called on community server
 			expects:
-				req.params.action 'subscription-request-accepted'
-				req.body.accessToken
+				req.params.action 'unsubscribe'
+				req.headers.member-access-token
 			returns:
 				{ 'status': 'ok' }
 	*/
 
+	var webhookMemberRegex = /^\/community\/([a-zA-Z0-9\-.]+)\/member-webhook\/(unsubscribe)$/;
 
-	var webhookRegex = /^\/([a-zA-Z0-9\-.]+)\/subscribe-webhook\/(subscription-request-accepted|subscription-request-canceled|subscription-request-declined)$/;
+	router.post(webhookMemberRegex, function (req, res) {
+		var matches = req.url.match(webhookMemberRegex);
+		var action = matches[2];
 
-	router.post(webhookRegex, function (req, res) {
-		var matches = req.url.match(webhookRegex);
-		var ctx = req.myContext;
+		req.app.models.Member.findOne({
+			'where': {
+				'localAccessToken': req.headers['member-access-token']
+			}
+		}, function (err, member) {
+
+			if (err || !member) {
+				return res.send({
+					'status': 'member not found'
+				});
+			}
+
+			if (action === 'unsubscribe') {
+				member.destroy();
+				return res.send({
+					'status': 'ok'
+				});
+			}
+			res.sendStatus(404);
+		});
+	});
+
+
+	/*
+		 tell originator that subscription has been accepted
+		 called on requestor's server
+			expects:
+				req.params.action 'subscription-request-accepted'
+				req.headers.subscriber-access-token
+			returns:
+				{ 'status': 'ok' }
+	*/
+
+	var webhookSubscriptionRegex = /^\/([a-zA-Z0-9\-.]+)\/subscription-webhook\/(subscription-request-accepted|subscription-request-canceled|subscription-request-declined|subscription-cancel)$/;
+
+	router.post(webhookSubscriptionRegex, function (req, res) {
+		var matches = req.url.match(webhookSubscriptionRegex);
 		var action = matches[2];
 
 		req.app.models.Subscription.findOne({
 			'where': {
-				'localAccessToken': req.body.accessToken
-			},
-			'include': [{
-				'user': ['uploads']
-			}]
+				'localAccessToken': req.headers['subscriber-access-token']
+			}
 		}, function (err, subscription) {
 			if (err) {
 				var error = new WError(err, '/' + action + ' readSubscription failed');
@@ -711,7 +805,7 @@ module.exports = function (server) {
 			if (action === 'subscription-request-accepted') {
 				async.waterfall([
 						function saveSubscription(cb) {
-							debug('/subscribe-webhook/%s saveSubscription', action);
+							debug('/subscription-webhook/%s saveSubscription', action);
 
 							subscription.updateAttributes({
 								status: 'accepted',
@@ -722,7 +816,7 @@ module.exports = function (server) {
 					],
 					function (err, subscription) {
 						if (err) {
-							var e = new WError(err, '/subscribe-webhook/subscription-request-accepted failed');
+							var e = new WError(err, '/subscription-webhook/subscription-request-accepted failed');
 							req.logger.error(e.toString());
 							return res.send({
 								'status': e.cause().message
@@ -737,6 +831,14 @@ module.exports = function (server) {
 
 						return res.send(payload);
 					});
+			}
+
+			if (action === 'subscription-cancel') {
+				subscription.destroy();
+				var payload = {
+					'status': 'ok'
+				};
+				return res.send(payload);
 			}
 		});
 	});

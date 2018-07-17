@@ -15,7 +15,7 @@ var utils = require('../lib/endpoint-utils');
 var async = require('async');
 var resolveProfile = require('../lib/resolveProfile');
 
-var proxyRE = /^\/proxy\-(post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
+var proxyRE = /^\/proxy\-(community|post-comments|post\-photos|post\-photo|post-photo-comments|profile|posts|post|reactions|reaction|comments|comment|photos|photo|friends)/;
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
@@ -139,7 +139,7 @@ module.exports = function (server) {
 			if (json) {
 				data.pov.proxy = {
 					'endpoint': options.url,
-					'encrypted-response': friend && body.sig ? true : false
+					'encrypted-response': body.sig ? true : false
 				};
 				res.send(data);
 			}

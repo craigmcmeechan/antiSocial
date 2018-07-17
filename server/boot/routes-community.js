@@ -11,11 +11,11 @@ var proxyEndPoint = require('../lib/proxy-endpoint');
 var async = require('async');
 var request = require('request');
 var utils = require('../lib/endpoint-utils');
-var jsdom = require('jsdom');
 var debug = require('debug')('communities');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var uuid = require('uuid');
+var _ = require('lodash');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -41,7 +41,9 @@ module.exports = function (server) {
           return cb(null, communities, null);
         }
         server.models.Subscription.find({
-          'userId': currentUser.id
+          'where': {
+            'userId': currentUser.id
+          }
         }, function (err, subscriptions) {
           cb(err, communities, subscriptions);
         });
@@ -170,23 +172,23 @@ module.exports = function (server) {
 
             if (!communityMember) {
               return cb(err, null, {
-                'community': community
+                'community': community,
+                'endpoint': server.locals.config.publicHost + '/community/' + community.nickname
               });
             }
 
             var query = {
               'where': {
                 'and': [{
+                  'about': null
+                }, {
                   'visibility': {
                     'inq': ['community-' + community.nickname]
                   }
                 }]
               },
               'order': 'createdOn DESC',
-              'limit': 30,
-              'include': [
-                'member'
-              ]
+              'limit': 30
             };
 
             var highwater = 30;
@@ -208,35 +210,49 @@ module.exports = function (server) {
 
               async.map(posts, function (item, doneResolve) {
                 request.get({
-                  'url': item.athoritativeEndpoint,
+                  'url': item.athoritativeEndpoint + '.json',
+                  'json': true,
                   'headers': {
                     'community-access-token': communityMember.remoteAccessToken
                   }
                 }, function (err, response, body) {
                   if (err) {
                     item.httpStatus = 500;
-                    item.html = '<div class="post">Content unavailable. (' + err + ')</div>';
                     return doneResolve();
                   }
 
-                  item.httpStatus = response.statusCode;
+                  var decrypted;
+                  if (subscription && body.sig) {
+                    debug('got encrypted response');
+                    var privateKey = communityMember.keys.private;
+                    var publicKey = communityMember.remotePublicKey;
+                    var toDecrypt = body.data;
+                    var sig = body.sig;
+                    var pass = body.pass;
 
-                  if (response.statusCode !== 200) {
-                    item.html = '<div class="post">Content unavailable. (' + response.statusCode + ')</div>';
-                    return doneResolve();
+                    decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+                    if (!decrypted.valid) {
+                      return doneResolve(new VError('unable to decrypt response'));
+                    }
+                    body = JSON.parse(decrypted.data);
                   }
 
-                  var dom = new jsdom.JSDOM(body);
-                  var element = dom.window.document.querySelector('.post');
-                  item.html = element ? element.outerHTML : '<div class="post">Content unavailable.</div>';
-
+                  item.cached = {
+                    'httpStatus': response.statusCode,
+                    'valid': decrypted ? decrypted.valid : true,
+                    'body': body
+                  };
                   doneResolve();
                 });
               }, function (err) {
                 cb(err, null, {
                   'community': community,
+                  'endpoint': server.locals.config.publicHost + '/community/' + community.nickname,
                   'posts': posts,
-                  'highwater': highwater
+                  'highwater': highwater,
+                  'pov': {
+                    'member': communityMember.remoteEndPoint
+                  }
                 });
               });
             });
@@ -251,8 +267,20 @@ module.exports = function (server) {
         return res.send(utils.encryptIfFriend(communityMember, feed));
       }
 
+      var posts = [];
+      if (feed.posts) {
+        for (var i = 0; i < feed.posts.length; i++) {
+          var post = feed.posts[i];
+          if (_.get(post, 'cached.httpStatus') === 200 && _.get(post, 'cached.valid')) {
+            posts.push(post.cached.body.post);
+          }
+        }
+      }
+
+      feed.posts = posts;
+
       res.header('x-highwater', feed.highwater);
-      res.render('pages/community', {
+      res.render('components/rendered-community', {
         'user': ctx.get('currentUser'),
         'globalSettings': ctx.get('globalSettings'),
         'data': feed,
@@ -278,7 +306,6 @@ module.exports = function (server) {
 
     async.waterfall([
       function (cb) {
-        req.body.uuid = uuid();
         communityMember.posts.create(req.body, function (err, post) {
           if (err) {
             var e = new VError(err, 'could create Post');
