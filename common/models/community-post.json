@@ -36,6 +36,9 @@
     },
     "cache": {
       "type": "object"
+    },
+    "about": {
+      "type": "string"
     }
   },
   "validations": [],

@@ -204,10 +204,4 @@ block content
 								label.mdc-floating-label(for="#server-description") Server Description
 								textarea#server-description.mdc-text-field__input(name="serverDescription" data-validate="required" rows="2" )= globalSettings.serverDescription
 							.validation-help.mdc-text-field-helper-text--persistent
-						.form-group
-							.form-check
-								if globalSettings.communityChannel
-									input.form-check-input(type="checkbox" name="communityChannel" checked)
-								else
-									input.form-check-input(type="checkbox" name="communityChannel")
-								label.form-check-label Enable Community Channels
+						

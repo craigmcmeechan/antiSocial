@@ -25,6 +25,9 @@
     "postPolicy": {
       "type": "string"
     },
+    "memberPolicy": {
+      "type": "string"
+    },
     "name": {
       "type": "string",
       "required": true
