@@ -32,14 +32,15 @@ aside.mdc-drawer.mdc-drawer--temporary.mdc-typography
 				a.nav-item.mdc-list-item.toggle-modal(href="#" data-target="#login-form") Login
 
 			.hidden-logged-out
-				if globalSettings.communityChannel
-					li
-						a#nav-community.nav-item.mdc-list-item(href="/community" data-toggle="tooltip" title="Community posts." data-placement="bottom")
-							<i class="fa fa-bullhorn fa-fw material-icons mdc-list-item__graphic"></i>
-							|  Community Feed
 				a#nav-feed.nav-item.mdc-list-item(href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom")
 					<i class="fa fa-users fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Friends Feed
+				if user && user.subscriptions
+					div#community-nav(data-hijax="true")
+						for community in user.subscriptions()
+							a#nav-feed.nav-item.mdc-list-item(href="/community/" + community.communityName )
+								<i class="fa fa-bullhorn fa-fw material-icons mdc-list-item__graphic"></i>
+								= community.communityName
 				a#nav-profile.nav-item.mdc-list-item(href= user ? '/' + user.username : "/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom")
 					<i class="fa fa-user fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Your Posts

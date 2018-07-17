@@ -20,6 +20,7 @@
 		this.modal = this.element.data('modal');
 		this.description = this.element.data('description');
 		this.replyTo = this.element.data('reply-to');
+		this.community = this.element.data('community');
 		this.share = null;
 
 		this.start = function () {
@@ -196,7 +197,8 @@
 					'photoId': photoId,
 					'description': self.description,
 					'shareEndpoint': self.share,
-					'replyTo': self.replyTo
+					'replyTo': self.replyTo,
+					'community': self.community
 				};
 
 				if (self.element.find('[name="autopost"]').val()) {
