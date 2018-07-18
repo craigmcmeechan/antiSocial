@@ -203,13 +203,18 @@ function instantiateMaterialDesignElements(element) {
 
 		const nav = new MDC.MDCTemporaryDrawer(document.querySelector('#nav-drawer'));
 		document.querySelector('.menu').addEventListener('click', () => nav.open = true);
+		$('body').on('click', '.nav-item', function () {
+			nav.open = false;
+		});
 
 		const notifications = new MDC.MDCTemporaryDrawer(document.querySelector('#news-feed'));
 		document.querySelector('.show-notifications-button').addEventListener('click', () => notifications.open = true);
-
-		$('body').on('click', '.nav-item', function () {
-			drawer.open = false;
+		$('body').on('click', '.news-feed-item', function (e) {
+			e.preventDefault();
+			notifications.open = false;
+			loadPage($(this).data('about'));
 		});
+
 	}
 
 	$(element).find('.mdc-button').each(function () {
