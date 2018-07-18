@@ -40,9 +40,8 @@ html(lang="en")
 				img(src="/images/logo.svg" height="200px" style="margin:0 auto;")
 				| myAntiSocial.net
 
-		#news-feed.hidden-logged-out(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets )
-			include components/news-feed
-		
+		include components/news-feed
+
 		.scroll-viewport
 			
 			include components/modals.pug

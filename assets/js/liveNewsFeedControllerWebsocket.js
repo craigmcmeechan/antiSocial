@@ -132,13 +132,6 @@
 					self.updateBadge();
 				}
 				li.data('about', event.endpoint);
-				li.on('click', function (e) {
-					e.preventDefault();
-					loadPage($(this).data('about'));
-					if ($('body').hasClass('digitopia-xsmall')) {
-						$('.show-notifications-button').trigger('click');
-					};
-				});
 			}
 			if (!event.backfill) {
 				if (event.data.type === 'post' && event.type === 'create') {
