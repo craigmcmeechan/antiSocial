@@ -117,28 +117,6 @@ function bootMyAntiSocial() {
 		})
 	});
 
-	$('.show-feed-button').on('click', function (e) {
-		e.preventDefault();
-		$('.footer-button.active').toggleClass('active');
-		$(this).toggleClass('active');
-		$('.on-screen').toggleClass('on-screen');
-		$('#content').show();
-		$(scrollViewport).scrollTop(0);
-		$('#news-feed').data('liveNewsFeedItemWebsocketController').clearCounter();
-	});
-
-	$('.show-notifications-button').on('click', function (e) {
-		e.preventDefault();
-		if (!$('#news-feed').hasClass('on-screen')) {
-			$('body').addClass('modal-open');
-		}
-		else {
-			$('body').removeClass('modal-open');
-		}
-		$('#news-feed').toggleClass('on-screen');
-		$(scrollViewport).scrollTop(0);
-	});
-
 	$('body').on('click', '.bug-report', function () {
 		open('https://github.com/antiSocialNet/antiSocial/issues/new');
 	});
@@ -222,8 +200,13 @@ var MDCInstanciateOnce = 0;
 function instantiateMaterialDesignElements(element) {
 	if (!MDCInstanciateOnce++) {
 		const topAppBar = new MDC.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
-		const drawer = new MDC.MDCTemporaryDrawer(document.querySelector('.mdc-drawer--temporary'));
-		document.querySelector('.menu').addEventListener('click', () => drawer.open = true);
+
+		const nav = new MDC.MDCTemporaryDrawer(document.querySelector('#nav-drawer'));
+		document.querySelector('.menu').addEventListener('click', () => nav.open = true);
+
+		const notifications = new MDC.MDCTemporaryDrawer(document.querySelector('#news-feed'));
+		document.querySelector('.show-notifications-button').addEventListener('click', () => notifications.open = true);
+
 		$('body').on('click', '.nav-item', function () {
 			drawer.open = false;
 		});
