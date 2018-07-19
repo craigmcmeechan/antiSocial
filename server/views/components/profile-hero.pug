@@ -35,7 +35,7 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 											each audience in user.audiences
 												.form-check.form-check-inline
 													input.form-check-input(type="checkbox" data-value= audience)
-													label.form-check-label = audience
+													label.form-check-label= audience
 
 						else 
 							if friend.status === 'pending'

@@ -56,7 +56,7 @@ block content
 							.input-relative
 								label Audiences
 								- var canEdit = user.audiences !== ""
-								- var audiences = JSON.stringify(user.audiences ? user.audiences : ['close','family','colleagues','acquaintances'])
+								- var audiences = JSON.stringify(user.audiences ? user.audiences : ['close','family','work','acquaintances'])
 								input#audience-list.form-control(type="hidden" name="audiences" placeholder="Audiences" data-validate="required" value= audiences)
 								.list-edit(data-jsclass="editListController" data-target="#audience-list" data-add-only= !init)
 								.validation-help
