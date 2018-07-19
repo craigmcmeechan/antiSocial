@@ -64,33 +64,45 @@
 				.checkbox-group(data-jsclass="checkboxGroupController" data-target=".posting-visibility")
 					input.posting-visibility.form-control(type="hidden" name="visibility" data-validate="required" value= editing ?  JSON.stringify(post.visibility)  : '["friends"]')
 
-					.form-check.form-check-inline
-						label.form-check-label Audience:
-						
-					.form-check.form-check-inline
-						input.form-check-input(type="checkbox" data-value="public")
-						label.form-check-label public
-						
-					if 0 && fb
-						.form-check.form-check-inline
-							input.form-check-input(type="checkbox" data-value="facebook")
-							label.form-check-label facebook
+					.mdc-form-field
+						.mdc-checkbox
+							input.form-check-input.mdc-checkbox__native-control(id="#post-audience-public" type="checkbox" data-value= "public")
+							.mdc-checkbox__background
+								svg.mdc-checkbox__checkmark(viewBox="0 0 24 24")
+									path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
+								.mdc-checkbox__mixedmark
+						label(for="post-audience-public") public
 							
-					.form-check.form-check-inline
-						input.form-check-input(type="checkbox" data-value="friends")
-						label.form-check-label friends
+					.mdc-form-field
+						.mdc-checkbox
+							input.form-check-input.mdc-checkbox__native-control(id="#post-audience-friends" type="checkbox" data-value= "friends")
+							.mdc-checkbox__background
+								svg.mdc-checkbox__checkmark(viewBox="0 0 24 24")
+									path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
+								.mdc-checkbox__mixedmark
+						label(for="post-audience-friends") friends
 						
 					if user && user.audiences
 						for audience in user.audiences
-							.form-check.form-check-inline
-								input.form-check-input(type="checkbox" data-value= audience)
-								label.form-check-label= audience
+							.mdc-form-field
+								.mdc-checkbox
+									input.form-check-input.mdc-checkbox__native-control(id="#select-audience-" + index type="checkbox" data-value= audience)
+									.mdc-checkbox__background
+										svg.mdc-checkbox__checkmark(viewBox="0 0 24 24")
+											path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
+										.mdc-checkbox__mixedmark
+								label(for="select-audience-" + index)= audience
 								
 					if user && user.subscriptions()
 						for subscription in user.subscriptions()
-							.form-check.form-check-inline
-								input.form-check-input(type="checkbox" data-value="community-" + subscription.communityName)
-								label.form-check-label= subscription.communityName
+							.mdc-form-field
+								.mdc-checkbox
+									input.form-check-input.mdc-checkbox__native-control(type="checkbox" data-value= subscription.communityName)
+									.mdc-checkbox__background
+										svg.mdc-checkbox__checkmark(viewBox="0 0 24 24")
+											path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
+										.mdc-checkbox__mixedmark
+								label= subscription.communityName
 
 			.autopost-zone
 				.form-group.input-relative

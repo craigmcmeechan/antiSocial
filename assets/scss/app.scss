@@ -22,6 +22,8 @@ $mdc-theme-secondary: #757575;
 @import "@material/drawer/mdc-drawer";
 @import "@material/button/mdc-button";
 @import "@material/dialog/mdc-dialog";
+@import "@material/form-field/mdc-form-field";
+@import "@material/checkbox/mdc-checkbox";
 @import "@material/textfield/mdc-text-field";
 @import "@material/textfield/helper-text/mdc-text-field-helper-text";
 @import "@material/textfield/icon/mdc-text-field-icon";
@@ -52,7 +54,7 @@ $mdc-theme-secondary: #757575;
 	max-width:1024px;
 }
 
-// bootstrap disambiguation - remove when bootstrap is gone
+// boostrap disabmiguation
 label {
-	margin-bottom: auto;
+	margin-bottom:0;
 }

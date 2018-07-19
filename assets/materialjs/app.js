@@ -39,6 +39,16 @@ import {
 }
 from '@material/snackbar';
 
+import {
+	MDCFormField
+}
+from '@material/form-field';
+
+import {
+	MDCCheckbox
+}
+from '@material/checkbox';
+
 module.exports = {
 	'MDCRipple': MDCRipple,
 	'MDCTopAppBar': MDCTopAppBar,
@@ -49,5 +59,7 @@ module.exports = {
 	'MDCTextField': MDCTextField,
 	'MDCTextFieldIcon': MDCTextFieldIcon,
 	'MDCTextFieldHelperText': MDCTextFieldHelperText,
-	'MDCSnackbar': MDCSnackbar
+	'MDCSnackbar': MDCSnackbar,
+	'MDCFormField': MDCFormField,
+	'MDCCheckbox': MDCCheckbox
 }

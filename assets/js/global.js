@@ -140,6 +140,16 @@ function bootMyAntiSocial() {
 		dialog.show();
 	});
 
+	$('body').on('click', '.filter-feed', function (e) {
+		var self = $(this);
+		var selected = self.closest('.feed-filters').find(':checked');
+		var audiences = [];
+		for (var i = 0; i < selected.length; i++) {
+			audiences.push($(selected[i]).data('audience'));
+		}
+		alert(audiences);
+	});
+
 	$.fn.extend({
 		animateCss: function (animationName, callback) {
 			var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -232,6 +242,13 @@ function instantiateMaterialDesignElements(element) {
 	$(element).find('.mdc-text-field-helper-text').each(function () {
 		const helperText = new MDC.MDCTextFieldHelperText(this);
 	});
+
+	$(element).find('.mdc-checkbox').each(function () {
+		const checkbox = new MDC.MDCCheckbox(this);
+		const formField = new MDC.MDCFormField(this.closest('.mdc-form-field'));
+		formField.input = checkbox;
+	});
+
 }
 
 var flashTimer = null;
