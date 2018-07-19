@@ -51,7 +51,6 @@ module.exports = function (server) {
       }
 
       if (inFilter) {
-        console.log('filter:' + f.remoteEndPoint);
         friendMap[f.remoteEndPoint] = f;
       }
     }
