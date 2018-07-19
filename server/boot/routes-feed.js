@@ -31,12 +31,28 @@ module.exports = function (server) {
     var ctx = req.getCurrentContext();
     var currentUser = ctx.get('currentUser');
     var userSettings = ctx.get('userSettings');
+    var filters = _.get(req, 'cookies.filters') ? JSON.parse(req.cookies.filters) : {};
 
     var friendMap = {};
     friendMap[server.locals.config.publicHost + '/' + currentUser.username] = true;
+
+    var audienceFilter = function (audience) {
+      return filters.audiences.indexOf(audience) !== -1;
+    };
+
     for (var i = 0; i < currentUser.friends().length; i++) {
       var f = currentUser.friends()[i];
-      friendMap[f.remoteEndPoint] = f;
+
+      var inFilter = true;
+      if (filters && filters.audiences && filters.audiences.length) {
+        if (!f.audiences.filter(audienceFilter).length) {
+          inFilter = false;
+        }
+      }
+
+      if (inFilter) {
+        friendMap[f.remoteEndPoint] = f;
+      }
     }
 
     async.waterfall([
@@ -51,7 +67,8 @@ module.exports = function (server) {
             'currentSlice': {
               'start': 0,
               'end': 0
-            }
+            },
+            'filters': _.get(req, 'cookies.filters')
           };
           debug('new scroll session');
         }
@@ -318,7 +335,8 @@ module.exports = function (server) {
         'items': items,
         'more': req.query.more,
         'profile': getProfile(currentUser),
-        'pageTitle': 'Feed'
+        'pageTitle': 'Feed',
+        'filters': filters
       });
 
     });

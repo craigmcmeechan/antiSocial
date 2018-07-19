@@ -10,20 +10,36 @@ block content
 				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
 					#the-posting-form
 						include ../components/posting-form
-					.feed-controls
+					if user && user.audiences
+						.feed-filters.hidden-not-digitopia-xsmall
+							for audience,index in user.audiences
+								.mdc-form-field
+									.mdc-checkbox
+										if filters.audiences && filters.audiences.indexOf(audience) !== -1
+											input.mdc-checkbox__native-control.filter-feed(type="checkbox"  data-audience= audience checked)
+										else
+											input.mdc-checkbox__native-control.filter-feed(type="checkbox"  data-audience= audience)
+										.mdc-checkbox__background
+											svg.mdc-checkbox__checkmark(viewBox="0 0 24 24")
+												path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
+											.mdc-checkbox__mixedmark
+									label= audience
+									
+					.feed-controls.hidden-not-digitopia-xsmall
+						.float-right
+							if userSettings.feedSortOrder !== 'post'
+								a(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"post"}' data-endpoint= '/user-settings') Sort By Posting Date
+								
+							if userSettings.feedSortOrder !== 'activity'
+								a(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"activity"}' data-endpoint= '/user-settings') Sort By Last Activity
+								
+					#is-feed
 						if userSettings.feedSortOrder === 'post'
 							| Sorted by Post 
 							
 						if userSettings.feedSortOrder === 'activity'
-							| Sorted by Activity 
-						
-						.float-right
-							if userSettings.feedSortOrder !== 'post'
-								a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"post"}' data-endpoint= '/user-settings') Sort By Posting
-								
-							if userSettings.feedSortOrder !== 'activity'
-								a.btn.btn-xs.btn-default(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"activity"}' data-endpoint= '/user-settings') Sort By Activity
-					#is-feed
+							| Sorted by Activity
+							
 						#scope-post-list
 							for item,index in items
 								if item.httpStatus === 200 && (item.type === 'post' || item.type === 'interaction' || item.type === 'tag')
@@ -35,4 +51,27 @@ block content
 										
 					.text-center
 						.loader(data-jsclass="loadMoreController")
-						
+							
+				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4.content-padding-top.content.hidden-digitopia-xsmall
+					if user && user.audiences
+						.feed-filters
+							for audience,index in user.audiences
+								.mdc-form-field
+									.mdc-checkbox
+										if filters.audiences && filters.audiences.indexOf(audience) !== -1
+											input.mdc-checkbox__native-control.filter-feed(type="checkbox" data-audience= audience checked)
+										else
+											input.mdc-checkbox__native-control.filter-feed(type="checkbox" data-audience= audience)
+										.mdc-checkbox__background
+											svg.mdc-checkbox__checkmark(viewBox="0 0 24 24")
+												path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
+											.mdc-checkbox__mixedmark
+									label= audience
+									
+					.feed-controls
+						.float-right
+							if userSettings.feedSortOrder !== 'post'
+								a(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"post"}' data-endpoint= '/user-settings') Sort By Posting Date
+								
+							if userSettings.feedSortOrder !== 'activity'
+								a(href="#" data-jsclass="getEndpointController" data-method= 'PATCH' data-data='{"feedSortOrder":"activity"}' data-endpoint= '/user-settings') Sort By Last Activity

@@ -24,6 +24,17 @@
     "@material/theme" "^0.35.0"
     "@material/typography" "^0.35.0"
 
+"@material/checkbox@^0.37.1":
+  version "0.37.1"
+  resolved "https://registry.yarnpkg.com/@material/checkbox/-/checkbox-0.37.1.tgz#b8f5f100a8c40110fa6f6b6ea11896fd7a49b7d8"
+  dependencies:
+    "@material/animation" "^0.34.0"
+    "@material/base" "^0.35.0"
+    "@material/ripple" "^0.37.1"
+    "@material/rtl" "^0.36.0"
+    "@material/selection-control" "^0.37.1"
+    "@material/theme" "^0.35.0"
+
 "@material/dialog@^0.36.1":
   version "0.36.1"
   resolved "https://registry.yarnpkg.com/@material/dialog/-/dialog-0.36.1.tgz#fc191bd24b5ec2612163091ab7062192efa4f99b"
@@ -64,6 +75,16 @@
     "@material/theme" "^0.35.0"
     "@material/typography" "^0.35.0"
 
+"@material/form-field@^0.37.1":
+  version "0.37.1"
+  resolved "https://registry.yarnpkg.com/@material/form-field/-/form-field-0.37.1.tgz#94922ad3cde4ecc91af6d058378e4bd52b64aa14"
+  dependencies:
+    "@material/base" "^0.35.0"
+    "@material/rtl" "^0.36.0"
+    "@material/selection-control" "^0.37.1"
+    "@material/theme" "^0.35.0"
+    "@material/typography" "^0.37.1"
+
 "@material/layout-grid@^0.34.0":
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/@material/layout-grid/-/layout-grid-0.34.0.tgz#f730bdd962401b691ab7538e7d2b4d91764f4052"
@@ -101,9 +122,23 @@
     "@material/base" "^0.35.0"
     "@material/theme" "^0.35.0"
 
+"@material/ripple@^0.37.1":
+  version "0.37.1"
+  resolved "https://registry.yarnpkg.com/@material/ripple/-/ripple-0.37.1.tgz#7bfe43036c2a9066f5083ba2ac5b952d96be16a4"
+  dependencies:
+    "@material/animation" "^0.34.0"
+    "@material/base" "^0.35.0"
+    "@material/theme" "^0.35.0"
+
 "@material/rtl@^0.36.0":
   version "0.36.0"
   resolved "https://registry.yarnpkg.com/@material/rtl/-/rtl-0.36.0.tgz#a81b587981dc6e09f51e26da8a7447f89358ccd5"
+
+"@material/selection-control@^0.37.1":
+  version "0.37.1"
+  resolved "https://registry.yarnpkg.com/@material/selection-control/-/selection-control-0.37.1.tgz#de36d8e535bc19ef43a1511c7a46a53bef1cfe51"
+  dependencies:
+    "@material/ripple" "^0.37.1"
 
 "@material/snackbar@^0.36.0":
   version "0.36.0"
@@ -148,6 +183,10 @@
 "@material/typography@^0.35.0":
   version "0.35.0"
   resolved "https://registry.yarnpkg.com/@material/typography/-/typography-0.35.0.tgz#23ad7eb7c9789e69c7c3fa54df8fc311cd7fc4b1"
+
+"@material/typography@^0.37.1":
+  version "0.37.1"
+  resolved "https://registry.yarnpkg.com/@material/typography/-/typography-0.37.1.tgz#2e14e3ee5418a5170d793cdf7b6a671c8896292c"
 
 "@types/babel-types@*", "@types/babel-types@^7.0.0":
   version "7.0.4"
