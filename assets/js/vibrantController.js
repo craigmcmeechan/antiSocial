@@ -10,6 +10,7 @@
 		var self = this;
 
 		this.start = function () {
+
 			if (cache[self.element.data('image')]) {
 				self.setColors(cache[self.element.data('image')]);
 				return;
@@ -42,23 +43,18 @@
 		this.setColors = function (swatches) {
 			var top = swatches.Muted ? swatches.Muted.getHex() : '#eee';
 			var bottom = swatches.DarkMuted ? swatches.DarkMuted.getHex() : '#ccc';
-			var links = swatches.DarkVibrant ? swatches.DarkVibrant.getHex() : '#333';
-			var hover = swatches.Vibrant ? swatches.Vibrant.getHex() : '#333';
-			var text = swatches.DarkMuted ? swatches.DarkMuted.getHex() : '#333';
-			var secondary = swatches.LightMuted ? swatches.LightMuted.getHex() : '#ccc';
 
-			var bg = {
-				'background': 'linear-gradient(to bottom right,' + top + ',' + bottom + ')'
-			};
-
-			self.element.css(bg);
+			var title = swatches.Muted.getTitleTextColor();
+			var text = swatches.Muted.getBodyTextColor();
 
 			var styles = '.vibrant {color:' + text + '!important;}\n';
-			styles += '.vibrant h1,.vibrant h2, .vibrant h3,.vibrant h4,.vibrant h5,.vibrant h6,.vibrant .h1,.vibrant .h2,.vibrant .h3,.vibrant .h4,.vibrant .h5,.vibrant .h6 { color:' + text + '!important;}\n';
-			styles += '.vibrant a{color:' + links + '!important;}\n';
-			styles += '.vibrant a:hover{color:' + hover + '!important;}\n';
-			styles += '.vibrant a:visited{color:' + links + ';}\n';
-			styles += '.vibrant .secondary{color:' + secondary + '!important;}\n';
+			styles += '.vibrant-bg .vibrant-typography { color:' + text + '!important;}\n';
+			styles += '.vibrant-bg .vibrant-typography a{color:' + title + '!important;}\n';
+			styles += '.vibrant-bg .vibrant-typography a:hover{color:' + title + '!important;}\n';
+			styles += '.vibrant-bg .vibrant-typography a:visited{color:' + title + ';}\n';
+			styles += '.vibrant-bg .vibrant-typography .secondary{color:' + text + '!important;}\n';
+			styles += '.vibrant-bg { background: linear-gradient(to bottom right,' + top + ',' + bottom + ')};\n';
+			styles += '.vibrant-border { border-color:' + bottom + '!important};\n';
 
 			$('#override-styles').empty().append(styles);
 		};

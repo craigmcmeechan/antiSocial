@@ -8,7 +8,7 @@
 			if identity.provider === 'twitter'
 				- tw= identity
 	
-	form.scope-posting-form.form.form-validation(data-jsclass="postingFormController,formValidator" data-about= wall && profile ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint= editing ? "/post/" + post.uuid : "/post" data-modal= editing ? "#edit-post-form" : '' data-community= subscription ? subscription.remoteEndPoint : '')
+	form.scope-posting-form.form.form-validation.vibrant-border(data-jsclass="postingFormController,formValidator" data-about= wall && profile ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint= editing ? "/post/" + post.uuid : "/post" data-modal= editing ? "#edit-post-form" : '' data-community= subscription ? subscription.remoteEndPoint : '')
 		.tabbed
 			#form-tab
 				.form-group.input-relative

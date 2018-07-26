@@ -16,10 +16,10 @@
 						!= post.commentSummary
 				
 				if post.athoritativeEndpoint
-					.post.loading.live-element(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
+					.post.loading.live-element.vibrant-border.mdc-elevation--z1(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 				else 
-					.post.live-element(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.source + '/post/' + post.uuid,user))
-						.post-identity
+					.post.live-element.vibrant-border.mdc-elevation--z1(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.source + '/post/' + post.uuid,user))
+						.post-identity.vibrant-bg
 							.post-avatar
 								.media
 									- var endpoint = poster.endpoint
@@ -47,40 +47,41 @@
 														else
 															a.dropdown-item.edit-post(href="#") Edit Post
 															a.dropdown-item.delete-post(href="#") Delete Post
-										h4.media-heading.mt-0
-											a(href= posterUrl)= name
-											if post.about
-												span.fa.fa-arrow-right.target-arrow
-												a(href= proxyEndPoint(post.about,user))= about.name
-										div.secondary
-											
-											span.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())
-												= moment(post.createdOn).calendar()
+										.vibrant-typography
+											h4.media-heading.mt-0
+												a(href= posterUrl)= name
+												if post.about
+													span.fa.fa-arrow-right.target-arrow
+													a(href= proxyEndPoint(post.about,user))= about.name
+											div.secondary
 												
-											if post.versions
-												span.post-edited
-													| (edited)
-											div
-												.visibility
-													if post.visibility.indexOf('public') !== -1
-														i.fa.fa-globe
-													else
-														i.fa.fa-eye
-													= ' ' + post.visibility.join(', ')
-												if isPublic && !isPermalink
-													.permalink
-														a(href= postEndpoint)
-															i.fa.fa-link
-												if !post.posted
-													= ' (pending '
-													span.timestamp(data-timestamp= moment(post.autopost).toISOString() data-format="absolute")
-													= ')'
-												
-											if post.geoDescription
-												.post-geo
-													<i class="fa fa-map-marker"></i>
-													= ' ' + post.geoDescription 
+												span.post-timestamp.timestamp(data-timestamp= moment(post.createdOn).toISOString())
+													= moment(post.createdOn).calendar()
 													
+												if post.versions
+													span.post-edited
+														| (edited)
+												div
+													.visibility
+														if post.visibility.indexOf('public') !== -1
+															i.fa.fa-globe
+														else
+															i.fa.fa-eye
+														= ' ' + post.visibility.join(', ')
+													if isPublic && !isPermalink
+														.permalink
+															a(href= postEndpoint)
+																i.fa.fa-link
+													if !post.posted
+														= ' (pending '
+														span.timestamp(data-timestamp= moment(post.autopost).toISOString() data-format="absolute")
+														= ')'
+													
+												if post.geoDescription
+													.post-geo
+														<i class="fa fa-map-marker"></i>
+														= ' ' + post.geoDescription 
+														
 
 						- var body = post.body ? post.body : '';
 						- var maxHeight = !isPermalink ? '1200' : 50000
