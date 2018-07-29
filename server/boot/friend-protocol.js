@@ -8,9 +8,8 @@ var watchFeed = require('../lib/websocketWatchFriend');
 var resolveProfiles = require('../lib/resolveProfiles');
 var utils = require('../lib/utilities');
 var mailer = require('../lib/mail');
-var forge = require('node-forge');
 var crc = require('crc');
-
+var encryption = require('antisocial-encryption');
 
 var url = require('url');
 var uuid = require('uuid');
@@ -84,21 +83,7 @@ module.exports = function (server) {
 				});
 			},
 			function keyPair(cb) {
-				var rsa = forge.pki.rsa;
-				rsa.generateKeyPair({
-					bits: 2048,
-					workers: 2
-				}, function (err, pair) {
-					if (err) {
-						var e = new VError(err, '/friend keyPair failed');
-						return cb(e);
-					}
-					var keypair = {
-						public: forge.pki.publicKeyToPem(pair.publicKey, 72),
-						private: forge.pki.privateKeyToPem(pair.privateKey, 72)
-					};
-					cb(null, keypair);
-				});
+				encryption.getKeyPair(cb);
 			},
 			function createFriend(pair, cb) { // create pending Friend record
 				currentUser.friends.create({
@@ -367,22 +352,12 @@ module.exports = function (server) {
 			},
 			function keyPair(user, cb) {
 				debug('/friend-request keyPair');
-
-				var rsa = forge.pki.rsa;
-				rsa.generateKeyPair({
-					bits: 2048,
-					workers: 2
-				}, function (err, pair) {
+				encryption.getKeyPair(function (err, pair) {
 					if (err) {
 						var e = new VError(err, '/friend-request keyPair failed');
 						return cb(e);
 					}
-
-					var keypair = {
-						public: forge.pki.publicKeyToPem(pair.publicKey, 72),
-						private: forge.pki.privateKeyToPem(pair.privateKey, 72)
-					};
-					cb(null, user, keypair);
+					cb(null, user, pair);
 				});
 			},
 			function createPendingFriend(user, pair, cb) {

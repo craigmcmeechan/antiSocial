@@ -9,7 +9,7 @@
 var url = require('url');
 var async = require('async');
 var VError = require('verror').VError;
-var encryption = require('./encryption');
+var encryption = require('antisocial-encryption');
 var utils = require('./utilities');
 var mailer = require('./mail');
 var debug = require('debug')('websockets');
@@ -40,11 +40,8 @@ function getDataEventHandler(server, socket) {
 		var privateKey = friend.keys.private;
 		var publicKey = friend.remotePublicKey;
 
-		var toDecrypt = message.data;
-		var sig = message.sig;
-		var pass = message.pass;
 
-		var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+		var decrypted = encryption.decrypt(publicKey, privateKey, message);
 
 		if (!decrypted.valid) { // could not validate signature
 			logger.error({
