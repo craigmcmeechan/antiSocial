@@ -144,7 +144,7 @@ module.exports.getPost = function (postId, user, friend, subscription, isMe, cb)
 		if (subscription) {
 			query.where.and.push({
 				'visibility': {
-					'inq': ['community-' + subscription.communityName]
+					'inq': ['community:' + subscription.communityName]
 				}
 			});
 		}

@@ -180,7 +180,7 @@ module.exports = function (server) {
                   'about': null
                 }, {
                   'visibility': {
-                    'inq': ['community-' + community.nickname]
+                    'inq': ['community:' + community.nickname]
                   }
                 }]
               },

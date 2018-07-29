@@ -521,7 +521,7 @@ module.exports = function (server) {
       function (post, cb) {
         // look for communities in audiences
         async.mapSeries(post.visibility, function (channel, doneAudiences) {
-          var matches = channel.match(/^community-([0-9a-zA-Z-]+)/);
+          var matches = channel.match(/^community:([0-9a-zA-Z-]+)/);
           if (!matches) {
             return async.setImmediate(function () { // not a community
               doneAudiences();
@@ -540,7 +540,7 @@ module.exports = function (server) {
           // post notification to all selected community subscription endpoint(s)
           async.mapSeries(subscriptions, function (subscription, donePostToCommunity) {
             var visibility = [];
-            visibility.push('community-' + subscription.communityName);
+            visibility.push('community:' + subscription.communityName);
             if (post.visibility.indexOf('public') !== -1) {
               visibility.push('public');
             }
