@@ -5,7 +5,7 @@
 //var PassThrough = require('stream').PassThrough;
 var debug = require('debug')('pushfeeds');
 var debugVerbose = require('debug')('pushfeeds:verbose');
-var encryption = require('../../server/lib/encryption');
+var encryption = require('antisocial-encryption');
 var RemoteRouting = require('loopback-remote-routing');
 var server = require('../../server/server');
 
