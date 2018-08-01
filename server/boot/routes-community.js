@@ -16,6 +16,7 @@ var VError = require('verror').VError;
 var WError = require('verror').WError;
 var uuid = require('uuid');
 var _ = require('lodash');
+var moment = require('moment');
 
 module.exports = function (server) {
   var router = server.loopback.Router();
@@ -77,7 +78,7 @@ module.exports = function (server) {
     });
   });
 
-  var communityRE = /^\/community\/([a-zA-Z0-9-]+)(\.json)?(\?more=1)?(&highwater=1)?$/;
+  var communityRE = /^\/community\/([a-zA-Z0-9-]+)(\.json)?(\?since=([0-9]+))?(\?more=1)?(&highwater=1)?$/;
 
   router.get(communityRE, getCurrentUser(), getCommunityMember(), function (req, res, next) {
     var ctx = req.myContext;
@@ -109,6 +110,9 @@ module.exports = function (server) {
           }
           if (req.query.highwater) {
             url += '?highwater=' + req.query.highwater;
+          }
+          if (req.query.since) {
+            url += '?since=' + req.query.since;
           }
 
           var highwater = 30;
@@ -169,6 +173,7 @@ module.exports = function (server) {
 
             if (!communityMember) {
               return cb(err, null, {
+                'anon': true,
                 'community': community,
                 'endpoint': server.locals.config.publicHost + '/community/' + community.nickname
               });
@@ -187,6 +192,16 @@ module.exports = function (server) {
               'order': 'createdOn DESC',
               'limit': 30
             };
+
+            if (req.query.since) {
+              query.where.and.push({
+                'createdOn': {
+                  'gt': new Date(req.query.since)
+                }
+              });
+              query.order = 'createdOn ASC';
+              delete query.limit;
+            }
 
             var highwater = 30;
 
@@ -246,7 +261,8 @@ module.exports = function (server) {
                   'highwater': highwater,
                   'pov': {
                     'member': communityMember.remoteEndPoint
-                  }
+                  },
+                  'since': moment().valueOf()
                 });
               });
             });

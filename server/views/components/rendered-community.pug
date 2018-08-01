@@ -42,9 +42,12 @@ block content
 						if posts && posts.length
 							#the-posting-form
 								include ../components/posting-form
-							include ../components/post-list
-							.text-center
-								.loader(data-jsclass="loadMoreController")
+								
+							#polling(data-jsclass="communityPollingController" data-endpoint= '/community/'+subscription.communityName + '.json')
+								include ../components/post-list
+								.text-center
+									.loader(data-jsclass="loadMoreController")
+							
 						else
 							.page-header
 								h4 No posts visible to you in this community at the moment.

@@ -213,6 +213,19 @@
 					}
 					else {
 						self.hideForm();
+
+						// prepend new to post list
+						if (this.community) {
+							var result = data.result;
+							var item = $('<div>');
+							var endpoint = result.endpoint;
+							item.load(endpoint, function () {
+								var post = item.find('.newsfeed-item');
+								$('#scope-post-list').prepend(post);
+								didInjectContent($('#scope-post-list').find('.newsfeed-item')[0]);
+							});
+						}
+
 						if (self.share) {
 							$('#post-form').data('mdc-dialog').destroy();
 						}
