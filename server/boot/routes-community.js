@@ -196,7 +196,7 @@ module.exports = function (server) {
             if (req.query.since) {
               query.where.and.push({
                 'createdOn': {
-                  'gt': new Date(req.query.since)
+                  'gt': moment(parseInt(req.query.since)).toDate()
                 }
               });
               query.order = 'createdOn ASC';
@@ -222,7 +222,7 @@ module.exports = function (server) {
 
               async.map(posts, function (item, doneResolve) {
                 request.get({
-                  'url': item.athoritativeEndpoint + '.json',
+                  'url': item.athoritativeEndpoint,
                   'json': true,
                   'headers': {
                     'community-access-token': communityMember.remoteAccessToken

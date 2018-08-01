@@ -36,7 +36,9 @@
 			};
 			$.ajax(options)
 				.done(function (data, textStatus, jqXHR) {
-					console.log(data);
+					if (data.posts) {
+						console.log(data);
+					}
 					self.lastPoll = data.since;
 				})
 				.fail(function (jqXHR, textStatus, errorThrown) {
