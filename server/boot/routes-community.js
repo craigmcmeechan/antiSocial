@@ -14,6 +14,7 @@ var utils = require('../lib/endpoint-utils');
 var debug = require('debug')('communities');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
+
 var uuid = require('uuid');
 var _ = require('lodash');
 var moment = require('moment');
@@ -182,8 +183,6 @@ module.exports = function (server) {
             var query = {
               'where': {
                 'and': [{
-                  'about': null
-                }, {
                   'visibility': {
                     'inq': ['community:' + community.nickname]
                   }
@@ -201,6 +200,11 @@ module.exports = function (server) {
               });
               query.order = 'createdOn ASC';
               delete query.limit;
+            }
+            else {
+              query.where.and.push({
+                'about': null
+              });
             }
 
             var highwater = 30;
@@ -222,7 +226,7 @@ module.exports = function (server) {
 
               async.map(posts, function (item, doneResolve) {
                 request.get({
-                  'url': item.athoritativeEndpoint,
+                  'url': item.athoritativeEndpoint + '.json',
                   'json': true,
                   'headers': {
                     'community-access-token': communityMember.remoteAccessToken

@@ -43,7 +43,7 @@ block content
 							#the-posting-form
 								include ../components/posting-form
 								
-							#polling(data-jsclass="communityPollingController" data-endpoint= '/community/'+subscription.communityName + '.json')
+							#polling(data-jsclass="communityPollingController" data-endpoint= '/community/'+subscription.communityName + '.json' data-since= moment().valueOf())
 								include ../components/post-list
 								.text-center
 									.loader(data-jsclass="loadMoreController")

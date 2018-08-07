@@ -7,7 +7,7 @@
 		this.threads = [];
 		this.timer = null;
 		this.endpoint = this.element.data('endpoint');
-		this.lastPoll = '';
+		this.since = this.element.data('since');
 		var self = this;
 
 		this.start = function () {
@@ -27,8 +27,8 @@
 		this.poll = function () {
 			flashAjaxStatus('info', 'loading');
 			var url = self.endpoint;
-			if (self.lastPoll) {
-				url += '?since=' + self.lastPoll;
+			if (self.since) {
+				url += '?since=' + self.since;
 			}
 			var options = {
 				'method': 'GET',
@@ -37,9 +37,17 @@
 			$.ajax(options)
 				.done(function (data, textStatus, jqXHR) {
 					if (data.posts) {
-						console.log(data);
+						for (var i = 0; i < data.posts.length; i++) {
+							var post = data.posts[i];
+							if (post.about) {
+								console.log('new comment about' + post.about);
+							}
+							else {
+								console.log('new post', post.athoritativeEndpoint);
+							}
+						}
 					}
-					self.lastPoll = data.since;
+					self.since = data.since;
 				})
 				.fail(function (jqXHR, textStatus, errorThrown) {
 					flashAjaxStatus('info', textStatus);
