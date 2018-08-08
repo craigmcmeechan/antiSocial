@@ -216,7 +216,7 @@
 
 						// prepend new to post list
 						if (this.community) {
-
+							//
 						}
 
 						if (self.share) {
