@@ -75,7 +75,7 @@ module.exports = function (MyUser) {
 
 	// send email for password reset loop
 	MyUser.on('resetPasswordRequest', function (info) {
-		var url = server.locals.config.publicHost + '/?access_token=' + info.accessToken.id;
+		var url = server.locals.config.publicHost + '/?reset=' + info.accessToken.id;
 		url += '#password-reset-form';
 		var options = {
 			'to': info.email,
