@@ -3,6 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 var crypto = require('crypto');
+var forge = require('node-forge');
 var uuid = require('uuid');
 var debug = require('debug')('encryption');
 
@@ -69,3 +70,22 @@ module.exports.decrypt = function (publicKey, privateKey, data, pass, sig) {
 		'valid': valid
 	};
 };
+
+// generate a key pair
+module.exports.getKeyPair(cb) {
+	var rsa = forge.pki.rsa;
+	rsa.generateKeyPair({
+		bits: 2048,
+		workers: 2
+	}, function (err, pair) {
+		if (err) {
+			var e = new VError(err, '/friend keyPair failed');
+			return cb(e);
+		}
+		var keypair = {
+			public: forge.pki.publicKeyToPem(pair.publicKey, 72),
+			private: forge.pki.privateKeyToPem(pair.privateKey, 72)
+		};
+		cb(null, keypair);
+	});
+}

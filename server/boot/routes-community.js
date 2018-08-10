@@ -5,7 +5,7 @@
 var getCurrentUser = require('../middleware/context-currentUser');
 var resolveProfilesForPosts = require('../lib/resolveProfilesForPosts');
 var resolvePostPhotos = require('../lib/resolvePostPhotos');
-var encryption = require('../lib/encryption');
+var encryption = require('antisocial-encryption');
 var getCommunityMember = require('../middleware/context-getCommunityMember');
 var proxyEndPoint = require('../lib/proxy-endpoint');
 var async = require('async');
@@ -138,11 +138,8 @@ module.exports = function (server) {
               debug('got encrypted response');
               var privateKey = subscription.keys.private;
               var publicKey = subscription.remotePublicKey;
-              var toDecrypt = body.data;
-              var sig = body.sig;
-              var pass = body.pass;
 
-              var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+              var decrypted = encryption.decrypt(publicKey, privateKey, body);
               if (!decrypted.valid) {
                 return cb(new VError('unable to decrypt response'));
               }
@@ -183,7 +180,7 @@ module.exports = function (server) {
                   'about': null
                 }, {
                   'visibility': {
-                    'inq': ['community-' + community.nickname]
+                    'inq': ['community:' + community.nickname]
                   }
                 }]
               },
@@ -226,11 +223,8 @@ module.exports = function (server) {
                     debug('got encrypted response');
                     var privateKey = communityMember.keys.private;
                     var publicKey = communityMember.remotePublicKey;
-                    var toDecrypt = body.data;
-                    var sig = body.sig;
-                    var pass = body.pass;
 
-                    decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+                    decrypted = encryption.decrypt(publicKey, privateKey, body);
                     if (!decrypted.valid) {
                       return doneResolve(new VError('unable to decrypt response'));
                     }

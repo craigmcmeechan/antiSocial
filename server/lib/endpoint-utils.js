@@ -5,7 +5,7 @@
 var pug = require('pug');
 var debug = require('debug')('proxy');
 var server = require('../server');
-var encryption = require('../lib/encryption');
+var encryption = require('antisocial-encryption');
 
 module.exports.getPOVEndpoint = function (friend, currentUser) {
 	if (friend) {
@@ -144,7 +144,7 @@ module.exports.getPost = function (postId, user, friend, subscription, isMe, cb)
 		if (subscription) {
 			query.where.and.push({
 				'visibility': {
-					'inq': ['community-' + subscription.communityName]
+					'inq': ['community:' + subscription.communityName]
 				}
 			});
 		}

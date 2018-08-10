@@ -6,7 +6,7 @@ var debug = require('debug')('routes');
 var getFriendForEndpoint = require('../middleware/context-getFriendForEndpoint');
 var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
-var encryption = require('../lib/encryption');
+var encryption = require('antisocial-encryption');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var request = require('request');
@@ -122,11 +122,8 @@ module.exports = function (server) {
 				debug('got encrypted response');
 				var privateKey = friend.keys.private;
 				var publicKey = friend.remotePublicKey;
-				var toDecrypt = body.data;
-				var sig = body.sig;
-				var pass = body.pass;
 
-				var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+				var decrypted = encryption.decrypt(publicKey, privateKey, body);
 				if (!decrypted.valid) {
 					return res.sendStatus('401');
 				}

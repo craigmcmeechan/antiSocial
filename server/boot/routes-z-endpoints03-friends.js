@@ -6,7 +6,7 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
 var checkNeedProxyRewrite = require('../middleware/rewriteUrls');
 var resolveProfiles = require('../lib/resolveProfiles');
-var encryption = require('../lib/encryption');
+var encryption = require('antisocial-encryption');
 var getProfile = require('../lib/getProfile');
 var async = require('async');
 var debug = require('debug')('proxy');
@@ -135,11 +135,8 @@ module.exports = function (server) {
 								debug('got encrypted response');
 								var privateKey = friend.keys.private;
 								var publicKey = friend.remotePublicKey;
-								var toDecrypt = body.data;
-								var sig = body.sig;
-								var pass = body.pass;
 
-								var decrypted = encryption.decrypt(publicKey, privateKey, toDecrypt, pass, sig);
+								var decrypted = encryption.decrypt(publicKey, privateKey, body);
 								if (!decrypted.valid) {
 									return res.sendStatus('401');
 								}
