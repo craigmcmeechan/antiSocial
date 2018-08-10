@@ -122,7 +122,7 @@ if globalSettings.multiUser === 'open' || inviteToken
 aside#password-reset-form.mdc-dialog(role="alertdialog")
 	.mdc-dialog__surface
 		form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
-			input(type="hidden" name="access_token" value= passwordResetToken)
+			input(type="hidden" name="reset" value= passwordResetToken)
 			header.mdc-dialog__header
 				h2.mdc-dialog__header__title.
 					Reset Password

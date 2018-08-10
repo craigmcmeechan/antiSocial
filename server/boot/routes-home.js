@@ -75,7 +75,7 @@ module.exports = function (server) {
               'data': {
                 'posts': posts
               },
-              'passwordResetToken': req.query.access_token,
+              'passwordResetToken': req.query.reset,
               'noComments': true,
               'pageTitle': 'Home'
             });
