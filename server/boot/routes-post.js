@@ -583,7 +583,10 @@ module.exports = function (server) {
       res.send({
         'result': {
           'status': 'ok',
-          'uuid': post.uuid
+          'uuid': post.uuid,
+          'about': post.about,
+          'source': post.source,
+          'endpoint': post.source + '/post/' + post.uuid
         }
       });
     });

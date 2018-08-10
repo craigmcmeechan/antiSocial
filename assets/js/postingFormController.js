@@ -213,6 +213,12 @@
 					}
 					else {
 						self.hideForm();
+
+						// prepend new to post list
+						if (this.community) {
+							//
+						}
+
 						if (self.share) {
 							$('#post-form').data('mdc-dialog').destroy();
 						}

@@ -178,7 +178,7 @@ module.exports = function (server) {
 
         // post comment to community endpoint
         var visibility = [];
-        visibility.push('community-' + subscription.communityName);
+        visibility.push('community:' + subscription.communityName);
         visibility.push('public');
 
         var payload = {

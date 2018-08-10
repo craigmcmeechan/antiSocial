@@ -7,6 +7,10 @@ module.exports = function () {
 		var reqContext = req.getCurrentContext();
 		var accessToken = req.headers['community-access-token'];
 
+		if (!accessToken) {
+			return next();
+		}
+
 		var query = {
 			'where': {
 				'and': [{

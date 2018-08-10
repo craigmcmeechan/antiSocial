@@ -10,7 +10,9 @@
 		this.start = function () {
 			var modal = location.hash;
 			if (modal && modal.length > 1 && modal !== '#_=_') {
-				$(modal).modal();
+				var dialog = new MDC.MDCDialog(document.querySelector(modal));
+				$(modal).data('mdc-dialog', dialog);
+				dialog.show();
 			}
 		};
 
