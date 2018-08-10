@@ -35,8 +35,8 @@ aside#nav-drawer.mdc-drawer.mdc-drawer--temporary.mdc-typography
 				a#nav-feed.nav-item.mdc-list-item(href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom")
 					<i class="fa fa-users fa-fw material-icons mdc-list-item__graphic"></i>
 					|  Friends Feed
-				if user && user.subscriptions
-					div#community-nav(data-hijax="true")
+				div#community-nav(data-hijax="true")
+					if user && user.subscriptions
 						for community in user.subscriptions()
 							a#nav-feed.nav-item.mdc-list-item(href="/community/" + community.communityName )
 								<i class="fa fa-bullhorn fa-fw material-icons mdc-list-item__graphic"></i>

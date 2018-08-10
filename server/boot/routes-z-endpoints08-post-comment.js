@@ -4,6 +4,7 @@
 
 var getCurrentUser = require('../middleware/context-currentUser');
 var getFriendAccess = require('../middleware/context-getFriendAccess');
+var getCommunitySubscriber = require('../middleware/context-getCommunitySubscriber');
 var checkNeedProxyRewrite = require('../middleware/rewriteUrls');
 var resolveProfiles = require('../lib/resolveProfiles');
 var resolveComments = require('../lib/resolveComments');
@@ -39,7 +40,7 @@ module.exports = function (server) {
 	 * @response {JSON|HTML} If .json is requested returns a JSON comment object, otherwise HTML
 	 */
 
-	router.get(postCommentRE, getCurrentUser(), checkNeedProxyRewrite('comment'), getFriendAccess(), function (req, res, next) {
+	router.get(postCommentRE, getCurrentUser(), checkNeedProxyRewrite('comment'), getFriendAccess(), getCommunitySubscriber(), function (req, res, next) {
 		var ctx = req.myContext;
 		var redirectProxy = ctx.get('redirectProxy');
 		if (redirectProxy) {
@@ -53,6 +54,7 @@ module.exports = function (server) {
 		var commentId = matches[3];
 		var view = matches[4];
 		var friend = ctx.get('friendAccess');
+		var subscriber = ctx.get('communitySubscriber');
 		var currentUser = ctx.get('currentUser');
 
 		var isMe = false;
@@ -73,7 +75,7 @@ module.exports = function (server) {
 					}
 				}
 
-				utils.getPost(postId, user, friend, null, isMe, function (err, post) {
+				utils.getPost(postId, user, friend, subscriber, isMe, function (err, post) {
 					if (err) {
 						return cb(err);
 					}
