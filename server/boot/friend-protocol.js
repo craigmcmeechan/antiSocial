@@ -41,6 +41,18 @@ var debug = require('debug')('friends');
 
 
 module.exports = function (server) {
+
+	var antisocial = require('antisocial-friends');
+	var db = require('../lib/antisocial-module-db-adaptor')(server);
+
+	server.locals.config.APIPrefix = '';
+	var antisocialApp = antisocial(server, server.locals.config, db, getCurrentUser());
+
+	// TODO implement listeners here
+
+}
+
+function old(server) {
 	var router = server.loopback.Router();
 
 	/*
@@ -785,4 +797,4 @@ module.exports = function (server) {
 		}
 		return url;
 	}
-};
+}

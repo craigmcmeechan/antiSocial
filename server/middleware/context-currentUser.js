@@ -45,6 +45,7 @@ module.exports = function () {
 				return next();
 			}
 
+			req.antisocialUser = user;
 			reqContext.set('currentUser', user);
 			reqContext.set('ip', req.ip);
 
