@@ -160,7 +160,7 @@ describe('proxy endpoints', function () {
 		});
 
 		it('user1 should be able to friend user2', function (done) {
-			client1.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint2).end(function (err, res) {
+			client1.get('http://127.0.0.1:3000/userone/request-friend?endpoint=' + endpoint2).end(function (err, res) {
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -168,15 +168,19 @@ describe('proxy endpoints', function () {
 		});
 
 		it('user2 should be able to accept friend request from user1', function (done) {
-			client2.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint1)).end(function (err, res) {
-				expect(res.status).to.be(200);
-				expect(res.body.status).to.equal('ok');
-				done();
-			});
+			client2.post('http://127.0.0.1:3000/usertwo/friend-request-accept')
+				.send({
+					'endpoint': endpoint1
+				})
+				.end(function (err, res) {
+					expect(res.status).to.be(200);
+					expect(res.body.status).to.equal('ok');
+					done();
+				});
 		});
 
 		it('user3 should be able to friend user1', function (done) {
-			client3.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint1).end(function (err, res) {
+			client3.get('http://127.0.0.1:3000/userthree/request-friend?endpoint=' + endpoint1).end(function (err, res) {
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -184,15 +188,19 @@ describe('proxy endpoints', function () {
 		});
 
 		it('user1 should be able to accept friend request from user3', function (done) {
-			client1.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint3)).end(function (err, res) {
-				expect(res.status).to.be(200);
-				expect(res.body.status).to.equal('ok');
-				done();
-			});
+			client1.post('http://127.0.0.1:3000/userone/friend-request-accept')
+				.send({
+					'endpoint': endpoint3
+				})
+				.end(function (err, res) {
+					expect(res.status).to.be(200);
+					expect(res.body.status).to.equal('ok');
+					done();
+				});
 		});
 
 		it('user4 should be able to friend user2', function (done) {
-			client4.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint2).end(function (err, res) {
+			client4.get('http://127.0.0.1:3000/userfour/request-friend?endpoint=' + endpoint2).end(function (err, res) {
 				expect(res.status).to.be(200);
 				expect(res.body.status).to.equal('ok');
 				done();
@@ -200,11 +208,15 @@ describe('proxy endpoints', function () {
 		});
 
 		it('user2 should be able to accept friend request from user4', function (done) {
-			client2.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint4)).end(function (err, res) {
-				expect(res.status).to.be(200);
-				expect(res.body.status).to.equal('ok');
-				done();
-			});
+			client2.post('http://127.0.0.1:3000/usertwo/friend-request-accept')
+				.send({
+					'endpoint': endpoint4
+				})
+				.end(function (err, res) {
+					expect(res.status).to.be(200);
+					expect(res.body.status).to.equal('ok');
+					done();
+				});
 		});
 	}
 

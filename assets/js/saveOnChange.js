@@ -53,6 +53,10 @@
 
 			toSave[property] = value;
 
+			if (self.element.data('friend-endpoint')) {
+				toSave.endpoint = self.element.data('friend-endpoint');
+			}
+
 			$.ajax({ // save the data
 				type: method,
 				url: endpoint,

@@ -50,6 +50,21 @@ module.exports = function (server) {
 
 	// TODO implement listeners here
 
+
+	antisocialApp.on('friend-request-accepted', function (e) {
+		watchFeed.connect(server, e.friend);
+	});
+
+	antisocialApp.on('friend-updated', function (e) {
+		console.log('antisocial friend-updated %j', e.friend.remoteEndPoint);
+	});
+
+	antisocialApp.on('friend-deleted', function (e) {
+		if (e.friend.originator) {
+			watchFeed.disconnect(server, e.friend);
+		}
+	});
+
 }
 
 function old(server) {
