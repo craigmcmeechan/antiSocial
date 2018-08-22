@@ -23,9 +23,12 @@ module.exports = function (server) {
 	var antisocialApp = antisocial(server, server.locals.config, db, getCurrentUser());
 
 	// notify requestor that their friend request was accepted
-	antisocialApp.on('friend-request-accepted', function (e) {
+	antisocialApp.on('new-friend', function (e) {
 		var friend = e.friend;
-		watchFeed.connect(server, friend);
+
+		if (friend.originator) {
+			watchFeed.connect(server, friend);
+		}
 
 		async.waterfall([
 			function getUser(cb) {
@@ -33,7 +36,7 @@ module.exports = function (server) {
 					cb(err, user);
 				});
 			},
-			function (user, cb) {
+			function (user, cb) { // tell my friends about my new friend
 				var item = {
 					'userId': user.id,
 					'uuid': uuid(),
@@ -45,7 +48,29 @@ module.exports = function (server) {
 				};
 				server.models.PushNewsFeedItem.create(item, function (err, item) {
 					if (err) {
-						return cb(new VError(err, '/accept-friend pushNews could not create PushNewsFeedItem %j', item));
+						return cb(new VError(err, 'could not create PushNewsFeedItem %j', item));
+					}
+					cb(null, user, item);
+				});
+			},
+			function (user, pushItem, cb) { // notify self
+				if (!friend.originator) {
+					return async.setImmediate(function () {
+						return cb();
+					});
+				}
+
+				var item = {
+					'userId': user.id,
+					'friendId': friend.id,
+					'uuid': pushItem.uuid,
+					'type': 'friend',
+					'source': friend.remoteEndPoint,
+					'about': friend.remoteEndPoint
+				};
+				server.models.NewsFeedItem.create(item, function (err, item) {
+					if (err) {
+						return cb(new VError(err, 'could not create PushNewsFeedItem %j', item));
 					}
 					cb(null, friend);
 				});
