@@ -113,5 +113,9 @@ module.exports = {
   'Request': {
     'dataSource': 'db',
     'public': true
+  },
+  'Block': {
+    'dataSource': 'db',
+    'public': true
   }
 };

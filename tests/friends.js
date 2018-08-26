@@ -87,6 +87,7 @@ describe('friends', function () {
 				var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 				expect(accessToken).to.be.a('string');
 				endpoint1 += res.body.result.username;
+				console.log(endpoint1);
 				done();
 			});
 	});
@@ -105,12 +106,14 @@ describe('friends', function () {
 				var accessToken = getCookie(res.headers['set-cookie'], 'access_token');
 				expect(accessToken).to.be.a('string');
 				endpoint2 += res.body.result.username;
+				console.log(endpoint2);
 				done();
 			});
 	});
 
 	it('user1 should be able to friend user2', function (done) {
-		client1.get('http://127.0.0.1:3000/friend?endpoint=' + endpoint2).end(function (err, res) {
+		console.log(endpoint2);
+		client1.get('http://127.0.0.1:3000/user-1/request-friend?endpoint=' + endpoint2).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body.status).to.equal('ok');
 			done();
@@ -118,15 +121,15 @@ describe('friends', function () {
 	});
 
 	it('user1 should not be able to friend user2 again', function (done) {
-		client1.get('http://127.0.0.1:3000/friend?endpoint=' + encodeURIComponent(endpoint2)).end(function (err, res) {
+		client1.get('http://127.0.0.1:3000/user-1/request-friend?endpoint=' + encodeURIComponent(endpoint2)).end(function (err, res) {
 			expect(res.status).to.be(200);
-			expect(res.body.status).to.equal('duplicate friend request');
+			expect(res.body.status).to.equal('error');
 			done();
 		});
 	});
 
 	it('user1 should not be able to friend unknown user', function (done) {
-		client1.get('http://127.0.0.1:3000/friend?endpoint=' + encodeURIComponent(endpoint3)).end(function (err, res) {
+		client1.get('http://127.0.0.1:3000/user-1/request-friend?endpoint=' + encodeURIComponent(endpoint3)).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body.status).to.not.equal('ok');
 			done();
@@ -134,11 +137,16 @@ describe('friends', function () {
 	});
 
 	it('user2 should be able to accept friend request from user1', function (done) {
-		client2.get('http://127.0.0.1:3000/accept-friend?endpoint=' + encodeURIComponent(endpoint1)).end(function (err, res) {
-			expect(res.status).to.be(200);
-			expect(res.body.status).to.equal('ok');
-			done();
-		});
+		client2.post('http://127.0.0.1:3000/user-2/friend-request-accept')
+			.type('form')
+			.send({
+				'endpoint': endpoint1
+			})
+			.end(function (err, res) {
+				expect(res.status).to.be(200);
+				expect(res.body.status).to.equal('ok');
+				done();
+			});
 	});
 });
 
