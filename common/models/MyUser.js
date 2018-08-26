@@ -52,15 +52,24 @@ module.exports = function (MyUser) {
 	MyUser.afterRemote('login', function setLoginCookie(context, accessToken, next) {
 		var res = context.res;
 		var req = context.req;
-		if (accessToken != null) {
-			if (accessToken.id != null) {
+		if (accessToken != null && accessToken.id != null) {
+			MyUser.findById(accessToken.userId, function (err, user) {
 				res.cookie('access_token', accessToken.id, {
 					signed: req.signedCookies ? true : false,
 					maxAge: 1000 * accessToken.ttl
 				});
-			}
+
+				res.cookie('username', user.username, {
+					signed: req.signedCookies ? true : false,
+					maxAge: 1000 * accessToken.ttl
+				});
+
+				next();
+			});
 		}
-		return next();
+		else {
+			return next();
+		}
 	});
 
 	// toast the session cookie
@@ -285,6 +294,11 @@ module.exports = function (MyUser) {
 			}
 
 			res.cookie('access_token', accessToken.id, {
+				signed: req.signedCookies ? true : false,
+				maxAge: 1000 * accessToken.ttl
+			});
+
+			res.cookie('username', user.username, {
 				signed: req.signedCookies ? true : false,
 				maxAge: 1000 * accessToken.ttl
 			});

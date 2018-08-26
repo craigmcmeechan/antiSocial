@@ -1,0 +1,50 @@
+{
+	"name": "Block",
+	"base": "PersistedModel",
+	"idInjection": true,
+	"options": {
+		"validateUpsert": true
+	},
+	"strictObjectIDCoercion": true,
+	"mixins": {
+		"TimeStamp": {
+			"createdAt": "createdOn",
+			"updatedAt": "updatedOn",
+			"required": false,
+			"validateUpsert": true
+		}
+	},
+	"properties": {
+		"status": {
+			"endpoint": "string"
+		}
+	},
+	"validations": [],
+	"relations": {
+		"user": {
+			"type": "belongsTo",
+			"model": "MyUser",
+			"foreignKey": "userId"
+		}
+	},
+	"acls": [{
+		"accessType": "*",
+		"property": "*",
+		"principalType": "ROLE",
+		"principalId": "$everyone",
+		"permission": "DENY"
+	}, {
+		"accessType": "*",
+		"property": "*",
+		"principalType": "ROLE",
+		"principalId": "admin",
+		"permission": "ALLOW"
+	}, {
+		"accessType": "*",
+		"property": "*",
+		"principalType": "ROLE",
+		"principalId": "superuser",
+		"permission": "ALLOW"
+	}],
+	"methods": {}
+}
