@@ -134,6 +134,11 @@
       "type": "hasMany",
       "model": "Subscription",
       "foreignKey": "userId"
+    },
+    "blocks": {
+      "type": "hasMany",
+      "model": "Block",
+      "foreignKey": "userId"
     }
   },
   "acls": [{

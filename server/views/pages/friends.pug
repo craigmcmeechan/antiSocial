@@ -70,21 +70,22 @@ block content
 												if friend.status === 'pending'
 													if !friend.originator
 														div
-															a(data-jsclass="getEndpointController" data-endpoint= '/accept-friend?endpoint=' + encodeURIComponent(friend.remoteEndPoint) data-toggle="tooltip" title="Accept Request")
+															a(data-jsclass="getEndpointController" data-method= 'POST' data-endpoint= '/' + user.username + '/friend-request-accept'  data-data='{"endpoint":"'+friend.remoteEndPoint+'"}' data-toggle="tooltip" title="Accept Request")
 																span.fa.fa-fw.fa-check
 														div
-															a(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"declined"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Decline Request")
+															a(data-jsclass="getEndpointController" data-method= 'POST' data-endpoint= '/' + user.username + '/friend-request-decline' data-data='{"endpoint":"'+friend.remoteEndPoint+'"}' data-toggle="tooltip" title="Decline Request")
 																span.fa.fa-fw.fa-times
 														div
-															a(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"blocked"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Block Request")
+															a(data-jsclass="getEndpointController" data-method= 'POST' data-endpoint = '/' + user.username + '/friend-update' data-data='{"endpoint":"'+friend.remoteEndPoint+'","status":"block"}' data-toggle="tooltip" title="Block Request")
 																span.fa.fa-fw.fa-ban
 													else
-														a(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"canceled"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Cancel Request")
+														
+														a(data-jsclass="getEndpointController" data-method= 'POST' data-endpoint= '/' + user.username + '/request-friend-cancel' data-data='{"endpoint":"'+friend.remoteEndPoint+'"}' data-toggle="tooltip" title="Cancel Request")
 															span.fa.fa-fw.fa-times
 
 												else
 													if friend.status === 'accepted'
-														a(data-jsclass="getEndpointController" data-method= 'PUT' data-data='{"status":"deleted"}' data-endpoint= '/api/MyUsers/me/friends/' + friend.id.toString() data-toggle="tooltip" title="Delete")
+														a(data-jsclass="getEndpointController" data-method= 'POST' data-endpoint = '/' + user.username + '/friend-update' data-data='{"endpoint":"'+friend.remoteEndPoint+'","status":"delete"}' data-toggle="tooltip" title="Delete")
 															span.fa.fa-fw.fa-times
 
 											a(href= proxyEndPoint(friend.remoteEndPoint,user))= friend.resolvedProfiles[friend.remoteEndPoint].profile.name
