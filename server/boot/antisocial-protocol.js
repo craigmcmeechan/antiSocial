@@ -157,13 +157,69 @@ module.exports = function (server) {
 		});
 	});
 
+	// friend has changed
 	antisocialApp.on('friend-updated', function (e) {
 		console.log('antisocial friend-updated %j', e.friend.remoteEndPoint);
 	});
 
+	// friend has been deleted
 	antisocialApp.on('friend-deleted', function (e) {
 		if (e.friend.originator) {
-			watchFeed.disconnect(server, e.friend);
+			watchFeed.disConnect(server, e.friend);
 		}
+
+		// delete news feed entries by originating from deleted friend
+		server.models.NewsFeedItem.destroyAll({
+			'and': [{
+				'source': e.friend.remoteEndPoint
+			}, {
+				'userId': e.friend.userId
+			}]
+		}, function (err, info) {
+			if (err) {
+				server.locals.logger('error', 'error occured deleting newsFeedItems for friend-deleted event', err.message);
+			}
+			debug('friend-deleted NewsFeedItems removed: ' + info);
+		});
+
+		// mark push notifications for my actions on items originating from deleted friend as deleted
+		server.models.PushNewsFeedItem.find({
+			'where': {
+				'and': [{
+					'about': {
+						'like': new RegExp('^' + e.friend.remoteEndPoint + '.*')
+					}
+				}, {
+					'userId': e.friend.userId
+				}]
+			}
+		}, function (err, items) {
+			if (err) {
+				server.locals.logger('error', 'error occured deleting newsFeedItems for friend-deleted event', err.message);
+			}
+			else {
+				for (var i = 0; i < items.length; i++) {
+					items[i].deleted = true;
+					items[i].save();
+				}
+			}
+			debug('friend-deleted NewsFeedItems marked as deleted', items ? items.length : 0);
+		});
+
+		// delete news feed items for my actions on items originating from deleted friend
+		server.models.NewsFeedItem.destroyAll({
+			'and': [{
+				'about': {
+					'like': new RegExp('^' + e.friend.remoteEndPoint + '.*')
+				}
+			}, {
+				'userId': e.friend.userId
+			}]
+		}, function (err, info) {
+			if (err) {
+				server.locals.logger('error', 'error occured deleting newsFeedItems for friend-deleted event', err.message);
+			}
+			debug('friend-deleted NewsFeedItems removed: ' + info);
+		});
 	});
 };
