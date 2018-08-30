@@ -363,9 +363,9 @@ antisocial-encryption@^1.0.2:
     node-forge "^0.7.5"
     uuid "^3.3.2"
 
-antisocial-friends@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.0.9.tgz#29aa154e0d3ff4fa7dcd7e5de0a0c91feef959ab"
+antisocial-friends@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.0.11.tgz#f2b74a26a03b452aac757fc18b5383fc54b65319"
   dependencies:
     antisocial-encryption "^1.0.2"
     async "^2.6.1"
@@ -374,6 +374,8 @@ antisocial-friends@^0.0.9:
     express "~4.16.0"
     lodash "^4.17.10"
     request "^2.88.0"
+    socket.io "^2.1.1"
+    socketio-auth "^0.1.1"
     uuid "^3.3.2"
     verror "^1.10.0"
 
@@ -7806,7 +7808,7 @@ socket.io-parser@~3.2.0:
     debug "~3.1.0"
     isarray "2.0.1"
 
-socket.io@^2.0.4:
+socket.io@^2.0.4, socket.io@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-2.1.1.tgz#a069c5feabee3e6b214a75b40ce0652e1cfb9980"
   dependencies:
@@ -7817,7 +7819,7 @@ socket.io@^2.0.4:
     socket.io-client "2.1.1"
     socket.io-parser "~3.2.0"
 
-socketio-auth@^0.1.0:
+socketio-auth@^0.1.0, socketio-auth@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/socketio-auth/-/socketio-auth-0.1.1.tgz#03f1fdd9d9b5e10f0a0ea9502abadbc580015d71"
   dependencies:

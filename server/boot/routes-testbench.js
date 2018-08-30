@@ -73,12 +73,33 @@ module.exports = function (server) {
 		res.send(server.locals.myCache.getStats());
 	});
 
+	// tell notification listeners to go offline
+	function disconnectAllNotificationsListeners() {
+		if (server.openNotificationsListeners) {
+			for (var key in server.openNotificationsListeners) {
+				var socket = server.openNotificationsListeners[key];
+				socket.emit('data', {
+					'type': 'offline'
+				});
+			}
+		}
+	}
+
+	function disconnectAllActivityListeners(user) {
+		for (var key in server.openActivityListeners) {
+			var socket = server.openActivityListeners[key];
+			if (socket.data.currentUser.id.toString() === user.id.toString()) {
+				socket.disconnect(true);
+			}
+		}
+	}
+
 	router.get('/stop-ws', function (req, res, next) {
 		server.models.MyUser.find({}, function (err, users) {
 			for (var i = 0; i < users.length; i++) {
-				watchFeed.disconnectAll(server, users[i]);
+				disconnectAllActivityListeners(users[i]);
 			}
-			clientWebsockets.disconnectAll(server);
+			disconnectAllNotificationsListeners();
 			res.send('ok');
 		});
 	});
@@ -104,7 +125,7 @@ module.exports = function (server) {
 
 			for (var i = 0; i < friends.length; i++) {
 				var friend = friends[i];
-				watchFeed.connect(server, friend);
+				watchFeed.connect(server, friend, friend.user());
 			}
 		});
 		res.send('ok');
@@ -116,9 +137,9 @@ module.exports = function (server) {
 		res.render('pages/status', {
 			'globalSettings': ctx.get('globalSettings'),
 			'currentUser': ctx.get('currentUser'),
-			'listeningFriendConnections': server.listeningFriendConnections,
-			'openClients': server.openClients,
-			'watchFriendConnections': server.watchFriendConnections
+			'openActivityListeners': server.openActivityListeners,
+			'openNotificationsListeners': server.openNotificationsListeners,
+			'openActivityListeners': server.openActivityListeners
 		});
 	});
 

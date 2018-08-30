@@ -12,7 +12,7 @@ var uuid = require('uuid');
 var VError = require('verror').VError;
 var async = require('async');
 
-var debug = require('debug')('friends');
+var debug = require('debug')('antisocial-friends');
 
 module.exports = function (server) {
 
@@ -25,10 +25,6 @@ module.exports = function (server) {
 	// notify requestor that their friend request was accepted
 	antisocialApp.on('new-friend', function (e) {
 		var friend = e.friend;
-
-		if (friend.originator) {
-			watchFeed.connect(server, friend);
-		}
 
 		async.waterfall([
 			function getUser(cb) {
@@ -56,7 +52,7 @@ module.exports = function (server) {
 			function (user, pushItem, cb) { // notify self
 				if (!friend.originator) {
 					return async.setImmediate(function () {
-						return cb();
+						return cb(null, user);
 					});
 				}
 
@@ -72,12 +68,17 @@ module.exports = function (server) {
 					if (err) {
 						return cb(new VError(err, 'could not create PushNewsFeedItem %j', item));
 					}
-					cb(null, friend);
+					cb(null, user);
 				});
 			}
-		], function (err) {
+		], function (err, user) {
 			if (err) {
 				server.locals.logger('error', 'error occured doing notifications for friend-request-accepted event', err.message);
+			}
+			else {
+				if (friend.originator) {
+					watchFeed.connect(server, friend, user);
+				}
 			}
 		});
 	});
@@ -86,7 +87,7 @@ module.exports = function (server) {
 	antisocialApp.on('new-friend-request', function (e) {
 		var friend = e.friend;
 
-		watchFeed.connect(server, friend);
+		console.log('new-friend-request got %j', e);
 
 		// do notifications
 		async.waterfall([
@@ -131,7 +132,7 @@ module.exports = function (server) {
 			function notifyEmail(user, profile, item, cb) {
 				utils.getUserSettings(server, user, function (err, settings) {
 					if (!settings.notifications_friend_request) {
-						return cb(null);
+						return cb(null, user);
 					}
 					var template = 'emails/notify-friend-request';
 					var options = {
@@ -147,10 +148,10 @@ module.exports = function (server) {
 					mailer(server, template, options, function (err, info) {
 						debug('mail status %j %j', err, info);
 					});
-					cb(null);
+					cb(null, user);
 				});
 			}
-		], function (err) {
+		], function (err, user) {
 			if (err) {
 				server.locals.logger('error', 'error occured doing notificationd for new-friend-request event', err.message);
 			}
@@ -168,58 +169,74 @@ module.exports = function (server) {
 			watchFeed.disConnect(server, e.friend);
 		}
 
-		// delete news feed entries by originating from deleted friend
-		server.models.NewsFeedItem.destroyAll({
-			'and': [{
-				'source': e.friend.remoteEndPoint
-			}, {
-				'userId': e.friend.userId
-			}]
-		}, function (err, info) {
-			if (err) {
-				server.locals.logger('error', 'error occured deleting newsFeedItems for friend-deleted event', err.message);
-			}
-			debug('friend-deleted NewsFeedItems removed: ' + info);
-		});
-
-		// mark push notifications for my actions on items originating from deleted friend as deleted
-		server.models.PushNewsFeedItem.find({
-			'where': {
-				'and': [{
-					'about': {
-						'like': new RegExp('^' + e.friend.remoteEndPoint + '.*')
+		async.series([
+			function (cb) {
+				// delete news feed entries by originating from deleted friend
+				server.models.NewsFeedItem.destroyAll({
+					'and': [{
+						'source': e.friend.remoteEndPoint
+					}, {
+						'userId': e.friend.userId
+					}]
+				}, function (err, info) {
+					if (err) {
+						var e = new VError(err, 'error occured deleting newsFeedItems (source)');
+						return cb(e);
 					}
-				}, {
-					'userId': e.friend.userId
-				}]
-			}
-		}, function (err, items) {
-			if (err) {
-				server.locals.logger('error', 'error occured deleting newsFeedItems for friend-deleted event', err.message);
-			}
-			else {
-				for (var i = 0; i < items.length; i++) {
-					items[i].deleted = true;
-					items[i].save();
-				}
-			}
-			debug('friend-deleted NewsFeedItems marked as deleted', items ? items.length : 0);
-		});
+					debug('friend-deleted NewsFeedItems removed: ', info);
+					cb();
+				});
+			},
+			function (cb) {
+				// mark push notifications for my actions on items originating from deleted friend as deleted
+				server.models.PushNewsFeedItem.find({
+					'where': {
+						'and': [{
+							'about': {
+								'like': new RegExp('^' + e.friend.remoteEndPoint + '.*')
+							}
+						}, {
+							'userId': e.friend.userId
+						}]
+					}
+				}, function (err, items) {
+					if (err) {
+						var e = new VError(err, 'error occured deleting PushNewsFeedItems (about)');
+						return cb(e);
+					}
 
-		// delete news feed items for my actions on items originating from deleted friend
-		server.models.NewsFeedItem.destroyAll({
-			'and': [{
-				'about': {
-					'like': new RegExp('^' + e.friend.remoteEndPoint + '.*')
-				}
-			}, {
-				'userId': e.friend.userId
-			}]
-		}, function (err, info) {
-			if (err) {
-				server.locals.logger('error', 'error occured deleting newsFeedItems for friend-deleted event', err.message);
+					for (var i = 0; i < items.length; i++) {
+						items[i].deleted = true;
+						items[i].save();
+					}
+
+					debug('friend-deleted NewsFeedItems marked as deleted', items ? items.length : 0);
+					cb();
+				});
+			},
+			function (cb) {
+				// delete news feed items for my actions on items originating from deleted friend
+				server.models.NewsFeedItem.destroyAll({
+					'and': [{
+						'about': {
+							'like': new RegExp('^' + e.friend.remoteEndPoint + '.*')
+						}
+					}, {
+						'userId': e.friend.userId
+					}]
+				}, function (err, info) {
+					if (err) {
+						var e = new VError(err, 'error occured deleting newsFeedItems (about)');
+						return cb(e);
+					}
+					debug('friend-deleted NewsFeedItems removed: ', info);
+					cb();
+				});
 			}
-			debug('friend-deleted NewsFeedItems removed: ' + info);
+		], function (err) {
+			if (err) {
+				server.locals.logger('error', 'error occured for friend-deleted event', err.message);
+			}
 		});
 	});
 };

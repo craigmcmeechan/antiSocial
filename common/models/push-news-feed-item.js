@@ -18,7 +18,7 @@ module.exports = function (PushNewsFeedItem) {
 
 	PushNewsFeedItem.changeHandlerBackfill = function (socket, options) {
 		var friend = socket.data.friend;
-		var user = friend.user();
+		var user = socket.data.currentUser;
 
 		var highwater = socket.data.highwater ? socket.data.highwater : 0;
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;

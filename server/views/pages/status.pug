@@ -10,23 +10,14 @@ block content
 				.page-header
 					h1 Testbench
 
-				if openClients
-					strong Clients
+				if openNotificationsListeners
+					strong openNotificationsListeners
 					ul
-						for socket in openClients
+						for socket in openNotificationsListeners
 							li= socket.data.currentUser.username
 							
-				if listeningFriendConnections
-					strong listeningFriendConnections:
+				if openActivityListeners
+					strong openActivityListeners:
 					ul
-						for socket in listeningFriendConnections
-							-var user = socket.data.friend.user() ? socket.data.friend.user().username : 'unknown'
-							li= user + '->' + socket.data.friend.remoteEndPoint + ' ('+socket.id+')'
-
-				if listeningFriendConnections
-					strong watchFriendConnections:
-					ul
-						for socket in watchFriendConnections
-							-var name = socket.data.currentUser ? socket.data.currentUser.username : 'unknown'
-							li= name + '<-' + socket.data.friend.remoteEndPoint + ' ('+socket.id+')'
-					
+						for socket,index in openActivityListeners
+							li= index + ' ('+socket.id+')'

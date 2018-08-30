@@ -33,7 +33,7 @@ module.exports = function (server) {
 	function later(server, friend, i) {
 		setTimeout(function () {
 			//console.log('connecting: ', friend.user().username, friend.remoteUsername);
-			watchFeed(server, friend);
+			watchFeed(server, friend, friend.user());
 		}, i * 500);
 	}
 };

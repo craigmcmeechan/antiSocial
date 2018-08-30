@@ -231,7 +231,11 @@ function getDataEventHandler(server, socket) {
 										logger.error({
 											err: err
 										}, 'error saving address change');
-										watchFeed(server, friend);
+
+										// TODO: disconnect and reconnect to websockets.
+										// problem websocketWatchFriend circular reference this file
+
+										//watchFeed(server, friend, currentUser);
 										return cb(err);
 									}
 									cb();

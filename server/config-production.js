@@ -22,5 +22,6 @@ module.exports = {
   protocol: pubProtocol,
   websockets: websockets,
   publicHost: pub,
-  APIVersion: version
+  APIVersion: version,
+  secureCookiePassword: 'DecodrRing'
 };

@@ -14,6 +14,7 @@ var uuid = require('uuid');
 var NodeCache = require('node-cache');
 var proxyEndPoint = require('./lib/proxy-endpoint');
 var websockets = require('./lib/websocketAuthenticate');
+var async = require('async');
 
 var app = module.exports = loopback();
 
@@ -313,9 +314,20 @@ if (process.env.BASIC_AUTH) {
 
 var listener;
 
-app.stop = function () {
-  listener.close();
-  app.io.close();
+app.stop = function (done) {
+  async.series([
+    function (cb) {
+      app.ioActivity.close(cb);
+    },
+    function (cb) {
+      app.ioNotifications.close(cb);
+    },
+    function (cb) {
+      listener.close(cb);
+    }
+  ], function (err) {
+    done();
+  });
 };
 
 app.start = function () {
@@ -330,9 +342,8 @@ app.start = function () {
       }
       app.emit('started');
       app.locals.logger.info('http started');
-      app.io = require('socket.io')(listener);
-      websockets.mount(app);
-      app.locals.logger.info('websockets ws started');
+      websockets.mount(app, listener);
+
     });
   }
   else {
@@ -354,9 +365,7 @@ app.start = function () {
         return;
       }
       app.locals.logger.info('https started');
-      app.io = require('socket.io')(sslListener);
-      websockets.mount(app);
-      app.locals.logger.info('websockets wss started');
+      websockets.mount(app, listener);
     });
   }
 };
