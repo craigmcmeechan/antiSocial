@@ -11,7 +11,7 @@ var mailer = require('./mail');
 var debug = require('debug')('websockets');
 var debugVerbose = require('debug')('websockets:verbose');
 
-module.exports = function dataEventHandler(server, data, currentUser, friend) {
+module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 	var logger = server.locals.logger;
 
@@ -28,22 +28,6 @@ module.exports = function dataEventHandler(server, data, currentUser, friend) {
 		debugVerbose('watchFeed listener %s received online message', key);
 		return;
 	}
-
-	var privateKey = friend.keys.private;
-	var publicKey = friend.remotePublicKey;
-
-	var decrypted = encryption.decrypt(publicKey, privateKey, message);
-
-	if (!decrypted.valid) { // could not validate signature
-		logger.error({
-			'message': message
-		}, 'WatchNewsFeedItem decryption signature validation error');
-		return;
-	}
-
-	message.data = JSON.parse(decrypted.data);
-
-	var myNewsFeedItem = JSON.parse(JSON.stringify(message.data));
 
 	var query = {
 		'where': {

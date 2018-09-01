@@ -7,6 +7,7 @@ var watchFeed = require('../lib/websocketWatchFriend');
 var resolveProfiles = require('../lib/resolveProfiles');
 var utils = require('../lib/utilities');
 var mailer = require('../lib/mail');
+var dataEventHandler = require('../lib/websocketDataEventHandler');
 
 var uuid = require('uuid');
 var VError = require('verror').VError;
@@ -240,9 +241,26 @@ module.exports = function (server) {
 			});
 		});
 
-		antisocialApp.on('open-activity-connection', function (e) {});
-		antisocialApp.on('close-activity-connection', function (e) {});
-		antisocialApp.on('activity-data', function (e) {});
+		antisocialApp.on('open-activity-connection', function (e) {
+			var friend = e.info.friend;
+			var user = e.info.user;
+			// TODO set up data observer for PushNewsFeedItem and do backfill
+		});
+
+		antisocialApp.on('close-activity-connection', function (e) {
+			var friend = e.info.friend;
+			var user = e.info.user;
+			// TODO remove data observer for PushNewsFeedItem
+
+		});
+
+		antisocialApp.on('activity-data', function (e) {
+			var friend = e.info.friend;
+			var user = e.info.user;
+			// TODO call data handler for user/friend
+			dataEventHandler(server, user, friend, data);
+		});
+
 		antisocialApp.on('open-notification-connection', function (e) {});
 		antisocialApp.on('close-notification-connection', function (e) {});
 		antisocialApp.on('notification-data', function (e) {});
