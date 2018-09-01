@@ -340,10 +340,8 @@ app.start = function () {
         app.locals.logger.error('http could not be started', err);
         return;
       }
-      app.emit('started');
-      app.locals.logger.info('http started');
       websockets.mount(app, listener);
-
+      app.emit('started', listener);
     });
   }
   else {
@@ -364,8 +362,8 @@ app.start = function () {
         app.locals.logger.info('https could not start', err);
         return;
       }
-      app.locals.logger.info('https started');
       websockets.mount(app, listener);
+      app.emit('started', listener);
     });
   }
 };
