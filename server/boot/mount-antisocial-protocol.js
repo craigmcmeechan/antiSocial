@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 var getCurrentUser = require('../middleware/context-currentUser');
-var watchFeed = require('../lib/websocketWatchFriend');
+var watchFeed = require('antisocial-friends/lib/websockets-activity-subscribe');
 var resolveProfiles = require('../lib/resolveProfiles');
 var utils = require('../lib/utilities');
 var mailer = require('../lib/mail');
@@ -20,8 +20,40 @@ module.exports = function (server) {
 		var antisocial = require('antisocial-friends');
 		var db = require('../lib/antisocial-module-db-adaptor')(server);
 
+		function getLoggedInUser(req, res, next) {
+			var token;
+			if (req.cookies && req.cookies.access_token) {
+				token = req.cookies.access_token;
+			}
+
+			if (!token) {
+				return next();
+			}
+			async.waterfall([
+				function (cb) {
+					server.models.AccessToken.resolve(token, function (err, tokenInstance) {
+						if (err || !tokenInstance) {
+							return cb(null, null);
+						}
+						cb(err, tokenInstance);
+					});
+
+				},
+				function (token, cb) {
+					server.models.MyUser.findById(token.userId, function (err, user) {
+						cb(err, user);
+					});
+				}
+			], function (err, user) {
+				req.antisocialUser = user;
+				next();
+			});
+		}
+
 		server.locals.config.APIPrefix = '';
-		var antisocialApp = antisocial(server, server.locals.config, db, getCurrentUser());
+		var antisocialApp = antisocial(server, server.locals.config, db, getLoggedInUser, listener);
+
+		server.antisocialApp = antisocialApp;
 
 		// notify requestor that their friend request was accepted
 		antisocialApp.on('new-friend', function (e) {
@@ -78,7 +110,7 @@ module.exports = function (server) {
 				}
 				else {
 					if (friend.originator) {
-						watchFeed.connect(server, friend, user);
+						watchFeed.connect(antisocialApp, user, friend);
 					}
 				}
 			});
@@ -88,7 +120,7 @@ module.exports = function (server) {
 		antisocialApp.on('new-friend-request', function (e) {
 			var friend = e.info.friend;
 
-			console.log('new-friend-request got %j', e);
+			debug('new-friend-request got %j', e);
 
 			// do notifications
 			async.waterfall([
@@ -161,7 +193,7 @@ module.exports = function (server) {
 
 		// friend has changed
 		antisocialApp.on('friend-updated', function (e) {
-			console.log('antisocial friend-updated %j', e.info.friend.remoteEndPoint);
+			debug('antisocial friend-updated %j', e.info.friend.remoteEndPoint);
 		});
 
 		// friend has been deleted
@@ -244,25 +276,70 @@ module.exports = function (server) {
 		antisocialApp.on('open-activity-connection', function (e) {
 			var friend = e.info.friend;
 			var user = e.info.user;
-			// TODO set up data observer for PushNewsFeedItem and do backfill
+			var socket = e.socket;
+
+			// processing incomming data
+			socket.antisocial.setDataHandler(function (data) {
+				dataEventHandler(server, user, friend, data);
+			});
+
+			// set up data observer for PushNewsFeedItem which emits data events on socket for 'after save' events
+			var handler = server.models.PushNewsFeedItem.buildWebSocketChangeHandler(socket, user, friend);
+			e.info.observers = [{
+				'model': 'PushNewsFeedItem',
+				'eventType': 'after save',
+				'handler': handler
+			}];
+			server.models.PushNewsFeedItem.observe('after save', handler);
+
+			// backfill PushNewsFeedItem activity since last connection
+			server.models.PushNewsFeedItem.changeHandlerBackfill(socket, user, friend, e.info.highwater ? e.info.highwater : 0);
 		});
 
 		antisocialApp.on('close-activity-connection', function (e) {
 			var friend = e.info.friend;
 			var user = e.info.user;
-			// TODO remove data observer for PushNewsFeedItem
+			var socket = e.socket;
 
+			// remove data observers
+			var observers = e.info.observers;
+			if (observers) {
+				for (var i = 0; i < observers.length; i++) {
+					var observer = observers[i];
+					server.models[observer.model].removeObserver(observer.eventType, observer.handler);
+				}
+			}
+
+			if (friend.originator) {
+				setTimeout(function () {
+					watchFeed.connect(antisocialApp, user, friend);
+				}, 60000);
+			}
 		});
 
-		antisocialApp.on('activity-data', function (e) {
-			var friend = e.info.friend;
+		antisocialApp.on('open-notification-connection', function (e) {
 			var user = e.info.user;
-			// TODO call data handler for user/friend
-			dataEventHandler(server, user, friend, data);
+			var socket = e.socket;
+			var handler = server.models.NewsFeedItem.buildWebSocketChangeHandler(socket, user);
+			e.info.observers = [{
+				'model': 'NewsFeedItem',
+				'eventType': 'after save',
+				'handler': handler
+			}];
+			server.models.NewsFeedItem.observe('after save', handler);
+
+			// backfill NewsFeedItem activity since last connection
+			server.models.NewsFeedItem.changeHandlerBackfill(socket, user, e.info.highwater ? e.info.highwater : 0);
 		});
 
-		antisocialApp.on('open-notification-connection', function (e) {});
-		antisocialApp.on('close-notification-connection', function (e) {});
-		antisocialApp.on('notification-data', function (e) {});
+		antisocialApp.on('close-notification-connection', function (e) {
+			var observers = e.info.observers;
+			if (observers) {
+				for (var i = 0; i < observers.length; i++) {
+					var observer = observers[i];
+					server.models[observer.model].removeObserver(observer.eventType, observer.handler);
+				}
+			}
+		});
 	});
 };

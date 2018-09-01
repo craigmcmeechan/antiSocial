@@ -371,9 +371,9 @@ antisocial-encryption@^1.0.5:
     node-forge "^0.7.5"
     uuid "^3.3.2"
 
-antisocial-friends@^0.0.12:
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.0.12.tgz#4d5452b69c0e188f5aa6826c7a0eed28681a8146"
+antisocial-friends@^0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.0.18.tgz#fee79733ebe7d28b1a4bfefbbadfe5c91b4a09a3"
   dependencies:
     antisocial-encryption "^1.0.5"
     async "^2.6.1"

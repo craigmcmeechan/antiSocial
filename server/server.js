@@ -317,10 +317,16 @@ var listener;
 app.stop = function (done) {
   async.series([
     function (cb) {
-      app.ioActivity.close(cb);
+      if (!app.antisocialApp.ioActivity) {
+        return cb();
+      }
+      app.antisocialApp.ioActivity.close(cb);
     },
     function (cb) {
-      app.ioNotifications.close(cb);
+      if (!app.antisocialApp.ioNotifications) {
+        return cb();
+      }
+      app.antisocialApp.ioNotifications.close(cb);
     },
     function (cb) {
       listener.close(cb);
@@ -340,7 +346,7 @@ app.start = function () {
         app.locals.logger.error('http could not be started', err);
         return;
       }
-      websockets.mount(app, listener);
+      //websockets.mount(app, listener);
       app.emit('started', listener);
     });
   }
@@ -362,7 +368,7 @@ app.start = function () {
         app.locals.logger.info('https could not start', err);
         return;
       }
-      websockets.mount(app, listener);
+      //websockets.mount(app, listener);
       app.emit('started', listener);
     });
   }

@@ -16,11 +16,8 @@ module.exports = function (PushNewsFeedItem) {
 		});
 	}
 
-	PushNewsFeedItem.changeHandlerBackfill = function (socket, options) {
-		var friend = socket.data.friend;
-		var user = socket.data.currentUser;
+	PushNewsFeedItem.changeHandlerBackfill = function (socket, user, friend, highwater) {
 
-		var highwater = socket.data.highwater ? socket.data.highwater : 0;
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;
 		var privateKey = friend.keys.private;
 		var publicKey = friend.remotePublicKey;
@@ -72,10 +69,12 @@ module.exports = function (PushNewsFeedItem) {
 
 					if (!hit) {
 						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
-							'uuid': data.uuid
+							'type': 'remove',
+							'data': {
+								'uuid': data.uuid
+							}
 						}));
 						var change = {
-							'type': 'remove',
 							'data': encrypted.data,
 							'sig': encrypted.sig,
 							'pass': encrypted.pass
@@ -98,10 +97,12 @@ module.exports = function (PushNewsFeedItem) {
 							}
 						}
 
-						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(data));
+						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
+							'type': 'backfill',
+							'data': data
+						}));
 
 						var change = {
-							'type': 'backfill',
 							'data': encrypted.data,
 							'sig': encrypted.sig,
 							'pass': encrypted.pass
@@ -122,10 +123,7 @@ module.exports = function (PushNewsFeedItem) {
 		});
 	};
 
-	PushNewsFeedItem.buildWebSocketChangeHandler = function (socket, eventType, options) {
-		var friend = socket.data.friend;
-		var user = socket.data.currentUser;
-
+	PushNewsFeedItem.buildWebSocketChangeHandler = function (socket, user, friend) {
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;
 		var privateKey = friend.keys.private;
 		var publicKey = friend.remotePublicKey;
@@ -161,10 +159,12 @@ module.exports = function (PushNewsFeedItem) {
 
 			if (!hit) {
 				var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
-					'uuid': data.uuid
+					'type': 'remove',
+					'data': {
+						'uuid': data.uuid
+					}
 				}));
 				var change = {
-					'type': 'remove',
 					'data': encrypted.data,
 					'sig': encrypted.sig,
 					'pass': encrypted.pass
@@ -202,25 +202,19 @@ module.exports = function (PushNewsFeedItem) {
 
 			var mytype;
 
-			switch (eventType) {
-			case 'after save':
-				if (ctx.isNewInstance === undefined) {
-					mytype = hasTarget ? 'update' : 'create';
-				}
-				else {
-					mytype = ctx.isNewInstance ? 'create' : 'update';
-				}
-				break;
-			case 'before delete':
-				mytype = 'remove';
-				break;
+			if (ctx.isNewInstance === undefined) {
+				mytype = hasTarget ? 'update' : 'create';
 			}
-			var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(data));
+			else {
+				mytype = ctx.isNewInstance ? 'create' : 'update';
+			}
+
+			var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
+				'type': mytype,
+				'data': data
+			}));
 
 			var change = {
-				'type': mytype,
-				'model': 'NewsFeedItem',
-				'eventType': eventType,
 				'data': encrypted.data,
 				'sig': encrypted.sig,
 				'pass': encrypted.pass

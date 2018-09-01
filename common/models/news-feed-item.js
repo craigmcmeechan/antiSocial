@@ -24,8 +24,7 @@ module.exports = function (NewsFeedItem) {
 		});
 	}
 
-	NewsFeedItem.changeHandlerBackfill = function (socket, options) {
-		var user = socket.data.currentUser;
+	NewsFeedItem.changeHandlerBackfill = function (socket, user, highwater) {
 		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
 		var query = {
@@ -69,8 +68,7 @@ module.exports = function (NewsFeedItem) {
 		});
 	};
 
-	NewsFeedItem.buildWebSocketChangeHandler = function (socket, eventType, options) {
-		var user = socket.data.currentUser;
+	NewsFeedItem.buildWebSocketChangeHandler = function (socket, user) {
 		var streamDescription = 'user.username->client';
 		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
@@ -98,19 +96,14 @@ module.exports = function (NewsFeedItem) {
 
 			var mytype;
 
-			switch (eventType) {
-			case 'after save':
-				if (ctx.isNewInstance === undefined) {
-					mytype = hasTarget ? 'update' : 'create';
-				}
-				else {
-					mytype = ctx.isNewInstance ? 'create' : 'update';
-				}
-				break;
-			case 'before delete':
-				mytype = 'remove';
-				break;
+
+			if (ctx.isNewInstance === undefined) {
+				mytype = hasTarget ? 'update' : 'create';
 			}
+			else {
+				mytype = ctx.isNewInstance ? 'create' : 'update';
+			}
+
 
 			resolveProfiles(data, function (err) {
 				var items = optimizeNewsFeedItems([data], myEndpoint, user);
@@ -118,8 +111,6 @@ module.exports = function (NewsFeedItem) {
 				newsFeedItemResolve(user, data, function (err, data) {
 					var change = {
 						'type': mytype,
-						'model': 'NewsFeedItem',
-						'eventType': eventType,
 						'data': data,
 						'isMe': data.source === myEndpoint,
 						'endpoint': utils.whatAbout(data.about, user)

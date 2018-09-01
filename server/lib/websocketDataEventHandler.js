@@ -5,7 +5,6 @@
 var url = require('url');
 var async = require('async');
 var VError = require('verror').VError;
-var encryption = require('antisocial-encryption');
 var utils = require('./utilities');
 var mailer = require('./mail');
 var debug = require('debug')('websockets');
@@ -28,6 +27,8 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 		debugVerbose('watchFeed listener %s received online message', key);
 		return;
 	}
+
+	var myNewsFeedItem = data.data;
 
 	var query = {
 		'where': {
