@@ -12,7 +12,6 @@ var utils = require('../lib/utilities');
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
 var resolveProfiles = require('../lib/resolveProfiles');
 
-var clientWebsockets = require('../lib/websocketAuthenticate');
 var VError = require('verror').VError;
 var WError = require('verror').WError;
 var async = require('async');

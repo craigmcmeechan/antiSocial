@@ -13,7 +13,6 @@ var bunyan = require('bunyan');
 var uuid = require('uuid');
 var NodeCache = require('node-cache');
 var proxyEndPoint = require('./lib/proxy-endpoint');
-var websockets = require('./lib/websocketAuthenticate');
 var async = require('async');
 
 var app = module.exports = loopback();
@@ -346,7 +345,6 @@ app.start = function () {
         app.locals.logger.error('http could not be started', err);
         return;
       }
-      //websockets.mount(app, listener);
       app.emit('started', listener);
     });
   }
@@ -368,7 +366,6 @@ app.start = function () {
         app.locals.logger.info('https could not start', err);
         return;
       }
-      //websockets.mount(app, listener);
       app.emit('started', listener);
     });
   }
