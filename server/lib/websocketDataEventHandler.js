@@ -9,7 +9,7 @@ var utils = require('./utilities');
 var mailer = require('./mail');
 var debug = require('debug')('websockets');
 var debugVerbose = require('debug')('websockets:verbose');
-var watchFeed = require('antisocial-friends/lib/websockets-activity-subscribe')
+var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe')
 module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 	var logger = server.locals.logger;

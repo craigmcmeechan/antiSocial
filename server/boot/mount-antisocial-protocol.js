@@ -2,8 +2,7 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-var getCurrentUser = require('../middleware/context-currentUser');
-var watchFeed = require('antisocial-friends/lib/websockets-activity-subscribe');
+var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe');
 var resolveProfiles = require('../lib/resolveProfiles');
 var utils = require('../lib/utilities');
 var mailer = require('../lib/mail');

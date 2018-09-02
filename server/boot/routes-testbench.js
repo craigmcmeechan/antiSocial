@@ -6,7 +6,7 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
-var watchFeed = require('antisocial-friends/lib/websockets-activity-subscribe');
+var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe');
 var utils = require('../lib/utilities');
 
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');

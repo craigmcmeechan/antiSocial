@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 var _ = require('lodash');
-var watchFeed = require('antisocial-friends/lib/websockets-activity-subscribe');
+var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe');
 
 module.exports = function (server) {
 
