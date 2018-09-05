@@ -355,27 +355,19 @@ ansi-styles@^3.1.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-antisocial-encryption@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.5.tgz#451b5ca7dbf6b4215fd15610c530c5864563cd2f"
-  dependencies:
-    debug "^3.1.0"
-    node-forge "^0.7.5"
-    uuid "^3.3.2"
-
-antisocial-encryption@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.7.tgz#e148283494a809b47867f02e3bf9e76240595147"
+antisocial-encryption@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.8.tgz#608cd18dc174e715eaca25032a281423f54ae8ce"
   dependencies:
     debug "^3.1.0"
     node-forge "^0.7.6"
     uuid "^3.3.2"
 
-antisocial-friends@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.2.tgz#f85eed6a988c3353ce0cd791a3193ea2747e1e84"
+antisocial-friends@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.4.tgz#352fa4b5ea1862045d08c27db71edd65fa3b8a6b"
   dependencies:
-    antisocial-encryption "^1.0.5"
+    antisocial-encryption "^1.0.8"
     async "^2.6.1"
     crc "^3.8.0"
     debug "~3.1.0"
@@ -5787,10 +5779,6 @@ node-fetch@1.7.3:
   dependencies:
     encoding "^0.1.11"
     is-stream "^1.0.1"
-
-node-forge@^0.7.5:
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.5.tgz#6c152c345ce11c52f465c2abd957e8639cd674df"
 
 node-forge@^0.7.6:
   version "0.7.6"

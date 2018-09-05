@@ -7,8 +7,8 @@ var async = require('async');
 var VError = require('verror').VError;
 var utils = require('./utilities');
 var mailer = require('./mail');
-var debug = require('debug')('websockets');
-var debugVerbose = require('debug')('websockets:verbose');
+var debug = require('debug')('antisocial-friends');
+var debugVerbose = require('debug')('antisocial-friends:verbose');
 var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe')
 module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
@@ -17,6 +17,8 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 	var key = currentUser.username + '<-' + friend.remoteEndPoint;
 
 	var message = data;
+
+	debug('dataEventHandler %s %j', key, data.data);
 
 	if (message.type === 'offline') {
 		debugVerbose('watchFeed listener %s received offline message', key);

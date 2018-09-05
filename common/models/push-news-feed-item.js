@@ -73,13 +73,9 @@ module.exports = function (PushNewsFeedItem) {
 							'data': {
 								'uuid': data.uuid
 							}
-						}));
-						var change = {
-							'data': encrypted.data,
-							'sig': encrypted.sig,
-							'pass': encrypted.pass
-						};
-						socket.emit('data', change);
+						}), 'application/json');
+
+						socket.emit('data', encrypted);
 					}
 					else {
 
@@ -100,16 +96,10 @@ module.exports = function (PushNewsFeedItem) {
 						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
 							'type': 'backfill',
 							'data': data
-						}));
-
-						var change = {
-							'data': encrypted.data,
-							'sig': encrypted.sig,
-							'pass': encrypted.pass
-						};
+						}), 'application/json');
 
 						debugVerbose('backfilling PushNewsFeedItem %j', data);
-						socket.emit('data', change);
+						socket.emit('data', encrypted);
 					}
 				}
 
@@ -163,13 +153,9 @@ module.exports = function (PushNewsFeedItem) {
 					'data': {
 						'uuid': data.uuid
 					}
-				}));
-				var change = {
-					'data': encrypted.data,
-					'sig': encrypted.sig,
-					'pass': encrypted.pass
-				};
-				socket.emit('data', change);
+				}), 'application/json');
+
+				socket.emit('data', encrypted);
 				return next();
 			}
 
@@ -212,15 +198,9 @@ module.exports = function (PushNewsFeedItem) {
 			var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
 				'type': mytype,
 				'data': data
-			}));
+			}), 'application/json');
 
-			var change = {
-				'data': encrypted.data,
-				'sig': encrypted.sig,
-				'pass': encrypted.pass
-			};
-
-			socket.emit('data', change);
+			socket.emit('data', encrypted);
 
 			next();
 		};
