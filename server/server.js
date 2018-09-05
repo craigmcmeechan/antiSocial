@@ -13,7 +13,7 @@ var bunyan = require('bunyan');
 var uuid = require('uuid');
 var NodeCache = require('node-cache');
 var proxyEndPoint = require('./lib/proxy-endpoint');
-var websockets = require('./lib/websocketAuthenticate');
+var async = require('async');
 
 var app = module.exports = loopback();
 
@@ -313,9 +313,26 @@ if (process.env.BASIC_AUTH) {
 
 var listener;
 
-app.stop = function () {
-  listener.close();
-  app.io.close();
+app.stop = function (done) {
+  async.series([
+    function (cb) {
+      if (!app.antisocialApp.ioActivity) {
+        return cb();
+      }
+      app.antisocialApp.ioActivity.close(cb);
+    },
+    function (cb) {
+      if (!app.antisocialApp.ioNotifications) {
+        return cb();
+      }
+      app.antisocialApp.ioNotifications.close(cb);
+    },
+    function (cb) {
+      listener.close(cb);
+    }
+  ], function (err) {
+    done();
+  });
 };
 
 app.start = function () {
@@ -328,11 +345,7 @@ app.start = function () {
         app.locals.logger.error('http could not be started', err);
         return;
       }
-      app.emit('started');
-      app.locals.logger.info('http started');
-      app.io = require('socket.io')(listener);
-      websockets.mount(app);
-      app.locals.logger.info('websockets ws started');
+      app.emit('started', listener);
     });
   }
   else {
@@ -353,10 +366,7 @@ app.start = function () {
         app.locals.logger.info('https could not start', err);
         return;
       }
-      app.locals.logger.info('https started');
-      app.io = require('socket.io')(sslListener);
-      websockets.mount(app);
-      app.locals.logger.info('websockets wss started');
+      app.emit('started', listener);
     });
   }
 };

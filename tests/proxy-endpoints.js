@@ -47,8 +47,7 @@ describe('proxy endpoints', function () {
 
 	after(function (done) {
 		setTimeout(function () {
-			app.stop();
-			done();
+			app.stop(done);
 		}, 8000);
 	});
 

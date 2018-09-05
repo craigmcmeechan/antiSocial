@@ -16,7 +16,7 @@
       }
     },
     "cookie-parser": {
-      "params": "DecodrRing"
+      "params": "${secureCookiePassword}"
     }
   },
   "session": {},

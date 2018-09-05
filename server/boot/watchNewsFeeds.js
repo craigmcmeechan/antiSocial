@@ -3,7 +3,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 var _ = require('lodash');
-var watchFeed = require('../lib/websocketWatchFriend').connect;
+var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe');
 
 module.exports = function (server) {
 
@@ -33,7 +33,7 @@ module.exports = function (server) {
 	function later(server, friend, i) {
 		setTimeout(function () {
 			//console.log('connecting: ', friend.user().username, friend.remoteUsername);
-			watchFeed(server, friend);
+			watchFeed.connect(server.antisocialApp, friend.user(), friend);
 		}, i * 500);
 	}
 };

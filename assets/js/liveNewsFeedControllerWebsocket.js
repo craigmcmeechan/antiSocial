@@ -51,6 +51,7 @@
 			if (self.pendingConnection) {
 				clearTimeout(self.pendingConnection);
 			}
+
 			self.pendingConnection = setTimeout(function () {
 				flashAjaxStatus('info', 'connecting');
 				self.pendingConnection = null;
@@ -64,25 +65,28 @@
 					endpoint = endpoint.replace(/^http/, 'ws');
 				}
 
-				self.socket = io.connect(endpoint);
-				self.socket.on('disconnect', self.errors);
+				self.socket = io.connect(endpoint, {
+					'path': '/antisocial-notifications'
+				});
+
+				self.socket.on('disconnect', function () {
+					self.disconnect();
+				});
+
 				self.socket.on('error', self.errors);
+
 				self.socket.on('connect', function () {
-					self.socket.emit('authentication', {
-						'subscriptions': {
-							'NewsFeedItem': ['after save']
-						}
-					});
+					self.socket.emit('authentication', {});
 					self.socket.on('authenticated', function () {
 						flashAjaxStatus('info', 'online');
 						self.socket.on('data', self.processNews);
 						$('body').removeClass('offline');
 					});
 				});
-			}, self.reconnecting ? 1000 : 0);
+			}, self.reconnecting ? 10000 : 0);
 		};
 
-		this.disconnect = function () {
+		this.disconnect = function (noReconnect) {
 			flashAjaxStatus('info', 'offline');
 			$('body').addClass('offline');
 			self.element.find('.news-feed-items').empty();
@@ -91,7 +95,7 @@
 				self.socket = null;
 			}
 			self.reconnecting = false;
-			if (self.loggedIn) {
+			if (self.loggedIn && !noReconnect) {
 				self.reconnecting = true;
 				self.connect();
 			}
@@ -115,7 +119,7 @@
 
 		this.processNews = function (event) {
 			if (event.type === 'offline') {
-				self.disconnect();
+				self.disconnect(true);
 				return;
 			}
 			var formatted = $(event.data.humanReadable);
