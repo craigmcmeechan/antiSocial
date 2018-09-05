@@ -195,7 +195,7 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 					url: params.url,
 					'jar': request.jar(),
 					'headers': {
-						'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
+						//'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
 					}
 				};
 				var theRequest = request
