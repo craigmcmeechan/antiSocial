@@ -20,7 +20,7 @@ module.exports.encryptIfFriend = function (friend, payload) {
 	if (friend) {
 		var privateKey = friend.keys.private;
 		var publicKey = friend.remotePublicKey;
-		var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(payload));
+		var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify(payload), 'application/json');
 
 		payload = {
 			'data': encrypted.data,
