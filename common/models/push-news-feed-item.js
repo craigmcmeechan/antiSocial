@@ -98,7 +98,7 @@ module.exports = function (PushNewsFeedItem) {
 							'data': data
 						}), 'application/json');
 
-						debugVerbose('backfilling PushNewsFeedItem %j', data);
+						debugVerbose('backfilling PushNewsFeedItem %j', encrypted);
 						socket.emit('data', encrypted);
 					}
 				}
