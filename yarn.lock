@@ -363,17 +363,17 @@ antisocial-encryption@^1.0.5:
     node-forge "^0.7.5"
     uuid "^3.3.2"
 
-antisocial-encryption@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.6.tgz#8e354092df5744c9cd568948260afd0be86d56ff"
+antisocial-encryption@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.7.tgz#e148283494a809b47867f02e3bf9e76240595147"
   dependencies:
     debug "^3.1.0"
     node-forge "^0.7.6"
     uuid "^3.3.2"
 
-antisocial-friends@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.1.tgz#16c6ff96e9f0e56f15896cc38e025f9ace4a24f6"
+antisocial-friends@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.2.tgz#f85eed6a988c3353ce0cd791a3193ea2747e1e84"
   dependencies:
     antisocial-encryption "^1.0.5"
     async "^2.6.1"
