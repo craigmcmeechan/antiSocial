@@ -18,6 +18,8 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 	var message = data;
 
+	debug('dataEventHandler %s', key, data);
+
 	if (message.type === 'offline') {
 		debugVerbose('watchFeed listener %s received offline message', key);
 		return;
