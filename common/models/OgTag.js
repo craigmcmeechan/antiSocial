@@ -51,6 +51,8 @@ module.exports = function (OgTag) {
 
 	OgTag.scrape = function (url, ctx, done) {
 
+		var jar = request.jar();
+
 		var refresh = _.get(ctx, 'req.query.refresh') ? true : false;
 
 		if (verbose) {
@@ -137,9 +139,9 @@ module.exports = function (OgTag) {
 				request({
 						'method': 'GET',
 						'url': url,
-						'jar': request.jar(),
+						'jar': jar,
 						'headers': {
-							'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
+							//'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
 						}
 					},
 					function (err, response, body) {
@@ -203,9 +205,9 @@ module.exports = function (OgTag) {
 			var options = {
 				'url': url,
 				'headers': {
-					'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
+					//'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
 				},
-				'jar': request.jar(),
+				'jar': jar,
 				'onlyGetOpenGraphInfo': true,
 				'timeout': 15000
 			};
@@ -238,11 +240,12 @@ module.exports = function (OgTag) {
 				if (verbose) {
 					console.log('OgTag.scrape url:' + url + ' resave');
 				}
+				instance.ogData = og;
 				instance.save(function (err, saved) {
 					if (err) {
 						return cb(new VError(err, 'could not save OgTag instance %j %j', url, og));
 					}
-					cb(null, instance, og);
+					cb(null, saved, og);
 				});
 			}
 			else {
@@ -331,8 +334,8 @@ module.exports = function (OgTag) {
 						if (verbose) {
 							console.log('OgTag.scrape url:' + url + ' upload failed ', _.get(err, 'jse_cause.contentType'), _.get(err, 'jse_cause.statusCode'));
 						}
-						instance.ogData.success = false;
-						instance.ogData.httpStatusCode = _.get(err, 'jse_cause.statusCode');
+						instance.ogData.ogImage.success = false;
+						instance.ogData.ogImage.httpStatusCode = _.get(err, 'jse_cause.statusCode');
 						instance.save(function (err, saved) {
 							return cb(err, saved);
 						});
