@@ -355,19 +355,19 @@ ansi-styles@^3.1.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-antisocial-encryption@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.9.tgz#bb6e743098a3ae2ce2e6f5aff85f51073c498840"
+antisocial-encryption@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.11.tgz#aae43b8a9ffd16ec8bd80acafa18434e39effcfb"
   dependencies:
     debug "^3.1.0"
     node-forge "^0.7.6"
     uuid "^3.3.2"
 
-antisocial-friends@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.5.tgz#2534713f7c0abbf56c14f243b8a597715734e102"
+antisocial-friends@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.7.tgz#58469bf3f2e672580b7a8cb1cd90a12bae40d659"
   dependencies:
-    antisocial-encryption "^1.0.9"
+    antisocial-encryption "^1.0.11"
     async "^2.6.1"
     crc "^3.8.0"
     debug "~3.1.0"
