@@ -73,6 +73,14 @@
 					self.disconnect();
 				});
 
+				self.socket.on('reconnecting', function (attempt) {
+					flashAjaxStatus('info', 'attempting reconnect ' + attempt);
+				});
+
+				self.socket.on('reconnect_error', function () {
+					flashAjaxStatus('info', 'reconnect attempt failed');
+				});
+
 				self.socket.on('error', self.errors);
 
 				self.socket.on('connect', function () {
@@ -81,6 +89,11 @@
 						flashAjaxStatus('info', 'online');
 						self.socket.on('data', self.processNews);
 						$('body').removeClass('offline');
+						var highwater = self.getHighwater();
+						if (!highwater) {
+							highwater = moment().subtract(1, 'd').toISOString()
+						}
+						self.socket.emit('highwater', highwater);
 					});
 				});
 			}, self.reconnecting ? 10000 : 0);

@@ -363,9 +363,9 @@ antisocial-encryption@^1.0.11:
     node-forge "^0.7.6"
     uuid "^3.3.2"
 
-antisocial-friends@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.7.tgz#58469bf3f2e672580b7a8cb1cd90a12bae40d659"
+antisocial-friends@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.9.tgz#ee21afbff88f1e72020cfeb6d5dcce880ae8f122"
   dependencies:
     antisocial-encryption "^1.0.11"
     async "^2.6.1"
@@ -373,6 +373,7 @@ antisocial-friends@^0.1.7:
     debug "~3.1.0"
     express "~4.16.0"
     lodash "^4.17.10"
+    moment "^2.22.2"
     request "^2.88.0"
     socket.io "^2.1.1"
     socketio-auth "^0.1.1"
@@ -5580,7 +5581,7 @@ moment-timezone@^0.5.14:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0", moment@^2.20.1:
+"moment@>= 2.9.0", moment@^2.20.1, moment@^2.22.2:
   version "2.22.2"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 
