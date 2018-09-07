@@ -355,24 +355,25 @@ ansi-styles@^3.1.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-antisocial-encryption@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.9.tgz#bb6e743098a3ae2ce2e6f5aff85f51073c498840"
+antisocial-encryption@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.11.tgz#aae43b8a9ffd16ec8bd80acafa18434e39effcfb"
   dependencies:
     debug "^3.1.0"
     node-forge "^0.7.6"
     uuid "^3.3.2"
 
-antisocial-friends@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.5.tgz#2534713f7c0abbf56c14f243b8a597715734e102"
+antisocial-friends@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/antisocial-friends/-/antisocial-friends-0.1.9.tgz#ee21afbff88f1e72020cfeb6d5dcce880ae8f122"
   dependencies:
-    antisocial-encryption "^1.0.9"
+    antisocial-encryption "^1.0.11"
     async "^2.6.1"
     crc "^3.8.0"
     debug "~3.1.0"
     express "~4.16.0"
     lodash "^4.17.10"
+    moment "^2.22.2"
     request "^2.88.0"
     socket.io "^2.1.1"
     socketio-auth "^0.1.1"
@@ -5580,7 +5581,7 @@ moment-timezone@^0.5.14:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0", moment@^2.20.1:
+"moment@>= 2.9.0", moment@^2.20.1, moment@^2.22.2:
   version "2.22.2"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 

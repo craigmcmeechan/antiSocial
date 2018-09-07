@@ -14,7 +14,7 @@ block content
 					strong openNotificationsListeners
 					ul
 						for socket in openNotificationsListeners
-							li= socket.data.currentUser.username
+							li= socket.antisocial.user.username
 							
 				if openActivityListeners
 					strong openActivityListeners:

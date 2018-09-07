@@ -32,8 +32,8 @@ module.exports = function (server) {
 
 	function later(server, friend, i) {
 		setTimeout(function () {
-			//console.log('connecting: ', friend.user().username, friend.remoteUsername);
+			console.log('connecting: ', friend.user().username, friend.remoteUsername);
 			watchFeed.connect(server.antisocialApp, friend.user(), friend);
-		}, i * 500);
+		}, i * 100);
 	}
 };
