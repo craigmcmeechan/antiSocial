@@ -276,6 +276,15 @@ module.exports = function (server) {
 			});
 		});
 
+		antisocialApp.on('activity-backfill', function (e) {
+			var friend = e.info.friend;
+			var user = e.info.user;
+			var socket = e.socket;
+			// backfill PushNewsFeedItem activity since last connection
+			debug('starting backfill %s %s', e.info.key, e.highwater);
+			server.models.PushNewsFeedItem.changeHandlerBackfill(socket, user, friend, e.highwater ? e.highwater : 0);
+		});
+
 		antisocialApp.on('open-activity-connection', function (e) {
 			var friend = e.info.friend;
 			var user = e.info.user;
@@ -295,8 +304,6 @@ module.exports = function (server) {
 			}];
 			server.models.PushNewsFeedItem.observe('after save', handler);
 
-			// backfill PushNewsFeedItem activity since last connection
-			server.models.PushNewsFeedItem.changeHandlerBackfill(socket, user, friend, e.info.highwater ? e.info.highwater : 0);
 		});
 
 		antisocialApp.on('close-activity-connection', function (e) {
@@ -320,6 +327,14 @@ module.exports = function (server) {
 			}
 		});
 
+		antisocialApp.on('notification-backfill', function (e) {
+			var user = e.info.user;
+			var socket = e.socket;
+			debug('starting backfill %s %j', e.info.key, e.highwater);
+			// backfill NewsFeedItem activity since last connection
+			server.models.NewsFeedItem.changeHandlerBackfill(socket, user, e.highwater ? e.highwater : 0);
+		});
+
 		antisocialApp.on('open-notification-connection', function (e) {
 			var user = e.info.user;
 			var socket = e.socket;
@@ -331,8 +346,7 @@ module.exports = function (server) {
 			}];
 			server.models.NewsFeedItem.observe('after save', handler);
 
-			// backfill NewsFeedItem activity since last connection
-			server.models.NewsFeedItem.changeHandlerBackfill(socket, user, e.info.highwater ? e.info.highwater : 0);
+
 		});
 
 		antisocialApp.on('close-notification-connection', function (e) {
