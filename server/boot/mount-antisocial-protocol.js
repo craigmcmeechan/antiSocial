@@ -31,6 +31,7 @@ module.exports = function (server) {
 			if (!token) {
 				return next();
 			}
+
 			async.waterfall([
 				function (cb) {
 					server.models.AccessToken.resolve(token, function (err, tokenInstance) {
@@ -42,6 +43,9 @@ module.exports = function (server) {
 
 				},
 				function (token, cb) {
+					if (!token) {
+						return cb();
+					}
 					server.models.MyUser.findById(token.userId, function (err, user) {
 						cb(err, user);
 					});
@@ -55,7 +59,7 @@ module.exports = function (server) {
 		server.locals.config.APIPrefix = '';
 		var antisocialApp = antisocial(server, server.locals.config, db, getLoggedInUser, listener);
 
-		var watchFeed = antisocialApp.watchActivity;
+		var watchFeed = antisocialApp.activityFeed;
 
 		server.antisocialApp = antisocialApp;
 
