@@ -2,7 +2,6 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe');
 var resolveProfiles = require('../lib/resolveProfiles');
 var utils = require('../lib/utilities');
 var mailer = require('../lib/mail');
@@ -32,6 +31,7 @@ module.exports = function (server) {
 			if (!token) {
 				return next();
 			}
+
 			async.waterfall([
 				function (cb) {
 					server.models.AccessToken.resolve(token, function (err, tokenInstance) {
@@ -43,6 +43,9 @@ module.exports = function (server) {
 
 				},
 				function (token, cb) {
+					if (!token) {
+						return cb();
+					}
 					server.models.MyUser.findById(token.userId, function (err, user) {
 						cb(err, user);
 					});
@@ -55,6 +58,8 @@ module.exports = function (server) {
 
 		server.locals.config.APIPrefix = '';
 		var antisocialApp = antisocial(server, server.locals.config, db, getLoggedInUser, listener);
+
+		var watchFeed = antisocialApp.activityFeed;
 
 		server.antisocialApp = antisocialApp;
 
@@ -113,7 +118,7 @@ module.exports = function (server) {
 				}
 				else {
 					if (friend.originator) {
-						watchFeed.connect(antisocialApp, user, friend);
+						watchFeed.connect(user, friend);
 					}
 				}
 			});
@@ -276,15 +281,6 @@ module.exports = function (server) {
 			});
 		});
 
-		antisocialApp.on('activity-backfill', function (e) {
-			var friend = e.info.friend;
-			var user = e.info.user;
-			var socket = e.socket;
-			// backfill PushNewsFeedItem activity since last connection
-			debug('starting backfill %s %s', e.info.key, e.highwater);
-			server.models.PushNewsFeedItem.changeHandlerBackfill(socket, user, friend, e.highwater ? e.highwater : 0);
-		});
-
 		antisocialApp.on('open-activity-connection', function (e) {
 			var friend = e.info.friend;
 			var user = e.info.user;
@@ -293,6 +289,15 @@ module.exports = function (server) {
 			// processing incomming data
 			socket.antisocial.setDataHandler(function (data) {
 				dataEventHandler(server, user, friend, data);
+			});
+
+			socket.antisocial.setBackfillHandler(function (e) {
+				var friend = e.info.friend;
+				var user = e.info.user;
+				var highwater = e.highwater;
+				// backfill PushNewsFeedItem activity since last connection
+				debug('starting backfill %s %s', e.info.key, highwater);
+				server.models.PushNewsFeedItem.changeHandlerBackfill(socket, user, friend, highwater ? highwater : 0);
 			});
 
 			// set up data observer for PushNewsFeedItem which emits data events on socket for 'after save' events
@@ -322,17 +327,9 @@ module.exports = function (server) {
 
 			if (friend.originator) {
 				setTimeout(function () {
-					watchFeed.connect(antisocialApp, user, friend);
+					watchFeed.connect(user, friend);
 				}, 60000);
 			}
-		});
-
-		antisocialApp.on('notification-backfill', function (e) {
-			var user = e.info.user;
-			var socket = e.socket;
-			debug('starting backfill %s %j', e.info.key, e.highwater);
-			// backfill NewsFeedItem activity since last connection
-			server.models.NewsFeedItem.changeHandlerBackfill(socket, user, e.highwater ? e.highwater : 0);
 		});
 
 		antisocialApp.on('open-notification-connection', function (e) {
@@ -346,7 +343,19 @@ module.exports = function (server) {
 			}];
 			server.models.NewsFeedItem.observe('after save', handler);
 
+			socket.antisocial.setDataHandler(function (e) {
+				console.log('notifications got %j from %s', e, user.username);
+			});
 
+
+			socket.antisocial.setBackfillHandler(function (e) {
+				var user = e.info.user;
+				var socket = e.socket;
+				var highwater = e.highwater;
+				debug('starting backfill %s %j', e.info.key, highwater);
+				// backfill NewsFeedItem activity since last connection
+				server.models.NewsFeedItem.changeHandlerBackfill(socket, user, highwater ? highwater : 0);
+			});
 		});
 
 		antisocialApp.on('close-notification-connection', function (e) {

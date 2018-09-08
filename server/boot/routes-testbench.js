@@ -6,7 +6,6 @@ var getCurrentUser = require('../middleware/context-currentUser');
 var ensureLoggedIn = require('../middleware/context-ensureLoggedIn');
 var ensureAdmin = require('../middleware/context-ensureAdminUser');
 
-var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe');
 var utils = require('../lib/utilities');
 
 var optimizeNewsFeedItems = require('../lib/optimizeNewsFeedItems');
@@ -74,9 +73,9 @@ module.exports = function (server) {
 
 	// tell notification listeners to go offline
 	function disconnectAllNotificationsListeners() {
-		if (server.openNotificationsListeners) {
-			for (var key in server.openNotificationsListeners) {
-				var socket = server.openNotificationsListeners[key];
+		if (server.antisocial.openNotificationsListeners) {
+			for (var key in server.antisocial.openNotificationsListeners) {
+				var socket = server.antisocial.openNotificationsListeners[key];
 				socket.emit('data', {
 					'type': 'offline'
 				});
@@ -85,9 +84,10 @@ module.exports = function (server) {
 	}
 
 	function disconnectAllActivityListeners(user) {
-		for (var key in server.openActivityListeners) {
-			var socket = server.openActivityListeners[key];
-			if (socket.data.currentUser.id.toString() === user.id.toString()) {
+		for (var key in server.antisocial.openActivityListeners) {
+			var socket = server.antisocial.openActivityListeners[key];
+			if (socket.antisocial.user.id.toString() === user.id.toString()) {
+				console.log('disconnecting %s %s', socket.id, socket.antisocial.key);
 				socket.disconnect(true);
 			}
 		}
@@ -104,6 +104,7 @@ module.exports = function (server) {
 	});
 
 	router.get('/start-ws', function (req, res, next) {
+
 		var query = {
 			'where': {
 				'and': [{
@@ -124,7 +125,7 @@ module.exports = function (server) {
 
 			for (var i = 0; i < friends.length; i++) {
 				var friend = friends[i];
-				watchFeed.connect(server.antisocialApp, friend.user(), friend);
+				server.antisocial.activityFeed.connect(friend.user(), friend);
 			}
 		});
 		res.send('ok');

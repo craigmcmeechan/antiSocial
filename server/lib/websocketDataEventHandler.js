@@ -9,7 +9,6 @@ var utils = require('./utilities');
 var mailer = require('./mail');
 var debug = require('debug')('antisocial-friends');
 var debugVerbose = require('debug')('antisocial-friends:verbose');
-var watchFeed = require('antisocial-friends/lib/activity-feed-subscribe')
 module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 	var logger = server.locals.logger;
@@ -210,7 +209,7 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 										err: err
 									}, 'error saving address change');
 
-									watchFeed.connect(server, currentUser, friend);
+									server.antisocial.activityFeed.connect(server, currentUser, friend);
 									return cb(err);
 								}
 								cb();

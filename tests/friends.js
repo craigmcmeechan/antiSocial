@@ -22,13 +22,15 @@ describe('friends', function () {
 
 	before(function (done) {
 		app.start();
-		done();
+		setTimeout(function () {
+			done();
+		}, 5000);
 	});
 
 	it('delete test user1', function (done) {
 		app.models.MyUser.destroyAll({
 			'email': email1
-		},  function (err, info) {
+		}, function (err, info) {
 			expect(err).to.be(null);
 			//console.log(info);
 			done();
