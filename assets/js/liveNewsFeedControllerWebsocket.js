@@ -94,8 +94,15 @@
 							highwater = moment().subtract(1, 'd').toISOString()
 						}
 						self.socket.emit('highwater', highwater);
+						self.socket.emit('data', JSON.stringify({
+							'contentType': 'application/json',
+							'data': JSON.stringify({
+								'hello': 'world'
+							})
+						}));
 					});
 				});
+
 			}, self.reconnecting ? 10000 : 0);
 		};
 
