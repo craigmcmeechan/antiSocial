@@ -57,23 +57,18 @@ module.exports = function (server) {
 		}
 
 		server.locals.config.APIPrefix = '';
-		var antisocialApp = antisocial(server, server.locals.config, db, getLoggedInUser, listener);
+		var antisocialApp = antisocial(server, server.locals.config, db, getLoggedInUser);
 
 		var watchFeed = antisocialApp.activityFeed;
 
 		server.antisocialApp = antisocialApp;
 
 		// notify requestor that their friend request was accepted
-		antisocialApp.on('new-friend', function (e) {
-			var friend = e.info.friend;
+		antisocialApp.on('new-friend', function (user, friend) {
 
 			async.waterfall([
-				function getUser(cb) {
-					server.models.MyUser.findById(friend.userId, function (err, user) {
-						cb(err, user);
-					});
-				},
-				function (user, cb) { // tell my friends about my new friend
+
+				function (cb) { // tell my friends about my new friend
 					var item = {
 						'userId': user.id,
 						'uuid': uuid(),
@@ -125,19 +120,10 @@ module.exports = function (server) {
 		});
 
 		// notify recipient of new friend request
-		antisocialApp.on('new-friend-request', function (e) {
-			var friend = e.info.friend;
-
-			debug('new-friend-request got %j', e);
-
+		antisocialApp.on('new-friend-request', function (user, friend) {
 			// do notifications
 			async.waterfall([
-				function getUser(cb) {
-					server.models.MyUser.findById(friend.userId, function (err, user) {
-						cb(err, user);
-					});
-				},
-				function getProfile(user, cb) {
+				function getProfile(cb) {
 					resolveProfiles(friend, function (err) {
 						if (err) {
 							var e = new VError(err, 'error resolving profile');
@@ -200,14 +186,14 @@ module.exports = function (server) {
 		});
 
 		// friend has changed
-		antisocialApp.on('friend-updated', function (e) {
-			debug('antisocial friend-updated %j', e.info.friend.remoteEndPoint);
+		antisocialApp.on('friend-updated', function (user, friend) {
+			debug('antisocial friend-updated %j', friend.remoteEndPoint);
 		});
 
 		// friend has been deleted
-		antisocialApp.on('friend-deleted', function (e) {
-			if (e.info.friend.originator) {
-				watchFeed.disConnect(server, e.info.friend);
+		antisocialApp.on('friend-deleted', function (user, friend) {
+			if (friend.originator) {
+				watchFeed.disConnect(server, friend);
 			}
 
 			async.series([
@@ -215,9 +201,9 @@ module.exports = function (server) {
 					// delete news feed entries by originating from deleted friend
 					server.models.NewsFeedItem.destroyAll({
 						'and': [{
-							'source': e.info.friend.remoteEndPoint
+							'source': friend.remoteEndPoint
 						}, {
-							'userId': e.info.friend.userId
+							'userId': friend.userId
 						}]
 					}, function (err, info) {
 						if (err) {
@@ -234,10 +220,10 @@ module.exports = function (server) {
 						'where': {
 							'and': [{
 								'about': {
-									'like': new RegExp('^' + e.info.friend.remoteEndPoint + '.*')
+									'like': new RegExp('^' + friend.remoteEndPoint + '.*')
 								}
 							}, {
-								'userId': e.info.friend.userId
+								'userId': friend.userId
 							}]
 						}
 					}, function (err, items) {
@@ -260,10 +246,10 @@ module.exports = function (server) {
 					server.models.NewsFeedItem.destroyAll({
 						'and': [{
 							'about': {
-								'like': new RegExp('^' + e.info.friend.remoteEndPoint + '.*')
+								'like': new RegExp('^' + friend.remoteEndPoint + '.*')
 							}
 						}, {
-							'userId': e.info.friend.userId
+							'userId': friend.userId
 						}]
 					}, function (err, info) {
 						if (err) {
@@ -281,43 +267,32 @@ module.exports = function (server) {
 			});
 		});
 
-		antisocialApp.on('open-activity-connection', function (e) {
-			var friend = e.info.friend;
-			var user = e.info.user;
-			var socket = e.socket;
-
-			// processing incomming data
-			socket.antisocial.setDataHandler(function (data) {
-				dataEventHandler(server, user, friend, data);
-			});
-
-			socket.antisocial.setBackfillHandler(function (e) {
-				var friend = e.info.friend;
-				var user = e.info.user;
-				var highwater = e.highwater;
-				// backfill PushNewsFeedItem activity since last connection
-				debug('starting backfill %s %s', e.info.key, highwater);
-				server.models.PushNewsFeedItem.changeHandlerBackfill(socket, user, friend, highwater ? highwater : 0);
-			});
+		antisocialApp.on('open-activity-connection', function (user, friend, emitter, info) {
 
 			// set up data observer for PushNewsFeedItem which emits data events on socket for 'after save' events
-			var handler = server.models.PushNewsFeedItem.buildWebSocketChangeHandler(socket, user, friend);
-			e.info.observers = [{
+			var handler = server.models.PushNewsFeedItem.buildWebSocketChangeHandler(emitter, user, friend);
+			info.observers = [{
 				'model': 'PushNewsFeedItem',
 				'eventType': 'after save',
 				'handler': handler
 			}];
 			server.models.PushNewsFeedItem.observe('after save', handler);
-
+			console.log('here:', friend.highwater);
+			emitter('as-post', 'highwater', friend.highwater['as-post'] ? friend.highwater['as-post'] : 0);
 		});
 
-		antisocialApp.on('close-activity-connection', function (e) {
-			var friend = e.info.friend;
-			var user = e.info.user;
-			var socket = e.socket;
+		antisocialApp.on('activity-data-as-post', function (user, friend, data) {
+			dataEventHandler(server, user, friend, data);
+		});
+
+		antisocialApp.on('activity-backfill-as-post', function (user, friend, highwater, emitter) {
+			server.models.PushNewsFeedItem.changeHandlerBackfill(emitter, user, friend, highwater ? highwater : 0);
+		});
+
+		antisocialApp.on('close-activity-connection', function (user, friend, reason, info) {
 
 			// remove data observers
-			var observers = e.info.observers;
+			var observers = info.observers;
 			if (observers) {
 				for (var i = 0; i < observers.length; i++) {
 					var observer = observers[i];
@@ -332,34 +307,27 @@ module.exports = function (server) {
 			}
 		});
 
-		antisocialApp.on('open-notification-connection', function (e) {
-			var user = e.info.user;
-			var socket = e.socket;
-			var handler = server.models.NewsFeedItem.buildWebSocketChangeHandler(socket, user);
-			e.info.observers = [{
+		antisocialApp.on('open-notification-connection', function (user, emitter, info) {
+			var handler = server.models.NewsFeedItem.buildWebSocketChangeHandler(emitter, user);
+			info.observers = [{
 				'model': 'NewsFeedItem',
 				'eventType': 'after save',
 				'handler': handler
 			}];
 			server.models.NewsFeedItem.observe('after save', handler);
 
-			socket.antisocial.setDataHandler(function (e) {
-				console.log('notifications got %j from %s', e, user.username);
-			});
-
-
-			socket.antisocial.setBackfillHandler(function (e) {
-				var user = e.info.user;
-				var socket = e.socket;
-				var highwater = e.highwater;
-				debug('starting backfill %s %j', e.info.key, highwater);
-				// backfill NewsFeedItem activity since last connection
-				server.models.NewsFeedItem.changeHandlerBackfill(socket, user, highwater ? highwater : 0);
-			});
 		});
 
-		antisocialApp.on('close-notification-connection', function (e) {
-			var observers = e.info.observers;
+		antisocialApp.on('notification-data-as-post', function (user, data) {
+			console.log('notifications got %j from %s', data, user.username);
+		});
+
+		antisocialApp.on('notification-backfill-as-post', function (user, highwater, emitter) {
+			server.models.NewsFeedItem.changeHandlerBackfill(emitter, user, highwater ? highwater : 0);
+		});
+
+		antisocialApp.on('close-notification-connection', function (user, reason, info) {
+			var observers = info.observers;
 			if (observers) {
 				for (var i = 0; i < observers.length; i++) {
 					var observer = observers[i];
@@ -367,5 +335,8 @@ module.exports = function (server) {
 				}
 			}
 		});
+
+		antisocialApp.listen(listener);
+
 	});
 };

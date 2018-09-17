@@ -5,7 +5,6 @@
 //var PassThrough = require('stream').PassThrough;
 var debug = require('debug')('pushfeeds');
 var debugVerbose = require('debug')('pushfeeds:verbose');
-var encryption = require('antisocial-encryption');
 var RemoteRouting = require('loopback-remote-routing');
 var server = require('../../server/server');
 
@@ -16,7 +15,7 @@ module.exports = function (PushNewsFeedItem) {
 		});
 	}
 
-	PushNewsFeedItem.changeHandlerBackfill = function (socket, user, friend, highwater) {
+	PushNewsFeedItem.changeHandlerBackfill = function (emitter, user, friend, highwater) {
 
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;
 		var privateKey = friend.keys.private;
@@ -68,14 +67,12 @@ module.exports = function (PushNewsFeedItem) {
 					}
 
 					if (!hit) {
-						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
+						emitter('as-post', 'data', {
 							'type': 'remove',
 							'data': {
 								'uuid': data.uuid
 							}
-						}), 'application/json');
-
-						socket.emit('data', encrypted);
+						});
 					}
 					else {
 
@@ -93,19 +90,17 @@ module.exports = function (PushNewsFeedItem) {
 							}
 						}
 
-						var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
+						debugVerbose('backfilling PushNewsFeedItem %j', data);
+						emitter('as-post', 'data', {
 							'type': 'backfill',
-							'data': data
-						}), 'application/json');
-
-						debugVerbose('backfilling PushNewsFeedItem %j', encrypted);
-						socket.emit('data', encrypted);
+							data: data
+						});
 					}
 				}
 
 				// let watcher know if user is online
 				if (process.env.CLOSE_IDLE_FEEDS) {
-					socket.emit('data', {
+					emitter('as-post', 'data', {
 						'type': user.online ? 'online' : 'offline'
 					});
 				}
@@ -113,7 +108,7 @@ module.exports = function (PushNewsFeedItem) {
 		});
 	};
 
-	PushNewsFeedItem.buildWebSocketChangeHandler = function (socket, user, friend) {
+	PushNewsFeedItem.buildWebSocketChangeHandler = function (emitter, user, friend) {
 		var streamDescription = user.username + '->' + friend.remoteEndPoint;
 		var privateKey = friend.keys.private;
 		var publicKey = friend.remotePublicKey;
@@ -148,14 +143,12 @@ module.exports = function (PushNewsFeedItem) {
 			}
 
 			if (!hit) {
-				var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
-					'type': 'remove',
+				emitter('as-post', 'data', {
+					'type': 'some-type',
 					'data': {
 						'uuid': data.uuid
 					}
-				}), 'application/json');
-
-				socket.emit('data', encrypted);
+				});
 				return next();
 			}
 
@@ -195,12 +188,10 @@ module.exports = function (PushNewsFeedItem) {
 				mytype = ctx.isNewInstance ? 'create' : 'update';
 			}
 
-			var encrypted = encryption.encrypt(publicKey, privateKey, JSON.stringify({
+			emitter('as-post', 'data', {
 				'type': mytype,
 				'data': data
-			}), 'application/json');
-
-			socket.emit('data', encrypted);
+			});
 
 			next();
 		};

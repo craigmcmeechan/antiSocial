@@ -8,10 +8,8 @@
 
 antiSocial, is built around decentralized, individual user- or group-operated nodes powered by Open Source software, using publicly described Internet protocols and utilizing strong encryption for inter-node communication, shielding it from prying eyes.
 
-In concept it is to Facebook what Mastodon is to Twitter.
-
 A user can create friend relationships with other users and can post stories and photographs, comment and react (like, love, dislike etc) to content that other users share. Posts can be public or limited to friends or customized groups.
-Each node is independently operated and core user data remains only there under the control of the user.
+Each node is independently operated and core user data remains only there and under the control of the user.
 
 You can find some useful information below about the project.
 

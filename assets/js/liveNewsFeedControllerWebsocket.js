@@ -93,13 +93,16 @@
 						if (!highwater) {
 							highwater = moment().subtract(1, 'd').toISOString()
 						}
-						self.socket.emit('highwater', highwater);
-						self.socket.emit('data', JSON.stringify({
-							'contentType': 'application/json',
-							'data': JSON.stringify({
+						self.socket.emit('highwater', {
+							'appId': 'as-post',
+							'data': highwater
+						});
+						self.socket.emit('data', {
+							'appId': 'as-post',
+							'data': {
 								'hello': 'world'
-							})
-						}));
+							}
+						});
 					});
 				});
 
@@ -138,33 +141,34 @@
 		};
 
 		this.processNews = function (event) {
-			if (event.type === 'offline') {
+			var message = event.data;
+			if (message.type === 'offline') {
 				self.disconnect(true);
 				return;
 			}
-			var formatted = $(event.data.humanReadable);
-			if (formatted && !event.data.deleted && event.type !== 'update' && !event.isMe) {
+			var formatted = $(message.data.humanReadable);
+			if (formatted && !message.data.deleted && message.type !== 'update' && !message.isMe) {
 				var li = $('<div class="news-feed-item">');
-				formatted.append('<br><span class="post-timestamp timestamp" data-timestamp="' + moment(event.data.updatedOn).toISOString() + '"></span>');
+				formatted.append('<br><span class="post-timestamp timestamp" data-timestamp="' + moment(message.data.updatedOn).toISOString() + '"></span>');
 				li.append(formatted);
 				self.element.find('.news-feed-items').prepend(li);
 				didInjectContent(self.element);
-				if (self.getHighwater() < event.data.updatedOn) {
+				if (self.getHighwater() < message.data.updatedOn) {
 					li.addClass('is-new');
 					++self.newItems;
-					self.saveHighwater(event.data.updatedOn);
+					self.saveHighwater(message.data.updatedOn);
 					self.updateBadge();
 				}
-				li.data('about', event.endpoint);
+				li.data('about', message.endpoint);
 			}
-			if (!event.backfill) {
-				if (event.data.type === 'post' && event.type === 'create') {
+			if (!message.backfill) {
+				if (message.data.type === 'post' && message.type === 'create') {
 					var isFeed = $('#is-feed').length;
 					var isProfile = $('#is-profile').length;
 					var me = $('#is-profile').data('me');
-					if (isFeed || (isProfile && me === event.data.source)) {
+					if (isFeed || (isProfile && me === message.data.source)) {
 						var item = $('<div>');
-						var endpoint = event.data.about;
+						var endpoint = message.data.about;
 						item.load(endpoint, function () {
 							var post = item.find('.newsfeed-item');
 							$('#scope-post-list').prepend(post);
@@ -172,19 +176,19 @@
 						});
 					}
 				}
-				else if (event.data.type === 'post' && event.type === 'update') {
-					if (event.data.deleted) {
-						$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about, 'delete']);
+				else if (message.data.type === 'post' && message.type === 'update') {
+					if (message.data.deleted) {
+						$('body').trigger('NotifyLiveElement', [message.data.type, message.data.about, message.data.about, 'delete']);
 					}
 					else {
-						$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about]);
+						$('body').trigger('NotifyLiveElement', [message.data.type, message.data.about, message.data.about]);
 					}
 				}
-				else if (event.data.type === 'comment') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/comment/' + event.data.uuid, event.type, event.data]);
+				else if (message.data.type === 'comment') {
+					$('body').trigger('NotifyLiveElement', [message.data.type, message.data.about, message.data.about + '/comment/' + message.data.uuid, message.type, message.data]);
 				}
-				else if (event.data.type === 'react') {
-					$('body').trigger('NotifyLiveElement', [event.data.type, event.data.about, event.data.about + '/reactions']);
+				else if (message.data.type === 'react') {
+					$('body').trigger('NotifyLiveElement', [message.data.type, message.data.about, message.data.about + '/reactions']);
 				}
 				// TODO: need icon and text delimited
 				// notifyUser(event.data.type, message, icon, '/proxy-post?endpoint=' + encodeURIComponent(event.data.about));

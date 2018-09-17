@@ -24,7 +24,7 @@ module.exports = function (NewsFeedItem) {
 		});
 	}
 
-	NewsFeedItem.changeHandlerBackfill = function (socket, user, highwater) {
+	NewsFeedItem.changeHandlerBackfill = function (emitter, user, highwater) {
 		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
 		var query = {
@@ -60,7 +60,7 @@ module.exports = function (NewsFeedItem) {
 
 							debugVerbose('backfilling NewsFeedItem %j', data);
 
-							socket.emit('data', change);
+							emitter('as-post', 'data', change);
 						});
 					}
 				});
@@ -68,7 +68,7 @@ module.exports = function (NewsFeedItem) {
 		});
 	};
 
-	NewsFeedItem.buildWebSocketChangeHandler = function (socket, user) {
+	NewsFeedItem.buildWebSocketChangeHandler = function (emitter, user) {
 		var streamDescription = 'user.username->client';
 		var myEndpoint = server.locals.config.publicHost + '/' + user.username;
 
@@ -116,7 +116,7 @@ module.exports = function (NewsFeedItem) {
 						'endpoint': utils.whatAbout(data.about, user)
 					};
 					try {
-						socket.emit('data', change);
+						emitter('as-post', 'data', change);
 					}
 					catch (e) {
 						debug('NewsFeedItem ' + streamDescription + ' error writing');
