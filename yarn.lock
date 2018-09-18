@@ -355,8 +355,16 @@ ansi-styles@^3.1.0, ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-antisocial-encryption@^1.0.11, "antisocial-encryption@file:../modules/antisocial-encryption":
+antisocial-encryption@^1.0.11:
   version "1.0.11"
+  resolved "https://registry.yarnpkg.com/antisocial-encryption/-/antisocial-encryption-1.0.11.tgz#aae43b8a9ffd16ec8bd80acafa18434e39effcfb"
+  dependencies:
+    debug "^3.1.0"
+    node-forge "^0.7.6"
+    uuid "^3.3.2"
+
+"antisocial-encryption@file:../modules/antisocial-encryption":
+  version "1.0.10"
   dependencies:
     debug "^3.1.0"
     node-forge "^0.7.6"

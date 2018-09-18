@@ -82,13 +82,13 @@ module.exports = function (server) {
 						if (err) {
 							return cb(new VError(err, 'could not create PushNewsFeedItem %j', item));
 						}
-						cb(null, user, item);
+						cb(null, item);
 					});
 				},
-				function (user, pushItem, cb) { // notify self
+				function (pushItem, cb) { // notify self
 					if (!friend.originator) {
 						return async.setImmediate(function () {
-							return cb(null, user);
+							return cb(null);
 						});
 					}
 
@@ -104,10 +104,10 @@ module.exports = function (server) {
 						if (err) {
 							return cb(new VError(err, 'could not create PushNewsFeedItem %j', item));
 						}
-						cb(null, user);
+						cb(null);
 					});
 				}
-			], function (err, user) {
+			], function (err) {
 				if (err) {
 					server.locals.logger('error', 'error occured doing notifications for friend-request-accepted event', err.message);
 				}
@@ -132,10 +132,10 @@ module.exports = function (server) {
 
 						var profile = friend.resolvedProfiles[friend.remoteEndPoint];
 
-						cb(null, user, profile);
+						cb(null, profile);
 					});
 				},
-				function postNewsFeedPendingFriendRequest(user, profile, cb) {
+				function postNewsFeedPendingFriendRequest(profile, cb) {
 					debug('/friend-request postNewsFeedPendingFriendRequest');
 
 					var myNewsFeedItem = {
@@ -153,13 +153,13 @@ module.exports = function (server) {
 							var e = new VError(err, 'error creating newsfeed item');
 							return cb(e);
 						}
-						cb(null, user, profile, item);
+						cb(null, profile, item);
 					});
 				},
-				function notifyEmail(user, profile, item, cb) {
+				function notifyEmail(profile, item, cb) {
 					utils.getUserSettings(server, user, function (err, settings) {
 						if (!settings.notifications_friend_request) {
-							return cb(null, user);
+							return cb(null);
 						}
 						var template = 'emails/notify-friend-request';
 						var options = {
@@ -175,10 +175,10 @@ module.exports = function (server) {
 						mailer(server, template, options, function (err, info) {
 							debug('mail status %j %j', err, info);
 						});
-						cb(null, user);
+						cb(null);
 					});
 				}
-			], function (err, user) {
+			], function (err) {
 				if (err) {
 					server.locals.logger('error', 'error occured doing notificationd for new-friend-request event', err.message);
 				}
@@ -277,8 +277,7 @@ module.exports = function (server) {
 				'handler': handler
 			}];
 			server.models.PushNewsFeedItem.observe('after save', handler);
-			console.log('here:', friend.highwater);
-			emitter('as-post', 'highwater', friend.highwater['as-post'] ? friend.highwater['as-post'] : 0);
+			emitter('as-post', 'highwater', friend.highWater['as-post'] ? friend.highWater['as-post'] : 0);
 		});
 
 		antisocialApp.on('activity-data-as-post', function (user, friend, data) {
