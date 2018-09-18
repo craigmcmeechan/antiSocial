@@ -7,6 +7,7 @@ var crc = require('crc');
 module.exports = function rake(server, updateDone) {
 	return updateDone(); // nothing to do at the moment
 
+	/*
 	var version = 2;
 
 	server.models.Settings.findOrCreate({
@@ -28,21 +29,23 @@ module.exports = function rake(server, updateDone) {
 				}
 				server.models.Friend.find({}, function (err, friends) {
 					async.map(friends, function (friend, cb) {
-						if (!friend.hash) {
+						if (typeof friend.highWater === 'string') {
 							friend.highWater = {
 								'as-post': friend.highWater
 							};
-							friend.save();
+							friend.save(function (err) {
+								cb(err);
+							});
 						}
-						cb();
 					}, function (err) {
 						if (err) {
 							return done(err);
 						}
 						console.log('data upgrade complete to v2');
 						group.settings.version = 2;
-						group.save();
-						done();
+						group.save(function (err) {
+							done();
+						});
 					});
 				});
 			}
@@ -54,4 +57,5 @@ module.exports = function rake(server, updateDone) {
 			updateDone();
 		});
 	});
+	*/
 };

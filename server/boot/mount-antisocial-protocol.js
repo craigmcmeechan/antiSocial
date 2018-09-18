@@ -277,6 +277,13 @@ module.exports = function (server) {
 				'handler': handler
 			}];
 			server.models.PushNewsFeedItem.observe('after save', handler);
+
+			if (typeof friend.highWater !== 'object') {
+				friend.highWater = {
+					'as-post': typeof friend.highWater === 'string' ? friend.highWater : 0
+				};
+			}
+
 			emitter('as-post', 'highwater', friend.highWater['as-post'] ? friend.highWater['as-post'] : 0);
 		});
 

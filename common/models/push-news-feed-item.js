@@ -70,7 +70,8 @@ module.exports = function (PushNewsFeedItem) {
 						emitter('as-post', 'data', {
 							'type': 'remove',
 							'data': {
-								'uuid': data.uuid
+								'uuid': data.uuid,
+								'updatedOn': data.updatedOn
 							}
 						});
 					}
@@ -143,12 +144,6 @@ module.exports = function (PushNewsFeedItem) {
 			}
 
 			if (!hit) {
-				emitter('as-post', 'data', {
-					'type': 'some-type',
-					'data': {
-						'uuid': data.uuid
-					}
-				});
 				return next();
 			}
 
