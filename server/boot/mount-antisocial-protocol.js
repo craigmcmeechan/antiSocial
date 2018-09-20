@@ -280,18 +280,18 @@ module.exports = function (server) {
 
 			if (typeof friend.highWater !== 'object') {
 				friend.highWater = {
-					'as-post': typeof friend.highWater === 'string' ? friend.highWater : 0
+					'myantisocialnet': typeof friend.highWater === 'string' ? friend.highWater : 0
 				};
 			}
 
-			emitter('as-post', 'highwater', friend.highWater['as-post'] ? friend.highWater['as-post'] : 0);
+			emitter('myantisocialnet', 'highwater', friend.highWater['myantisocialnet'] ? friend.highWater['myantisocialnet'] : 0);
 		});
 
-		antisocialApp.on('activity-data-as-post', function (user, friend, data) {
+		antisocialApp.on('activity-data-myantisocialnet', function (user, friend, data) {
 			dataEventHandler(server, user, friend, data);
 		});
 
-		antisocialApp.on('activity-backfill-as-post', function (user, friend, highwater, emitter) {
+		antisocialApp.on('activity-backfill-myantisocialnet', function (user, friend, highwater, emitter) {
 			server.models.PushNewsFeedItem.changeHandlerBackfill(emitter, user, friend, highwater ? highwater : 0);
 		});
 
@@ -324,11 +324,11 @@ module.exports = function (server) {
 
 		});
 
-		antisocialApp.on('notification-data-as-post', function (user, data) {
+		antisocialApp.on('notification-data-myantisocialnet', function (user, data) {
 			console.log('notifications got %j from %s', data, user.username);
 		});
 
-		antisocialApp.on('notification-backfill-as-post', function (user, highwater, emitter) {
+		antisocialApp.on('notification-backfill-myantisocialnet', function (user, highwater, emitter) {
 			server.models.NewsFeedItem.changeHandlerBackfill(emitter, user, highwater ? highwater : 0);
 		});
 

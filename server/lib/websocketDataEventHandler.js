@@ -134,12 +134,12 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 							if (typeof friend.highWater !== 'object') {
 								friend.highWater = {
-									'as-post': typeof friend.highWater === 'string' ? friend.highWater : 0
+									'myantisocialnet': typeof friend.highWater === 'string' ? friend.highWater : 0
 								};
 							}
 
-							if (friend.highWater['as-post'] > message.data.updatedOn) {
-								debug('skipping, highwater lower than last value %s %s', friend.highWater['as-post'], message.data.updatedOn);
+							if (friend.highWater['myantisocialnet'] > message.data.updatedOn) {
+								debug('skipping, highwater lower than last value %s %s', friend.highWater['myantisocialnet'], message.data.updatedOn);
 								return process.nextTick(function () {
 									cb();
 								});
@@ -147,7 +147,7 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 							friend.updateAttributes({
 								'highWater': {
-									'as-post': message.data.updatedOn
+									'myantisocialnet': message.data.updatedOn
 								}
 							}, function (err, updated) {
 								if (err) {
@@ -302,12 +302,12 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 							if (typeof friend.highWater !== 'object') {
 								friend.highWater = {
-									'as-post': typeof friend.highWater === 'string' ? friend.highWater : 0
+									'myantisocialnet': typeof friend.highWater === 'string' ? friend.highWater : 0
 								};
 							}
 
-							if (friend.highWater['as-post'] > message.data.updatedOn) {
-								debug('skipping, highwater lower than last value %s %s', friend.highWater['as-post'], message.data.updatedOn);
+							if (friend.highWater['myantisocialnet'] > message.data.updatedOn) {
+								debug('skipping, highwater lower than last value %s %s', friend.highWater['myantisocialnet'], message.data.updatedOn);
 								return process.nextTick(function () {
 									cb();
 								});
@@ -315,7 +315,7 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 							friend.updateAttributes({
 								'highWater': {
-									'as-post': message.data.updatedOn
+									'myantisocialnet': message.data.updatedOn
 								}
 							}, function (err, updated) {
 								if (err) {

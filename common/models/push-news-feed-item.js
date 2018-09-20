@@ -67,7 +67,7 @@ module.exports = function (PushNewsFeedItem) {
 					}
 
 					if (!hit) {
-						emitter('as-post', 'data', {
+						emitter('myantisocialnet', 'data', {
 							'type': 'remove',
 							'data': {
 								'uuid': data.uuid,
@@ -92,7 +92,7 @@ module.exports = function (PushNewsFeedItem) {
 						}
 
 						debugVerbose('backfilling PushNewsFeedItem %j', data);
-						emitter('as-post', 'data', {
+						emitter('myantisocialnet', 'data', {
 							'type': 'backfill',
 							data: data
 						});
@@ -101,7 +101,7 @@ module.exports = function (PushNewsFeedItem) {
 
 				// let watcher know if user is online
 				if (process.env.CLOSE_IDLE_FEEDS) {
-					emitter('as-post', 'data', {
+					emitter('myantisocialnet', 'data', {
 						'type': user.online ? 'online' : 'offline'
 					});
 				}
@@ -183,7 +183,7 @@ module.exports = function (PushNewsFeedItem) {
 				mytype = ctx.isNewInstance ? 'create' : 'update';
 			}
 
-			emitter('as-post', 'data', {
+			emitter('myantisocialnet', 'data', {
 				'type': mytype,
 				'data': data
 			});

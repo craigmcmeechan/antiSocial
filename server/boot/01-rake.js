@@ -31,7 +31,7 @@ module.exports = function rake(server, updateDone) {
 					async.map(friends, function (friend, cb) {
 						if (typeof friend.highWater === 'string') {
 							friend.highWater = {
-								'as-post': friend.highWater
+								'myantisocialnet': friend.highWater
 							};
 							friend.save(function (err) {
 								cb(err);

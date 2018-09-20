@@ -94,11 +94,11 @@
 							highwater = moment().subtract(1, 'd').toISOString()
 						}
 						self.socket.emit('highwater', {
-							'appId': 'as-post',
+							'appId': 'myantisocialnet',
 							'data': highwater
 						});
 						self.socket.emit('data', {
-							'appId': 'as-post',
+							'appId': 'myantisocialnet',
 							'data': {
 								'hello': 'world'
 							}

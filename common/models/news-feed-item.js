@@ -60,7 +60,7 @@ module.exports = function (NewsFeedItem) {
 
 							debugVerbose('backfilling NewsFeedItem %j', data);
 
-							emitter('as-post', 'data', change);
+							emitter('myantisocialnet', 'data', change);
 						});
 					}
 				});
@@ -116,7 +116,7 @@ module.exports = function (NewsFeedItem) {
 						'endpoint': utils.whatAbout(data.about, user)
 					};
 					try {
-						emitter('as-post', 'data', change);
+						emitter('myantisocialnet', 'data', change);
 					}
 					catch (e) {
 						debug('NewsFeedItem ' + streamDescription + ' error writing');
