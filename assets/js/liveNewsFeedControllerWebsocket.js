@@ -168,7 +168,7 @@
 					var me = $('#is-profile').data('me');
 					if (isFeed || (isProfile && me === message.data.source)) {
 						var item = $('<div>');
-						var endpoint = message.data.about;
+						var endpoint = '/proxy-post?endpoint=' + encodeURIComponent(message.data.about);
 						item.load(endpoint, function () {
 							var post = item.find('.newsfeed-item');
 							$('#scope-post-list').prepend(post);

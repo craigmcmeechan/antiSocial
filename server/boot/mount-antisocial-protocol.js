@@ -111,11 +111,6 @@ module.exports = function (server) {
 				if (err) {
 					server.locals.logger('error', 'error occured doing notifications for friend-request-accepted event', err.message);
 				}
-				else {
-					if (friend.originator) {
-						watchFeed.connect(user, friend);
-					}
-				}
 			});
 		});
 
@@ -276,6 +271,7 @@ module.exports = function (server) {
 				'eventType': 'after save',
 				'handler': handler
 			}];
+			debug('adding observer %j', info.observers);
 			server.models.PushNewsFeedItem.observe('after save', handler);
 
 			if (typeof friend.highWater !== 'object') {
@@ -302,6 +298,7 @@ module.exports = function (server) {
 			if (observers) {
 				for (var i = 0; i < observers.length; i++) {
 					var observer = observers[i];
+					debug('removing observer %j', observer);
 					server.models[observer.model].removeObserver(observer.eventType, observer.handler);
 				}
 			}
@@ -320,8 +317,8 @@ module.exports = function (server) {
 				'eventType': 'after save',
 				'handler': handler
 			}];
+			debug('adding observer %j', info.observers);
 			server.models.NewsFeedItem.observe('after save', handler);
-
 		});
 
 		antisocialApp.on('notification-data-myantisocialnet', function (user, data) {
@@ -337,6 +334,7 @@ module.exports = function (server) {
 			if (observers) {
 				for (var i = 0; i < observers.length; i++) {
 					var observer = observers[i];
+					debug('removing observer %j', observer);
 					server.models[observer.model].removeObserver(observer.eventType, observer.handler);
 				}
 			}

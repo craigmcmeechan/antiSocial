@@ -6,41 +6,43 @@ var scrollViewport = window;
 
 function bootMyAntiSocial() {
 
-	// auto redirect to proxy form of url in the case where a users follows a link from
-	// somewhere such as facebook and ends up on someone sleses antisocial server.
-	var xd_cookie = xDomainCookie('//s3.amazonaws.com/myantisocial');
-	xd_cookie.get('antisocial-home', function (cookie_val) {
-		// if the antisocial-home xdomain cookie is not set and we are logged in set the cookie for later
-		if (!cookie_val) {
-			if ($.cookie('access_token')) {
-				var new_val = document.location.protocol + '//' + document.location.host;
-				xd_cookie.set('antisocial-home', new_val);
-			}
-		}
-		else {
-			// the antisocial-home cookie exists, if we are not on the user's antisocial server redirect to it
-			// if the link is a post
-			var server = document.location.protocol + '//' + document.location.host;
-			if (server !== cookie_val) {
-
-				var url = cookie_val;
-				var href = document.location.href;
-				href = href.replace(/\?.*$/, ''); // get rid of query string
-
-				// profile url form
-				if (document.location.pathname.match(/^\/([a-zA-Z0-9-]+)$/)) {
-					url += '/proxy-profile?endpoint=' + encodeURIComponent(href);
-					document.location.href = url;
-				}
-
-				// post permalink url form
-				if (document.location.pathname.match(/\/post\//)) {
-					url += '/proxy-post?endpoint=' + encodeURIComponent(href);
-					document.location.href = url;
+	if (doHomeServerRedirect) {
+		// auto redirect to proxy form of url in the case where a users follows a link from
+		// somewhere such as facebook and ends up on someone sleses antisocial server.
+		var xd_cookie = xDomainCookie('//s3.amazonaws.com/myantisocial');
+		xd_cookie.get('antisocial-home', function (cookie_val) {
+			// if the antisocial-home xdomain cookie is not set and we are logged in set the cookie for later
+			if (!cookie_val) {
+				if ($.cookie('access_token')) {
+					var new_val = document.location.protocol + '//' + document.location.host;
+					xd_cookie.set('antisocial-home', new_val);
 				}
 			}
-		}
-	}, 365);
+			else {
+				// the antisocial-home cookie exists, if we are not on the user's antisocial server redirect to it
+				// if the link is a post
+				var server = document.location.protocol + '//' + document.location.host;
+				if (server !== cookie_val) {
+
+					var url = cookie_val;
+					var href = document.location.href;
+					href = href.replace(/\?.*$/, ''); // get rid of query string
+
+					// profile url form
+					if (document.location.pathname.match(/^\/([a-zA-Z0-9-]+)$/)) {
+						url += '/proxy-profile?endpoint=' + encodeURIComponent(href);
+						document.location.href = url;
+					}
+
+					// post permalink url form
+					if (document.location.pathname.match(/\/post\//)) {
+						url += '/proxy-post?endpoint=' + encodeURIComponent(href);
+						document.location.href = url;
+					}
+				}
+			}
+		}, 365);
+	}
 
 	$(document).ajaxSend(function (event, jqxhr, settings) {
 		jqxhr.setRequestHeader('X-API-Version', APIVersion);
