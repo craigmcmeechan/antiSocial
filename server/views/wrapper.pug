@@ -93,6 +93,8 @@ html(lang="en")
 
 		script(nonce= nonce defer).
 			var APIVersion = #{config.APIVersion};
+			var doHomeServerRedirect = '#{config.doHomeServerRedirect}';
+
 			(function ($) {
 				$(document).ready(function() { bootMyAntiSocial(); });
 			})(jQuery);

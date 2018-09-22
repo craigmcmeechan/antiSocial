@@ -127,6 +127,37 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 								}
 								cb(err);
 							});
+						},
+						function updateHighwater(cb) {
+
+							debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.updatedOn);
+
+							if (typeof friend.highWater !== 'object') {
+								friend.highWater = {
+									'myantisocialnet': typeof friend.highWater === 'string' ? friend.highWater : 0
+								};
+							}
+
+							if (friend.highWater['myantisocialnet'] > message.data.updatedOn) {
+								debug('skipping, highwater lower than last value %s %s', friend.highWater['myantisocialnet'], message.data.updatedOn);
+								return process.nextTick(function () {
+									cb();
+								});
+							}
+
+							friend.updateAttributes({
+								'highWater': {
+									'myantisocialnet': message.data.updatedOn
+								}
+							}, function (err, updated) {
+								if (err) {
+									logger.error({
+										err: err
+									}, 'error saving highwater');
+									return cb(err);
+								}
+								cb();
+							});
 						}
 					], function (err) {
 						return;
@@ -267,10 +298,25 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 						},
 						function updateHighwater(cb) {
 
-							debugVerbose('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.createdOn);
+							debug('watchFeed ' + currentUser.username + ' saving highwater %j', message.data.updatedOn);
+
+							if (typeof friend.highWater !== 'object') {
+								friend.highWater = {
+									'myantisocialnet': typeof friend.highWater === 'string' ? friend.highWater : 0
+								};
+							}
+
+							if (friend.highWater['myantisocialnet'] > message.data.updatedOn) {
+								debug('skipping, highwater lower than last value %s %s', friend.highWater['myantisocialnet'], message.data.updatedOn);
+								return process.nextTick(function () {
+									cb();
+								});
+							}
 
 							friend.updateAttributes({
-								'highWater': message.data.createdOn
+								'highWater': {
+									'myantisocialnet': message.data.updatedOn
+								}
 							}, function (err, updated) {
 								if (err) {
 									logger.error({

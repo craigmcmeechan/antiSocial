@@ -65,7 +65,7 @@
       "type": "array"
     },
     "highWater": {
-      "type": "string"
+      "type": "object"
     },
     "keys": {
       "type": "object"
