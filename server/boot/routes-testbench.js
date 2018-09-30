@@ -22,6 +22,35 @@ module.exports = function (server) {
 		return;
 	}
 
+	router.get('/test-token', function (req, res) {
+		var accessToken = req.query.token;
+
+		if (!accessToken) {
+			return res.sendStatus(401);
+		}
+
+		server.models.AccessToken.find({
+			'where': {
+				'id': accessToken
+			}
+		}, function (err, tokens) {
+			if (err || !tokens.length) {
+				if (err) {
+					return res.send(err);
+				}
+				return res.sendStatus(401);
+			}
+
+			var token = tokens[0];
+
+			res.cookie('access_token', token.id, {
+				signed: req.signedCookies ? true : false,
+				maxAge: 1000 * token.ttl
+			});
+			res.send(token);
+		});
+	});
+
 	router.get('/testbench-callout', getCurrentUser(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
