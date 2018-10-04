@@ -23,31 +23,41 @@ module.exports = function (server) {
 	}
 
 	router.get('/test-token', function (req, res) {
-		var accessToken = req.query.token;
+		var accessToken = req.query.token ? req.query.token : req.signedCookies.access_token;
 
 		if (!accessToken) {
-			return res.sendStatus(401);
+			return res.send({
+				'status': 'missing access token',
+				'headers': req.headers,
+				'cookies': req.cookies,
+				'signedCookies': req.signedCookies
+			});
 		}
 
-		server.models.AccessToken.find({
-			'where': {
-				'id': accessToken
+		server.models.AccessToken.resolve(accessToken, function (err, tokenInstance) {
+			if (err || !tokenInstance) {
+				return res.send('token not found %s %j', accessToken, err);
 			}
-		}, function (err, tokens) {
-			if (err || !tokens.length) {
-				if (err) {
-					return res.send(err);
+
+			server.models.MyUser.findById(tokenInstance.userId, function (err, user) {
+
+				if (req.query.token) {
+					res.cookie('access_token', tokenInstance.id, {
+						signed: req.signedCookies ? true : false,
+						maxAge: 1000 * tokenInstance.ttl
+					});
 				}
-				return res.sendStatus(401);
-			}
 
-			var token = tokens[0];
-
-			res.cookie('access_token', token.id, {
-				signed: req.signedCookies ? true : false,
-				maxAge: 1000 * token.ttl
+				res.send({
+					'cookie': accessToken,
+					'token': tokenInstance,
+					'user': user.username,
+					'headers': req.headers,
+					'cookies': req.cookies,
+					'signedCookies': req.signedCookies
+				});
 			});
-			res.send(token);
+
 		});
 	});
 
