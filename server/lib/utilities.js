@@ -12,9 +12,9 @@ var url = require('url');
 var defaultSettings = {
 	'friendListVisibility': 'all', // all, mutual, none
 	'feedSortOrder': 'activity', // post, activity
-	'notifications_posts': 'on',
-	'notifications_comments': 'on',
-	'notifications_reactions': 'on',
+	'notifications_posts': false,
+	'notifications_comments': false,
+	'notifications_reactions': false,
 	'notifications_digest': false,
 	'notifications_friend_request': true
 };

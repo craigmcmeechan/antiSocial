@@ -20,7 +20,6 @@
 		this.modal = this.element.data('modal');
 		this.description = this.element.data('description');
 		this.replyTo = this.element.data('reply-to');
-		this.community = this.element.data('community');
 		this.share = null;
 
 		this.start = function () {
@@ -197,8 +196,7 @@
 					'photoId': photoId,
 					'description': self.description,
 					'shareEndpoint': self.share,
-					'replyTo': self.replyTo,
-					'community': self.community
+					'replyTo': self.replyTo
 				};
 
 				if (self.element.find('[name="autopost"]').val()) {
@@ -213,11 +211,6 @@
 					}
 					else {
 						self.hideForm();
-
-						// prepend new to post list
-						if (this.community) {
-							//
-						}
 
 						if (self.share) {
 							$('#post-form').data('mdc-dialog').destroy();

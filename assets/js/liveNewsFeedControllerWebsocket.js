@@ -166,7 +166,7 @@
 					var isFeed = $('#is-feed').length;
 					var isProfile = $('#is-profile').length;
 					var me = $('#is-profile').data('me');
-					if (isFeed || (isProfile && me === message.data.source)) {
+					if (isFeed || (isProfile && (me === message.data.source || me === message.data.target))) {
 						var item = $('<div>');
 						var endpoint = '/proxy-post?endpoint=' + encodeURIComponent(message.data.about);
 						item.load(endpoint, function () {

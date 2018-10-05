@@ -188,7 +188,11 @@ module.exports = function (server) {
 		// friend has been deleted
 		antisocialApp.on('friend-deleted', function (user, friend) {
 			if (friend.originator) {
-				watchFeed.disConnect(server, friend);
+				watchFeed.disconnect(server, friend, function (err) {
+					if (err) {
+						debug('error disconnecting %j', err);
+					}
+				});
 			}
 
 			async.series([
@@ -322,7 +326,7 @@ module.exports = function (server) {
 		});
 
 		antisocialApp.on('notification-data-myantisocialnet', function (user, data) {
-			console.log('notifications got %j from %s', data, user.username);
+			debug('notifications got %j from %s', data, user.username);
 		});
 
 		antisocialApp.on('notification-backfill-myantisocialnet', function (user, highwater, emitter) {

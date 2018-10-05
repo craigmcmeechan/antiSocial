@@ -248,15 +248,16 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 						},
 						function createNewFeedItem(cb) {
 
-							delete myNewsFeedItem.id;
-							delete myNewsFeedItem.visibility;
+							var myItem = JSON.parse(JSON.stringify(myNewsFeedItem));
+							delete myItem.id;
+							delete myItem.visibility;
 
-							myNewsFeedItem.userId = currentUser.id;
-							myNewsFeedItem.friendId = friend.id;
+							myItem.userId = currentUser.id;
+							myItem.friendId = friend.id;
 
-							debugVerbose('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myNewsFeedItem);
+							debugVerbose('watchFeed ' + currentUser.username + ' create NewsFeedItem %j', myItem);
 
-							server.models.NewsFeedItem.create(myNewsFeedItem, function (err, item) {
+							server.models.NewsFeedItem.create(myItem, function (err, item) {
 								if (err) {
 									logger.error({
 										'myNewsFeedItem': myNewsFeedItem
@@ -275,13 +276,14 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 							}
 
 							async.waterfall([
-								function (cbPostOnMyWall) { // make a Post record
+								function makePostOnWall(cbPostOnMyWall) { // make a Post record
 									var post = {
 										'uuid': message.data.uuid,
 										'athoritativeEndpoint': message.data.about,
 										'source': message.data.source,
 										'userId': currentUser.id,
-										'visibility': message.data.visibility
+										'visibility': ['friends'],
+										'posted': true
 									};
 
 									server.models.Post.create(post, function (err, post) {
@@ -290,6 +292,30 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 											return cbPostOnMyWall(e);
 										}
 										cbPostOnMyWall(null, post);
+									});
+								},
+								function notifyPostOnWall(post, cbPostOnMyWall) {
+									if (!currentUser.community) {
+										return process.nextTick(function () {
+											cbPostOnMyWall();
+										});
+									}
+									currentUser.pushNewsFeedItems.create({
+										'uuid': post.uuid,
+										'type': 'post',
+										'source': server.locals.config.publicHost + '/' + currentUser.username,
+										'about': server.locals.config.publicHost + '/' + currentUser.username + '/post/' + post.uuid,
+										'target': post.about,
+										'visibility': post.visibility,
+										'details': {},
+										'tags': post.tags,
+										'description': post.description
+									}, function (err) {
+										if (err) {
+											var e = new VError(err, 'could create PushNewsFeedItem for post to wall');
+											return cbPostOnMyWall(e);
+										}
+										cbPostOnMyWall();
 									});
 								}
 							], function (err) {

@@ -74,7 +74,7 @@ module.exports = function (server) {
 					}
 				}
 
-				utils.getPost(postId, user, friend, null, isMe, function (err, post) {
+				utils.getPost(postId, user, friend, isMe, function (err, post) {
 					if (err) {
 						return cb(err);
 					}

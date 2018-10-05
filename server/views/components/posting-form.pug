@@ -8,7 +8,7 @@
 			if identity.provider === 'twitter'
 				- tw= identity
 	
-	form.scope-posting-form.form.form-validation.vibrant-border(data-jsclass="postingFormController,formValidator" data-about= wall && profile ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint= editing ? "/post/" + post.uuid : "/post" data-modal= editing ? "#edit-post-form" : '' data-community= subscription ? subscription.remoteEndPoint : '')
+	form.scope-posting-form.form.form-validation.vibrant-border(data-jsclass="postingFormController,formValidator" data-about= wall && profile ? profile.endpoint : '' data-submitter='.post-submit-button' data-focus-target=".posting-body" data-endpoint= editing ? "/post/" + post.uuid : "/post" data-modal= editing ? "#edit-post-form" : '')
 		.tabbed
 			#form-tab
 				.form-group.input-relative
@@ -92,17 +92,6 @@
 											path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
 										.mdc-checkbox__mixedmark
 								label(for="select-audience-" + index)= audience
-								
-					if user && user.subscriptions()
-						for subscription in user.subscriptions()
-							.mdc-form-field
-								.mdc-checkbox
-									input.form-check-input.mdc-checkbox__native-control(type="checkbox" data-value= 'community:' + subscription.communityName)
-									.mdc-checkbox__background
-										svg.mdc-checkbox__checkmark(viewBox="0 0 24 24")
-											path.mdc-checkbox__checkmark-path(fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59")
-										.mdc-checkbox__mixedmark
-								label= subscription.communityName
 
 			.autopost-zone
 				.form-group.input-relative

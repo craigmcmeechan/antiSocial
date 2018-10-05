@@ -1,3 +1,5 @@
+var debug = require('debug')('antisocial-friends');
+
 module.exports = function (server) {
 	function dbHandler() {
 		var self = this;
@@ -51,15 +53,25 @@ module.exports = function (server) {
 		this.updateInstance = function (collectionName, id, patch, cb) {
 			server.models[self.models[collectionName]].findById(id, function (err, instance) {
 				if (err) {
-					return cb(new Error('error reading ' + collectionName));
+					if (cb) {
+						return cb(new Error('error reading ' + collectionName));
+					}
+					return;
 				}
 				if (!instance) {
-					return cb(new Error('error ' + collectionName + ' id ' + id + ' not found'));
+					if (cb) {
+						return cb(new Error('error ' + collectionName + ' id ' + id + ' not found'));
+					}
+					return;
 				}
 
 				instance.updateAttributes(patch, function (err, updated) {
 					if (err) {
-						return cb(new Error('error updating ' + collectionName));
+						debug('error updating instance %j', err);
+						if (cb) {
+							return cb(err);
+						}
+						return;
 					}
 					if (cb) {
 						cb(null, updated);
