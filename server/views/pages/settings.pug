@@ -61,6 +61,15 @@ block content
 								.list-edit(data-jsclass="editListController" data-target="#audience-list" data-add-only= !init)
 								.validation-help
 
+
+					.form-group
+						.form-check
+							if user.community
+								input.form-check-input(type="checkbox" name="community" checked)
+							else
+								input.form-check-input(type="checkbox" name="community")
+							label.form-check-label This endpoint is a community/group
+
 				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/user-settings")
 					.form-group
 						label Friends can see my friends list
