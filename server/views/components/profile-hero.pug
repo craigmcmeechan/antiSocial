@@ -12,36 +12,46 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 
 					if friend
 						if friend.status === 'accepted'
-							| This friend can see my public posts and posts in
-							each audience, i in friend.audiences
-								if i
-									| ,
-								= ' ' + audience
+							if profile.community
+								| Community Member
+								button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-method= 'POST' data-endpoint = '/' + user.username + '/friend-update' data-data='{"endpoint":"'+friend.remoteEndPoint+'","status":"delete"}') Leave
 
-							span.revealer(data-target="#edit-friend-audience" data-toggle="collapse")
-								i.fa.fa-chevron-down
+							else
+								
+								| This friend can see my public posts and posts in
+								each audience, i in friend.audiences
+									if i
+										| ,
+									= ' ' + audience
 
-							#edit-friend-audience.collapse
-								form#form.form-validation(data-jsclass="formValidator,saveOnChange" data-method="POST" data-endpoint= user.username + "/friend-update" data-friend-endpoint= friend.remoteEndPoint)
-									.checkbox-group(data-jsclass="checkboxGroupController" data-target="#friend-audiences")
-										input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(friend.audiences))
-										.form-check.form-check-inline
-											label.form-check-label Set Audience
-										.form-check.form-check-inline
-											input.form-check-input(type="checkbox" data-value="friends")
-											label.form-check-label friends
-										if user && user.audiences
-											each audience in user.audiences
-												.form-check.form-check-inline
-													input.form-check-input(type="checkbox" data-value= audience)
-													label.form-check-label= audience
+								span.revealer(data-target="#edit-friend-audience" data-toggle="collapse")
+									i.fa.fa-chevron-down
+
+								#edit-friend-audience.collapse
+									form#form.form-validation(data-jsclass="formValidator,saveOnChange" data-method="POST" data-endpoint= user.username + "/friend-update" data-friend-endpoint= friend.remoteEndPoint)
+										.checkbox-group(data-jsclass="checkboxGroupController" data-target="#friend-audiences")
+											input#friend-audiences.form-control(type="hidden" data-validate="required" name="audiences" value= JSON.stringify(friend.audiences))
+											.form-check.form-check-inline
+												label.form-check-label Set Audience
+											.form-check.form-check-inline
+												input.form-check-input(type="checkbox" data-value="friends")
+												label.form-check-label friends
+											if user && user.audiences
+												each audience in user.audiences
+													.form-check.form-check-inline
+														input.form-check-input(type="checkbox" data-value= audience)
+														label.form-check-label= audience
 
 						else 
 							if friend.status === 'pending'
-								| Pending friend request 
+								| Pending request 
 								if !friend.originator
 									a.btn.btn-primary.btn-xs(data-jsclass="getEndpointController" data-method="POST" data-endpoint= user.username + '/friend-request-accept' data-data='{"endpoint":"' + friend.remoteEndPoint + '"}') Accept
 					else
-						if user && !isMe && profile.endpoint
-							button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= user.username + '/request-friend?endpoint=' + encodeURIComponent(profile.endpoint)) Add Friend
-							|  this user can see my public posts.
+						if user && !isMe && profile.endpoint && !user.community
+							if profile.community
+								button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= user.username + '/request-friend?endpoint=' + encodeURIComponent(profile.endpoint)) Join
+							else
+								
+								button.btn.btn-sm.btn-primary(data-jsclass="getEndpointController" data-endpoint= user.username + '/request-friend?endpoint=' + encodeURIComponent(profile.endpoint)) Add Friend
+								|  this user can see my public posts.

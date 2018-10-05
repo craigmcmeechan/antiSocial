@@ -78,6 +78,9 @@
     },
     "inviteToken": {
       "type": "string"
+    },
+    "community": {
+      "type": "boolean"
     }
   },
   "protected": ["keys", "localRequestToken", "localAccessToken", "remoteRequestToken", "remoteAccessToken"],

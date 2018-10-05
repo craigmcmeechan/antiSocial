@@ -517,60 +517,6 @@ module.exports = function (server) {
         doPostNotifications(currentUser, post, function (err, post) {
           cb(err, post);
         });
-      },
-      function (post, cb) {
-        // look for communities in audiences
-        async.mapSeries(post.visibility, function (channel, doneAudiences) {
-          var matches = channel.match(/^community:([0-9a-zA-Z-]+)/);
-          if (!matches) {
-            return async.setImmediate(function () { // not a community
-              doneAudiences();
-            });
-          }
-
-          var subscriptions = [];
-
-          for (var i = 0; i < currentUser.subscriptions().length; i++) {
-            var subscription = currentUser.subscriptions()[i];
-            if (subscription.communityName === matches[1]) {
-              subscriptions.push(subscription);
-            }
-          }
-
-          // post notification to all selected community subscription endpoint(s)
-          async.mapSeries(subscriptions, function (subscription, donePostToCommunity) {
-            var visibility = [];
-            visibility.push('community:' + subscription.communityName);
-            if (post.visibility.indexOf('public') !== -1) {
-              visibility.push('public');
-            }
-            var payload = {
-              'uuid': post.uuid,
-              'source': post.source,
-              'visibility': visibility,
-              'athoritativeEndpoint': post.source + '/post/' + post.uuid
-            };
-
-            var options = {
-              'url': fixIfBehindProxy(subscription.remoteEndPoint + '/post'),
-              'headers': {
-                'community-access-token': subscription.remoteAccessToken
-              },
-              'form': payload,
-              'json': true
-            };
-
-            request.post(options, function (err, response, body) {
-              donePostToCommunity(err);
-            });
-
-          }, function (err) {
-            doneAudiences(err);
-          });
-
-        }, function (err) {
-          cb(err, post);
-        });
       }
     ], function (err, post) {
       if (err) {

@@ -149,7 +149,8 @@ describe('proxy endpoints', function () {
 				.send({
 					'email': email5,
 					'password': password,
-					'name': 'user five'
+					'name': 'test community',
+					'community': true
 				})
 				.end(function (err, res) {
 					expect(err).to.be(null);
@@ -693,114 +694,6 @@ describe('proxy endpoints', function () {
 		client2.get(endpoint1 + '/photo/' + postCommentPhotoUUID).end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.headers['content-type']).to.be('text/html; charset=utf-8');
-			done();
-		});
-	});
-
-	it('should be able to create a community', function (done) {
-		client1.post('http://127.0.0.1:3000/api/Communities')
-			.type('form')
-			.send({
-				'name': 'community one',
-				'nickname': 'community-one',
-				'viewPolicy': 'open',
-				'postPolicy': 'open',
-				'memberPolicy': 'approval'
-			})
-			.end(function (err, res) {
-				expect(err).to.be(null);
-				expect(res.status).to.equal(200);
-				done();
-			});
-	});
-
-	it('/communities page should redirect to the only community', function (done) {
-		client1.get('http://127.0.0.1:3000/communities')
-			.redirects(0)
-			.end(function (err, res) {
-				expect(res.status).to.equal(302);
-				expect(res.headers['location']).to.be('/community/community-one');
-				done();
-			});
-	});
-
-	it('should be able to follow redirect from /communities to only community', function (done) {
-		client1.get('http://127.0.0.1:3000/communities')
-			.end(function (err, res) {
-				expect(err).to.be(null);
-				expect(res.status).to.equal(200);
-				done();
-			});
-	});
-
-	it('should be able to create annother community', function (done) {
-		client1.post('http://127.0.0.1:3000/api/Communities')
-			.type('form')
-			.send({
-				'name': 'community two',
-				'nickname': 'community-two',
-				'viewPolicy': 'open',
-				'postPolicy': 'open',
-				'memberPolicy': 'open'
-			})
-			.end(function (err, res) {
-				expect(err).to.be(null);
-				expect(res.status).to.equal(200);
-				done();
-			});
-	});
-
-	it('should be able to load communities page (no redirect beacause now more than one community)', function (done) {
-		client1.get('http://127.0.0.1:3000/communities')
-			.redirects(0)
-			.end(function (err, res) {
-				expect(err).to.be(null);
-				expect(res.status).to.equal(200);
-				done();
-			});
-	});
-
-	it('user1 should be able to join community-one', function (done) {
-		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community/community-one').end(function (err, res) {
-			expect(res.status).to.be(200);
-			expect(res.body.status).to.equal('ok');
-			done();
-		});
-	});
-
-	it('user1 should not able to join community-one again', function (done) {
-		client1.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community/community-one').end(function (err, res) {
-			expect(res.status).to.be(200);
-			expect(res.body.status).to.equal('duplicate subscription request');
-			done();
-		});
-	});
-
-	it('user2 should be able to join community-one', function (done) {
-		client2.get('http://127.0.0.1:3000/join?endpoint=' + 'http://127.0.0.1:3000/community/community-one').end(function (err, res) {
-			expect(res.status).to.be(200);
-			expect(res.body.status).to.equal('ok');
-			done();
-		});
-	});
-
-	it('user1 should be able to accept usertwo as a member', function (done) {
-		client1.get('http://127.0.0.1:3000/community/community-one/accept-member?endpoint=' + 'http://127.0.0.1:3000/usertwo').end(function (err, res) {
-			console.log('body', res.body);
-			expect(res.status).to.be(200);
-			expect(res.body.status).to.equal('ok');
-			done();
-		});
-	});
-
-	it('user2 should be able to post to community', function (done) {
-		client2.post('http://127.0.0.1:3000/post').send({
-			body: 'Hello world',
-			visibility: ['community:community-one']
-		}).end(function (err, res) {
-			expect(res.status).to.be(200);
-			expect(res.body.result.status).to.be('ok');
-			expect(res.headers['content-type']).to.be('application/json; charset=utf-8');
 			done();
 		});
 	});

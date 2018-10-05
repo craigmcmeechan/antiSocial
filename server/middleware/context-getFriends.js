@@ -16,7 +16,13 @@ module.exports = function () {
 
 		var query = {
 			'where': {
-				'userId': user.id
+				'and': [{
+					'userId': user.id
+				}, {
+					'community': {
+						'neq': true
+					}
+				}]
 			}
 		};
 		req.app.models.Friend.find(query, function (err, friends) {

@@ -17,6 +17,7 @@ module.exports = function getProfile(user) {
 			'url': server.locals.getUploadForProperty('background', user.uploads(), 'thumb', server.locals.FPO).url
 		},
 		'endpoint': server.locals.config.publicHost + '/' + user.username,
-		'publicHost': server.locals.config.publicHost
+		'publicHost': server.locals.config.publicHost,
+		'community': user.community
 	};
 };

@@ -7,8 +7,30 @@ block content
 	.mdc-layout-grid
 		.mdc-layout-grid__inner
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
-				h4 Communities hosted on this server
-				ul
-					for community in communities
-						li
-							a(href="/community/" + community.nickname )= community.name
+				h4 My Communities
+				if myCommunities && myCommunities.length
+					ul
+						for community in myCommunities
+							li
+								a(href="/" + community.uniqueRemoteUsername )= community.remoteName
+				else
+					p You have not joined any communities
+					
+				h4 Join a community
+				p If you know a community endpoint enter it here.
+				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
+					.form-group
+						.input-group
+							.input-relative
+								input.form-control(type="text" name="endpoint" placeholder="Endpoint" data-validate="required" value= endpoint)
+							.input-group-btn
+								button#lookup-button.btn.btn-primary Lookup
+
+				if communities && communities.length
+					h4 Communities hosted on this server
+					ul
+						for community in communities
+							li
+								a(href="/" + community.username )= community.name
+				else
+					p No communities on this server

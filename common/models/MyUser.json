@@ -35,8 +35,7 @@
       "friends",
       "pushNewsFeedItems",
       "newsFeeds",
-      "photos",
-      "subscriptions"
+      "photos"
     ],
     "helpers": [{
       "type": "upload",
@@ -86,6 +85,9 @@
     },
     "deactivated": {
       "type": "date"
+    },
+    "community": {
+      "type": "boolean"
     }
   },
   "validations": [],
@@ -128,11 +130,6 @@
     "invitations": {
       "type": "hasMany",
       "model": "Invitation",
-      "foreignKey": "userId"
-    },
-    "subscriptions": {
-      "type": "hasMany",
-      "model": "Subscription",
       "foreignKey": "userId"
     },
     "blocks": {

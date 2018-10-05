@@ -184,7 +184,7 @@ module.exports = function (MyUser) {
 				});
 			},
 			function (isFirstUser, cb) { // create the user
-				createUser(req.body.email, req.body.password, req.body.name, isFirstUser, function (err, user) {
+				createUser(req.body.email, req.body.password, req.body.name, isFirstUser, req.body.community, function (err, user) {
 					if (err) {
 						var e = new VError(err, 'create user error');
 						return cb(e);
@@ -316,25 +316,25 @@ module.exports = function (MyUser) {
 	};
 
 	// create a user, if superuser set up admin roles
-	function createUser(email, password, name, superuser, next) {
+	function createUser(email, password, name, superuser, community, next) {
 		var theUser = null;
 
 		//var unique = sh.unique(server.locals.config.publicHost + '/' + uuid());
-		var username = name.toLowerCase().replace(/[^a-z0-9\-]/g, ''); // + '-' + unique;
+		var username = name.toLowerCase().replace(/[^a-z0-9-]/g, ''); // + '-' + unique;
 
-		var adminUser = {
+		var user = {
 			'email': email,
 			'password': password,
 			'name': name,
-			'username': username
-				//,'unique': unique
+			'username': username,
+			'community': community
 		};
 
-		debugVerbose('createUser', adminUser);
+		debugVerbose('createUser', user);
 
 		async.series([
 			function createUser(cb) {
-				server.models.MyUser.create(adminUser, function (err, user) {
+				server.models.MyUser.create(user, function (err, user) {
 					if (err) {
 						var e = new VError(err, 'create user error');
 						return cb(e);

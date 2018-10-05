@@ -50,22 +50,6 @@ module.exports = {
     'dataSource': 'db',
     'public': true
   },
-  'Community': {
-    'dataSource': 'db',
-    'public': process.env.ADMIN ? true : false
-  },
-  'CommunityPost': {
-    'dataSource': 'db',
-    'public': process.env.ADMIN ? true : false
-  },
-  'Member': {
-    'dataSource': 'db',
-    'public': process.env.ADMIN ? true : false
-  },
-  'Subscription': {
-    'dataSource': 'db',
-    'public': process.env.ADMIN ? true : false
-  },
   'UserIdentity': {
     'dataSource': 'db',
     'public': process.env.ADMIN ? true : false
