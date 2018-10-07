@@ -5,7 +5,6 @@
 (function ($) {
 	function loginController(elem, options) {
 		this.element = $(elem);
-
 		var self = this;
 		this.start = function () {
 
@@ -32,17 +31,18 @@
 					})
 					.done(function (data, textStatus, jqXHR) {
 						$('#login-form').data('mdc-dialog').destroy();
-
-						flashAjaxStatus('success', 'logged in');
-
-						loadPage('/feed');
+						didLogIn();
 						if (window.Cordova) {
 							$.cookie('access_token', data.id, {
 								'path': '/',
 								'expires': 999
 							})
 						}
-						didLogIn();
+
+						flashAjaxStatus('success', 'logged in');
+
+						self.postLogin = $('#login-form').data('post-login') ? $('#login-form').data('post-login') : '/feed';
+						loadPage(self.postLogin);
 					})
 					.fail(function () {
 						flashAjaxStatus('warning', 'login failed');

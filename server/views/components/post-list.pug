@@ -15,9 +15,12 @@
 					.news-summary
 						!= post.commentSummary
 				
-				if post.athoritativeEndpoint
+				if (!user || !user.community) && post.athoritativeEndpoint
 					.post.loading.live-element.vibrant-border.mdc-elevation--z1(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 				else 
+					if post.cached && post.cached.httpStatus === 200
+						-post = post.cached.data
+						
 					.post.live-element.vibrant-border.mdc-elevation--z1(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.source + '/post/' + post.uuid,user))
 						.post-identity.vibrant-bg
 							.post-avatar
