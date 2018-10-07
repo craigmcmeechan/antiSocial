@@ -133,34 +133,55 @@ module.exports.getPosts = function (user, friend, highwater, isMe, tags, cb) {
 
 		// get community post content from athoritativeEndpoint
 		async.map(posts, function (item, doneResolve) {
-			request.get({
-				'url': item.athoritativeEndpoint + '.json',
-				'json': true,
-				'headers': {
-					'friend-access-token': friend.remoteAccessToken
+			if (!item.athoritativeEndpoint) {
+				return async.setImmediate(function () {
+					return doneResolve(null);
+				});
+			}
+
+			server.models.Friend.findOne({
+				'where': {
+					'and': [{
+						'remoteEndPoint': item.source,
+						'userId': user.id
+					}]
 				}
-			}, function (err, response, body) {
-				if (err) {
-					item.cached = {
-						'httpStatus': 500
-					};
-					return doneResolve();
+			}, function (err, poster) {
+				if (!poster) {
+					return async.setImmediate(function () {
+						return doneResolve(null);
+					});
 				}
 
-				var decrypted;
-				if (body.sig) {
-					debug('got encrypted response');
-					var privateKey = friend.keys.private;
-					var publicKey = friend.remotePublicKey;
-					decrypted = encryption.decrypt(publicKey, privateKey, body);
-					if (decrypted.valid) {
-						item.cached = {
-							'httpStatus': response.statusCode,
-							'data': JSON.parse(decrypted.data)
-						};
+				request.get({
+					'url': item.athoritativeEndpoint + '.json',
+					'json': true,
+					'headers': {
+						'friend-access-token': poster.remoteAccessToken
 					}
-				}
-				doneResolve();
+				}, function (err, response, body) {
+					if (err) {
+						item.cached = {
+							'httpStatus': 500
+						};
+						return doneResolve();
+					}
+
+					var decrypted;
+					if (body.sig) {
+						debug('got encrypted response');
+						var privateKey = poster.keys.private;
+						var publicKey = poster.remotePublicKey;
+						decrypted = encryption.decrypt(publicKey, privateKey, body);
+						if (decrypted.valid) {
+							item.cached = {
+								'httpStatus': response.statusCode,
+								'data': JSON.parse(decrypted.data)
+							};
+						}
+					}
+					doneResolve();
+				});
 			});
 		}, function (err) {
 			cb(err, posts);
