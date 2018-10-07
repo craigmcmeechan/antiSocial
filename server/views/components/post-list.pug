@@ -1,6 +1,9 @@
 #scope-post-list
 	if posts && posts.length
 		for post in posts
+			if post.cached && post.cached.httpStatus === 200
+				- post = post.cached.data.post
+			
 			- var postEndpoint = post.source + '/post/' + post.uuid;
 			- var poster = post.resolvedProfiles[post.source].profile
 			- var about = post.about ? post.resolvedProfiles[post.about].profile : {}
@@ -18,9 +21,6 @@
 				if (!user || !user.community) && post.athoritativeEndpoint
 					.post.loading.live-element.vibrant-border.mdc-elevation--z1(data-jsclass="loadController" data-target=".post" data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.athoritativeEndpoint,user) data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name)
 				else 
-					if post.cached && post.cached.httpStatus === 200
-						-post = post.cached.data
-						
 					.post.live-element.vibrant-border.mdc-elevation--z1(data-watch= post.source + '/post/' + post.uuid data-watch-type="post" data-source= post.source data-hat-tip= poster.name data-endpoint= '/proxy-post?endpoint=' + encodeURIComponent(post.source + '/post/' + post.uuid,user))
 						.post-identity.vibrant-bg
 							.post-avatar
