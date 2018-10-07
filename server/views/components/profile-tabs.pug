@@ -4,8 +4,13 @@
 			ul.nav.nav-tabs.subnav-tabs(data-jsclass="subnavController")
 				li#subnav-posts.nav-item
 					a.nav-link(href= proxyEndPoint(data.profile.endpoint,user)) Posts
-				li#subnav-photos.nav-item
-					a.nav-link(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
+				//
+					li#subnav-photos.nav-item
+						a.nav-link(href= proxyEndPoint(data.profile.endpoint + '/photos',user)) Photos
 				if user && friend && !isMe
 					li#subnav-friends.nav-item
-						a.nav-link(href= proxyEndPoint(data.profile.endpoint + '/friends',user)) Friends
+						a.nav-link(href= proxyEndPoint(data.profile.endpoint + '/friends',user))
+							if data.profile.community
+								|Members
+							else 
+								|Friends
