@@ -6,9 +6,6 @@ block seo
 block content
 	- var photo = getUploadForProperty('photo',user.uploads(),'large',headshotFPO)
 	- var background = getUploadForProperty('background',user.uploads(),'large',FPO)
-	- var communityBackground = { 'url': '/images/fpo.jpg' }
-	if globalSettings.instance
-		- communityBackground =getUploadForProperty('background',globalSettings.instance.uploads(),'large',FPO)
 	.mdc-layout-grid
 		.mdc-layout-grid__inner
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6.content-padding-top.content

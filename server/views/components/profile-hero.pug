@@ -6,9 +6,14 @@ img.avatar(src= profile.photo.url data-jsclass="scrollEffectsController" data-ef
 			.mdc-layout-grid__inner
 				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12.text-overlay.navbar-margin
 					h1
+						if profile && profile.community
+							| Community: 
 						= profile.name
 						if isMe
-							= ' (me)'
+							if profile.community
+								= ' (admin)'
+							else
+								= ' (me)'
 
 					if friend
 						if friend.status === 'accepted'
