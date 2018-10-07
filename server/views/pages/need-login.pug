@@ -7,5 +7,8 @@ block content
 	.mdc-layout-grid
 		.mdc-layout-grid__inner
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content(data-jsclass="clearAccessToken")
-				p Please login to access the requested page #{page}
+				p Hmmm. Looks like you are not logged in or your login expired.
+				button.mdc-button.nav-item.mdc-button--raised.toggle-modal(href="#" data-target="#login-form" data-post-login= page) Click Here to Login
+
+				
 				

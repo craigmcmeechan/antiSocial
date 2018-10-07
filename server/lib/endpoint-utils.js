@@ -6,6 +6,8 @@ var pug = require('pug');
 var debug = require('debug')('proxy');
 var server = require('../server');
 var encryption = require('antisocial-encryption');
+var async = require('async');
+var request = require('request');
 
 module.exports.getPOVEndpoint = function (friend, currentUser) {
 	if (friend) {
@@ -125,7 +127,44 @@ module.exports.getPosts = function (user, friend, highwater, isMe, tags, cb) {
 			return cb(err);
 		}
 
-		cb(err, posts);
+		if (!user.community) {
+			return cb(err, posts);
+		}
+
+		// get community post content from athoritativeEndpoint
+		async.map(posts, function (item, doneResolve) {
+			request.get({
+				'url': item.athoritativeEndpoint + '.json',
+				'json': true,
+				'headers': {
+					'friend-access-token': friend.remoteAccessToken
+				}
+			}, function (err, response, body) {
+				if (err) {
+					item.cached = {
+						'httpStatus': 500
+					};
+					return doneResolve();
+				}
+
+				var decrypted;
+				if (body.sig) {
+					debug('got encrypted response');
+					var privateKey = friend.keys.private;
+					var publicKey = friend.remotePublicKey;
+					decrypted = encryption.decrypt(publicKey, privateKey, body);
+					if (decrypted.valid) {
+						item.cached = {
+							'httpStatus': response.statusCode,
+							'data': JSON.parse(decrypted.data)
+						};
+					}
+				}
+				doneResolve();
+			});
+		}, function (err) {
+			cb(err, posts);
+		});
 	});
 };
 

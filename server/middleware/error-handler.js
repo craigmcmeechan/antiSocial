@@ -4,6 +4,11 @@
 
 module.exports = function () {
 	return function errorHandler(err, req, res, next) {
+		if (err.status === 401 && err.code === 'INVALID_TOKEN') {
+			return req.redirect('/need-login.html');
+		}
+
+
 		var ctx;
 		var currentUser;
 		if (req.getCurrentContext) {
