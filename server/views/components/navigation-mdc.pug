@@ -3,12 +3,10 @@ header.mdc-top-app-bar.mdc-top-app-bar--fixed
 		section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start
 			a.menu.material-icons.mdc-top-app-bar__navigation-icon(href="#") menu
 
-			a.navbar-brand(href="/")
-				.header-logo
 			#page-title.mdc-top-app-bar__title(data-hijax="true")
 				span= pageTitle
 
-			section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end
+			section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.hidden-logged-out
 				.position-relative
 					.show-notifications-button.material-icons.mdc-top-app-bar__action-item
 						i.fa.fa-fw.fa-bell

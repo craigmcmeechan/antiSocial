@@ -30,6 +30,7 @@ $mdc-theme-secondary: #757575;
 @import "@material/layout-grid/mdc-layout-grid";
 @import "@material/snackbar/mdc-snackbar";
 @import "@material/elevation/mdc-elevation";
+@import "@material/fab/mdc-fab";
 
 .mdc-top-app-bar {
 	top:0px;
@@ -52,6 +53,12 @@ $mdc-theme-secondary: #757575;
 
 .mdc-layout-grid {
 	max-width:1024px;
+}
+
+.app-fab-fixed {
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
 }
 
 // boostrap disabmiguation

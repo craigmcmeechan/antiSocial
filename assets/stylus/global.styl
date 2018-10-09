@@ -16,6 +16,9 @@ body.cordova
 	height: 100vh
 	width: 100vw
 
+.gradient-bg
+	background: linear-gradient(to right bottom, rgba(0,0,0,.1), rgba(0,0,0,.2))
+
 .cordova
 	.scroll-viewport
 		-webkit-overflow-scrolling: touch
@@ -112,32 +115,18 @@ button:focus
 	.digitopia-xsmall &
 		margin:7px
 
-#sidebar
-	background-color:#ccc
-	text-align:center
-	padding:1em
-	border: thin solid #eee
-	border-radius: 4px
-	margin-bottom: 30px
-	.digitopia-xsmall &
-		margin-right:30px
-		margin-left:30px
-	.dark-background
-		background-color:#333
-		margin:-16px
-		margin-bottom: 16px
-		border-top-left-radius: 4px
-		border-top-right-radius: 4px
-		color:#999
-		padding-bottom:30px
-		img
-			margin: 30px;
-			margin-bottom: 0px;
-
-			width: 25%;
-
-	.page-header
-		margin-top:0
+.dark-background
+	background-color:#333
+	color:#999
+	padding-top:30px
+	padding-bottom:30px
+	img
+		padding-bottom: 30px;
+		width: 25%;
+	a
+		color: #ccc
+	a:visited
+		color: #ccc
 
 #tmks
 	text-align:left
@@ -281,10 +270,12 @@ img.avatar
 					border-top-right-radius: 4px
 					min-height:33vh
 					background-color:white
+					border-color:#eee
 
 		.posting-body
-			border thin solid
+			border thin solid #333
 			border-radius: 4px
+			background-color:#eee
 
 		&.reply
 			margin-left:37px
@@ -371,7 +362,7 @@ img.avatar
 			padding-bottom:7px
 
 	.comment-button-zone
-		padding-top:7px
+		padding:7px
 	.hide-until-subject-focus
 		display:none
 	.focused .hide-until-subject-focus
@@ -478,8 +469,6 @@ img.avatar
 
 	.post
 		background-color:white
-		border:thin solid
-		border-radius:4px
 		margin-bottom:15px
 		&.loading
 			min-height:398px

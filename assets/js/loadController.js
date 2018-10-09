@@ -14,6 +14,9 @@
 				if (status == "error") {
 					var msg = "Sorry but there was an error: ";
 					self.element.html(msg + xhr.status + " " + xhr.statusText);
+					setTimeout(function () {
+						self.element.remove();
+					}, 1000);
 				}
 				else {
 					self.element.html(element.find(self.target).html());

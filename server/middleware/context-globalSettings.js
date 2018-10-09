@@ -17,14 +17,9 @@ module.exports = function () {
 
 			var settings = {
 				'multiUser': process.env.REGISTER_POLICY ? process.env.REGISTER_POLICY : 'invite',
-				'serverName': 'AntiSocial',
-				'serverTitle': 'User centered Distibuted Social Networking',
-				'serverDescription': 'Your server. Your data. Your network.',
-				'communityChannel': false,
-				'community': {
-					'name': 'Community Name',
-					'tagline': 'Community tagline'
-				}
+				'serverOperator': 'Unknown Operator',
+				'serverTitle': 'A myAntisocial.net node',
+				'serverDescription': 'Your server. Your data. Your network.'
 			};
 
 			if (group) {
