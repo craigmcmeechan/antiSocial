@@ -60,6 +60,10 @@ html(lang="en")
 			.mdc-snackbar__action-wrapper
 				button.mdc-snackbar__action-button(type="button")
 
+		button.mdc-fab.mdc-fab--extended.app-fab-fixed.hidden-logged-in.toggle-modal(href="#" data-target="#login-form")
+			span.material-icons.mdc-fab__icon account_circle
+			span.mdc-fab__label Login
+
 		block controller
 
 		script(src="/dist/js/jquery.min.js")

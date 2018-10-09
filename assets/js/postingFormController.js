@@ -157,6 +157,10 @@
 
 			this.element.on('click', this.element.data('focus-target'), function () {
 				self.element.addClass('focused');
+				self.element.addClass('mdc-elevation--z6');
+				if (self.about) {
+					self.element.closest('.post').removeClass('mdc-elevation--z6');
+				}
 				didInjectContent(self.element);
 			});
 
@@ -276,6 +280,10 @@
 
 		this.hideForm = function () {
 			self.element.removeClass('focused');
+			self.element.removeClass('mdc-elevation--z6');
+			if (self.about) {
+				self.element.closest('.post').addClass('mdc-elevation--z6');
+			}
 			self.element.find('.touched').removeClass('touched input-error input-ok');
 			self.element.find('.posting-markdown').val('');
 			self.element.find('.posting-body').css('height', 'auto').empty();

@@ -25,35 +25,41 @@ block content
 
 		.mdc-layout-grid__inner
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
-				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
-					h4 Add friend by Their Public Page Endpoint
-					p If you know someone's endpoint enter it here.
-					.form-group
-						.input-group
-							.input-relative
-								input.form-control(type="text" name="endpoint" placeholder="Endpoint" data-validate="required" value= endpoint)
-							.input-group-btn
-								button#lookup-button.btn.btn-primary Lookup
-
-			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
 				h4 Invite a friend via Email
 				p If they don't have an antiSocial account the email will include instructions on how to create one.
 
 				form#invite-friend-form.form.form-validation(method="POST" action="/invite" data-submitter="#send-invite" data-jsclass="formValidator,postEndpointController")
 					input(type="hidden" name="type" value="friend")
 					.form-group
-						.input-relative
-							input.form-control(type="text" name="email" placeholder="Email Address" data-validate="required,email")
-							.input-ok-indicator
+						.mdc-text-field.mdc-text-field--with-trailing-icon
+							label.mdc-floating-label Email Address
+							input.mdc-text-field__input(type="text" name="email" data-validate="required,email")
+							.input-ok-indicator.material-icons.mdc-text-field__icon
 								span.fa.fa-check
-							.validation-help
+							.mdc-line-ripple
+						.validation-help.mdc-text-field-helper-text--persistent
 					.form-group
-						.input-relative
-							textarea.form-control(type="text" name="note" placeholder="Note" data-validate="required")
-							.input-ok-indicator
+						.mdc-text-field.mdc-text-field--textarea
+							label.mdc-floating-label(for="#server-description") Note to include
+							textarea.mdc-text-field__input(name="note" data-validate="required")
+						.validation-help.mdc-text-field-helper-text--persistent
+					button#send-invite.mdc-button.mdc-button--raised Send
+
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
+				form.form.form-validation(method="POST" action="/friends" data-jsclass="formValidator,friendLookupController" data-submitter="#lookup-button")
+					h4 Add a friend
+					p If you know someone's endpoint enter it here to send them a friend request.
+					.form-group
+						.mdc-text-field.mdc-text-field--with-trailing-icon
+							label.mdc-floating-label Endpoint Address
+							input.mdc-text-field__input(type="text" name="endpoint" data-validate="required" value= endpoint)
+							.input-ok-indicator.material-icons.mdc-text-field__icon
 								span.fa.fa-check
-							.validation-help
-					button#send-invite.btn.btn-primary Send
+							.mdc-line-ripple
+						.validation-help.mdc-text-field-helper-text--persistent
+					.form-group
+						button#lookup-button.mdc-button.mdc-button--raised Lookup
+
 		.mdc-layout-grid__inner
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
 				if !friends.length

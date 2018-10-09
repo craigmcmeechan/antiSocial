@@ -270,6 +270,9 @@ function instantiateMaterialDesignElements(element) {
 		formField.input = checkbox;
 	});
 
+	$(element).find('.mdc-fab').each(function () {
+		const fabRipple = new MDC.MDCRipple(this);
+	});
 }
 
 var flashTimer = null;
