@@ -708,13 +708,17 @@ img.avatar
 	quick()
 	position: fixed
 	width:300px
-	top:-100%
+	top:-100vh
 	right:0px
 	background-color:white
+	max-height:100vh
+	overflow: hidden
 	&.open
 		top:64px
+		max-height:calc(100vh - 64px)
 		.digitopia-xsmall &
 			top:56px
+			max-height:calc(100vh - 56px)
 	.status
 		width:8px
 		height:8px
