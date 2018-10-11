@@ -194,6 +194,8 @@ img.avatar
 
 .subnav-tabs
 	border-bottom: none
+	.nav-item > a
+		background-color:#eee
 
 .revealer
 	padding-left:7px
@@ -703,8 +705,16 @@ img.avatar
 	padding: 4px
 
 #news-feed
-	right:0
-	left:initial
+	quick()
+	position: fixed
+	width:300px
+	top:-100%
+	right:0px
+	background-color:white
+	&.open
+		top:64px
+		.digitopia-xsmall &
+			top:56px
 	.status
 		width:8px
 		height:8px

@@ -65,12 +65,13 @@ block seo
 block content
 	include profile-hero
 	
-	.profile-parallax(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
-		include profile-tabs
+	.profile-parallax.gradient-bg.vibrant-bg(data-jsclass="vibrantController" data-image= profile.backgroundSmall.url)
 
 		.mdc-layout-grid
 			.mdc-layout-grid__inner
 				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
+					include profile-tabs
+
 					include ../components/post-list
 				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4
 					if !user
