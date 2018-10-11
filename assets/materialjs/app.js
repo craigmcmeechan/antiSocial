@@ -9,7 +9,7 @@ import {
 from '@material/top-app-bar';
 
 import {
-	MDCTemporaryDrawer
+	MDCDrawer
 }
 from '@material/drawer';
 
@@ -28,6 +28,10 @@ import {
 }
 from '@material/textfield/helper-text';
 
+import {
+	MDCSelect
+}
+from '@material/select';
 
 import {
 	MDCTextFieldIcon
@@ -52,7 +56,7 @@ from '@material/checkbox';
 module.exports = {
 	'MDCRipple': MDCRipple,
 	'MDCTopAppBar': MDCTopAppBar,
-	'MDCTemporaryDrawer': MDCTemporaryDrawer,
+	'MDCDrawer': MDCDrawer,
 	'MDCDialog': MDCDialog,
 	'MDCDialogFoundation': MDCDialogFoundation,
 	'util': util,
@@ -61,5 +65,6 @@ module.exports = {
 	'MDCTextFieldHelperText': MDCTextFieldHelperText,
 	'MDCSnackbar': MDCSnackbar,
 	'MDCFormField': MDCFormField,
-	'MDCCheckbox': MDCCheckbox
+	'MDCCheckbox': MDCCheckbox,
+	'MDCSelect': MDCSelect
 }

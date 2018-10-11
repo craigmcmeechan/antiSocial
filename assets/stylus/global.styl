@@ -7,6 +7,9 @@ quick()
 	transition-duration: .25s
 	transition-timing-function: ease
 
+*, *::before, *::after
+	box-sizing: border-box
+
 body
 	margin:0
 	padding:0
@@ -42,11 +45,6 @@ button:focus
 	outline: none !important
 	box-shadow: none !important
 
-.navbar-margin
-	margin-top:56px
-	.not-digitopia-xsmall &
-		margin-top:64px
-
 .header-logo
 	height:40px
 	width:40px
@@ -74,16 +72,8 @@ button:focus
 	.digitopia-xsmall &
 		margin-bottom:30px
 
-.digitopia-xsmall
-	.modal
-		position:static
-		margin-top: 75px
-	.modal-backdrop
-		display:none
-
 .friends-list
 	background-color:white
-
 
 #splash
 	position: fixed
@@ -130,7 +120,10 @@ button:focus
 
 #tmks
 	text-align:left
-	color:#999
+	background-color: #333
+	color: #999
+	a
+		color: #ccc
 
 .copy-left
 	display: inline-block
@@ -176,7 +169,7 @@ img.avatar
 	right: calc(50% - 25px)
 
 .profile-hero
-	top:0px
+	top:64px
 	position:fixed
 	height:100vh
 	width:100vw
@@ -184,6 +177,8 @@ img.avatar
 	background-repeat:no-repeat
 	background-position: center center
 	z-index:-1
+	.digitopia-xsmall &
+		top: 56px
 	.text-gradient
 		background: linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)
 		padding-bottom:50px
@@ -208,8 +203,6 @@ img.avatar
 .form-validation
 	.input-relative
 		position:relative
-		input[type="text"]
-			padding-right:30px
 
 	.input-ok-indicator
 		opacity:0
@@ -228,9 +221,6 @@ img.avatar
 		&.touched
 			.validation-help
 				opacity:1
-
-	.input-with-icon
-		padding-left:25px!important
 
 .comments-list
 	.timestamp
@@ -713,6 +703,8 @@ img.avatar
 	padding: 4px
 
 #news-feed
+	right:0
+	left:initial
 	.status
 		width:8px
 		height:8px

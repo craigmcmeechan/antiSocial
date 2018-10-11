@@ -12,7 +12,7 @@
 			if (modal && modal.length > 1 && modal !== '#_=_') {
 				var dialog = new MDC.MDCDialog(document.querySelector(modal));
 				$(modal).data('mdc-dialog', dialog);
-				dialog.show();
+				dialog.open();
 			}
 		};
 

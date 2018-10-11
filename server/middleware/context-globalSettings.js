@@ -17,7 +17,7 @@ module.exports = function () {
 
 			var settings = {
 				'multiUser': process.env.REGISTER_POLICY ? process.env.REGISTER_POLICY : 'invite',
-				'serverOperator': 'Unknown Operator',
+				'serverOperator': 'Anonymous Operator',
 				'serverTitle': 'A myAntisocial.net node',
 				'serverDescription': 'Your server. Your data. Your network.'
 			};

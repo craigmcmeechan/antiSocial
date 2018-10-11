@@ -33,36 +33,44 @@ html(lang="en")
 			var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
 			if(cookie){document.body.className = document.body.className + ' ' + cookie;}
 		
-		include components/navigation-mdc
 
 		#splash(style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;")
 			#splash-logo
 				img(src="/images/logo.svg" height="200px" style="margin:0 auto;")
 				| myAntiSocial.net
 
+		include components/drawer-mdc
+
+		.mdc-drawer-app-content
+
+			include components/navigation-mdc
+
+			.scroll-viewport
+				
+				include components/modals.pug
+				
+				#content.mdc-top-app-bar--fixed-adjust(data-hijax="true")
+					block content
+
+				#tmks.mdc-layout-grid
+					.mdc-layout-grid__inner
+						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12.text-center
+							p.
+								Content, posts &amp; images Copyright &copy; by the post owner, All Rights Reserved.
+							p.small 
+								<a href="https://myantisocial.net" target="_blank">Code for this this project</a> is licensed under the MIT License. Copyright &copy; Michael Rhodes 2017,2018 All Rights Reserved.
+
 		include components/news-feed
-
-		.scroll-viewport
-			
-			include components/modals.pug
-			
-			#content.navbar-margin(data-hijax="true")
-				block content
-
-			#tmks.mdc-layout-grid
-				.mdc-layout-grid__inner
-					.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12.text-center
-						span.
-							Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)
 
 		#ajax-status.mdc-snackbar
 			.mdc-snackbar__text
 			.mdc-snackbar__action-wrapper
 				button.mdc-snackbar__action-button(type="button")
 
-		button.mdc-fab.mdc-fab--extended.app-fab-fixed.hidden-logged-in.toggle-modal(href="#" data-target="#login-form")
-			span.material-icons.mdc-fab__icon account_circle
-			span.mdc-fab__label Login
+		if !initializing
+			button.mdc-fab.mdc-fab--extended.app-fab-fixed.hidden-logged-in.toggle-modal(href="#" data-target="#login-form")
+				span.material-icons.mdc-fab__icon account_circle
+				span.mdc-fab__label Login
 
 		block controller
 

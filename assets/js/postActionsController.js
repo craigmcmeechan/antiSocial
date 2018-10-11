@@ -53,7 +53,7 @@
 
 					var dialog = new MDC.MDCDialog(document.querySelector(target));
 					$(target).data('mdc-dialog', dialog);
-					dialog.show();
+					dialog.open();
 				});
 			}
 			this.element.on('click', '.share-post', function (e) {
@@ -66,7 +66,7 @@
 				var modal = $(target);
 				var dialog = new MDC.MDCDialog(document.querySelector(target));
 				$(target).data('mdc-dialog', dialog);
-				dialog.show();
+				dialog.open();
 			});
 		};
 

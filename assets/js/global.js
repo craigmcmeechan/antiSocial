@@ -140,7 +140,7 @@ function bootMyAntiSocial() {
 		var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
 		$(self.data('target')).data('mdc-dialog', dialog);
 		$(self.data('target')).data('post-login', self.data('post-login'));
-		dialog.show();
+		dialog.open();
 	});
 
 	var filterTimer = null;
@@ -232,13 +232,13 @@ function instantiateMaterialDesignElements(element) {
 	if (!MDCInstanciateOnce++) {
 		const topAppBar = new MDC.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
 
-		const nav = new MDC.MDCTemporaryDrawer(document.querySelector('#nav-drawer'));
+		const nav = new MDC.MDCDrawer.attachTo(document.querySelector('#nav-drawer'));
 		document.querySelector('.menu').addEventListener('click', () => nav.open = true);
 		$('body').on('click', '.nav-item', function () {
 			nav.open = false;
 		});
 
-		const notifications = new MDC.MDCTemporaryDrawer(document.querySelector('#news-feed'));
+		const notifications = new MDC.MDCDrawer.attachTo(document.querySelector('#news-feed'));
 		document.querySelector('.show-notifications-button').addEventListener('click', () => notifications.open = true);
 		$('body').on('click', '.news-feed-item', function (e) {
 			e.preventDefault();
@@ -273,6 +273,16 @@ function instantiateMaterialDesignElements(element) {
 	$(element).find('.mdc-fab').each(function () {
 		const fabRipple = new MDC.MDCRipple(this);
 	});
+
+	$(element).find('.mdc-select').each(function () {
+		const select = new MDC.MDCSelect(this);
+	});
+
+	/*
+		$(element).find('.mdc-select').each(function () {
+			const select = new MDC.MDCSelect(this);
+		});
+		*/
 }
 
 var flashTimer = null;

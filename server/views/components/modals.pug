@@ -1,106 +1,143 @@
 
 aside#login-form.mdc-dialog(role="alertdialog")
-	.mdc-dialog__surface
-		form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button")
-			header.mdc-dialog__header
-				h2.mdc-dialog__header__title.
-					Login
-			section.mdc-dialog__body
-				.mdc-layout-grid
-					.mdc-layout-grid__inner
-						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
-							.form-group
-								.mdc-text-field.mdc-text-field--with-trailing-icon
-									input.login-email-address.mdc-text-field__input(type="email" name="email" data-validate="required,email" autocomplete="email")
-									label.mdc-floating-label Email Address
-									.input-ok-indicator.material-icons.mdc-text-field__icon
-										span.fa.fa-check
-									.mdc-line-ripple
-								.validation-help.mdc-text-field-helper-text--persistent
-						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
-							.form-group
-								.mdc-text-field.mdc-text-field--with-trailing-icon
-									input.mdc-text-field__input(type="password" name="password" data-validate="required,password" autocomplete="current-password")
-									label.mdc-floating-label Password
-									.input-ok-indicator.material-icons.mdc-text-field__icon
-										span.fa.fa-check
-									.mdc-line-ripple
-								.validation-help.mdc-text-field-helper-text--persistent
-			footer.mdc-dialog__footer
-				a.toggle-modal.mdc-button.mdc-dialog__footer__button--cancel(href="#" data-target="#password-request-reset-form") Forgot Password
-				if globalSettings.multiUser === 'open'
-					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form") Don't Have Account
-				a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#") Cancel
-				button#login-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Login
-	.mdc-dialog__backdrop
-
-aside#password-request-reset-form.mdc-dialog(role="alertdialog")
-	.mdc-dialog__surface
-		form.form-validation(action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.")
-			header.mdc-dialog__header
-				h2.mdc-dialog__header__title.
-					Recover Password
-			section.mdc-dialog__body
-				.mdc-layout-grid
-					.mdc-layout-grid__inner
-						.mdc-layout-grid__cell
-							.form-group
-								.mdc-text-field.mdc-text-field--with-trailing-icon
-									input.login-email-address.mdc-text-field__input(type="email" name="email" data-validate="required,email" autocomplete="email")
-									label.mdc-floating-label Email Address
-									.input-ok-indicator.material-icons.mdc-text-field__icon
-										span.fa.fa-check
-								.validation-help.mdc-text-field-helper-text--persistent
-			footer.mdc-dialog__footer
-				a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
-				if globalSettings.multiUser === 'open'
-					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#register-form" data-dismiss="modal") Don't Have Account
-				a.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel Cancel
-				button#reset-request-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Password Reset
-	.mdc-dialog__backdrop
-
-if globalSettings.multiUser === 'open' || inviteToken
-	aside#register-form.mdc-dialog(role="alertdialog")
+	.mdc-dialog__container
 		.mdc-dialog__surface
-			form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
+			form.form-validation(data-jsclass="loginController,formValidator" data-submitter="#login-button")
 				header.mdc-dialog__header
-					h2.mdc-dialog__header__title.
-						Register
-				section.mdc-dialog__body.dialog__body--scrollable
+					h2.mdc-dialog__title.
+						Login
+				section.mdc-dialog__content
 					.mdc-layout-grid
 						.mdc-layout-grid__inner
-							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
 								.form-group
 									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.mdc-text-field__input(type="email" name="email" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email" autocomplete="email")
+										input.login-email-address.mdc-text-field__input(type="email" name="email" data-validate="required,email" autocomplete="email")
 										label.mdc-floating-label Email Address
 										.input-ok-indicator.material-icons.mdc-text-field__icon
 											span.fa.fa-check
 										.mdc-line-ripple
 									.validation-help.mdc-text-field-helper-text--persistent
-							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
 								.form-group
 									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.mdc-text-field__input(type="email" name="confirm-email" data-validate="required,email" data-match="input[name='email']" autocomplete="email")
-										label.mdc-floating-label Confirm Email
-										.input-ok-indicator.material-icons.mdc-text-field__icon
-											span.fa.fa-check
-										.mdc-line-ripple
-									.validation-help
-							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
-								.form-group
-									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.mdc-text-field__input(type="password" name="password" data-validate="required,password" autocomplete="new-password")
+										input.mdc-text-field__input(type="password" name="password" data-validate="required,password" autocomplete="current-password")
 										label.mdc-floating-label Password
 										.input-ok-indicator.material-icons.mdc-text-field__icon
 											span.fa.fa-check
 										.mdc-line-ripple
 									.validation-help.mdc-text-field-helper-text--persistent
+				footer.mdc-dialog__actions
+					a.toggle-modal.mdc-button(data-mdc-dialog-action="close" href="#" data-target="#password-request-reset-form") Forgot Password
+					if globalSettings.multiUser === 'open'
+						a.toggle-modal.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close" href="#" data-target="#register-form") Don't Have Account
+					a.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close" href="#") Cancel
+					button#login-button.mdc-button.mdc-dialog__button.mdc-button--raised(data-mdc-dialog-action="accept" type="submit") Login
+	.mdc-dialog__scrim
+
+aside#password-request-reset-form.mdc-dialog(role="alertdialog")
+	.mdc-dialog__container
+		.mdc-dialog__surface
+			form.form-validation(action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.")
+				header.mdc-dialog__header
+					h2.mdc-dialog__title.
+						Recover Password
+				section.mdc-dialog__content
+					.mdc-layout-grid
+						.mdc-layout-grid__inner
+							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
+								.form-group
+									.mdc-text-field.mdc-text-field--with-trailing-icon
+										input.login-email-address.mdc-text-field__input(type="email" name="email" data-validate="required,email" autocomplete="email")
+										label.mdc-floating-label Email Address
+										.input-ok-indicator.material-icons.mdc-text-field__icon
+											span.fa.fa-check
+									.validation-help.mdc-text-field-helper-text--persistent
+				footer.mdc-dialog__actions
+					a.toggle-modal.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close" href="#" data-target="#login-form") Login
+					if globalSettings.multiUser === 'open'
+						a.toggle-modal.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close" href="#" data-target="#register-form" data-dismiss="modal") Don't Have Account
+					a.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close") Cancel
+					button#reset-request-button.mdc-button.mdc-dialog__button.mdc-button--raised(data-mdc-dialog-action="accept" type="submit") Password Reset
+	.mdc-dialog__scrim
+
+if globalSettings.multiUser === 'open' || inviteToken
+	aside#register-form.mdc-dialog(role="alertdialog")
+		.mdc-dialog__container
+			.mdc-dialog__surface
+				form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#register-button" data-modal="#register-form")
+					header.mdc-dialog__header
+						h2.mdc-dialog__title.
+							Register
+					section.mdc-dialog__content.dialog__body--scrollable
+						.mdc-layout-grid
+							.mdc-layout-grid__inner
+								.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+									.form-group
+										.mdc-text-field.mdc-text-field--with-trailing-icon
+											input.mdc-text-field__input(type="email" name="email" data-validate="required,email" data-unique-endpoint= "/api/MyUsers/isunique?field=email" autocomplete="email")
+											label.mdc-floating-label Email Address
+											.input-ok-indicator.material-icons.mdc-text-field__icon
+												span.fa.fa-check
+											.mdc-line-ripple
+										.validation-help.mdc-text-field-helper-text--persistent
+								.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+									.form-group
+										.mdc-text-field.mdc-text-field--with-trailing-icon
+											input.mdc-text-field__input(type="email" name="confirm-email" data-validate="required,email" data-match="input[name='email']" autocomplete="email")
+											label.mdc-floating-label Confirm Email
+											.input-ok-indicator.material-icons.mdc-text-field__icon
+												span.fa.fa-check
+											.mdc-line-ripple
+										.validation-help
+								.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+									.form-group
+										.mdc-text-field.mdc-text-field--with-trailing-icon
+											input.mdc-text-field__input(type="password" name="password" data-validate="required,password" autocomplete="new-password")
+											label.mdc-floating-label Password
+											.input-ok-indicator.material-icons.mdc-text-field__icon
+												span.fa.fa-check
+											.mdc-line-ripple
+										.validation-help.mdc-text-field-helper-text--persistent
+								.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+									.form-group
+										.mdc-text-field.mdc-text-field--with-trailing-icon
+											input.mdc-text-field__input(type="password" name="confirm-password" data-validate="required,password" data-match="input[name='password']"  autocomplete="off")
+											label.mdc-floating-label Confirm Password
+											.input-ok-indicator.material-icons.mdc-text-field__icon
+												span.fa.fa-check
+											.mdc-line-ripple
+										.validation-help.mdc-text-field-helper-text--persistent
+								.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+									.form-group
+										.mdc-text-field.mdc-text-field--with-trailing-icon
+											input.mdc-text-field__input(type="text" name="name" data-validate="required" autocomplete="name")
+											label.mdc-floating-label Name
+											.input-ok-indicator.material-icons.mdc-text-field__icon
+												span.fa.fa-check
+										.validation-help.mdc-text-field-helper-text--persistent
+								.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
+					footer.mdc-dialog__actions
+						a.toggle-modal.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close" href="#" data-target="#login-form") Already Have Account
+						button#register-button.mdc-button.mdc-dialog__button.mdc-button--raised(data-mdc-dialog-action="accept") Sign Up
+		.mdc-dialog__scrim
+
+aside#password-reset-form.mdc-dialog(role="alertdialog")
+	.mdc-dialog__container
+		.mdc-dialog__surface
+			form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
+				input(type="hidden" name="reset" value= passwordResetToken)
+				header.mdc-dialog__header
+					h2.mdc-dialog__title.
+						Reset Password
+				section.mdc-dialog__content
+					.mdc-layout-grid
+						.mdc-layout-grid__inner
 							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
 								.form-group
 									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.mdc-text-field__input(type="password" name="confirm-password" data-validate="required,password" data-match="input[name='password']"  autocomplete="off")
-										label.mdc-floating-label Confirm Password
+										input.reset-password.mdc-text-field__input(type="password" name="password" data-validate="required,password")
+										label.mdc-floating-label New Password
 										.input-ok-indicator.material-icons.mdc-text-field__icon
 											span.fa.fa-check
 										.mdc-line-ripple
@@ -108,106 +145,76 @@ if globalSettings.multiUser === 'open' || inviteToken
 							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
 								.form-group
 									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.mdc-text-field__input(type="text" name="name" data-validate="required" autocomplete="name")
-										label.mdc-floating-label Name
+										input.mdc-text-field__input(type="password" name="confirm-password" data-validate="required,password" data-match="input[name='password']")
+										label.mdc-floating-label Confirm Password
 										.input-ok-indicator.material-icons.mdc-text-field__icon
 											span.fa.fa-check
+										.mdc-line-ripple
 									.validation-help.mdc-text-field-helper-text--persistent
-							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
-				footer.mdc-dialog__footer
-					a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Already Have Account
-					button#register-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised Sign Up
-		.mdc-dialog__backdrop
-
-aside#password-reset-form.mdc-dialog(role="alertdialog")
-	.mdc-dialog__surface
-		form.form-validation(action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form")
-			input(type="hidden" name="reset" value= passwordResetToken)
-			header.mdc-dialog__header
-				h2.mdc-dialog__header__title.
-					Reset Password
-			section.mdc-dialog__body
-				.mdc-layout-grid
-					.mdc-layout-grid__inner
-						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
-							.form-group
-								.mdc-text-field.mdc-text-field--with-trailing-icon
-									input.reset-password.mdc-text-field__input(type="password" name="password" data-validate="required,password")
-									label.mdc-floating-label New Password
-									.input-ok-indicator.material-icons.mdc-text-field__icon
-										span.fa.fa-check
-									.mdc-line-ripple
-								.validation-help.mdc-text-field-helper-text--persistent
-						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
-							.form-group
-								.mdc-text-field.mdc-text-field--with-trailing-icon
-									input.mdc-text-field__input(type="password" name="confirm-password" data-validate="required,password" data-match="input[name='password']")
-									label.mdc-floating-label Confirm Password
-									.input-ok-indicator.material-icons.mdc-text-field__icon
-										span.fa.fa-check
-									.mdc-line-ripple
-								.validation-help.mdc-text-field-helper-text--persistent
-			footer.mdc-dialog__footer
-				a.toggle-modal.mdc-button.mdc-dialog__footer__button.mdc-dialog__footer__button--cancel(href="#" data-target="#login-form") Login
-				button#reset-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised Reset Password
-	.mdc-dialog__backdrop
+				footer.mdc-dialog__actions
+					a.toggle-modal.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close" href="#" data-target="#login-form") Login
+					button#reset-button.mdc-button.mdc-dialog__button.mdc-button--raised(data-mdc-dialog-action="accept") Reset Password
+	.mdc-dialog__scrim
 
 aside#request-invite-form.mdc-dialog(role="alertdialog")
-	.mdc-dialog__surface
-		form.form-validation(action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.")
-			header.mdc-dialog__header
-				h2.mdc-dialog__header__title.
-					Request an Account on This Server
-			section.mdc-dialog__body
-				.mdc-layout-grid
-					.mdc-layout-grid__inner
-						.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
-							.form-group
-								.mdc-text-field.mdc-text-field--with-trailing-icon
-									input.login-email-address.mdc-text-field__input(type="email" name="email" data-validate="required,email")
-									label.mdc-floating-label Email Address
-									.input-ok-indicator.material-icons.mdc-text-field__icon
-										span.fa.fa-check
-									.mdc-line-ripple
-								.validation-help.mdc-text-field-helper-text--persistent
-					.mdc-layout-grid__inner
-						.mdc-layout-grid__cell
-							.form-group
-								.mdc-text-field.mdc-text-field--with-trailing-icon
-									input.mdc-text-field__input(type="text" name="name" data-validate="required")
-									label.mdc-floating-label Your Name
-									.input-ok-indicator.material-icons.mdc-text-field__icon
-										span.fa.fa-check
-									.mdc-line-ripple
-								.validation-help.mdc-text-field-helper-text--persistent
-			footer.mdc-dialog__footer
-				a.toggle-modal.mdc-button.mdc-dialog__footer__button--cancel(href="#") Cancel
-				button#request-invite-button.mdc-button.mdc-dialog__footer__button.mdc-button--raised(type="submit") Send Request
-	.mdc-dialog__backdrop
+	.mdc-dialog__container
+		.mdc-dialog__surface
+			form.form-validation(action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.")
+				header.mdc-dialog__header
+					h2.mdc-dialog__title.
+						Request an Account on This Server
+				section.mdc-dialog__content
+					.mdc-layout-grid
+						.mdc-layout-grid__inner
+							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
+								.form-group
+									.mdc-text-field.mdc-text-field--with-trailing-icon
+										input.login-email-address.mdc-text-field__input(type="email" name="email" data-validate="required,email")
+										label.mdc-floating-label Email Address
+										.input-ok-indicator.material-icons.mdc-text-field__icon
+											span.fa.fa-check
+										.mdc-line-ripple
+									.validation-help.mdc-text-field-helper-text--persistent
+							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
+								.form-group
+									.mdc-text-field.mdc-text-field--with-trailing-icon
+										input.mdc-text-field__input(type="text" name="name" data-validate="required")
+										label.mdc-floating-label Your Name
+										.input-ok-indicator.material-icons.mdc-text-field__icon
+											span.fa.fa-check
+										.mdc-line-ripple
+									.validation-help.mdc-text-field-helper-text--persistent
+				footer.mdc-dialog__actions
+					a.toggle-modal.mdc-button(data-mdc-dialog-action="close" href="#") Cancel
+					button#request-invite-button.mdc-button.mdc-dialog__button.mdc-button--raised(data-mdc-dialog-action="accept" type="submit") Send Request
+	.mdc-dialog__scrim
 
 aside#edit-post-form.mdc-dialog(role="alertdialog")
-	.mdc-dialog__surface
-		header.mdc-dialog__header
-			h2.mdc-dialog__header__title.
-				Edit post
-		section.mdc-dialog__body.dialog__body--scrollable
-			| edit form here
-	.mdc-dialog__backdrop
+	.mdc-dialog__container
+		.mdc-dialog__surface
+			header.mdc-dialog__header
+				h2.mdc-dialog__title.
+					Edit post
+			section.mdc-dialog__content.dialog__body--scrollable
+				| edit form here
+	.mdc-dialog__scrim
 
 aside#edit-comment-form.mdc-dialog(role="alertdialog")
-	.mdc-dialog__surface
-		header.mdc-dialog__header
-			h2.mdc-dialog__header__title.
-				Edit comment
-		section.mdc-dialog__body.dialog__body--scrollable
-			| edit form here
-	.mdc-dialog__backdrop
+	.mdc-dialog__container
+		.mdc-dialog__surface
+			header.mdc-dialog__header
+				h2.mdc-dialog__title.
+					Edit comment
+			section.mdc-dialog__content.dialog__body--scrollable
+				| edit form here
+	.mdc-dialog__scrim
 
 aside#post-form.mdc-dialog(role="alertdialog")
-	.mdc-dialog__surface
-		header.mdc-dialog__header
-			h2.mdc-dialog__header__title.
-				Share Post
-		section.mdc-dialog__body.dialog__body--scrollable
-			include posting-form
-	.mdc-dialog__backdrop
+	.mdc-dialog__container
+		.mdc-dialog__surface
+			header.mdc-dialog__header
+				h2.mdc-dialog__title.
+					Share Post
+			section.mdc-dialog__content.dialog__body--scrollable
+				include posting-form
+	.mdc-dialog__scrim

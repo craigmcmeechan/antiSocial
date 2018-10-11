@@ -37,7 +37,8 @@ module.exports = function (server) {
       res.render('pages/setup', {
         'user': ctx.get('currentUser'),
         'globalSettings': ctx.get('globalSettings'),
-        'pageTitle': 'Setup Server'
+        'pageTitle': 'Setup Server',
+        'initializing': true
       });
     }
   });
