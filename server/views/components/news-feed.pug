@@ -1,13 +1,15 @@
-aside#news-feed.mdc-drawer.mdc-drawer--temporary.mdc-typography.hidden-logged-out(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets)
-	nav.mdc-drawer__drawer(dir="rtl")
-		.mdc-drawer__content(dir="ltr")
-			.news-feed-header
-				.status.float-right
-				.position-relative
-					i.fa.fa-fw.fa-bell
-			.news-feed-items
-				.news-feed-item
-					- var thumb= getUploadForProperty('photo', user ? user.uploads() : {}, 'thumb', headshotFPO).url
-					img(src=thumb)
-					div
-						| listening for events
+div
+	aside#news-feed.mdc-drawer.mdc-drawer--dismissible.mdc-typography.hidden-logged-out(data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint = config.websockets)
+		nav.mdc-drawer__drawer(dir="rtl")
+			.mdc-drawer__content(dir="ltr")
+				.news-feed-header
+					.status.float-right
+					.position-relative
+						i.fa.fa-fw.fa-bell
+				.news-feed-items
+					.news-feed-item
+						- var thumb= getUploadForProperty('photo', user ? user.uploads() : {}, 'thumb', headshotFPO).url
+						img(src=thumb)
+						div
+							| listening for events
+	.mdc-drawer-scrim

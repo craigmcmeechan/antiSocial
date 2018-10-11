@@ -10,16 +10,9 @@ block content
 		.mdc-layout-grid__inner
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6.content-padding-top.content
 		
-				h2.mb-3 User Settings
+				h2 User Settings
 
-				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/api/MyUsers/me")
-					.form-group
-						.form-check
-							if user.discoverable
-								input.form-check-input(type="checkbox" name="discoverable" checked)
-							else
-								input.form-check-input(type="checkbox" name="discoverable")
-							label.form-check-label Discoverable (Public posts and profile visible to search engines)
+				form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/api/MyUsers/me")
 
 					if !user.username
 						.form-group
@@ -49,6 +42,26 @@ block content
 							.mdc-line-ripple
 						.validation-help.mdc-text-field-helper-text--persistent
 
+					#scope-upload
+						.form-group
+							h3 Profile Photo
+							- var endpoint = "/api/MyUsers/me/upload/photo"
+							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+								img(data-jsclass="digitopiaLazyImg" data-lazy-src= photo.url)
+								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+									.dz-message.
+										Drop your photo here<br><small>(or click to upload)</small>
+
+						.form-group
+							h3 Profile Background
+							- var endpoint = "/api/MyUsers/me/upload/background"
+							.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
+								img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
+								.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
+									.dz-message.
+										Drop your image here<br><small>(or click to upload)</small>
+					
+
 					.form-group
 							.input-relative
 								label Custom Audiences For Friends
@@ -61,13 +74,21 @@ block content
 
 					.form-group
 						.form-check
+							if user.discoverable
+								input.form-check-input(type="checkbox" name="discoverable" checked)
+							else
+								input.form-check-input(type="checkbox" name="discoverable")
+							label.form-check-label Discoverable (Public posts and profile visible to search engines)
+
+					.form-group
+						.form-check
 							if user.community
 								input.form-check-input(type="checkbox" name="community" checked)
 							else
 								input.form-check-input(type="checkbox" name="community")
 							label.form-check-label This endpoint is a community/group
 
-				form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/user-settings")
+				form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/user-settings")
 					.form-group
 						label Friends can see my friends list
 							select.form-control(name='friendListVisibility' data-validate="required")
@@ -121,77 +142,17 @@ block content
 							else
 								input.form-check-input(type="checkbox" name="notifications_comments")
 							label.form-check-label Comments on my Posts
-									
-				- var fb,tw
-				if user.identities()
-					for identity in user.identities()
-						if identity.provider === 'facebook'
-							- fb= identity
-						if identity.provider === 'twitter'
-							- tw= identity
-							
-				if 0 && environment.FACEBOOK_CLIENT_ID
-					.form-group
-						span.fa.fa-2x.fa-facebook-square(style="color:#3B5998;margin-right:7px;")
-						if fb
-							| Linked w/facebook account
-						else
-							a(href="/auth/facebook" data-no-hijax="true") Link w/ Facebook Account
-				
-				if environment.TWITTER_CONSUMER_KEY
-					.form-group
-						span.fa.fa-2x.fa-twitter-square(style="color:#3B5998;margin-right:7px")
-						if tw
-							| Linked w/twitter account
-						else
-							a(href="/auth/twitter" data-no-hijax="true") Link w/ Twitter Account
-
-				#scope-upload
-					.form-group
-						h3 Profile Photo
-						- var endpoint = "/api/MyUsers/me/upload/photo"
-						.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-							img(data-jsclass="digitopiaLazyImg" data-lazy-src= photo.url)
-							.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-								.dz-message.
-									Drop your photo here<br><small>(or click to upload)</small>
-
-					.form-group
-						h3 Profile Background
-						- var endpoint = "/api/MyUsers/me/upload/background"
-						.profile-photo-viewport.text-center(data-jsclass="digitopiaViewport" data-crop="true" data-blowup="true")
-							img(data-jsclass="digitopiaLazyImg" data-lazy-src= background.url)
-							.dropzone(data-jsclass="dropzoneController" data-endpoint= endpoint)
-								.dz-message.
-									Drop your image here<br><small>(or click to upload)</small>
-			
+										
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6.content-padding-top.content
 				if isAdmin
 					.page-heading
 						h2 Server Settings
-					form.form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/server-settings")
-						.form-group
-							.input-relative
-								label Multi-user
-									select.form-control(name='multiUser' data-validate="required")
-										if globalSettings.multiUser === '' || globalSettings.multiUser === 'closed'
-											option(value='closed' selected) Single User
-										else
-											option(value='closed') Single User
-											
-										if globalSettings.multiUser === 'open'
-											option(value='open' selected) Open
-										else
-											option(value='open') Open
-											
-										if globalSettings.multiUser === 'invite'
-											option(value='invite' selected) By Invitation
-										else
-											option(value='invite') By Invitation
+					form.form-validation(data-jsclass="formValidator,saveOnChange" data-endpoint="/server-settings")
+
 						.form-group
 							.mdc-text-field.mdc-text-field--with-trailing-icon
 								label.mdc-floating-label Server Operator
-								input.mdc-text-field__input(type="text" name="serverOperator" placeholder="Server Name" data-validate="required" value= globalSettings.serverOperator)
+								input.mdc-text-field__input(type="text" name="serverOperator" data-validate="required" value= globalSettings.serverOperator)
 								.input-ok-indicator.material-icons.mdc-text-field__icon
 									span.fa.fa-check
 								.mdc-line-ripple
@@ -199,7 +160,7 @@ block content
 						.form-group
 							.mdc-text-field.mdc-text-field--with-trailing-icon
 								label.mdc-floating-label Server Title
-								input.mdc-text-field__input(type="text" name="serverTitle" placeholder="Server Title" data-validate="required" value= globalSettings.serverTitle)
+								input.mdc-text-field__input(type="text" name="serverTitle" data-validate="required" value= globalSettings.serverTitle)
 								.input-ok-indicator.material-icons.mdc-text-field__icon
 									span.fa.fa-check
 								.mdc-line-ripple
@@ -210,4 +171,22 @@ block content
 								label.mdc-floating-label(for="#server-description") Server Description
 								textarea#server-description.mdc-text-field__input(name="serverDescription" data-validate="required" rows="2" )= globalSettings.serverDescription
 							.validation-help.mdc-text-field-helper-text--persistent
-						
+								
+						.form-group
+							label User Signup Policy
+							select(name='multiUser' data-validate="required")
+								if globalSettings.multiUser === '' || globalSettings.multiUser === 'closed'
+									option(value='closed' selected) Single User
+								else
+									option(value='closed') Single User
+									
+								if globalSettings.multiUser === 'open'
+									option(value='open' selected) Open
+								else
+									option(value='open') Open
+									
+								if globalSettings.multiUser === 'invite'
+									option(value='invite' selected) By Invitation
+								else
+									option(value='invite') By Invitation
+							

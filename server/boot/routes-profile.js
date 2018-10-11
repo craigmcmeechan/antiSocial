@@ -14,7 +14,12 @@ module.exports = function (server) {
 			return res.redirect('/');
 		}
 
-		res.set('x-digitopia-hijax-location', '/' + currentUser.username).send('redirect to ' + '/' + currentUser.username);
+		if (req.headers['x-digitopia-hijax']) {
+			res.set('x-digitopia-hijax-location', '/' + currentUser.username).send('redirect to ' + '/' + currentUser.username);
+		}
+		else {
+			res.redirect('/' + currentUser.username);
+		}
 	});
 
 	server.use(router);

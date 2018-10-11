@@ -46,7 +46,7 @@
 
 					var dialog = new MDC.MDCDialog(document.querySelector(target));
 					$(target).data('mdc-dialog', dialog);
-					dialog.show();
+					dialog.open();
 				});
 			}
 		};

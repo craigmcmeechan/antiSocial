@@ -9,6 +9,7 @@ block content
 			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8.content-padding-top.content
 				.page-header
 					h2.mb-3 Create an administrator login for your node
+					p This server has not been initialized. The first user to be created will be the server administrator.
 
 				form.form.form-validation(action="/api/MyUsers/register" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter=".register-button")
 					.form-group
@@ -57,4 +58,4 @@ block content
 						.validation-help.mdc-text-field-helper-text--persistent
 							
 					.form-group
-						button.register-button.mdc-button.mdc-button--raised Sign Up
+						button.register-button.mdc-button.mdc-button--raised Create Administrator Account
