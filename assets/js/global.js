@@ -238,8 +238,15 @@ function instantiateMaterialDesignElements(element) {
 			nav.open = false;
 		});
 
-		const notifications = new MDC.MDCDrawer.attachTo(document.querySelector('#news-feed'));
-		document.querySelector('.show-notifications-button').addEventListener('click', () => notifications.open = true);
+		document.querySelector('.show-notifications-button').addEventListener('click', () => {
+			if ($('#news-feed').hasClass('open')) {
+				$('#news-feed').removeClass('open');
+			}
+			else {
+				$('#news-feed').addClass('open');
+			}
+		});
+
 		$('body').on('click', '.news-feed-item', function (e) {
 			e.preventDefault();
 			notifications.open = false;
