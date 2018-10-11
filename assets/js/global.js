@@ -249,7 +249,7 @@ function instantiateMaterialDesignElements(element) {
 
 		$('body').on('click', '.news-feed-item', function (e) {
 			e.preventDefault();
-			notifications.open = false;
+			$('#news-feed').removeClass('open');
 			loadPage($(this).data('about'));
 		});
 
