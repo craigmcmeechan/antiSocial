@@ -50,7 +50,7 @@ describe('proxy endpoints', function () {
 	after(function (done) {
 		setTimeout(function () {
 			app.stop(done);
-		}, 8000);
+		}, 10000);
 	});
 
 	it('http should be up', function (done) {

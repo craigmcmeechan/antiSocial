@@ -24,6 +24,7 @@
     "editProperties": [
       "email",
       "name",
+      "username",
       "password",
       "discoverable",
       "bio"
