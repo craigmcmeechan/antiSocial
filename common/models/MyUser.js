@@ -161,9 +161,10 @@ module.exports = function (MyUser) {
 						var e = new VError(err, 'create access token');
 						return cb(e);
 					}
-					self.selfAccessToken = accessToken.id;
-					self.save();
-					cb(null, accessToken.id);
+
+					self.updateAttribute('selfAccessToken', accessToken.id, function (err) {
+						cb(err, accessToken.id);
+					});
 				});
 			}
 		], function (err, tokenId) {
@@ -200,8 +201,7 @@ module.exports = function (MyUser) {
 						var e = new VError(err, 'generate verification token');
 						return cb(e);
 					}
-					user.verificationToken = token;
-					user.save(function (err) {
+					user.updateAttribute(user.verificationToken, token, function (err) {
 						if (err) {
 							var e = new VError(err, 'save verification token');
 							return cb(e);
@@ -709,7 +709,10 @@ module.exports = function (MyUser) {
 					'stripeSubscriptionId': subscription.id
 				};
 				currentUser.stripeCustomerId = customer.id;
-				currentUser.save();
+				currentUser.updateAttributes({
+					'subscription': currentUser.subscription,
+					'stripeCustomerId': currentUser.stripeCustomerId
+				});
 				cb(null, {
 					'status': 'ok'
 				});

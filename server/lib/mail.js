@@ -53,9 +53,7 @@ function mail(server, template, options, cb) {
 		var config = {
 			host: process.env.OUTBOUND_MAIL_SMTP_HOST,
 			port: process.env.OUTBOUND_MAIL_SMTP_PORT || 25,
-			secure: process.env.OUTBOUND_MAIL_SMTP_SSL === 'true' ? true : false,
-			'logger': true,
-			'debug': true
+			secure: process.env.OUTBOUND_MAIL_SMTP_SSL === 'true' ? true : false
 		};
 
 		if (process.env.OUTBOUND_MAIL_SMTP_USER && process.env.OUTBOUND_MAIL_SMTP_PASSWORD) {
