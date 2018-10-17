@@ -207,6 +207,8 @@ aside#edit-comment-form.mdc-dialog(role="alertdialog")
 					Edit comment
 			section.mdc-dialog__content.dialog__body--scrollable
 				| edit form here
+			footer.mdc-dialog__actions
+				button.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close") Cancel
 	.mdc-dialog__scrim
 
 aside#post-form.mdc-dialog(role="alertdialog")
@@ -217,4 +219,6 @@ aside#post-form.mdc-dialog(role="alertdialog")
 					Share Post
 			section.mdc-dialog__content.dialog__body--scrollable
 				include posting-form
+			footer.mdc-dialog__actions
+				button.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close") Cancel
 	.mdc-dialog__scrim

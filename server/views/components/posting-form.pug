@@ -12,7 +12,7 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					.posting-body.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '' data-placeholder= placeholder style="font-family:Helvetica,Arial,sans-serif;")
+					.posting-body.editable.markdown(tabindex="1" data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '' data-placeholder= placeholder style="font-family:Helvetica,Arial,sans-serif;")
 						if editing
 							p
 								br
