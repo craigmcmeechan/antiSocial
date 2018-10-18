@@ -17,7 +17,6 @@
 		self.dropzone = undefined;
 		this.lookupDebounce = null;
 		this.singleUpload = this.element.data('single-upload');
-		this.modal = this.element.data('modal');
 		this.description = this.element.data('description');
 		this.replyTo = this.element.data('reply-to');
 		this.share = null;
@@ -183,7 +182,7 @@
 					}
 				}
 
-				var geo = self.element.find('#geo-location').val();
+				var geo = self.element.find('.geo-location').val();
 				if (!geo) {
 					geo = '{}';
 				}
@@ -215,15 +214,6 @@
 					}
 					else {
 						self.hideForm();
-
-						if (self.share) {
-							$('#post-form').data('mdc-dialog').destroy();
-						}
-						if (self.modal) {
-							$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
-							$(self.modal).find('.modal-body').empty().append('loading...');
-							$(self.modal).data('mdc-dialog').destroy();
-						}
 						if (self.replyTo) {
 							self.element.closest('.scope-posting-form').hide();
 						}
@@ -238,10 +228,15 @@
 				'onCancel': function () {},
 				'onConfirm': function () {
 					self.hideForm();
-					if (self.modal) {
-						$(self.modal).find('.DigitopiaInstance').trigger('DigitopiaStop');
-						$(self.modal).find('.modal-body').empty().append('loading...');
-						$(self.modal).data('mdc-dialog').destroy();
+
+					// reload content if editing
+					if (self.element.closest('.post-comments').length) {
+						var watch = self.element.closest('.post-comments').data('watch');
+						$('body').trigger('NotifyLiveElement', ['comments', watch, watch]);
+					}
+					else if (self.element.closest('.post').length) {
+						var watch = self.element.closest('.post').data('watch');
+						$('body').trigger('NotifyLiveElement', ['post', watch, watch]);
 					}
 				}
 			});

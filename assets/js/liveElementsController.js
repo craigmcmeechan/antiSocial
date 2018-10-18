@@ -23,6 +23,13 @@
 							didInjectContent(element);
 						});
 					}
+					else if (type === 'comments' && element.data('watch-type') === 'comment') {
+						var item = $('<div>');
+						item.load('/proxy-comments?endpoint=' + encodeURIComponent(endpoint + '/comments'), function () {
+							element.find('.comments-list').empty().append(item.find('.comments-list').html());
+							didInjectContent(element);
+						});
+					}
 					else if (type === 'comment' && element.data('watch-type') === type) {
 						var item = $('<div>');
 						item.load('/proxy-comment?endpoint=' + encodeURIComponent(endpoint), function () {

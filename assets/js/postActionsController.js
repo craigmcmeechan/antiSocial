@@ -42,6 +42,7 @@
 
 				this.element.on('click', '.edit-post', function (e) {
 					e.preventDefault();
+					var container = self.element.closest('.post');
 					container.empty().append('loading...');
 					container.load('/post/' + self.postId, function () {
 						didInjectContent(container);

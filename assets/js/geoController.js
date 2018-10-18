@@ -16,7 +16,7 @@
 		this.element.prop('disabled', true);
 		this.start = function () {
 			self.geoService = 'https://maps.googleapis.com/maps/api/geocode/json?key=' + self.element.data('api-key');
-			self.placesService = new google.maps.places.PlacesService($('#geo-attributions').get(0));
+			self.placesService = new google.maps.places.PlacesService(self.element.closest('.geo-zone').find('.geo-attributions').get(0));
 
 			if (navigator.geolocation) {
 				flashAjaxStatus('info', 'initializing geolocation');
