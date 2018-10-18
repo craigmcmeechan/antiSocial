@@ -20,18 +20,14 @@ if wantSummary
 				.dropdown(data-jsclass="commentActionsController" data-comment-id= comment.uuid data-is-mine= (isMine || postIsMine))
 					button.btn-xs(data-toggle="dropdown")
 						i.fa.fa-ellipsis-h
-					ul.dropdown-menu
+					.dropdown-menu
 						if isMine
-							li 
-								a.edit-comment(href="#") Edit Comment
-							li 
-								a.delete-comment(href="#") Delete Comment
+							a.dropdown-item.edit-comment(href="#") Edit Comment
+							a.dropdown-item.delete-comment(href="#") Delete Comment
 						else if postIsMine
-							li 
-								a.delete-comment(href="#") Remove Comment
+							a.dropdown-item.delete-comment(href="#") Remove Comment
 						else
-							li
-								a.hide-comment(href="#") Hide Comment
+							a.dropdown-item.hide-comment(href="#") Hide Comment
 			
 			strong.float-left
 				a(href= proxyEndPoint(comment.source,user))

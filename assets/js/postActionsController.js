@@ -42,31 +42,24 @@
 
 				this.element.on('click', '.edit-post', function (e) {
 					e.preventDefault();
-
-					var target = '#edit-post-form';
-
-					var modal = $(target);
-					modal.find('.mdc-dialog__body').empty().append('loading...');
-					modal.find('.mdc-dialog__body').load('/post/' + self.postId, function () {
-						didInjectContent(modal);
+					var container = self.element.closest('.post');
+					container.empty().append('loading...');
+					container.load('/post/' + self.postId, function () {
+						didInjectContent(container);
+						setTimeout(function () {
+							container.find('.posting-body').click().keyup().focus();
+						}, 0);
 					});
-
-					var dialog = new MDC.MDCDialog(document.querySelector(target));
-					$(target).data('mdc-dialog', dialog);
-					dialog.open();
 				});
 			}
+
 			this.element.on('click', '.share-post', function (e) {
 				e.stopPropagation();
 				e.preventDefault();
-				$('#post-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
-				$('#post-form').find('.posting-body').click().keyup().focus();
-
-				var target = '#post-form';
-				var modal = $(target);
-				var dialog = new MDC.MDCDialog(document.querySelector(target));
-				$(target).data('mdc-dialog', dialog);
-				dialog.open();
+				$('#the-posting-form').find('form').data('postingFormController').setShareMode(self.postEndPoint);
+				setTimeout(function () {
+					$('#the-posting-form').find('.posting-body').click().keyup().focus();
+				}, 0);
 			});
 		};
 

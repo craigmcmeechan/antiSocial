@@ -134,14 +134,16 @@ function bootMyAntiSocial() {
 		}, 1000);
 	});
 
-	$('body').on('click', '.toggle-modal', function (e) {
-		e.preventDefault();
-		var self = $(this);
-		var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
-		$(self.data('target')).data('mdc-dialog', dialog);
-		$(self.data('target')).data('post-login', self.data('post-login'));
-		dialog.open();
-	});
+	/*
+		$('body').on('click', '.toggle-modal', function (e) {
+			e.preventDefault();
+			var self = $(this);
+			var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
+			$(self.data('target')).data('mdc-dialog', dialog);
+			$(self.data('target')).data('post-login', self.data('post-login'));
+			dialog.open();
+		});
+	*/
 
 	var filterTimer = null;
 	$('body').on('click', '.filter-feed', function (e) {

@@ -36,17 +36,15 @@
 				this.element.on('click', '.edit-comment', function (e) {
 					e.preventDefault();
 
-					var target = '#edit-comment-form';
+					var container = self.element.closest('.a-comment');
 
-					var modal = $(target);
-					modal.find('.mdc-dialog__body').empty().append('loading...');
-					modal.find('.mdc-dialog__body').load('/comment/' + self.commentId, function () {
-						didInjectContent(modal);
+					container.empty().append('loading...');
+					container.load('/comment/' + self.commentId, function () {
+						didInjectContent(container);
+						setTimeout(function () {
+							container.find('.posting-body').click().keyup().focus();
+						}, 0);
 					});
-
-					var dialog = new MDC.MDCDialog(document.querySelector(target));
-					$(target).data('mdc-dialog', dialog);
-					dialog.open();
 				});
 			}
 		};

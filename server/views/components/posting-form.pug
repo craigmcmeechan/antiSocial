@@ -12,7 +12,7 @@
 		.tabbed
 			#form-tab
 				.form-group.input-relative
-					.posting-body.editable.markdown(data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '' data-placeholder= placeholder style="font-family:Helvetica,Arial,sans-serif;")
+					.posting-body.editable.markdown(tabindex="1" data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal= editing ? 'true' : '' data-placeholder= placeholder style="font-family:Helvetica,Arial,sans-serif;")
 						if editing
 							p
 								br
@@ -54,11 +54,11 @@
 					if editing && post.geoDescription
 						- loc = JSON.stringify({ "description": post.geoDescription , "loc": post.geoLocation})
 						
-					input#geo-name.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target="#geo-location" data-pulldown="#geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
-					input#geo-location(type="hidden" value= editing ? loc : '')
+					input.form-control.lazy-instantiate(data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target=".geo-location" data-pulldown=".geo-pulldown" data-api-key= environment.GOOGLE_MAPS_API_KEY value= editing ? post.geoDescription : '')
+					input.geo-location(type="hidden" value= editing ? loc : '')
 				
-				#geo-pulldown.dropdown-menu.dropdown
-				#geo-attributions
+				.geo-pulldown.dropdown-menu.dropdown
+				.geo-attributions
 
 			.form-group.input-relative.text-center.audience-select
 				.checkbox-group(data-jsclass="checkboxGroupController" data-target=".posting-visibility")
