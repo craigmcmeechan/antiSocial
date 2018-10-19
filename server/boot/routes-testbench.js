@@ -22,6 +22,16 @@ module.exports = function (server) {
 		return;
 	}
 
+	router.get('/mailing', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res) {
+		server.models.MyUser.find({}, function (err, users) {
+			var emails = [];
+			for (var i = 0; i < users.length; i++) {
+				emails.push(users[i].email);
+			}
+			res.send(emails);
+		});
+	});
+
 	router.get('/test-token', function (req, res) {
 		var accessToken = req.query.token ? req.query.token : req.signedCookies.access_token;
 
@@ -105,7 +115,7 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/invalidate-cache', function (req, res, next) {
+	router.get('/invalidate-cache', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		server.locals.myCache.flushAll();
 		res.send(server.locals.myCache.getStats());
 	});
@@ -132,7 +142,7 @@ module.exports = function (server) {
 		}
 	}
 
-	router.get('/stop-ws', function (req, res, next) {
+	router.get('/stop-ws', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		server.models.MyUser.find({}, function (err, users) {
 			for (var i = 0; i < users.length; i++) {
 				disconnectAllActivityListeners(users[i]);
@@ -142,7 +152,7 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/start-ws', function (req, res, next) {
+	router.get('/start-ws', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 
 		var query = {
 			'where': {
@@ -170,7 +180,7 @@ module.exports = function (server) {
 		res.send('ok');
 	});
 
-	router.get('/status', getCurrentUser(), function (req, res, next) {
+	router.get('/status', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 
 		res.render('pages/status', {
@@ -192,7 +202,7 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/testbench-friends', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+	router.get('/testbench-friends', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 
 		res.render('pages/testbench-friends', {
@@ -202,7 +212,7 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/testbench-subscription', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+	router.get('/testbench-subscription', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 		res.render('pages/testbench-subscription', {
 			'globalSettings': ctx.get('globalSettings'),
@@ -210,7 +220,7 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/testbench-email', getCurrentUser(), function (req, res, next) {
+	router.get('/testbench-email', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
 		var mailer = require('../lib/mail');
@@ -235,7 +245,7 @@ module.exports = function (server) {
 	});
 
 	// testbench
-	router.get('/requests', getCurrentUser(), function (req, res, next) {
+	router.get('/requests', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 		async.waterfall([
 			function (cb) {
@@ -269,7 +279,7 @@ module.exports = function (server) {
 
 	});
 
-	router.get('/testbench-byuser', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+	router.get('/testbench-byuser', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
 		var myEndpoint = server.locals.config.publicHost + '/' + currentUser.username;
@@ -292,7 +302,7 @@ module.exports = function (server) {
 		});
 	});
 
-	router.get('/testbench-notifications', getCurrentUser(), ensureLoggedIn(), function (req, res, next) {
+	router.get('/testbench-notifications', getCurrentUser(), ensureLoggedIn(), ensureAdmin(), function (req, res, next) {
 		var ctx = req.myContext;
 		var currentUser = ctx.get('currentUser');
 
