@@ -30,3 +30,8 @@ block content
 				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4
 					if !user
 						include ../components/server-sidebar
+						
+	if inviteToken
+		button.mdc-fab.mdc-fab--extended.app-fab-fixed.hidden-logged-in.toggle-modal(href="#" data-target="#register-form")
+			span.material-icons.mdc-fab__icon account_circle
+			span.mdc-fab__label Create Account

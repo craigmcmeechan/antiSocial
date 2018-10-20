@@ -698,7 +698,23 @@ describe('proxy endpoints', function () {
 		});
 	});
 
-	// TODO post notifications to user1 user2 user4 not user3
+	it('create an invite', function (done) {
+		app.db.newInstance('invitations', {
+			'token': 'testinvite',
+			'userId': userTwoId
+		}, function (err, invite) {
+			expect(err).to.be(null);
+			done();
+		});
+	});
+
+	it('user1 should be able to request friend user4  with invite', function (done) {
+		client1.get('http://127.0.0.1:3000/antisocial/userone/request-friend?endpoint=' + encodeURIComponent(endpoint4) + '&invite=testinvite').end(function (err, res) {
+			expect(res.status).to.be(200);
+			expect(res.body.status).to.equal('ok');
+			done();
+		});
+	});
 
 	it('check notifications about post1', function (done) {
 		setTimeout(function () {

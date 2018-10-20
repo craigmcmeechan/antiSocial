@@ -269,12 +269,10 @@ module.exports = function (MyUser) {
 						return cb(null, user, accessToken);
 					}
 
-					// build friend request
-					// TODO automatically approve invited friend in friend protocol DONE?
 					var endpoint = server.locals.config.publicHost + '/' + invite.user().username;
 
 					var options = {
-						'url': server.locals.config.publicHost + '/friend?endpoint=' + encodeURIComponent(endpoint) + '&invite=' + req.signedCookies.invite,
+						'url': server.locals.config.publicHost + '/' + user.username + '/request-friend?endpoint=' + encodeURIComponent(endpoint) + '&invite=' + req.signedCookies.invite,
 						'headers': {
 							'access_token': accessToken.id
 						}

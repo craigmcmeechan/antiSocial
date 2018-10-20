@@ -28,6 +28,10 @@ module.exports = function (server) {
 				token = req.signedCookies.access_token;
 			}
 
+			if (req.headers && req.headers.access_token) {
+				token = req.headers.access_token;
+			}
+
 			if (!token) {
 				return next();
 			}

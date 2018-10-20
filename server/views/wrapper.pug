@@ -67,8 +67,8 @@ html(lang="en")
 			.mdc-snackbar__text
 			.mdc-snackbar__action-wrapper
 				button.mdc-snackbar__action-button(type="button")
-
-		if !initializing
+		
+		if !initializing && !inviteToken
 			button.mdc-fab.mdc-fab--extended.app-fab-fixed.hidden-logged-in.toggle-modal(href="#" data-target="#login-form")
 				span.material-icons.mdc-fab__icon account_circle
 				span.mdc-fab__label Login

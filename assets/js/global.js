@@ -238,6 +238,7 @@ function instantiateMaterialDesignElements(element) {
 			e.preventDefault();
 			nav.open = true
 		});
+
 		$('body').on('click', '.nav-item', function () {
 			nav.open = false;
 		});

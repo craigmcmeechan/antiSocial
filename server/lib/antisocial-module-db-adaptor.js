@@ -7,7 +7,7 @@ module.exports = function (server) {
 		self.models = {
 			'users': 'MyUser',
 			'friends': 'Friend',
-			'invitations': 'Invite',
+			'invitations': 'Invitation',
 			'blocks': 'Block'
 		};
 
