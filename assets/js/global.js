@@ -234,7 +234,10 @@ function instantiateMaterialDesignElements(element) {
 		const topAppBar = new MDC.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
 
 		const nav = new MDC.MDCDrawer.attachTo(document.querySelector('#nav-drawer'));
-		document.querySelector('.menu').addEventListener('click', () => nav.open = true);
+		document.querySelector('.menu').addEventListener('click', function (e) {
+			e.preventDefault();
+			nav.open = true
+		});
 		$('body').on('click', '.nav-item', function () {
 			nav.open = false;
 		});
