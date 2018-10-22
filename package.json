@@ -1,6 +1,6 @@
 {
   "name": "AntiSocial",
-  "version": "0.0.0-beta.1",
+  "version": "0.1.0",
   "main": "server/server.js",
   "scripts": {
     "pretest": "jshint ."
