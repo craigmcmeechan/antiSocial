@@ -308,7 +308,8 @@ module.exports = function (MyUser) {
 				'flashMessage': 'Welcome!',
 				'hijaxLocation': '/settings',
 				'didLogIn': true,
-				'username': user.username
+				'username': user.username,
+				'id': user.id
 			});
 		});
 	};
