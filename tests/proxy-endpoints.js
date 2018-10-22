@@ -139,6 +139,7 @@ describe('proxy endpoints', function () {
 					expect(accessToken).to.be.a('string');
 					endpoint4 += res.body.result.username;
 					userID4 = res.body.result.id;
+					console.log(res.body.result);
 					done();
 				});
 		});
@@ -699,17 +700,21 @@ describe('proxy endpoints', function () {
 	});
 
 	it('create an invite', function (done) {
-		app.db.newInstance('invitations', {
+		app.models.Invitation.create({
+			'type': 'sometype',
+			'email': email1,
 			'token': 'testinvite',
-			'userId': userTwoId
+			'userId': userID4,
+			'status': 'pending'
 		}, function (err, invite) {
+			console.log(invite);
 			expect(err).to.be(null);
 			done();
 		});
 	});
 
 	it('user1 should be able to request friend user4  with invite', function (done) {
-		client1.get('http://127.0.0.1:3000/antisocial/userone/request-friend?endpoint=' + encodeURIComponent(endpoint4) + '&invite=testinvite').end(function (err, res) {
+		client1.get('http://127.0.0.1:3000/userone/request-friend?endpoint=' + encodeURIComponent(endpoint4) + '&invite=testinvite').end(function (err, res) {
 			expect(res.status).to.be(200);
 			expect(res.body.status).to.equal('ok');
 			done();
