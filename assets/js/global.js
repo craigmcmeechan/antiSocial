@@ -97,7 +97,7 @@ function bootMyAntiSocial() {
 		$('.news-feed-items').toggleClass('constrained-height');
 	});
 
-	$('.reply-to-button').on('click', function (e) {
+	$('body').on('click', '.reply-to-button', function (e) {
 		e.preventDefault();
 		var that = $(this);
 		// download and inject comment form at end after closest comment
