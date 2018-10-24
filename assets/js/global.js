@@ -97,7 +97,7 @@ function bootMyAntiSocial() {
 		$('.news-feed-items').toggleClass('constrained-height');
 	});
 
-	$('.reply-to-button').on('click', function (e) {
+	$('body').on('click', '.reply-to-button', function (e) {
 		e.preventDefault();
 		var that = $(this);
 		// download and inject comment form at end after closest comment
@@ -139,8 +139,12 @@ function bootMyAntiSocial() {
 		e.preventDefault();
 		var self = $(this);
 		var dialog = new MDC.MDCDialog(document.querySelector(self.data('target')));
+		dialog.listen('MDCDialog:closed', function (e) {
+			$('body').removeClass('modal-open');
+		});
 		$(self.data('target')).data('mdc-dialog', dialog);
 		$(self.data('target')).data('post-login', self.data('post-login'));
+		$('body').addClass('modal-open');
 		dialog.open();
 	});
 
@@ -246,9 +250,11 @@ function instantiateMaterialDesignElements(element) {
 		document.querySelector('.show-notifications-button').addEventListener('click', () => {
 			if ($('#news-feed').hasClass('open')) {
 				$('#news-feed').removeClass('open');
+				$('body').removeClass('modal-open');
 			}
 			else {
 				$('#news-feed').addClass('open');
+				$('body').addClass('modal-open');
 			}
 		});
 

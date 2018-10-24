@@ -54,6 +54,7 @@ module.exports = function (OgTag) {
 		var jar = request.jar();
 
 		var refresh = _.get(ctx, 'req.query.refresh') ? true : false;
+		var ua = _.get(ctx, 'req.headers["user-agent"]');
 
 		if (verbose) {
 			console.log('OgTag.scrape url:' + url + ' start refresh:' + refresh);
@@ -134,14 +135,13 @@ module.exports = function (OgTag) {
 				return cb(null, instance, og);
 			}
 
-			// need cookies for paywalled sites
 			try {
 				request({
 						'method': 'GET',
 						'url': url,
 						'jar': jar,
 						'headers': {
-							//'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
+							'user-agent': ua ? ua : 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
 						}
 					},
 					function (err, response, body) {
@@ -201,11 +201,10 @@ module.exports = function (OgTag) {
 			}
 
 			// set up the call to open-graph-scraper
-			// for paywalled sites like NYT we need to supply facebooks user agent string and support cookies
 			var options = {
 				'url': url,
 				'headers': {
-					//'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
+					'user-agent': ua ? ua : 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
 				},
 				'jar': jar,
 				'onlyGetOpenGraphInfo': true,
