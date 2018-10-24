@@ -9,6 +9,15 @@ aside#login-form.mdc-dialog(role="alertdialog")
 				section.mdc-dialog__content
 					.mdc-layout-grid
 						.mdc-layout-grid__inner
+							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12.hidden-not-cordova
+								.form-group
+									.mdc-text-field.mdc-text-field--with-trailing-icon
+										input.mdc-text-field__input(tabindex="1" type="url" name="server" data-validate="url")
+										label.mdc-floating-label Your Server
+										.input-ok-indicator.material-icons.mdc-text-field__icon
+											span.fa.fa-check
+										.mdc-line-ripple
+									.validation-help.mdc-text-field-helper-text--persistent
 							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
 								.form-group
 									.mdc-text-field.mdc-text-field--with-trailing-icon

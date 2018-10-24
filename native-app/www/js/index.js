@@ -1,3 +1,5 @@
+var doHomeServerRedirect = false;
+var APIVersion = '0.1.0';
 var app = {
   initialize: function () {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
