@@ -37,9 +37,9 @@
 				var description = data.result.ogData.data.ogDescription;
 
 				if (data.result.ogData.success === false) {
-					title = 'Page not found';
-					description = '<div>Link preview not available</div>';
-					img = '';
+					self.element.addClass('no-preview');
+					self.element.append('<p>Go to <a href="' + self.url + '" target="_blank">' + parseUri(self.url).host + '</a> <i class="fa fa-chevron-right"></i></p>');
+					return;
 				}
 
 				caption.append('<div class="share-link"><i class="fa fa-share-square"></i></div>');
