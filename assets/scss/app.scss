@@ -79,6 +79,14 @@ $mdc-theme-secondary: #00bcd4;
 	border-bottom: thin solid #eee;
 }
 
+.mdc-dialog__surface {
+	width: calc(100vw - 14px);
+}
+
+.mdc-dialog__content{
+	padding:14px;
+}
+
 .mdc-text-field {
 	width:100%;
 }
@@ -91,6 +99,10 @@ $mdc-theme-secondary: #00bcd4;
 	position: fixed;
 	bottom: 1rem;
 	right: 1rem;
+}
+
+.mdc-drawer__header-content {
+	margin-top:14px;
 }
 
 // bootstrap conflicts

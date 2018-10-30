@@ -56,6 +56,13 @@ module.exports = function (OgTag) {
 		var refresh = _.get(ctx, 'req.query.refresh') ? true : false;
 		var ua = _.get(ctx, 'req.headers["user-agent"]');
 
+		if (url.match(/\.(youtube)\./)) {
+			ua = 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)';
+		}
+		if (url.match(/\.(washingtonpost)\./)) {
+			ua = null;
+		}
+
 		if (verbose) {
 			console.log('OgTag.scrape url:' + url + ' start refresh:' + refresh);
 		}
@@ -136,14 +143,16 @@ module.exports = function (OgTag) {
 			}
 
 			try {
-				request({
-						'method': 'GET',
-						'url': url,
-						'jar': jar,
-						'headers': {
-							'user-agent': ua ? ua : 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
-						}
-					},
+				var options = {
+					'method': 'GET',
+					'url': url,
+					'jar': jar,
+					'headers': {
+						'user-agent': ua
+					}
+				};
+
+				request(options,
 					function (err, response, body) {
 						if (verbose) {
 							console.log('OgTag.scrape url:' + url + ' getContentType:', err, response ? response.statusCode : ' response empty');
@@ -204,7 +213,7 @@ module.exports = function (OgTag) {
 			var options = {
 				'url': url,
 				'headers': {
-					'user-agent': ua ? ua : 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
+					'user-agent': ua
 				},
 				'jar': jar,
 				'onlyGetOpenGraphInfo': true,
@@ -286,7 +295,9 @@ module.exports = function (OgTag) {
 			}
 
 			var name = 'client/uploads/' + uuid.v4() + '.jpg';
-			webshot(url, name, function (err) {
+			webshot(url, name, {
+				'userAgent': ua
+			}, function (err) {
 				if (err) {
 					return cb(err);
 				}
@@ -324,7 +335,8 @@ module.exports = function (OgTag) {
 						'localCopy': screenshot,
 						'url': _.has(og, 'data.ogImage.url') ? og.data.ogImage.url : null
 					}
-				}
+				},
+				userAgent: ua
 			};
 
 			try {
@@ -333,8 +345,11 @@ module.exports = function (OgTag) {
 						if (verbose) {
 							console.log('OgTag.scrape url:' + url + ' upload failed ', _.get(err, 'jse_cause.contentType'), _.get(err, 'jse_cause.statusCode'));
 						}
-						instance.ogData.ogImage.success = false;
-						instance.ogData.ogImage.httpStatusCode = _.get(err, 'jse_cause.statusCode');
+						if (!_.has(instance.ogData.data, 'ogImage')) {
+							instance.ogData.data.ogImage = {};
+						}
+						instance.ogData.data.ogImage.success = false;
+						instance.ogData.data.ogImage.httpStatusCode = _.get(err, 'jse_cause.statusCode');
 						instance.save(function (err, saved) {
 							return cb(err, saved);
 						});
