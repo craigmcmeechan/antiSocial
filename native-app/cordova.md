@@ -4,10 +4,17 @@ to run it in browser:
 
 To set up:
 
-copy client/dist to cordova www
+```
+grunt
+cd native-app
+\rm -r www/dist
+cp -r ../client/dist www/dist
+```
 
 www/index.html
 	html body of home page
+	add 'cordova' to body classes
+	change script, image and css urls to relative
 	remove content in:
 		<div id="content" data-hijax="true"></div>
 	end of body something like:

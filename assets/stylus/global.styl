@@ -33,6 +33,11 @@ body.cordova
 		overflow-x: hidden
 		overflow-y: scroll
 
+.hidden-not-cordova
+	display:none
+	.cordova &
+		display:block
+
 a
 	&:focus
 		outline:none
@@ -179,6 +184,9 @@ img.avatar
 .modal-open
 	img.avatar
 		display:none
+	.mdc-fab
+		display:none
+
 
 .profile-hero
 	top:64px
@@ -221,6 +229,7 @@ img.avatar
 	.input-ok-indicator
 		opacity:0
 		color: green!important
+		font-size: .75em
 
 	.input-ok
 		.input-ok-indicator

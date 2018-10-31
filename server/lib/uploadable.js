@@ -16,6 +16,7 @@ var WError = require('verror').WError;
 var im = require('imagemagick');
 var s3 = require('s3');
 var resize = require('im-resize');
+var _ = require('lodash');
 
 
 module.exports = function () {
@@ -121,6 +122,7 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 	var req = ctx.req;
 	var res = ctx.res;
 	var params = req.query.id ? req.query : req.body;
+	var ua = ctx.userAgent ? ctx.userAgent : _.get(ctx, 'req.headers["user-agent"]');
 
 	var publicHost = server.locals.config.publicHost;
 
@@ -195,9 +197,10 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 					url: params.url,
 					'jar': request.jar(),
 					'headers': {
-						//'user-agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)'
+						'user-agent': ua
 					}
 				};
+
 				var theRequest = request
 					.get(options)
 					.on('error', function (err) {

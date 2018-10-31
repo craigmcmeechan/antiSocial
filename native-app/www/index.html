@@ -1,233 +1,384 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="zContent-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, minimal-ui, viewport-fit=cover">
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-        <link rel="stylesheet" href="dist/css/DigitopiaSocial.css">
-    </head>
-    <body id="document-body" data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController,liveTimeController,tagController">
-      <script nonce="70c9e546-3164-49fa-896a-3ddab0982b9f">
-        var result;
-        var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
-        if(cookie){document.body.className = cookie;}
-      </script>
-      <div id="splash" style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;">
-        <div id="splash-logo"><img src="images/logo.svg" height="200px" style="margin:0 auto;">myAntiSocial.net</div>
-      </div>
-      <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button><a class="navbar-brand" href="/"><div class="header-logo"></div></a>
-          </div>
-          <div class="collapse navbar-collapse" id="navbar" data-jsclass="navController">
-            <ul class="nav navbar-nav">
-              <li class="hidden-logged-out" id="nav-feed"><a href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom"><i class="fa fa-users fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Friends Feed</span></a></li>
-              <li class="hidden-logged-out" id="nav-profile"><a href="/profile" data-toggle="tooltip" title="Your Posts." data-placement="bottom"><i class="fa fa-user fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Your Posts</span></a></li>
-              <li class="hidden-logged-out" id="nav-friends"><a href="/friends" data-toggle="tooltip" title="Your friends." data-placement="bottom"><i class="fa fa-user-plus fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Friends</span></a></li>
-              <li class="hidden-logged-out" id="nav-settings"><a href="/settings" data-toggle="tooltip" title="Your Settings." data-placement="bottom"><i class="fa fa-cog fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Settings</span></a></li>
-              <li class="hidden-logged-out" id="nav-bugs"><a class="bug-report" href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom"><i class="fa fa-bug fa-fw"></i><span class="hidden-not-digitopia-xsmall"> Bug Report</span></a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li class="hidden-logged-in"><a href="#" data-toggle="modal" data-target="#request-invite-form">Request Account</a></li>
-              <li class="hidden-logged-in"><a href="#" data-toggle="modal" data-target="#login-form">Login</a></li>
-              <li class="hidden-logged-out"><a href="" data-jsclass="logoutController">Logout</a></li>
-              <li class="menu-icon-placeholder hidden-digitopia-xsmall">
-                <div id="menu-icon" data-hijax="true">
-                </div>
-              </li>
-            </ul>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+		<meta name="format-detection" content="telephone=no">
+		<meta name="msapplication-tap-highlight" content="no">
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, minimal-ui, viewport-fit=cover">
+    <title>Feed</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="css/index.css">
+		<link rel="stylesheet" href="dist/css/AntiSocial.css">
+    <style id="override-styles" nonce="1882bf0f-5053-4ce5-bcbc-e89862178e80" type="text/css"></style>
+  </head>
+  <body class="offline mdc-typography cordova" id="document-body" data-jsclass="liveElementsController,modalLaunchController,aspectRatioController,constrainedController,liveTimeController,tagController">
+    <script nonce="1882bf0f-5053-4ce5-bcbc-e89862178e80">
+      var result;
+      var cookie=(result=new RegExp('(?:^|; )responsive=([^;]*)').exec(document.cookie))?decodeURIComponent(result[1]):null;
+      if(cookie){document.body.className = document.body.className + ' ' + cookie;}
+    </script>
+    <div id="splash" style="position:fixed;top:0;left:0;right:0;bottom:0;text-align:center;background-color:#333;z-index:99999;">
+      <div id="splash-logo"><img src="images/logo.svg" height="200px" style="margin:0 auto;">myAntiSocial.net</div>
+    </div>
+    <aside class="mdc-drawer mdc-drawer--modal mdc-typography" id="nav-drawer">
+      <div class="mdc-drawer__header hidden-logged-out">
+        <div class="mdc-drawer__header-content text-center">
+          <div id="menu-icon" data-hijax="true">
           </div>
         </div>
-      </nav>
+      </div>
+      <div class="mdc-drawer__content">
+        <nav class="mdc-list">
+          <div class="hidden-logged-in"><a class="nav-item mdc-list-item toggle-modal" href="#" data-target="#request-invite-form"><span class="material-icons">account_circle</span> Request Account</a><a class="nav-item mdc-list-item toggle-modal" href="#" data-target="#login-form"><span class="material-icons">account_circle</span> Login</a>
+          </div>
+          <div class="hidden-logged-out"><a class="nav-item mdc-list-item" id="nav-feed" href="/feed" data-toggle="tooltip" title="Friend's posts." data-placement="bottom">
+              <i class="fa fa-users fa-fw material-icons mdc-list-item__graphic"></i> Friends Feed</a><a class="nav-item mdc-list-item" id="nav-communities" href="/communities" data-toggle="tooltip" title="Communities." data-placement="bottom">
+              <i class="fa fa-user fa-fw material-icons mdc-list-item__graphic"></i> Communities</a><a class="nav-item mdc-list-item" id="nav-profile" href="/mr" data-toggle="tooltip" title="Your Posts." data-placement="bottom">
+              <i class="fa fa-user fa-fw material-icons mdc-list-item__graphic"></i> Your Posts</a><a class="nav-item mdc-list-item" id="nav-friends" href="/friends" data-toggle="tooltip" title="Your friends." data-placement="bottom">
+              <i class="fa fa-user-plus fa-fw material-icons mdc-list-item__graphic"></i> Friends</a><a class="nav-item mdc-list-item" id="nav-settings" href="/settings" data-toggle="tooltip" title="Your Settings." data-placement="bottom">
+              <i class="fa fa-cog fa-fw material-icons mdc-list-item__graphic"></i> Settings</a><a class="nav-item mdc-list-item bug-report" id="nav-bugs" href="#" data-toggle="tooltip" title="Bug Report." data-placement="bottom">
+              <i class="fa fa-bug fa-fw material-icons mdc-list-item__graphic"></i> Bug Report</a><a class="nav-item mdc-list-item" href="" data-jsclass="logoutController">Logout</a></div>
+        </nav>
+      </div>
+    </aside>
+    <div class="mdc-drawer-scrim"></div>
+    <div class="mdc-drawer-app-content">
+      <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
+        <div class="mdc-top-app-bar__row">
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"><a class="menu material-icons mdc-top-app-bar__navigation-icon hidden-logged-out" href="#">menu</a>
+            <div class="mdc-top-app-bar__title" id="page-title" data-hijax="true"></div>
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end hidden-logged-out">
+              <div class="position-relative">
+                <div class="show-notifications-button material-icons mdc-top-app-bar__action-item"><i class="fa fa-fw fa-bell"></i></div>
+                <div class="badge activity-count"></div>
+              </div>
+            </section>
+          </section>
+        </div>
+      </header>
       <div class="scroll-viewport">
-
-        <div class="modal fade" id="login-form" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <form class="form form-validation" data-jsclass="loginController,formValidator" data-submitter="#login-button" data-modal="#login-form">
-              <div class="modal-content">
-                <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">Login</h4>
-                </div>
-                <div class="modal-body">
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>Server</label>
-                      <div class="input-relative">
-                        <input class="login-server form-control" type="url" name="server" placeholder="https://mr.myantisocial.net" data-validate="required" autocomplete="server">
-                        <div class="input-ok-indicator"><span class="fa fa-check"></span></div>
-                        <div class="validation-help"></div>
+        <aside class="mdc-dialog" id="login-form" role="alertdialog">
+          <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+              <form class="form-validation" data-jsclass="loginController,formValidator" data-submitter="#login-button">
+                <header class="mdc-dialog__header">
+                  <h2 class="mdc-dialog__title">Login</h2>
+                </header>
+                <section class="mdc-dialog__content">
+                  <div class="mdc-layout-grid">
+                    <div class="mdc-layout-grid__inner">
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 hidden-not-cordova">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="mdc-text-field__input" tabindex="1" type="url" name="server" data-validate="url">
+                            <label class="mdc-floating-label">Your Server</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                            <div class="mdc-line-ripple"></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
+                      </div>
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="login-email-address mdc-text-field__input" tabindex="1" type="email" name="email" data-validate="required,email" autocomplete="email">
+                            <label class="mdc-floating-label">Email Address</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                            <div class="mdc-line-ripple"></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
+                      </div>
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="mdc-text-field__input" type="password" name="password" data-validate="required,password" autocomplete="current-password">
+                            <label class="mdc-floating-label">Password</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                            <div class="mdc-line-ripple"></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>Email Address</label>
-                      <div class="input-relative">
-                        <input class="login-email-address form-control" type="email" name="email" placeholder="Email address" data-validate="required,email" autocomplete="email">
-                        <div class="input-ok-indicator"><span class="fa fa-check"></span></div>
-                        <div class="validation-help"></div>
-                      </div>
-                    </div>
-                    <div class="col-sm-6 form-group">
-                      <label>Password</label>
-                      <div class="input-relative">
-                        <input class="form-control" type="password" name="password" placeholder="Password" data-validate="required,password"  autocomplete="current-password">
-                        <div class="input-ok-indicator"><span class="fa fa-check"></span></div>
-                        <div class="validation-help"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <div class="pull-left"><a href="#" data-toggle="modal" data-target="#password-request-reset-form" data-dismiss="modal">Forgot Password</a>
-                  </div>
-                  <button class="btn btn-primary" id="login-button" type="submit">Login</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="modal fade" id="password-request-reset-form" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <form class="form form-validation" action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.">
-              <div class="modal-content">
-                <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">Recover Password</h4>
-                </div>
-                <div class="modal-body">
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>Email Address</label>
-                      <div class="input-relative">
-                        <input class="login-email-address form-control" type="email" name="email" placeholder="Email address" data-validate="required,email">
-                        <div class="input-ok-indicator"><span class="fa fa-check"></span></div>
-                        <div class="validation-help"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <div class="pull-left"><a href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal">Login</a>
-                  </div>
-                  <button class="btn btn-primary" id="reset-request-button" type="submit">Password Reset</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="modal fade" id="password-reset-form" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <form class="form form-validation" action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form">
-              <input type="hidden" name="access_token">
-              <div class="modal-content">
-                <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">Reset Password</h4>
-                </div>
-                <div class="modal-body">
-                  <div class="form-group input-relative">
-                    <input class="form-control" type="password" name="password" placeholder="Password" data-validate="required,password">
-                    <div class="input-ok-indicator"><span class="fa fa-check"></span></div>
-                    <div class="validation-help"></div>
-                  </div>
-                  <div class="form-group input-relative">
-                    <input class="form-control" type="password" name="confirm-password" placeholder="Confirm Password" data-validate="required,password" data-match="input[name='password']">
-                    <div class="input-ok-indicator"><span class="fa fa-check"></span></div>
-                    <div class="validation-help"></div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <div class="pull-left"><a href="#" data-toggle="modal" data-target="#login-form" data-dismiss="modal">Login</a></div>
-                  <button class="btn btn-primary" id="reset-button">Reset Password</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="modal fade" id="request-invite-form" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <form class="form form-validation" action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.">
-              <div class="modal-content">
-                <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">Request an Account on This Server</h4>
-                </div>
-                <div class="modal-body">
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>Your Email Address</label>
-                      <div class="input-relative">
-                        <input class="login-email-address form-control" type="email" name="email" placeholder="Email address" data-validate="required,email">
-                        <div class="input-ok-indicator"><span class="fa fa-check"></span></div>
-                        <div class="validation-help"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-12">
-                      <p>This is a very, very early prototype. Once things are more stable we will add users who want to help us test the system.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button class="btn btn-primary" id="request-invite-button" type="submit">Send Request</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="modal fade" id="edit-post-form" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Edit post</h4>
-              </div>
-              <div class="modal-body">edit form here</div>
+                </section>
+                <footer class="mdc-dialog__actions"><a class="toggle-modal mdc-button" data-mdc-dialog-action="close" href="#" data-target="#password-request-reset-form">Forgot Password</a><a class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close" href="#">Cancel</a>
+                  <button class="mdc-button mdc-dialog__button mdc-button--raised" id="login-button" data-mdc-dialog-action="accept" type="submit">Login</button>
+                </footer>
+              </form>
             </div>
           </div>
-        </div>
-        <div class="modal fade" id="edit-comment-form" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Edit comment</h4>
-              </div>
-              <div class="modal-body">edit form here</div>
+          <div class="mdc-dialog__scrim"></div>
+        </aside>
+        <aside class="mdc-dialog" id="password-request-reset-form" role="alertdialog">
+          <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+              <form class="form-validation" action="/api/MyUsers/reset" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#reset-request-button" data-modal="#password-request-reset-form" data-success-prompt="Please check your email.">
+                <header class="mdc-dialog__header">
+                  <h2 class="mdc-dialog__title">Recover Password</h2>
+                </header>
+                <section class="mdc-dialog__content">
+                  <div class="mdc-layout-grid">
+                    <div class="mdc-layout-grid__inner">
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="login-email-address mdc-text-field__input" tabindex="1" type="email" name="email" data-validate="required,email" autocomplete="email">
+                            <label class="mdc-floating-label">Email Address</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <footer class="mdc-dialog__actions"><a class="toggle-modal mdc-button mdc-dialog__button" data-mdc-dialog-action="close" href="#" data-target="#login-form">Login</a><a class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">Cancel</a>
+                  <button class="mdc-button mdc-dialog__button mdc-button--raised" id="reset-request-button" data-mdc-dialog-action="accept" type="submit">Password Reset</button>
+                </footer>
+              </form>
             </div>
           </div>
-        </div>
-
-        <div id="content" data-hijax="true"></div>
-
-        <div class="container-fluid text-center" id="tmks">
-          <span>Copyright &copy; Michael Rhodes 2017 All Rights Reserved. (code for this this project is licensed under the MIT License)</span>
+          <div class="mdc-dialog__scrim"></div>
+        </aside>
+        <aside class="mdc-dialog" id="password-reset-form" role="alertdialog">
+          <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+              <form class="form-validation" action="/reset-password" method="POST" data-jsclass="formValidator,postEndpointController" data-submitter="#reset-button" data-modal="#password-reset-form">
+                <input type="hidden" name="reset">
+                <header class="mdc-dialog__header">
+                  <h2 class="mdc-dialog__title">Reset Password</h2>
+                </header>
+                <section class="mdc-dialog__content">
+                  <div class="mdc-layout-grid">
+                    <div class="mdc-layout-grid__inner">
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="reset-password mdc-text-field__input" tabindex="1" type="password" name="password" data-validate="required,password">
+                            <label class="mdc-floating-label">New Password</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                            <div class="mdc-line-ripple"></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
+                      </div>
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="mdc-text-field__input" type="password" name="confirm-password" data-validate="required,password" data-match="input[name='password']">
+                            <label class="mdc-floating-label">Confirm Password</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                            <div class="mdc-line-ripple"></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <footer class="mdc-dialog__actions"><a class="toggle-modal mdc-button mdc-dialog__button" data-mdc-dialog-action="close" href="#" data-target="#login-form">Login</a>
+                  <button class="mdc-button mdc-dialog__button mdc-button--raised" id="reset-button" data-mdc-dialog-action="accept">Reset Password</button>
+                </footer>
+              </form>
+            </div>
+          </div>
+          <div class="mdc-dialog__scrim"></div>
+        </aside>
+        <aside class="mdc-dialog" id="request-invite-form" role="alertdialog">
+          <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+              <form class="form-validation" action="/api/Requests" method="POST" data-jsclass="postEndpointController,formValidator" data-submitter="#request-invite-button" data-modal="#request-invite-form" data-success-prompt="Request saved.">
+                <header class="mdc-dialog__header">
+                  <h2 class="mdc-dialog__title">Request an Account on This Server</h2>
+                </header>
+                <section class="mdc-dialog__content">
+                  <div class="mdc-layout-grid">
+                    <div class="mdc-layout-grid__inner">
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="login-email-address mdc-text-field__input" tabindex="1" type="email" name="email" data-validate="required,email">
+                            <label class="mdc-floating-label">Email Address</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                            <div class="mdc-line-ripple"></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
+                      </div>
+                      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+                        <div class="form-group">
+                          <div class="mdc-text-field mdc-text-field--with-trailing-icon">
+                            <input class="mdc-text-field__input" type="text" name="name" data-validate="required">
+                            <label class="mdc-floating-label">Your Name</label>
+                            <div class="input-ok-indicator material-icons mdc-text-field__icon"><span class="fa fa-check"></span></div>
+                            <div class="mdc-line-ripple"></div>
+                          </div>
+                          <div class="validation-help mdc-text-field-helper-text--persistent"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <footer class="mdc-dialog__actions"><a class="toggle-modal mdc-button" data-mdc-dialog-action="close" href="#">Cancel</a>
+                  <button class="mdc-button mdc-dialog__button mdc-button--raised" id="request-invite-button" data-mdc-dialog-action="accept" type="submit">Send Request</button>
+                </footer>
+              </form>
+            </div>
+          </div>
+          <div class="mdc-dialog__scrim"></div>
+        </aside>
+        <aside class="mdc-dialog" id="edit-post-form" role="alertdialog">
+          <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+              <header class="mdc-dialog__header">
+                <h2 class="mdc-dialog__title">Edit post</h2>
+              </header>
+              <section class="mdc-dialog__content dialog__body--scrollable">edit form here</section>
+            </div>
+          </div>
+          <div class="mdc-dialog__scrim"></div>
+        </aside>
+        <aside class="mdc-dialog" id="edit-comment-form" role="alertdialog">
+          <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+              <header class="mdc-dialog__header">
+                <h2 class="mdc-dialog__title">Edit comment</h2>
+              </header>
+              <section class="mdc-dialog__content dialog__body--scrollable">edit form here</section>
+              <footer class="mdc-dialog__actions">
+                <button class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">Cancel</button>
+              </footer>
+            </div>
+          </div>
+          <div class="mdc-dialog__scrim"></div>
+        </aside>
+        <aside class="mdc-dialog" id="post-form" role="alertdialog">
+          <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface">
+              <header class="mdc-dialog__header">
+                <h2 class="mdc-dialog__title">Share Post</h2>
+              </header>
+              <section class="mdc-dialog__content dialog__body--scrollable">
+                <div id="scope-posting-form">
+                  <form class="scope-posting-form form form-validation mdc-elevation-transition" data-jsclass="postingFormController,formValidator" data-about="" data-submitter=".post-submit-button" data-focus-target=".posting-body" data-endpoint="/post" data-modal="">
+                    <div class="tabbed">
+                      <div id="form-tab">
+                        <div class="form-group input-relative">
+                          <div class="posting-body editable markdown" tabindex="1" data-jsclass="markdownEditorController" data-target=".posting-markdown" data-in-modal="" data-placeholder="What's on your mind?" style="font-family:Helvetica,Arial,sans-serif;">
+                          </div>
+                          <textarea class="posting-markdown" type="hidden" name="body" data-validate="required,noEscapedAngle" style="display:none;"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="hide-until-subject-focus">
+                      <div class="shared-post"></div>
+                      <div class="upload-zone"></div>
+                    </div>
+                    <div class="post-tools hide-until-subject-focus">
+                      <div class="form-group input-relative button-zone"><a class="btn btn-sm btn-default" id="post-cancel-button" href="#">Cancel</a><a class="btn btn-sm btn-default" id="post-upload-button" href="#" data-toggle="tooltip" title="Attach Images." data-placement="bottom"><i class="fa fa-images"></i></a><a class="btn btn-sm btn-default" id="post-geo-button" href="#" data-toggle="tooltip" title="Checkin" data-placement="bottom"><i class="fa fa-map-marker"></i></a><a class="btn btn-sm btn-default" id="post-autopost-button" href="#" data-toggle="tooltip" title="Autopost" data-placement="bottom"><i class="fa fa-calendar"></i></a>
+                        <div class="float-right">
+                          <button class="post-submit-button btn btn-sm btn-primary">Post</button>
+                        </div>
+                      </div>
+                      <div class="geo-zone">
+                        <div class="form-group input-relative">
+                          <input class="form-control lazy-instantiate" data-lazy-jsclass="geoController" placeholder="Enter Place Name or Address" data-target=".geo-location" data-pulldown=".geo-pulldown" data-api-key="AIzaSyCP4oBk0JQY-fXxqD-ngMUhJi4Y8AbY5TE" value="">
+                          <input class="geo-location" type="hidden" value="">
+                        </div>
+                        <div class="geo-pulldown dropdown-menu dropdown"></div>
+                        <div class="geo-attributions"></div>
+                      </div>
+                      <div class="form-group input-relative text-center audience-select">
+                        <div class="checkbox-group" data-jsclass="checkboxGroupController" data-target=".posting-visibility">
+                          <input class="posting-visibility form-control" type="hidden" name="visibility" data-validate="required" value="[&quot;friends&quot;]">
+                          <div class="mdc-form-field">
+                            <div class="mdc-checkbox">
+                              <input class="form-check-input mdc-checkbox__native-control" type="checkbox" data-value="public">
+                              <div class="mdc-checkbox__background">
+                                <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                  <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                                </svg>
+                                <div class="mdc-checkbox__mixedmark"></div>
+                              </div>
+                            </div>
+                            <label for="post-audience-public">public</label>
+                          </div>
+                          <div class="mdc-form-field">
+                            <div class="mdc-checkbox">
+                              <input class="form-check-input mdc-checkbox__native-control" type="checkbox" data-value="friends">
+                              <div class="mdc-checkbox__background">
+                                <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                  <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                                </svg>
+                                <div class="mdc-checkbox__mixedmark"></div>
+                              </div>
+                            </div>
+                            <label for="post-audience-friends">friends</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="autopost-zone">
+                        <div class="form-group input-relative">
+                          <div class="input-group date">
+                            <input class="form-control" type="datetime-local" name="autopost" data-val-gmt="" placeholder="Autopost time">
+                            <div class="input-group-append"><span class="input-group-text"><span class="fa fa-calendar"></span></span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </section>
+              <footer class="mdc-dialog__actions">
+                <button class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">Cancel</button>
+              </footer>
+            </div>
+          </div>
+          <div class="mdc-dialog__scrim"></div>
+        </aside>
+        <div class="adjust-navbar-margin" id="content" data-hijax="true"></div>
+        <div id="tmks">
+          <div class="mdc-layout-grid">
+            <div class="mdc-layout-grid__inner">
+              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 text-center">
+                <p>Content, posts &amp; images Copyright &copy; by the post owner, All Rights Reserved.</p>
+                <p class="small">
+                   <a href="https://myantisocial.net" target="_blank">Code for this this project</a> is licensed under the MIT License. Copyright &copy; Michael Rhodes 2017,2018 All Rights Reserved.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div id="ajax-status"></div>
-      <div id="news-feed" data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint="ws://127.0.0.1:3000">
+    </div>
+    <div>
+      <aside class="mdc-typography hidden-logged-out mdc-elevation--z10" id="news-feed" data-jsclass="liveNewsFeedItemWebsocketController" data-endpoint="wss://mr.myantisocial.net">
         <div class="news-feed-header">
-          <div class="status pull-right"></div>Activity Feed
+          <div class="status float-right"></div>
+          <div class="position-relative"><i class="fa fa-fw fa-bell"></i></div>
         </div>
         <div class="news-feed-items">
-          <div class="news-feed-item"><img src="images/slug.png">
+          <div class="news-feed-item"><img src="https://s3.amazonaws.com/myantisocial-mr/MyUser-photo/1bd9da51-0505-4719-a6cd-10fd30ad356ethumb.jpeg">
             <div>listening for events</div>
           </div>
         </div>
-        <div class="news-feed-footer"><a href="/feed">More</a></div>
+      </aside>
+      <div class="mdc-drawer-scrim"></div>
+    </div>
+    <div class="mdc-snackbar" id="ajax-status">
+      <div class="mdc-snackbar__text"></div>
+      <div class="mdc-snackbar__action-wrapper">
+        <button class="mdc-snackbar__action-button" type="button"></button>
       </div>
-      
-     </div>
-      <script type="text/javascript" src="cordova.js"></script>
-      <script type="text/javascript" src="dist/js/jquery.min.js"></script>
-      <script type="text/javascript" src="js/jquery.cookie.js"></script>
-      <script type="text/javascript" src="js/index.js"></script>
-      <script type="text/javascript" src="js/socket.io.js"></script>
-      <script type="text/javascript" src="dist/js/DigitopiaSocial.js"></script>
-    </body>
+    </div>
+    <button class="mdc-fab mdc-fab--extended app-fab-fixed hidden-logged-in toggle-modal" href="#" data-target="#login-form"><span class="material-icons mdc-fab__icon">account_circle</span><span class="mdc-fab__label">Login</span></button>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="dist/js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript" src="js/socket.io.js"></script>
+    <script type="text/javascript" src="https://s3.amazonaws.com/myantisocial/xdomain_cookie.js"></script>
+    <script type="text/javascript" src="dist/js/AntiSocial.js"></script>
+  </body>
 </html>

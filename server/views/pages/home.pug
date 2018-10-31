@@ -5,61 +5,56 @@ block seo
 		!= globalSettings.serverTitle
 
 block content
-	.dark-background
-		.mdc-layout-grid
-			.mdc-layout-grid__inner
-				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-6
-					.text-center
-						img(src="/images/logo.svg")
+	.text-center.dark-background
+		img(src="/images/logo.svg" style="max-height:20vh;")
+	.mdc-layout-grid
+		.mdc-layout-grid__inner
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-8
 
-					h4 myAntiSocial.net
+				h4 myAntiSocial.net
 
-					p People are getting annoyed with social networking, with good reason. There are other ways to do this sort of thing. Better ways.
-						
-					ul
-						li A social networking ecosystem should be not built on a single company or application but on an open protocol.
+				p People are getting annoyed with social networking, with good reason. There are other ways to do this sort of thing. Better ways.
+					
+				ul
+					li A social networking ecosystem should be not built on a single company or application but on an open protocol.
 
-						li User should have total control and ownership of their information and content.
+					li User should have total control and ownership of their information and content.
 
-						li All sharing of information should be under explicit control of the users.
+					li All sharing of information should be under explicit control of the users.
 
-						li Protocols should embrace the decentralized approach that the internet was designed for and that the cloud enables.
+					li Protocols should embrace the decentralized approach that the internet was designed for and that the cloud enables.
 
-						li Data should be transmitted over secure user to user strong encryption. Each friend relationship has its own keys.
+					li Data should be transmitted over secure user to user strong encryption. Each friend relationship has its own keys.
 
-					p It's simple really. Making friends. Sharing with friends. Getting notified about what friends are sharing. Just that. Nothing else.
+				p It's simple really. Making friends. Sharing with friends. Getting notified about what friends are sharing. Just that. Nothing else.
 
-					a(style="color:#eee" href="https://github.com/antiSocialNet/antiSocial/wiki/FAQ" target="_blank") FAQ
-				
-				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-2
-
-				.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4.mdc-layout-grid__cell--align-middle
-					.server-info
-						p About this server
-						
+				a(href="https://github.com/antiSocialNet/antiSocial/wiki/FAQ" target="_blank") FAQ
+			
+			.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4
+				.server-info
+					h4 About this server
+					
+					p
 						if globalSettings.serverTitle
-							h4!= globalSettings.serverTitle
+							strong!= globalSettings.serverTitle
 						else
-							h4 An myAntisocial.net Node
+							strong An myAntisocial.net Node
+					
+					if globalSettings.serverDescription
+						p!= globalSettings.serverDescription
 						
-						if globalSettings.serverDescription
-							p!= globalSettings.serverDescription
-							
-						if globalSettings.serverOperator
-							p
+					if globalSettings.serverOperator
+						p
+							em
 								| This Node is operated by 
 								= globalSettings.serverOperator
-						
-						p.small!= config.host
-						
-						if globalSettings.multiUser === 'open'
-							p 'This is an open server.
-							
-							button.mdc-button.mdc-button--raised.toggle-modal(href="#" data-target="#register-form") Create an Account
+					
+					p.small!= config.host
+					
+					if globalSettings.multiUser === 'open'
+						p This is an open server.
+						button.mdc-button.mdc-button--raised.toggle-modal(href="#" data-target="#register-form") Create an Account
 
-						if globalSettings.multiUser === 'invite'
-							p This server accepts requests for accounts.
-							
-							button.mdc-button.mdc-button--raised.toggle-modal(href="#" data-target="#request-invite-form") Request an Account
-
-				
+					if globalSettings.multiUser === 'invite'
+						p This server accepts requests for accounts.
+						button.mdc-button.mdc-button--raised.toggle-modal(href="#" data-target="#request-invite-form") Request an Account

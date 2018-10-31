@@ -6,27 +6,34 @@ aside#login-form.mdc-dialog(role="alertdialog")
 				header.mdc-dialog__header
 					h2.mdc-dialog__title.
 						Login
-				section.mdc-dialog__content
-					.mdc-layout-grid
-						.mdc-layout-grid__inner
-							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
-								.form-group
-									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.login-email-address.mdc-text-field__input(tabindex="1" type="email" name="email" data-validate="required,email" autocomplete="email")
-										label.mdc-floating-label Email Address
-										.input-ok-indicator.material-icons.mdc-text-field__icon
-											span.fa.fa-check
-										.mdc-line-ripple
-									.validation-help.mdc-text-field-helper-text--persistent
-							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
-								.form-group
-									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.mdc-text-field__input(type="password" name="password" data-validate="required,password" autocomplete="current-password")
-										label.mdc-floating-label Password
-										.input-ok-indicator.material-icons.mdc-text-field__icon
-											span.fa.fa-check
-										.mdc-line-ripple
-									.validation-help.mdc-text-field-helper-text--persistent
+				section.mdc-dialog__content.dialog__body--scrollable
+					.hidden-not-cordova
+						.form-group
+							.mdc-text-field.mdc-text-field--with-trailing-icon
+								input.mdc-text-field__input(tabindex="1" type="url" name="server" data-validate="url")
+								label.mdc-floating-label Your Server
+								.input-ok-indicator.material-icons.mdc-text-field__icon
+									span.fa.fa-check
+								.mdc-line-ripple
+							.validation-help.mdc-text-field-helper-text--persistent
+
+					.form-group
+						.mdc-text-field.mdc-text-field--with-trailing-icon
+							input.login-email-address.mdc-text-field__input(tabindex="1" type="email" name="email" data-validate="required,email" autocomplete="email")
+							label.mdc-floating-label Email Address
+							.input-ok-indicator.material-icons.mdc-text-field__icon
+								span.fa.fa-check
+							.mdc-line-ripple
+						.validation-help.mdc-text-field-helper-text--persistent
+
+					.form-group
+						.mdc-text-field.mdc-text-field--with-trailing-icon
+							input.mdc-text-field__input(type="password" name="password" data-validate="required,password" autocomplete="current-password")
+							label.mdc-floating-label Password
+							.input-ok-indicator.material-icons.mdc-text-field__icon
+								span.fa.fa-check
+							.mdc-line-ripple
+						.validation-help.mdc-text-field-helper-text--persistent
 				footer.mdc-dialog__actions
 					a.toggle-modal.mdc-button(data-mdc-dialog-action="close" href="#" data-target="#password-request-reset-form") Forgot Password
 					if globalSettings.multiUser === 'open'
@@ -42,17 +49,14 @@ aside#password-request-reset-form.mdc-dialog(role="alertdialog")
 				header.mdc-dialog__header
 					h2.mdc-dialog__title.
 						Recover Password
-				section.mdc-dialog__content
-					.mdc-layout-grid
-						.mdc-layout-grid__inner
-							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
-								.form-group
-									.mdc-text-field.mdc-text-field--with-trailing-icon
-										input.login-email-address.mdc-text-field__input(tabindex="1" type="email" name="email" data-validate="required,email" autocomplete="email")
-										label.mdc-floating-label Email Address
-										.input-ok-indicator.material-icons.mdc-text-field__icon
-											span.fa.fa-check
-									.validation-help.mdc-text-field-helper-text--persistent
+				section.mdc-dialog__content.dialog__body--scrollable
+					.form-group
+						.mdc-text-field.mdc-text-field--with-trailing-icon
+							input.login-email-address.mdc-text-field__input(tabindex="1" type="email" name="email" data-validate="required,email" autocomplete="email")
+							label.mdc-floating-label Email Address
+							.input-ok-indicator.material-icons.mdc-text-field__icon
+								span.fa.fa-check
+						.validation-help.mdc-text-field-helper-text--persistent
 				footer.mdc-dialog__actions
 					a.toggle-modal.mdc-button.mdc-dialog__button(data-mdc-dialog-action="close" href="#" data-target="#login-form") Login
 					if globalSettings.multiUser === 'open'
@@ -130,7 +134,7 @@ aside#password-reset-form.mdc-dialog(role="alertdialog")
 				header.mdc-dialog__header
 					h2.mdc-dialog__title.
 						Reset Password
-				section.mdc-dialog__content
+				section.mdc-dialog__content.dialog__body--scrollable
 					.mdc-layout-grid
 						.mdc-layout-grid__inner
 							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-4-tablet.mdc-layout-grid__cell--span-6-desktop
@@ -163,7 +167,7 @@ aside#request-invite-form.mdc-dialog(role="alertdialog")
 				header.mdc-dialog__header
 					h2.mdc-dialog__title.
 						Request an Account on This Server
-				section.mdc-dialog__content
+				section.mdc-dialog__content.dialog__body--scrollable
 					.mdc-layout-grid
 						.mdc-layout-grid__inner
 							.mdc-layout-grid__cell.mdc-layout-grid__cell--span-12
