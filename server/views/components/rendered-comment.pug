@@ -40,8 +40,9 @@ if wantSummary
 				.comment-photo.loading(data-jsclass="loadController" data-target=".comment-photo" data-endpoint= proxyEndPoint(comment.details.photo,user))
 			
 			if ! comment.details.replyTo
+				
 				.float-right.secondary
-					a.reply-to-button(href="" data-about=saveAbout data-reply-to=about) reply
+					a.reply-to-button(href="" data-about=saveAbout ? saveAbout : comment.about data-reply-to=about ? about : comment.about + '/comment/' + comment.uuid) reply
 					
 			span.timestamp.secondary(data-timestamp= moment(comment.createdOn).toISOString())
 				!= ' - ' + moment(comment.createdOn).calendar()
@@ -59,6 +60,7 @@ if wantSummary
 	// look ahead at next comment to see if it is also a reply, if not then mark end of thread
 	if !comments 
 		if !comment.details.replyTo
+			.end-of-thread
 			.comment-separator
 	else
 		if index === comments.length -1 || !comments[index+1].details.replyTo

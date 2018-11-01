@@ -261,6 +261,7 @@ function instantiateMaterialDesignElements(element) {
 		$('body').on('click', '.news-feed-item', function (e) {
 			e.preventDefault();
 			$('#news-feed').removeClass('open');
+			$('body').removeClass('modal-open');
 			loadPage($(this).data('about'));
 		});
 
