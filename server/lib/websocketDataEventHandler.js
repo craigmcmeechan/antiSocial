@@ -189,14 +189,18 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 
 			var filter = {
 				'where': {
-					'or': [{
-						'remoteEndPoint': whoAbout
+					'and': [{
+						'userId': currentUser.id
+					}, {
+						'or': [{
+							'remoteEndPoint': whoAbout
+						}]
 					}]
 				}
 			};
 
 			if (myNewsFeedItem.target) {
-				filter.where.or.push({
+				filter.where.and.or.push({
 					'remoteEndPoint': myNewsFeedItem.target
 				});
 			}
