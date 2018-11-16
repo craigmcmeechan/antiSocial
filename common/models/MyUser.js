@@ -201,7 +201,7 @@ module.exports = function (MyUser) {
 						var e = new VError(err, 'generate verification token');
 						return cb(e);
 					}
-					user.updateAttribute(user.verificationToken, token, function (err) {
+					user.updateAttribute('verificationToken', token, function (err) {
 						if (err) {
 							var e = new VError(err, 'save verification token');
 							return cb(e);
