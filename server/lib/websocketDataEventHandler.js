@@ -199,8 +199,8 @@ module.exports = function dataEventHandler(server, currentUser, friend, data) {
 				}
 			};
 
-			if (myNewsFeedItem.target) {
-				filter.where.and.or.push({
+			if (myNewsFeedItem.target && filter.where.and[1] && filter.where.and[1].or) {
+				filter.where.and[1].or.push({
 					'remoteEndPoint': myNewsFeedItem.target
 				});
 			}
