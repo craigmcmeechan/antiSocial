@@ -9,6 +9,7 @@ grunt
 cd native-app
 \rm -r www/dist
 cp -r ../client/dist www/dist
+cordova run ios --device --buildFlag='-UseModernBuildSystem=0'
 ```
 
 www/index.html
