@@ -13,7 +13,7 @@ var async = require('async');
 var debug = require('debug')('proxy');
 var utils = require('../lib/endpoint-utils');
 
-var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?(\?source=facebook)?(\?share=1)?$/;
+var postRE = /^\/((?!proxy-)[a-zA-Z0-9-]+)\/post\/([a-f0-9-]+)(\.json)?(\?embed=1)?(\?source=facebook)?(\?share=1)?(\?bclid=.*)?$/;
 
 module.exports = function (server) {
 	var router = server.loopback.Router();
