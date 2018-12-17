@@ -326,8 +326,8 @@ function uploadable(model, instance, property, ctx, versionsByProperty, next) {
 				var attr = frames[0].split(/\s/);
 				//console.log(attr);
 				var dimensions = attr[2].split(/x/);
-				meta.width = dimensions[0];
-				meta.height = dimensions[1];
+				meta.width = parseInt(dimensions[0]);
+				meta.height = parseInt(dimensions[1]);
 				meta.type = attr[1];
 				if (frames.length > 1) {
 					meta.isAnimatedGif = true;
